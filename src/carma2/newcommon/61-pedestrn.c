@@ -2907,3 +2907,8 @@ int C2_HOOK_FASTCALL MakeCharacterBonePhysicworthy(tPed_character_instance* pCha
 done:
     return 0;
 }
+
+
+// FUNCTION: CARMA2_HW 0x0040c640
+void C2_HOOK_FASTCALL PedNoOp(void) {
+}
