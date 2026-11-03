@@ -33,6 +33,8 @@
 #include "58-crush2.h"
 #include "59-camera.h"
 #include "60-phil.h"
+#include "61-pedestrn.h"
+#include "69-sound.h"
 #include "brender/brender.h"
 #include "globvars.h"
 #include "globvrkm.h"
@@ -44,6 +46,7 @@
 #include "rec2_macros.h"
 
 #include <math.h>
+#include <string.h>
 
 #define PO_U32(o, off) (*(tU32*)((char*)(o) + (off)))
 #define PO_F32(o, off) (*(float*)((char*)(o) + (off)))
@@ -56,6 +59,8 @@ extern tWorld_callbacks gWorld_callbacks;
 
 extern int gKey_mapping[77];
 extern int gUNK_006793d0;
+extern int C2_HOOK_FASTCALL SetJoystickFFBForce(int pMagnitude);
+extern int C2_HOOK_FASTCALL SetJoystickFFBSteeringForce(int pMagnitude);
 static br_scalar stop_timer;
 static br_scalar slide_dist;
 
