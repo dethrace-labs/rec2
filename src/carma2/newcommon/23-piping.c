@@ -43,6 +43,11 @@ typedef struct {
 
 typedef struct {
     int field_0x0;
+    tU32 field_0x4;
+} tPipe_chunk_frame_bound;
+
+typedef struct {
+    int field_0x0;
     int field_0x4;
     tU8 field_0x8[4];
 } tPipe_chunk_model_mash;
@@ -2018,7 +2023,11 @@ void C2_HOOK_FASTCALL ApplyOilSpill(tPipe_chunk** pChunk) {
 #endif
 }
 
-// ApplyFrameBoundary
+// FUNCTION: CARMA2_HW 0x004c9360
+void C2_HOOK_FASTCALL ApplyFrameBoundary(tPipe_chunk** pChunk) {
+
+    return ApplyTime(((tPipe_chunk_frame_bound*)*pChunk)->field_0x4);
+}
 
 // ApplySound
 
