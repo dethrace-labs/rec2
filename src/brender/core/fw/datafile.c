@@ -1595,23 +1595,19 @@ br_datafile* C2_HOOK_STDCALL DfOpen(const char* name, int write, br_token scalar
 
     switch (mode) {
     case BR_FS_MODE_BINARY:
-        if (write) {
-            prims = &_BrFilePrimsWriteBinary;
-        } else {
+        prims = &_BrFilePrimsWriteBinary;
+        if (write == 0)
             prims = &_BrFilePrimsReadBinary;
-        }
         df->prims = prims;
         break;
     case BR_FS_MODE_TEXT:
-        if (write) {
-            prims = &_BrFilePrimsWriteText;
-        } else {
+        prims = &_BrFilePrimsWriteText;
+        if (write == 0)
             prims = &_BrFilePrimsReadText;
-        }
         df->prims = prims;
         break;
     }
-    if (DatafileStackTop >= (int)BR_ASIZE(DatafileStack)) {
+    if (DatafileStackTop >= 1024) {
         BrFailure("DatafileStack Overflow");
     }
     DatafileStack[DatafileStackTop].type = BR_MEMORY_FILE;
