@@ -35,11 +35,10 @@ struct {
 #endif
 
 
-#ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x00540086
 // FUNCTION: CARMA2_SW 0x0053b726
 C2_NAKED br_error C2_HOOK_CDECL HostSelectorReal(br_uint_16 *selp) {
-
+#ifdef REC2_MATCHING
     __asm {
         push    ebp
         mov     ebp, esp
@@ -50,19 +49,18 @@ C2_NAKED br_error C2_HOOK_CDECL HostSelectorReal(br_uint_16 *selp) {
         leave
         ret
     }
-}
 #else
-br_error C2_HOOK_CDECL HostSelectorReal(br_uint_16 *selp) {
-    NOT_IMPLEMENTED();
-    return 0;
-}
-#endif
 
-#ifdef REC2_MATCHING
+    *selp = _RealSelector;
+    return 0;
+#endif
+}
+
 // FUNCTION: CARMA2_HW 0x0053ff34
 // FUNCTION: CARMA2_SW 0x0053b5d4
 C2_NAKED br_error C2_HOOK_CDECL HostRealAllocate(struct host_real_memory *mem, br_uint_32 size_arg) {
 
+#ifdef REC2_MATCHING
     __asm {
         push    ebp
         mov     ebp, esp
@@ -77,20 +75,17 @@ C2_NAKED br_error C2_HOOK_CDECL HostRealAllocate(struct host_real_memory *mem, b
         leave
         ret
     }
-}
 #else
-br_error C2_HOOK_CDECL HostRealAllocate(struct host_real_memory *mem, br_uint_32 size_arg) {
-
     NOT_IMPLEMENTED();
     return 0;
-}
 #endif
+}
 
-#ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x0053ff51
 // FUNCTION: CARMA2_SW 0x0053b5f1
 C2_NAKED br_error C2_HOOK_CDECL HostRealFree(struct host_real_memory *mem) {
 
+#ifdef REC2_MATCHING
     __asm {
         push  ebp
         mov   ebp, esp
@@ -100,20 +95,17 @@ C2_NAKED br_error C2_HOOK_CDECL HostRealFree(struct host_real_memory *mem) {
         leave
         ret
     }
-}
 #else
-br_error C2_HOOK_CDECL HostRealFree(struct host_real_memory *mem) {
-
     NOT_IMPLEMENTED();
     return 0;
-}
 #endif
+}
 
-#ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x0053ff5a
 // FUNCTION: CARMA2_SW 0x0053b5fa
 C2_NAKED br_error C2_HOOK_CDECL HostRealInterruptGet(br_uint_32 vector, br_uint_16 *offp, br_uint_16 *vsegp) {
 
+#ifdef REC2_MATCHING
     __asm {
         push  ebp
         mov   ebp,esp
@@ -132,19 +124,16 @@ C2_NAKED br_error C2_HOOK_CDECL HostRealInterruptGet(br_uint_32 vector, br_uint_
         leave
         ret
     }
-}
 #else
-br_error C2_HOOK_CDECL HostRealInterruptGet(br_uint_32 vector, br_uint_16 *offp, br_uint_16 *vsegp) {
-
     NOT_IMPLEMENTED();
     return 0x2503;
-}
 #endif
+}
 
-#ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x0053ff7e
 // FUNCTION: CARMA2_SW 0x0053b61e
 C2_NAKED br_error C2_HOOK_CDECL HostRealInterruptSet(br_uint_32 vector, br_uint_32 voff, br_uint_32 vseg) {
+#ifdef REC2_MATCHING
     __asm {
         push    ebp
         mov     ebp,esp
@@ -160,20 +149,17 @@ C2_NAKED br_error C2_HOOK_CDECL HostRealInterruptSet(br_uint_32 vector, br_uint_
         leave
         ret
     }
-}
 #else
-br_error C2_HOOK_CDECL HostRealInterruptSet(br_uint_32 vector, br_uint_32 voff, br_uint_32 vseg) {
-
     NOT_IMPLEMENTED();
     return 0x2505;
-}
 #endif
+}
 
-#ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x0053ff9c
 // FUNCTION: CARMA2_SW 0x0053b63c
 C2_NAKED br_error C2_HOOK_CDECL HostRealInterruptCall(br_uint_32 vector, union host_regs *regs) {
 
+#ifdef REC2_MATCHING
     __asm {
         push     ebp
         mov      ebp, esp
@@ -237,20 +223,17 @@ C2_NAKED br_error C2_HOOK_CDECL HostRealInterruptCall(br_uint_32 vector, union h
         leave
         ret
     }
-}
 #else
-br_error C2_HOOK_CDECL HostRealInterruptCall(br_uint_32 vector, union host_regs *regs) {
-
     NOT_IMPLEMENTED();
     return 0x2511;
-}
 #endif
+}
 
-#ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x00540062
 // FUNCTION: CARMA2_SW 0x0053b702
 C2_NAKED br_error C2_HOOK_CDECL RealSelectorBegin(void) {
 
+#ifdef REC2_MATCHING
     __asm {
         push    ebx
         cmp     word ptr [_RealSelector], 0x0
@@ -267,14 +250,11 @@ C2_NAKED br_error C2_HOOK_CDECL RealSelectorBegin(void) {
         pop     ebx
         ret
     }
-}
 #else
-br_error C2_HOOK_CDECL RealSelectorBegin(void) {
-
     NOT_IMPLEMENTED();
     return 0x1002;
-}
 #endif
+}
 
 // FUNCTION: CARMA2_HW 0x00540085
 void C2_HOOK_CDECL RealSelectorEnd(void) {
