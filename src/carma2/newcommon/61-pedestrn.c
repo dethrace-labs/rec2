@@ -10,15 +10,22 @@
 
 #include "08-loading1.h"
 #include "10-loading2.h"
+#include "07-structur.h"
+#include "15-displays.h"
 #include "21-mainloop.h"
 #include "22-replay.h"
 #include "23-piping.h"
 #include "27-powerup.h"
+#include "28-world3.h"
+#include "29-raycast.h"
 #include "30-opponent.h"
 #include "41-utility.h"
 #include "52-errors.h"
 #include "42-input.h"
 #include "49-physics.h"
+#include "51-smash.h"
+#include "54-runtime.h"
+#include "60-phil.h"
 #include "62-graphics3.h"
 #include "63-loading3.h"
 #include "66-tintedpoly.h"
@@ -3161,7 +3168,7 @@ int C2_HOOK_FASTCALL MakeCharacterPhysics(tPed_character_instance* pCharacter, t
         }
     }
     if (gPed_vtable->fill_in_object != NULL) {
-        gPed_vtable->fill_in_object((undefined4*)pObject, pKind + 2);
+        gPed_vtable->fill_in_object((tPhysics_object*)pObject, pKind + 2);
     }
     return 1;
 }
