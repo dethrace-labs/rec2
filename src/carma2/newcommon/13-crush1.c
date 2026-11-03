@@ -13,19 +13,70 @@
 #include "09-funks.h"
 #include "23-piping.h"
 #include "30-opponent.h"
+#include "34-finteray.h"
 #include "41-utility.h"
 #include "49-physics.h"
 #include "51-smash.h"
 #include "60-phil.h"
+#include "00-car.h"
 #include "globvars.h"
+#include "globvrpb.h"
 #include "platform.h"
 #include "rec2_macros.h"
 
 #include "c2_math.h"
 #include "c2_string.h"
 
-// GLOBAL: CARMA2_HW 0x00744820
-tFace_ref gFace_list__car[300];
+#include <ctype.h>
+
+extern tPolyhedron_edge_indexes gBox_edge_indexes[12];
+
+// GLOBAL: CARMA2_HW 0x0067bd58
+int gCount_toggled_doors;
+
+// GLOBAL: CARMA2_HW 0x0067b838
+int gCount_net_crush_semi_detach_bit_list;
+
+// GLOBAL: CARMA2_HW 0x0067bd60
+int gCount_net_crush_full_detach_bit_list;
+
+// GLOBAL: CARMA2_HW 0x0067bdf0
+int gCount_net_crush_detach_list;
+
+// GLOBAL: CARMA2_HW 0x0067b7cc
+int gCount_car_damage_crush_list;
+
+// GLOBAL: CARMA2_HW 0x00679450
+tToggled_door gToggled_doors[16];
+
+// GLOBAL: CARMA2_HW 0x0067bd18
+tCar_damge_crush_list_item gCar_damage_crush_list[8];
+
+// GLOBAL: CARMA2_HW 0x00679558
+tCrush_detach_list_item gCrush_detach_list[16];
+
+// GLOBAL: CARMA2_HW 0x0067bad0
+int gCount_crush_detach_list;
+
+typedef struct tCrush_net_reattach_list_item_local {
+    tCar_spec* actor;
+    tCar_spec* car;
+    undefined4 field_0x8;
+} tCrush_net_reattach_list_item_local;
+
+extern tCrush_net_reattach_list_item_local gNet_crush_reattach_bit_list[8];
+
+// GLOBAL: CARMA2_HW 0x0067b7d8
+tCrush_net_full_detach_bit_list_item gNet_crush_full_detach_bit_list[8];
+
+// GLOBAL: CARMA2_HW 0x0067b840
+tCrush_net_semi_detach_bit_list_item gNet_crush_semi_detach_bit_list[8];
+
+// GLOBAL: CARMA2_HW 0x0067a290
+tCrush_net_detach_list_item gNet_crush_detach_list[8];
+
+// GLOBAL: CARMA2_HW 0x00679430
+int gCollision_face_mask__raycast;
 
 // GLOBAL: CARMA2_HW 0x00679438
 int gSensible_place_collect_active;
