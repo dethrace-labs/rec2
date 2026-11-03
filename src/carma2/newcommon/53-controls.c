@@ -9,6 +9,7 @@
 #include "53-controls.h"
 
 #include "00-car.h"
+#include "13-crush1.h"
 #include "15-displays.h"
 #include "16-graphics1.h"
 #include "17-world2.h"
