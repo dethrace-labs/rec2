@@ -3726,3 +3726,5 @@ int C2_HOOK_FASTCALL GetCompressedCrushVertexDataSize(tU8* pData) {
     }
     return count_or_points * 6 + 1;
 }
+
+
