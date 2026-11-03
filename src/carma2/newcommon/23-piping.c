@@ -30,23 +30,20 @@
 
 #define SIZE_OFFSET_PIPING(T, M) ((int)sizeof(((T*)NULL)->M)), ((int)offsetof(T, M))
 
-// GLOBAL: CARMA2_HW 0x0069410c
-volatile undefined4 gUNK_0069410c;
-
-// GLOBAL: CARMA2_HW 0x006768c8
-tU8* gPipe_buffer_end_marker = NULL;
-
-// GLOBAL: CARMA2_HW 0x0067690c
-int gPipe_undo_enabled = 0;
-
-// GLOBAL: CARMA2_HW 0x006768ec
-tU32 gPipe_buffer_size = 0;
-
-// GLOBAL: CARMA2_HW 0x00676910
-int gPipe_count_callbacks = 0;
-
 // GLOBAL: CARMA2_HW 0x006768fc
 int gReplay_pause_state = 0;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    tU8 field_0x8[0x10];
+} tPipe_chunk_crush;
+
+// STUB: CARMA2_HW 0x0043bd70
+void C2_HOOK_FASTCALL WorkerCrush(int field_0x4, void* pField_0x8, void* pField_0xe) {
+    NOT_IMPLEMENTED();
+}
+
 extern int gPaused;
 
 extern void C2_NORETURN C2_HOOK_CDECL FatalError(int pStr_index, ...);
@@ -1763,7 +1760,12 @@ void C2_HOOK_FASTCALL PipeSingleOppoRenderage(tOpponent_spec* pOpponent_spec, in
         SIZE_OFFSET_PIPING(tPipe_single_oppo_renderage, enable), pEnable);
 }
 
-// ApplyCrush
+// FUNCTION: CARMA2_HW 0x004c9040
+void C2_HOOK_FASTCALL ApplyCrush(tPipe_chunk** pChunk) {
+    tPipe_chunk_crush* chunk = (tPipe_chunk_crush*)*pChunk;
+
+    return WorkerCrush(chunk->field_0x4, &chunk->field_0x8[0], &chunk->field_0x8[6]);
+}
 
 // ApplySmudge
 
