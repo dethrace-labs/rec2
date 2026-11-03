@@ -14,13 +14,15 @@
 #include "01-network.h"
 #include "02-init.h"
 #include "04-netgame.h"
-#include "10-loading2.h"
+#include "09-funks.h"
 #include "13-crush1.h"
 #include "15-displays.h"
 #include "17-world2.h"
 #include "18-graphics2.h"
 #include "10-loading2.h"
 #include "20-skidmark.h"
+#include "32-spark.h"
+#include "39-oil.h"
 #include "59-camera.h"
 #include "22-replay.h"
 #include "23-piping.h"
@@ -31,10 +33,14 @@
 #include "37-brucetrk.h"
 #include "41-utility.h"
 #include "49-physics.h"
+#include "51-smash.h"
 #include "53-controls.h"
+#include "57-drone.h"
 #include "58-crush2.h"
 #include "59-camera.h"
 #include "60-phil.h"
+#include "61-pedestrn.h"
+#include "69-sound.h"
 #include "brender/brender.h"
 #include "globvars.h"
 #include "globvrkm.h"
@@ -46,6 +52,7 @@
 #include "rec2_macros.h"
 
 #include <math.h>
+#include <string.h>
 
 #define PO_U32(o, off) (*(tU32*)((char*)(o) + (off)))
 #define PO_F32(o, off) (*(float*)((char*)(o) + (off)))
@@ -58,6 +65,8 @@ extern tWorld_callbacks gWorld_callbacks;
 
 extern int gKey_mapping[77];
 extern int gUNK_006793d0;
+extern int C2_HOOK_FASTCALL SetJoystickFFBForce(int pMagnitude);
+extern int C2_HOOK_FASTCALL SetJoystickFFBSteeringForce(int pMagnitude);
 static br_scalar stop_timer;
 static br_scalar slide_dist;
 
