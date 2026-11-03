@@ -257,7 +257,7 @@ int DatafileStackTop;
 // FUNCTION: CARMA2_SW 0x00524b80
 void C2_HOOK_STDCALL DfPush(int type, void* value, unsigned int count) {
 
-    if (DatafileStackTop >= (int)BR_ASIZE(DatafileStack)) {
+    if (DatafileStackTop >= 1024) {
         BrFailure("DatafileStack Overflow");
     }
     DatafileStack[DatafileStackTop].type = type;
