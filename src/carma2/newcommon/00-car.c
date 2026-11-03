@@ -46,6 +46,12 @@
 // GLOBAL: CARMA2_SW 0x00795340
 tNon_car_spec* gActive_non_car_list[99];
 
+// GLOBAL: CARMA2_HW 0x00679360
+br_scalar gMin_world_y;
+
+// GLOBAL: CARMA2_HW 0x006793e4
+tPhysics_object* gUnknown_car_collision_info;
+
 // GLOBAL: CARMA2_HW 0x0067939c
 // GLOBAL: CARMA2_SW 0x00673b0c
 int gTesting_car_for_sensible_place;
