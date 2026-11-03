@@ -35,6 +35,7 @@ struct {
 #endif
 
 
+#ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x00540086
 // FUNCTION: CARMA2_SW 0x0053b726
 C2_MATCHING_NAKED br_error C2_HOOK_CDECL HostSelectorReal(br_uint_16 *selp) {
@@ -55,6 +56,13 @@ C2_MATCHING_NAKED br_error C2_HOOK_CDECL HostSelectorReal(br_uint_16 *selp) {
     return 0;
 #endif
 }
+#else
+br_error C2_HOOK_CDECL HostSelectorReal(br_uint_16 *selp) {
+
+    *selp = _RealSelector;
+    return 0;
+}
+#endif
 
 // FUNCTION: CARMA2_HW 0x0053ff34
 // FUNCTION: CARMA2_SW 0x0053b5d4
