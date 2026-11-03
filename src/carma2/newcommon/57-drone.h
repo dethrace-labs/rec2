@@ -206,3 +206,5 @@ extern void C2_HOOK_FASTCALL ReallocModelFacesAndVertices(br_model* pModel, int 
 // WriteOutDronePaths
 
 #endif // GUARD_57_DRONE_H
+
+int C2_HOOK_FASTCALL MyDroneHathHalteth(tPhysics_object* pObject);

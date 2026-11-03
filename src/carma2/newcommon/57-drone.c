@@ -524,3 +524,9 @@ void C2_HOOK_FASTCALL ReallocModelFacesAndVertices(br_model* pModel, int pCount_
 
 // WriteOutDronePaths
 
+
+// STUB: CARMA2_HW 0x00452360
+int C2_HOOK_FASTCALL MyDroneHathHalteth(tPhysics_object* pObject) {
+    NOT_IMPLEMENTED();
+    return 0;
+}
