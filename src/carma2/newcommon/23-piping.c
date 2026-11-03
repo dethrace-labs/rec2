@@ -32,23 +32,357 @@
 
 #define SIZE_OFFSET_PIPING(T, M) ((int)sizeof(((T*)NULL)->M)), ((int)offsetof(T, M))
 
-// GLOBAL: CARMA2_HW 0x0069410c
-volatile undefined4 gUNK_0069410c;
-
-// GLOBAL: CARMA2_HW 0x006768c8
-tU8* gPipe_buffer_end_marker = NULL;
-
-// GLOBAL: CARMA2_HW 0x0067690c
-int gPipe_undo_enabled = 0;
-
-// GLOBAL: CARMA2_HW 0x006768ec
-tU32 gPipe_buffer_size = 0;
-
-// GLOBAL: CARMA2_HW 0x00676910
-int gPipe_count_callbacks = 0;
-
 // GLOBAL: CARMA2_HW 0x006768fc
 int gReplay_pause_state = 0;
+
+typedef struct {
+    int field_0x0;
+    tU16 field_0x4;
+    tU16 field_0x6;
+    int field_0x8;
+} tPipe_chunk_prox_ray_replay;
+
+typedef struct {
+    int field_0x0;
+    tS8 field_0x4[12];
+} tPipe_chunk_damage;
+
+typedef struct {
+    int field_0x0;
+    tS16 field_0x4;
+    tS8 field_0x6;
+    tS8 field_0x7;
+    tS8 field_0x8;
+    tS8 field_0x9;
+} tPipe_chunk_graphpical_wheel_stuff;
+
+typedef struct {
+    int field_0x0;
+    tS32 field_0x4;
+    float field_0x8;
+    float field_0xc;
+    float field_0x10;
+    tU16 field_0x14;
+    tU16 field_0x16;
+} tPipe_chunk_sound;
+
+typedef struct {
+    int field_0x0;
+    br_vector3 field_0x4;
+    tU8 field_0x10[0x24];
+    int field_0x34;
+    int field_0x38;
+    int field_0x3c;
+    tU8 field_0x40[4];
+    int field_0x44;
+    br_vector3 field_0x48;
+    int field_0x54;
+} tPipe_chunk_oil_spill;
+
+typedef struct {
+    int field_0x0;
+    tU8 field_0x4;
+    int field_0x8;
+    br_vector3 field_0xc;
+    br_vector3 field_0x18;
+} tPipe_chunk_extended_splash;
+
+typedef struct {
+    uintptr_t pOwner;
+    float v[4];
+} tPipe_chunk_splash;
+
+typedef struct {
+    tU8 pad[0x244];
+    br_scalar x;
+    br_scalar y;
+    br_scalar z;
+    br_scalar size;
+} tReplay_splash_effect;
+
+typedef struct {
+    tU32 field_0x0;
+    tU8 pad[0x10];
+    tU16 field_0x14;
+} tPipe_chunk_smoke_column_replay;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+    int field_0xc;
+    int field_0x10;
+    br_vector3 field_0x14;
+} tPipe_chunk_groove_stop;
+
+typedef struct {
+    int field_0x0;
+    tU8 field_0x4[0xc];
+    tU16 field_0x10;
+    int field_0x14;
+} tPipe_chunk_shrapnel_replay;
+
+typedef struct {
+    int field_0x0;
+    tU8 field_0x4[0x10];
+} tPipe_chunk_spark_replay;
+
+typedef struct {
+    tU32 field_0x0;
+    br_actor* actor;
+    tU32 field_0x8;
+    br_actor* field_0xc;
+} tPipe_chunk_relink;
+
+typedef struct {
+    tU32 field_0x0;
+    tU32 field_0x4;
+    br_vector3 field_0x8;
+    br_vector3 field_0x14;
+    br_vector3 field_0x20;
+    br_vector3 field_0x2c;
+    br_vector3 field_0x38;
+    tU32 field_0x44;
+    tU32 field_0x48;
+    tU32 field_0x4c;
+    tU32 field_0x50;
+    br_vector3 field_0x54;
+    tU8 field_0x60[0x24];
+    tU32 field_0x84;
+    br_vector3 field_0x88;
+    tU8 field_0x94[0xc];
+    tU32 field_0xa0;
+    br_matrix34 field_0xa4;
+} tPipe_chunk_shrapnel_shower;
+
+typedef struct {
+    tU32 field_0x0;
+    tU32 field_0x4;
+    tU32 count;
+} tPipe_chunk_remove_faces;
+
+typedef struct {
+    tU8 pad[0x50];
+    br_scalar x;
+    br_scalar y;
+    br_scalar z;
+} tReplay_actor_trans_effect;
+
+typedef struct {
+    tU32 field_0x0;
+    uintptr_t field_0x4;
+    br_vector3 delta;
+} tPipe_chunk_actor_trans;
+
+typedef struct {
+    int field_0x0;
+    br_vector3 field_0x4;
+} tPipe_chunk_ped_dir;
+
+typedef struct {
+    int field_0x0;
+    tU8 field_0x4[8];
+    br_vector3 field_0xc;
+    br_vector3 field_0x18;
+    br_vector3 field_0x24;
+} tPipe_chunk_ped_status;
+
+typedef struct {
+    int field_0x0;
+    tS16 field_0x4;
+    tS16 field_0x6;
+    tU8 field_0x8;
+    tU8 field_0x9;
+    tS16 field_0xa;
+    int field_0xc;
+    int field_0x10;
+    int field_0x14;
+    br_vector3 field_0x18;
+    br_vector3 field_0x24;
+    int field_0x30;
+    int field_0x34;
+    br_vector3 field_0x38;
+} tPipe_chunk_ped_move;
+
+typedef struct {
+    int field_0x0;
+    br_matrix34 field_0x4;
+} tPipe_chunk_ped_physics;
+
+typedef struct {
+    int field_0x0;
+    tS16 field_0x4;
+    tU8 field_0x6;
+    tS8 field_0x7;
+} tPipe_chunk_ped_dismember;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+} tPipe_chunk_ped_fp_change;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    int field_0x8;
+    int field_0xc;
+    br_vector3 field_0x10;
+} tPipe_chunk_ped_pos;
+
+typedef struct {
+    int field_0x0;
+    tS16 field_0x4;
+    tS16 field_0x6;
+    tS16 field_0x8;
+    tS16 field_0xa;
+    int field_0xc;
+} tPipe_chunk_ped_model_change;
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0043c0e0
+void C2_HOOK_FASTCALL WorkerFlap(int field_0x4, tU16 field_0x8) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x0043bd70
+void C2_HOOK_FASTCALL WorkerCrush(int field_0x4, void* pField_0x8, void* pField_0xe) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004c9070
+void C2_HOOK_FASTCALL WorkerSmudge(tPipe_chunk** pChunk, int pScale) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004d6180
+void C2_HOOK_FASTCALL WorkerProxRay(int field_0x0, tU16 field_0x6, tU16 field_0x4, int field_0x8) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004e0710
+void C2_HOOK_FASTCALL WorkerSpecial(void) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004f8630
+void C2_HOOK_FASTCALL WorkerSpark(int field_0x0, void* pField_0x4, void* pField_0x10) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004f86f0
+void C2_HOOK_FASTCALL WorkerShrapnel(int field_0x0, void* pField_0x4, tU16 field_0x10, int field_0x14) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004fba00
+void C2_HOOK_FASTCALL WorkerFlame(int index, int flag, float f1, float f2, float f3, float f4) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004fef40
+void C2_HOOK_FASTCALL WorkerExtendedSplash(int field_0x0, int field_0x4, int field_0x8, br_vector3* pField_0xc, br_vector3* pField_0x18) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x0040ca40
+void C2_HOOK_CDECL RelinkActorKeepWorldTransform(br_actor* pParent, br_actor* pActor) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004eb8f0
+void C2_HOOK_FASTCALL WorkerShrapnelShower(tU32 pOwner, tU32 pShrapnel, tU32 pSeed, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, tU32 pActor, tU32 pTime, tU32 pArg9, br_vector3* pTransform, br_vector3* pFragment_owner, br_vector3* pPosition, tU32 pDistance, br_vector3* pArg14, tU32 pArg15) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca680
+void C2_HOOK_FASTCALL WorkerPedStatus(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x9, tU8 field_0xb, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca6e0
+void C2_HOOK_FASTCALL WorkerPedStatusUndo(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x8, tU8 field_0xa, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca4d0
+void C2_HOOK_FASTCALL WorkerPedDir(int field_0x0, br_vector3* pDir) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca500
+void C2_HOOK_FASTCALL WorkerPedMove(tPedestrian* pPed, int field_0x4, int field_0xc, int field_0x8_1, int field_0x14, int zero, br_vector3* pField_0x24, int field_0x34, br_vector3* pField_0x38) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca5a0
+void C2_HOOK_FASTCALL WorkerPedMoveUndo(tPedestrian* pPed, int field_0x6, int field_0x10, int zero, int zero2, int field_0xa, br_vector3* pField_0x18, int field_0x30, br_vector3* pField_0x38) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca7d0
+void C2_HOOK_FASTCALL WorkerPedPhysics(int field_0x0, br_matrix34* pMatrix) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca900
+void C2_HOOK_FASTCALL WorkerPedDismember(int field_0x0, int field_0x4, int field_0x7) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca980
+void C2_HOOK_FASTCALL WorkerPedDismemberUndo(int field_0x0, int field_0x4, int field_0x6) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca650
+void C2_HOOK_FASTCALL WorkerPedFPChange(int field_0x0, tPipe_stack_word field_0x4) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca830
+void C2_HOOK_FASTCALL WorkerPedPos(int field_0x0, br_vector3* pVec) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca8d0
+void C2_HOOK_FASTCALL WorkerPedModelChange(int field_0x0, int field_0x4, int field_0x6, int field_0x8) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004ca8a0
+void C2_HOOK_FASTCALL WorkerPedModelChangeUndo(int field_0x0, int field_0x4, int field_0xc, int field_0xa) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004f0380
+void C2_HOOK_FASTCALL WorkerShrapnelShowerUndo(tU32 chunk_0x48, tU32 prev_0x4, tU32 prev_0x84, tU32 prev_0x44, br_vector3* prev_0x8, br_vector3* prev_0x20, br_vector3* prev_0x2c, tU32 prev_0x50, tU32 prev_0x48, tU32 prev_0x0, br_vector3* prev_0x54, br_vector3* prev_0x88, br_vector3* prev_0x14, tU32 prev_0xa0, br_vector3* prev_0x38) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x004da960
+void C2_HOOK_FASTCALL WorkerRepulseRay(int field_0x0, int field_0x4, int field_0x8, int field_0xc) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x0043c240
+void C2_HOOK_FASTCALL WorkerSplitWeldApply(void* roadMachine, br_vector3* pVector) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x0043c3d0
+void C2_HOOK_FASTCALL WorkerSplitWeldUndo(void* roadMachine) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+extern int gPaused;
 
 // GLOBAL: CARMA2_HW 0x006b78a0
 br_matrix34 gShrapnel_shower_matrix;
@@ -2199,7 +2533,12 @@ void C2_HOOK_FASTCALL ApplyPedPos(tPipe_chunk** pChunk) {
     return WorkerPedPos(chunk->field_0x0, &chunk->field_0x10);
 }
 
-// ApplyPedModelChange
+// FUNCTION: CARMA2_HW 0x004c9b60
+void C2_HOOK_FASTCALL ApplyPedModelChange(tPipe_chunk** pChunk) {
+    tPipe_chunk_ped_model_change* chunk = (tPipe_chunk_ped_model_change*)*pChunk;
+
+    return WorkerPedModelChange(chunk->field_0x0, (int)chunk->field_0x4, (int)chunk->field_0x6, (int)chunk->field_0x8);
+}
 
 // ApplyPHILObject
 
