@@ -16,7 +16,9 @@
 #include "15-displays.h"
 #include "17-world2.h"
 #include "18-graphics2.h"
+#include "10-loading2.h"
 #include "20-skidmark.h"
+#include "59-camera.h"
 #include "22-replay.h"
 #include "23-piping.h"
 #include "27-powerup.h"
@@ -45,6 +47,12 @@
 // GLOBAL: CARMA2_HW 0x0079eda0
 // GLOBAL: CARMA2_SW 0x00795340
 tNon_car_spec* gActive_non_car_list[99];
+
+// GLOBAL: CARMA2_HW 0x00679360
+br_scalar gMin_world_y;
+
+// GLOBAL: CARMA2_HW 0x006793e4
+tPhysics_object* gUnknown_car_collision_info;
 
 // GLOBAL: CARMA2_HW 0x0067939c
 // GLOBAL: CARMA2_SW 0x00673b0c
