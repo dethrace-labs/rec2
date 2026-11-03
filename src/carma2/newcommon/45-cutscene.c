@@ -9,6 +9,7 @@
 #include "45-cutscene.h"
 
 #include "18-graphics2.h"
+#include "18b-graphics2.h"
 #include "42-input.h"
 #include "41-utility.h"
 #include "69-sound.h"
@@ -76,6 +77,7 @@ void C2_HOOK_FASTCALL DoGameCompletedAnimation(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0043f5c0
+// FUNCTION: CARMA2_SW 0x0043f6a0
 void C2_HOOK_FASTCALL StartLoadingScreen(void) {
 
     SwitchToLoresMode();

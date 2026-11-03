@@ -12,14 +12,10 @@
 
 extern br_uint_16 _RealSelector;
 
-#if defined(__I86__) || defined(_M_IX86)
-C2_NAKED
-#endif
 // FUNCTION: CARMA2_HW 0x0054009c
-// STUB: CARMA2_SW 0x0053b73c
-void C2_HOOK_CDECL HostRealBlockWrite(br_uint_16 offset, br_uint_16 seg, void *block, br_uint_32 count) {
-#if defined(__I86__) || defined(_M_IX86)
-#if defined(_MSC_VER)
+// FUNCTION: CARMA2_SW 0x0053b73c
+C2_NAKED void C2_HOOK_CDECL HostRealBlockWrite(br_uint_16 offset, br_uint_16 seg, void *block, br_uint_32 count) {
+#ifdef REC2_MATCHING
     __asm {
         push ebp
         mov ebp, esp
@@ -43,42 +39,14 @@ void C2_HOOK_CDECL HostRealBlockWrite(br_uint_16 offset, br_uint_16 seg, void *b
         ret
     }
 #else
-    __asm__(
-        "push %ebp\n"
-        "mov %esp, %ebp\n"
-        "push %es\n"
-        "push %esi\n"
-        "push %edi\n"
-        "mov __RealSelector, %es\n"
-        "mov 0xc(%ebp), %edi\n"
-        "shl $4, %edi\n"
-        "add 8(%ebp), %edi\n"
-        "mov 0x10(%ebp), %esi\n"
-        "mov 0x14(%ebp), %ecx\n"
-        "shr $1, %ecx\n"
-        "rep movsw\n"
-        "adc %ecx, %ecx\n"
-        "rep movsb\n"
-        "pop %edi\n"
-        "pop %esi\n"
-        "pop %es\n"
-        "leave\n"
-        "ret\n"
-    );
-#endif
-#else
     abort();
 #endif
 }
 
-#if defined(__I86__) || defined(_M_IX86)
-C2_NAKED
-#endif
 // FUNCTION: CARMA2_HW 0x005400c6
-// STUB: CARMA2_SW 0x0053b766
-void C2_HOOK_CDECL HostRealBlockFill(br_uint_16 offset, br_uint_16 seg, br_uint_8 value, br_uint_32 count) {
-#if defined(__I86__) || defined(_M_IX86)
-#if defined(_MSC_VER)
+// FUNCTION: CARMA2_SW 0x0053b766
+C2_NAKED void C2_HOOK_CDECL HostRealBlockFill(br_uint_16 offset, br_uint_16 seg, br_uint_8 value, br_uint_32 count) {
+#ifdef REC2_MATCHING
     __asm {
         push ebp
         mov ebp, esp
@@ -103,43 +71,14 @@ void C2_HOOK_CDECL HostRealBlockFill(br_uint_16 offset, br_uint_16 seg, br_uint_
         ret
     }
 #else
-    __asm__(
-        "push %ebp\n"
-        "mov %esp, %ebp\n"
-        "push %es\n"
-        "push %esi\n"
-        "push %edi\n"
-        "mov __RealSelector, %es\n"
-        "mov 0xc(%ebp), %edi\n"
-        "shl $4, %edi\n"
-        "add 8(%ebp), %edi\n"
-        "mov 0x10(%ebp), %al\n"
-        "mov 0x14(%ebp), %ecx\n"
-        "mov %al, %ah\n"
-        "shr $1, %ecx\n"
-        "rep stosw\n"
-        "adc %ecx, %ecx\n"
-        "rep stosb\n"
-        "pop %edi\n"
-        "pop %esi\n"
-        "pop %es\n"
-        "leave\n"
-        "ret\n"
-    );
-#endif
-#else
     abort();
 #endif
 }
 
-#if defined(__I86__) || defined(_M_IX86)
-C2_NAKED
-#endif
 // FUNCTION: CARMA2_HW 0x005400f2
-// STUB: CARMA2_SW 0x0053b792
-void C2_HOOK_CDECL HostRealBlockRead(br_uint_16 offset, br_uint_16 seg, void *block, br_uint_32 count) {
-#if defined(__I86__) || defined(_M_IX86)
-#if defined(_MSC_VER)
+// FUNCTION: CARMA2_SW 0x0053b792
+C2_NAKED void C2_HOOK_CDECL HostRealBlockRead(br_uint_16 offset, br_uint_16 seg, void *block, br_uint_32 count) {
+#ifdef REC2_MATCHING
     __asm {
         push ebp
         mov ebp, esp
@@ -163,42 +102,14 @@ void C2_HOOK_CDECL HostRealBlockRead(br_uint_16 offset, br_uint_16 seg, void *bl
         ret
     }
 #else
-    __asm__(
-        "push %ebp\n"
-        "mov %esp, %ebp\n"
-        "push %ds\n"
-        "push %esi\n"
-        "push %edi\n"
-        "mov __RealSelector, %ds\n"
-        "mov 0xc(%ebp), %esi\n"
-        "shl $4, %esi\n"
-        "add 8(%ebp), %esi\n"
-        "mov 0x10(%ebp), %edi\n"
-        "mov 0x14(%ebp), %ecx\n"
-        "shr $1, %ecx\n"
-        "rep movsw\n"
-        "adc %ecx, %ecx\n"
-        "rep movsb\n"
-        "pop %edi\n"
-        "pop %esi\n"
-        "pop %ds\n"
-        "leave\n"
-        "ret\n"
-    );
-#endif
-#else
     abort();
 #endif
 }
 
-#if defined(__I86__) || defined(_M_IX86)
-C2_NAKED
-#endif
 // FUNCTION: CARMA2_HW 0x0054011c
-// STUB: CARMA2_SW 0x0053b7bc
-br_uint_32 C2_HOOK_CDECL HostRealStringWrite(br_uint_16 offset, br_uint_16 seg, br_uint_8 *string, br_uint_32 max) {
-#if defined(__I86__) || defined(_M_IX86)
-#if defined(_MSC_VER)
+// FUNCTION: CARMA2_SW 0x0053b7bc
+C2_NAKED br_uint_32 C2_HOOK_CDECL HostRealStringWrite(br_uint_16 offset, br_uint_16 seg, br_uint_8 *string, br_uint_32 max) {
+#ifdef REC2_MATCHING
     __asm {
         push ebp
         mov ebp, esp
@@ -233,53 +144,14 @@ br_uint_32 C2_HOOK_CDECL HostRealStringWrite(br_uint_16 offset, br_uint_16 seg, 
         ret
     }
 #else
-    __asm__(
-        "push %ebp\n"
-        "mov %esp, %ebp\n"
-        "push %es\n"
-        "push %esi\n"
-        "push %edi\n"
-        "mov __RealSelector, %es\n"
-        "mov 0xc(%ebp), %edi\n"
-        "shl $4, %edi\n"
-        "add 8(%ebp), %edi\n"
-        "mov 0x10(%ebp), %esi\n"
-        "mov 0x14(%ebp), %ecx\n"
-        "xor %eax, %eax\n"
-        "and %ecx, %ecx\n"
-        "je 1f\n"
-        "0:\n"
-        "mov (%esi), %dl\n"
-        "mov %dl, %es:(%edi)\n"
-        "inc %eax\n"
-        "and %dl, %dl\n"
-        "je 1f\n"
-        "inc %esi\n"
-        "inc %edi\n"
-        "dec %ecx\n"
-        "jne 0b\n"
-        "movb $0, %es:-1(%edi)\n"
-        "1:\n"
-        "pop %edi\n"
-        "pop %esi\n"
-        "pop %es\n"
-        "leave\n"
-        "ret\n"
-    );
-#endif
-#else
     abort();
 #endif
 }
 
-#if defined(__I86__) || defined(_M_IX86)
-C2_NAKED
-#endif
 // FUNCTION: CARMA2_HW 0x00540157
-// STUB: CARMA2_SW 0x0053b7f7
-br_uint_32 C2_HOOK_CDECL HostRealStringRead(br_uint_16 offset, br_uint_16 seg, br_uint_8 *string, br_uint_32 max) {
-#if defined(__I86__) || defined(_M_IX86)
-#if defined(_MSC_VER)
+// FUNCTION: CARMA2_SW 0x0053b7f7
+C2_NAKED br_uint_32 C2_HOOK_CDECL HostRealStringRead(br_uint_16 offset, br_uint_16 seg, br_uint_8 *string, br_uint_32 max) {
+#ifdef REC2_MATCHING
     __asm {
         push ebp
         mov ebp, esp
@@ -314,53 +186,14 @@ br_uint_32 C2_HOOK_CDECL HostRealStringRead(br_uint_16 offset, br_uint_16 seg, b
         ret
     }
 #else
-    __asm__(
-        "push %ebp\n"
-        "mov %esp, %ebp\n"
-        "push %es\n"
-        "push %esi\n"
-        "push %edi\n"
-        "mov __RealSelector, %es\n"
-        "mov 0xc(%ebp), %edi\n"
-        "shl $4, %edi\n"
-        "add 8(%ebp), %edi\n"
-        "mov 0x10(%ebp), %esi\n"
-        "mov 0x14(%ebp), %ecx\n"
-        "xor %eax, %eax\n"
-        "and %ecx, %ecx\n"
-        "je 1f\n"
-        "0:\n"
-        "mov %es:(%edi), %dl\n"
-        "mov %dl, (%esi)\n"
-        "inc %eax\n"
-        "and %dl, %dl\n"
-        "je 1f\n"
-        "inc %esi\n"
-        "inc %edi\n"
-        "dec %ecx\n"
-        "jne 0b\n"
-        "movb $0, -1(%esi)\n"
-        "1:\n"
-        "pop %edi\n"
-        "pop %esi\n"
-        "pop %es\n"
-        "leave\n"
-        "ret\n"
-    );
-#endif
-#else
     abort();
 #endif
 }
 
-#if defined(__I86__) || defined(_M_IX86)
-C2_NAKED
-#endif
 // FUNCTION: CARMA2_HW 0x00540191
-// STUB: CARMA2_SW 0x0053b831
-void C2_HOOK_CDECL HostRealByteWrite(br_uint_16 offset, br_uint_16 seg, br_uint_8 value) {
-#if defined(__I86__) || defined(_M_IX86)
-#if defined(_MSC_VER)
+// FUNCTION: CARMA2_SW 0x0053b831
+C2_NAKED void C2_HOOK_CDECL HostRealByteWrite(br_uint_16 offset, br_uint_16 seg, br_uint_8 value) {
+#ifdef REC2_MATCHING
     __asm {
         push ebp
         mov ebp, esp
@@ -376,34 +209,14 @@ void C2_HOOK_CDECL HostRealByteWrite(br_uint_16 offset, br_uint_16 seg, br_uint_
         ret
     }
 #else
-    __asm__(
-        "push %ebp\n"
-        "mov %esp, %ebp\n"
-        "push %ds\n"
-        "mov __RealSelector, %ds\n"
-        "mov 0xc(%ebp), %edx\n"
-        "shl $4, %edx\n"
-        "add 8(%ebp), %edx\n"
-        "mov 0x10(%ebp), %al\n"
-        "mov %al, (%edx)\n"
-        "pop %ds\n"
-        "leave\n"
-        "ret\n"
-    );
-#endif
-#else
     abort();
 #endif
 }
 
-#if defined(__I86__) || defined(_M_IX86)
-C2_NAKED
-#endif
 // FUNCTION: CARMA2_HW 0x005401ad
-// STUB: CARMA2_SW 0x0053b84d
-br_uint_8 C2_HOOK_CDECL HostRealByteRead(br_uint_16 offset, br_uint_16 seg) {
-#if defined(__I86__) || defined(_M_IX86)
-#if defined(_MSC_VER)
+// FUNCTION: CARMA2_SW 0x0053b84d
+C2_NAKED br_uint_8 C2_HOOK_CDECL HostRealByteRead(br_uint_16 offset, br_uint_16 seg) {
+#ifdef REC2_MATCHING
     __asm {
         push ebp
         mov ebp, esp
@@ -418,33 +231,14 @@ br_uint_8 C2_HOOK_CDECL HostRealByteRead(br_uint_16 offset, br_uint_16 seg) {
         ret
     }
 #else
-    __asm__(
-        "push %ebp\n"
-        "mov %esp, %ebp\n"
-        "push %ds\n"
-        "mov __RealSelector, %ds\n"
-        "mov 0xc(%ebp), %eax\n"
-        "shl $4, %eax\n"
-        "add 8(%ebp), %eax\n"
-        "mov (%eax), %al\n"
-        "pop %ds\n"
-        "leave\n"
-        "ret\n"
-    );
-#endif
-#else
     abort();
 #endif
 }
 
-#if defined(__I86__) || defined(_M_IX86)
-C2_NAKED
-#endif
 // FUNCTION: CARMA2_HW 0x005401c6
-// STUB: CARMA2_SW 0x0053b866
-void C2_HOOK_CDECL HostRealWordWrite(br_uint_16 offset, br_uint_16 seg, br_uint_16 value) {
-#if defined(__I86__) || defined(_M_IX86)
-#if defined(_MSC_VER)
+// FUNCTION: CARMA2_SW 0x0053b866
+C2_NAKED void C2_HOOK_CDECL HostRealWordWrite(br_uint_16 offset, br_uint_16 seg, br_uint_16 value) {
+#ifdef REC2_MATCHING
     __asm {
         push ebp
         mov ebp, esp
@@ -460,34 +254,14 @@ void C2_HOOK_CDECL HostRealWordWrite(br_uint_16 offset, br_uint_16 seg, br_uint_
         ret
     }
 #else
-    __asm__(
-        "push %ebp\n"
-        "mov %esp, %ebp\n"
-        "push %ds\n"
-        "mov __RealSelector, %ds\n"
-        "mov 0xc(%ebp), %edx\n"
-        "shl $4, %edx\n"
-        "add 8(%ebp), %edx\n"
-        "mov 0x10(%ebp), %ax\n"
-        "mov %ax, (%edx)\n"
-        "pop %ds\n"
-        "leave\n"
-        "ret\n"
-    );
-#endif
-#else
     abort();
 #endif
 }
 
-#if defined(__I86__) || defined(_M_IX86)
-C2_NAKED
-#endif
 // FUNCTION: CARMA2_HW 0x005401e4
-// STUB: CARMA2_SW 0x0053b884
-br_uint_16 C2_HOOK_CDECL HostRealWordRead(br_uint_16 offset, br_uint_16 seg) {
-#if defined(__I86__) || defined(_M_IX86)
-#if defined(_MSC_VER)
+// FUNCTION: CARMA2_SW 0x0053b884
+C2_NAKED br_uint_16 C2_HOOK_CDECL HostRealWordRead(br_uint_16 offset, br_uint_16 seg) {
+#ifdef REC2_MATCHING
     __asm {
         push ebp
         mov ebp, esp
@@ -502,33 +276,14 @@ br_uint_16 C2_HOOK_CDECL HostRealWordRead(br_uint_16 offset, br_uint_16 seg) {
         ret
     }
 #else
-    __asm__(
-        "push %ebp\n"
-        "mov %esp, %ebp\n"
-        "push %ds\n"
-        "mov __RealSelector, %ds\n"
-        "mov 0xc(%ebp), %eax\n"
-        "shl $4, %eax\n"
-        "add 8(%ebp), %eax\n"
-        "mov (%eax), %ax\n"
-        "pop %ds\n"
-        "leave\n"
-        "ret\n"
-    );
-#endif
-#else
     abort();
 #endif
 }
 
-#if defined(__I86__) || defined(_M_IX86)
-C2_NAKED
-#endif
 // FUNCTION: CARMA2_HW 0x005401fe
-// STUB: CARMA2_SW 0x0053b89e
-void C2_HOOK_CDECL HostRealDWordWrite(br_uint_16 offset, br_uint_16 seg, br_uint_32 value) {
-#if defined(__I86__) || defined(_M_IX86)
-#if defined(_MSC_VER)
+// FUNCTION: CARMA2_SW 0x0053b89e
+C2_NAKED void C2_HOOK_CDECL HostRealDWordWrite(br_uint_16 offset, br_uint_16 seg, br_uint_32 value) {
+#ifdef REC2_MATCHING
     __asm {
         push ebp
         mov ebp, esp
@@ -544,34 +299,14 @@ void C2_HOOK_CDECL HostRealDWordWrite(br_uint_16 offset, br_uint_16 seg, br_uint
         ret
     }
 #else
-    __asm__(
-        "push %ebp\n"
-        "mov %esp, %ebp\n"
-        "push %ds\n"
-        "mov __RealSelector, %ds\n"
-        "mov 0xc(%ebp), %edx\n"
-        "shl $4, %edx\n"
-        "add 8(%ebp), %edx\n"
-        "mov 0x10(%ebp), %eax\n"
-        "mov %eax, (%edx)\n"
-        "pop %ds\n"
-        "leave\n"
-        "ret\n"
-    );
-#endif
-#else
     abort();
 #endif
 }
 
-#if defined(__I86__) || defined(_M_IX86)
-C2_NAKED
-#endif
 // FUNCTION: CARMA2_HW 0x0054021a
-// STUB: CARMA2_SW 0x0053b8ba
-br_uint_32 C2_HOOK_CDECL HostRealDWordRead(br_uint_16 offset, br_uint_16 seg) {
-#if defined(__I86__) || defined(_M_IX86)
-#if defined(_MSC_VER)
+// FUNCTION: CARMA2_SW 0x0053b8ba
+C2_NAKED br_uint_32 C2_HOOK_CDECL HostRealDWordRead(br_uint_16 offset, br_uint_16 seg) {
+#ifdef REC2_MATCHING
     __asm {
         push ebp
         mov ebp, esp
@@ -588,24 +323,6 @@ br_uint_32 C2_HOOK_CDECL HostRealDWordRead(br_uint_16 offset, br_uint_16 seg) {
         leave
         ret
     }
-#else
-    __asm__(
-        "push %ebp\n"
-        "mov %esp, %ebp\n"
-        "push %ds\n"
-        "mov __RealSelector, %ds\n"
-        "mov 0xc(%ebp), %edx\n"
-        "shl $4, %edx\n"
-        "add 8(%ebp), %edx\n"
-        "mov 0xc(%ebp), %eax\n"
-        "shl $4, %eax\n"
-        "add 8(%ebp), %eax\n"
-        "mov (%eax), %eax\n"
-        "pop %ds\n"
-        "leave\n"
-        "ret\n"
-    );
-#endif
 #else
     abort();
 #endif

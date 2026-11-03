@@ -249,9 +249,6 @@ const char* ChunkNames[CHUNKNAMES_NB] = {
     PIXELMAP_NEW_STR
 };
 
-// GLOBAL: CARMA2_HW 0x006673c4
-const char* gUNK_006673c4[1] = { "" };
-
 // GLOBAL: CARMA2_HW 0x006b09b0
 // GLOBAL: CARMA2_SW 0x006aa138
 int DatafileStackTop;
@@ -260,7 +257,7 @@ int DatafileStackTop;
 // FUNCTION: CARMA2_SW 0x00524b80
 void C2_HOOK_STDCALL DfPush(int type, void* value, unsigned int count) {
 
-    if (DatafileStackTop >= 1024) {
+    if (DatafileStackTop >= (int)BR_ASIZE(DatafileStack)) {
         BrFailure("DatafileStack Overflow");
     }
     DatafileStack[DatafileStackTop].type = type;
@@ -1595,19 +1592,23 @@ br_datafile* C2_HOOK_STDCALL DfOpen(const char* name, int write, br_token scalar
 
     switch (mode) {
     case BR_FS_MODE_BINARY:
-        prims = &_BrFilePrimsWriteBinary;
-        if (write == 0)
+        if (write) {
+            prims = &_BrFilePrimsWriteBinary;
+        } else {
             prims = &_BrFilePrimsReadBinary;
+        }
         df->prims = prims;
         break;
     case BR_FS_MODE_TEXT:
-        prims = &_BrFilePrimsWriteText;
-        if (write == 0)
+        if (write) {
+            prims = &_BrFilePrimsWriteText;
+        } else {
             prims = &_BrFilePrimsReadText;
+        }
         df->prims = prims;
         break;
     }
-    if (DatafileStackTop >= 1024) {
+    if (DatafileStackTop >= (int)BR_ASIZE(DatafileStack)) {
         BrFailure("DatafileStack Overflow");
     }
     DatafileStack[DatafileStackTop].type = BR_MEMORY_FILE;
