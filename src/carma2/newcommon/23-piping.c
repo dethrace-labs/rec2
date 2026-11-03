@@ -36,6 +36,38 @@
 int gReplay_pause_state = 0;
 
 typedef struct {
+    tU32 value;
+} tPipe_stack_word;
+
+typedef struct {
+    int field_0x0;
+    tU16 field_0x4;
+} tPipe_chunk_funk_enable;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    tU8 field_0x8[0x10];
+} tPipe_chunk_crush;
+
+typedef struct {
+    int field_0x0;
+    tU32 field_0x4;
+} tPipe_chunk_frame_bound;
+
+typedef struct {
+    int field_0x0;
+    int field_0x4;
+    tU8 field_0x8[4];
+} tPipe_chunk_model_mash;
+
+typedef struct {
+    int skid_num;
+    br_matrix34 matrix;
+    br_material* material;
+} tPipe_chunk_skid_adjust;
+
+typedef struct {
     int field_0x0;
     tU16 field_0x4;
     tU16 field_0x6;
@@ -2652,7 +2684,12 @@ void C2_HOOK_FASTCALL ApplyPowerupLose(tPipe_chunk** pChunk) {
     return WorkerPowerupLose(chunk->field_0x0, chunk->field_0x4);
 }
 
-// ApplyFunkEnable
+// FUNCTION: CARMA2_HW 0x004c9c20
+void C2_HOOK_FASTCALL ApplyFunkEnable(tPipe_chunk** pChunk) {
+    tPipe_chunk_funk_enable* chunk = (tPipe_chunk_funk_enable*)*pChunk;
+
+    return AdjustFunkEnable(chunk->field_0x0, chunk->field_0x4);
+}
 
 // ApplyVanishDismembered
 
