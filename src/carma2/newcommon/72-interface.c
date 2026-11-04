@@ -653,6 +653,11 @@ int C2_HOOK_FASTCALL InterfaceMenuInfunc(tFrontend_spec* pFrontend) {
     return 1;
 }
 
+// FUNCTION: CARMA2_HW 0x0046ada0
+int C2_HOOK_FASTCALL InterfaceReturnTrue(void) {
+    return 1;
+}
+
 // FUNCTION: CARMA2_HW 0x00466760
 // FUNCTION: CARMA2_SW 0x004664f0
 void C2_HOOK_FASTCALL LoadMenuSettings(tFrontend_spec* pFrontend) {
