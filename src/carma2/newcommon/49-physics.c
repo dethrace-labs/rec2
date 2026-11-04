@@ -4005,4 +4005,14 @@ void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tU16*
     BrQuatToMatrix34(pMatrix, &quaternion);
 }
 
+// FUNCTION: CARMA2_HW 0x004b7250
+br_scalar C2_HOOK_FASTCALL PhysicsObjectWeightedSquareSum(tPhysics_object* pObject) {
+    br_scalar sum;
+    int i;
 
+    sum = gFLOAT_0058a768;
+    for (i = 0; i < 3; i++) {
+        sum += pObject->M * (pObject->v.v[i] * pObject->v.v[i]) + pObject->I.v[i] * (pObject->omega.v[i] * pObject->omega.v[i]);
+    }
+    return sum;
+}
