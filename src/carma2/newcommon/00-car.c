@@ -3901,37 +3901,6 @@ void C2_HOOK_FASTCALL ReceivedCrushReattachBit(tNet_message_chunk_crush_reattach
     }
 }
 
-
-// FUNCTION: CARMA2_HW 0x0043d900
-int C2_HOOK_FASTCALL FUN_0043d900(tCar_spec* pCar) {
-    tCar_crush_spec* crush;
-    int* node;
-    int i;
-    int total;
-    int result;
-
-    crush = pCar->car_crush_spec;
-    if (crush->field_0x4b8 != 0) {
-        result = 1;
-        node = *(int**)(*(int*)((tU8*)pCar + 8) + 0x20);
-        if (node != NULL) {
-            do {
-                if (node[0] == 1 || node[0] == 3) {
-                    result = result + 1 + node[0xe] * 6;
-                }
-                node = (int*)node[0xd];
-            } while (node != NULL);
-        }
-        return result;
-    }
-    total = 0;
-    for (i = 0; i < crush->count_shapes; i++) {
-        total += crush->field_0x4[i].count_points;
-    }
-    return total * 6 + 1;
-}
-
-
 // FUNCTION: CARMA2_HW 0x0043d960
 int C2_HOOK_FASTCALL GetCompressedCrushVertexDataSize(tU8* pData) {
     tU8 count_or_points;
@@ -4071,7 +4040,7 @@ void C2_HOOK_FASTCALL SendLocalCarData(tU32 pNext_frame_time) {
             gProgram_state.current_car.car_crush_spec->field_0x28 = 0;
         }
         if (gProgram_state.current_car.car_crush_spec->field_0x24 != gProgram_state.current_car.car_crush_spec->field_0x26) {
-            crush_size = FUN_0043d900(&gProgram_state.current_car);
+            crush_size = GetNetShapeDataLengthFromShape(&gProgram_state.current_car);
             message_size += crush_size;
             flags |= 1;
             if (gProgram_state.current_car.car_crush_spec->field_0x144 != 0) {
