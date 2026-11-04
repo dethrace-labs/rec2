@@ -2420,7 +2420,6 @@ void C2_HOOK_FASTCALL CrashNoise(br_vector3* pForce, br_vector3* pPosition, int 
 void C2_HOOK_FASTCALL CrushAndDamageCar(tCar_spec* pCar1, br_vector3* pPoint, br_vector3* pForce, tCar_spec* pCar2, int pChain_count, br_vector3* pChain, br_actor* pActor) {
     extern int gIt_or_fox;
     extern void C2_HOOK_FASTCALL FUN_0043fb70(tCar_spec* pCar, br_vector3* pPoint, br_vector3* pForce, int pCars_touch);
-    extern void C2_HOOK_FASTCALL FUN_0042d400(tCar_spec* pCar, int pChain_count, br_vector3* pChain, br_vector3* pForce, tU32 pTick);
     extern void C2_HOOK_FASTCALL DoPratcamHit(br_vector3* pVelocity);
     extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
     extern tNet_game_player_info* C2_HOOK_FASTCALL NetPlayerFromCar(tCar_spec* pCar);
@@ -2535,7 +2534,7 @@ void C2_HOOK_FASTCALL CrushAndDamageCar(tCar_spec* pCar1, br_vector3* pPoint, br
     if (gNet_mode != eNet_mode_client || pCar2 == NULL) {
         FUN_0043fb70(pCar1, pPoint, &vForce, pCar2 != NULL);
     }
-    FUN_0042d400(pCar1, pChain_count, pChain, &vOther, gPHIL_last_physics_tick);
+    QueueCarCrush(pCar1, pChain_count, pChain, &vOther, gPHIL_last_physics_tick);
     if (pCar2 != NULL && pCar2->driver == eDriver_local_human && power > 0.003) {
         PipeSingleCarIncident(pCar1, pPoint, power);
     }

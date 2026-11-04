@@ -740,7 +740,10 @@ void C2_HOOK_FASTCALL SetCrush(tCar_crush* pCrush, int pCount_vectors, br_vector
     pCrush->field_0x50 = pValue;
 }
 
-// QueueCarCrush
+// STUB: CARMA2_HW 0x0042d400
+void C2_HOOK_FASTCALL QueueCarCrush(tCar_spec* pCar, int pChain_count, br_vector3* pChain, br_vector3* pForce, tU32 pTick) {
+    NOT_IMPLEMENTED();
+}
 
 // SetBitForDetachment
 
