@@ -300,7 +300,7 @@ extern void C2_HOOK_FAKE_THISCALL RotateObjectFirstOrder(tPhysics_object* pObjec
 
 void C2_HOOK_FAKE_THISCALL RotateObject(tPhysics_object* pObject, undefined4 pUnused, br_scalar pDelta_time);
 
-// TranslateObject
+void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject);
 
 // GetFacesNearObject
 
