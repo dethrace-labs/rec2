@@ -1619,6 +1619,31 @@ int C2_HOOK_FASTCALL FindBestColourMatch(br_colour pColour) {
     return FindBestMatch(&rgb, gRender_palette);
 }
 
+// FUNCTION: CARMA2_HW 0x00518590
+br_actor* C2_HOOK_FASTCALL CreateBoundsActor(br_actor* pParent, const br_bounds* pBounds) {
+    br_actor* actor;
+
+    actor = BrActorAllocate(1, NULL);
+    actor->model = BrModelAllocate("Bounds", 3, 1);
+    actor->model->faces->vertices[0] = 0;
+    actor->model->faces->vertices[1] = 1;
+    actor->model->faces->vertices[2] = 2;
+    actor->model->vertices[0].p.v[0] = 0.f;
+    actor->model->vertices[0].p.v[1] = 0.f;
+    actor->model->vertices[0].p.v[2] = 1.f;
+    actor->model->vertices[1].p.v[0] = 0.f;
+    actor->model->vertices[1].p.v[1] = 1.f;
+    actor->model->vertices[1].p.v[2] = 1.f;
+    actor->model->vertices[2].p.v[0] = 1.f;
+    actor->model->vertices[2].p.v[1] = 0.f;
+    actor->model->vertices[2].p.v[2] = 1.f;
+    BrModelAdd(actor->model);
+    actor->model->bounds = *pBounds;
+    actor->render_style = 6;
+    BrActorAdd(pParent, actor);
+    return actor;
+}
+
 // FUNCTION: CARMA2_HW 0x00518690
 void C2_HOOK_FASTCALL WhitenVertexRGB(br_model** pModels, int pCount) {
     int i;
