@@ -390,3 +390,30 @@ void C2_HOOK_FASTCALL WorkerSmudge(tPipe_chunk** pChunk, int pScale) {
     } while (i < *(tU16*)((tU8*)*pChunk + 4));
 }
 // PARTIAL 77.78%: work-v4 measures 78.32% on the same body; register/param-home allocation differs (edi vs esi for pChunk), logic and call sequence identical.
+
+// FUNCTION: CARMA2_HW 0x004ca680
+void C2_HOOK_FASTCALL WorkerPedStatus(int field_0x0, tU8 field_0x4, tU8 field_0x5, tU8 field_0x6, tU8 field_0x7, tU8 field_0x9, tU8 field_0xb, br_vector3* p0xc, br_vector3* p0x18, br_vector3* p0x24) {
+    extern int C2_HOOK_FASTCALL MakeCharacterRenderable2(tPed_character_instance* pCharacter, int pIndex);
+    extern int C2_HOOK_FASTCALL CharacterNoLongerRenderable(tPed_character_instance* pCharacter);
+    extern void C2_HOOK_FASTCALL RecalculateOrientationOfRoot(tPed_character_instance* pPed);
+    tPedestrian* ped;
+
+    ped = (tPedestrian*)field_0x0;
+    if (field_0x5 != 0xff) {
+        if (field_0x5 != 0) {
+            *(tU8*)&ped->flags |= 1;
+            MakeCharacterRenderable2(ped->character, (int)(tS8)field_0x9);
+        } else {
+            *(tU8*)&ped->flags &= 0xfe;
+            CharacterNoLongerRenderable(ped->character);
+        }
+    }
+    if (field_0x7 != 0xff) {
+        ped->character->field_0x14 = (int)(tS8)field_0x7;
+        ped->character->field_0x5 = field_0xb;
+        if ((field_0x6 & 4) != 0 && (field_0x7 & 4) == 0) {
+            RecalculateOrientationOfRoot(ped->character);
+        }
+    }
+}
+// PARTIAL 77.78% (work-v4 measures the same): logic complete; register allocation and the flags-byte read/write differ.
