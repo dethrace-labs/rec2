@@ -348,7 +348,47 @@ void C2_HOOK_FASTCALL CrashEarnings(tCar_spec* pCar1, tCar_spec* pCar2) {
     }
 }
 
-// PercentageCarHealth
+// based on ApexWorm/rec2 1e0d5a8ab (reference only)
+// PARTIAL 95.35%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x00441350
+int C2_HOOK_FASTCALL PercentageCarHealth(tCar_spec* pCar) {
+    int engine;
+    int transmission;
+    int driver;
+    int wheels;
+    int health;
+
+    if (pCar->knackered) {
+        return 0;
+    }
+
+    wheels = pCar->damage_units[eDamage_lr_wheel].damage_level;
+    wheels += pCar->damage_units[eDamage_rr_wheel].damage_level;
+    wheels += pCar->damage_units[eDamage_lf_wheel].damage_level;
+    wheels += pCar->damage_units[eDamage_rf_wheel].damage_level;
+    engine = pCar->damage_units[eDamage_engine].damage_level;
+    transmission = pCar->damage_units[eDamage_transmission].damage_level;
+    driver = pCar->damage_units[eDamage_driver].damage_level;
+    wheels /= 4;
+
+    if (engine <= 75 && transmission <= 75 && driver <= 75 && wheels <= 75) {
+        health = 100 - (wheels + driver + transmission + engine) / 4;
+        if (health < 25) {
+            health = 25;
+        }
+        return health;
+    }
+    if (engine > transmission && engine > driver && engine > wheels) {
+        return 100 - engine;
+    }
+    if (transmission > driver && transmission > wheels) {
+        return 100 - transmission;
+    }
+    if (driver > wheels) {
+        return 100 - driver;
+    }
+    return 100 - wheels;
+}
 
 // FUNCTION: CARMA2_HW 0x00441420
 // FUNCTION: CARMA2_SW 0x00441500
@@ -371,4 +411,55 @@ void C2_HOOK_FASTCALL ChristmasLights(tCar_spec* pCar, int pMin_damage, int pMax
         }
     }
     pCar->damage_magnitude_accumulator += 0.5f;
+}
+
+/* Moved here from 00-car.c (2026-11-02): the same two blocks at the end of 00-car.c cost
+   FullyDetachSnappedBits 0x00431310 its 100 (97.69, two fld operands swapped) as soon as
+   FUN_0043b400 had any stack frame at all; no placement inside that TU avoided it. Like
+   FUN_0043b2e0 above, they live in this TU instead. Bodies are unchanged.
+   The typedef below is a file-local copy of the one in 00-car.c (identical definition). */
+typedef struct {
+    tCar_spec* car;
+    float step;
+    float* total_displacement;
+    float displacement;
+} tCrush_displacement_context_local;
+
+typedef struct {
+    tCar_spec* car;
+    float step;
+    float displacement;
+    float* total_displacement;
+} tModel_mash_context_local;
+
+extern void C2_HOOK_FASTCALL ARStartPipingSession(tPipe_chunk_type pType);
+extern void C2_HOOK_FASTCALL AREndPipingSession(void);
+extern intptr_t C2_HOOK_CDECL FUN_00434320(br_actor* pActor, int pArg2);
+
+/* The original walks the model hierarchy with FUN_0043b470 (0x0043b470); that callback is not
+   implemented in rec2 yet, so an inert one keeps this runtime-safe. */
+// STUB: CARMA2_HW 0x0043b470
+intptr_t C2_HOOK_CDECL FUN_0043b470(br_actor* pActor, tModel_mash_context_local* pContext) {
+    (void)pActor; (void)pContext;
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0043b400
+int C2_HOOK_FASTCALL FUN_0043b400(tPhysics_object* pObject, tCrush_displacement_context_local* pContext) {
+    tCrush_displacement_context_local* context;
+    tModel_mash_context_local model_context;
+
+    context = pContext;
+    model_context.car = context->car;
+    model_context.step = context->step;
+    model_context.displacement = 0.0f;
+    model_context.total_displacement = context->total_displacement;
+
+    ARStartPipingSession(0x18);
+    DRActorEnumRecurse(pObject->actor, (br_actor_enum_cbfn*)FUN_0043b470, &model_context);
+    AREndPipingSession();
+    DRActorEnumRecurse(pObject->actor, (br_actor_enum_cbfn*)FUN_00434320, NULL);
+
+    context->displacement += model_context.displacement;
+    return 0;
 }
