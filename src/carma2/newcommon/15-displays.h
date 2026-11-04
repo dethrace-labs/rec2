@@ -102,7 +102,7 @@ extern void C2_HOOK_FASTCALL EarnCredits2(int pAmount, const char* pPrefix_text)
 
 extern void C2_HOOK_FASTCALL EarnCredits(int pAmount);
 
-// EarnCredits100
+extern void C2_HOOK_FASTCALL EarnCredits100(int pAmount);
 
 extern int C2_HOOK_FASTCALL SpendCredits(int pAmount);
 
