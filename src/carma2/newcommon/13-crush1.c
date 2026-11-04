@@ -1049,7 +1049,11 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor, void*
 
 // FindForceEdge
 
-// DoXZSplitting
+// STUB: CARMA2_HW 0x00430e30
+int C2_HOOK_FASTCALL DoXZSplitting(tCollision_contact* pContacts, float* pImpulses, int pCount) {
+    NOT_IMPLEMENTED();
+    return 0;
+}
 
 // DoYSplitting
 

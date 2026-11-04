@@ -4243,6 +4243,8 @@ typedef struct tPhysics_joint {
     tPhysics_joint_limit limits[];
 } tPhysics_joint;
 
+// FIXME: are tPhysics_joint_force and tCollision_contact identical?
+
 typedef struct {
     br_scalar field_0x0;
     tPhysics_object* object_a;
@@ -4257,6 +4259,21 @@ typedef struct {
     br_vector3 field_0x50;
     int type;
 } tPhysics_joint_force;
+
+typedef struct {
+    float impulse;
+    tPhysics_object* object1;
+    tPhysics_object* object2;
+    void* field_0xc;
+    float field_0x10;
+    br_vector3 r1;
+    br_vector3 r2;
+    br_vector3 normal;
+    br_vector3 field_0x38;
+    br_vector3 impulse1;
+    br_vector3 impulse2;
+    int type;
+} tCollision_contact;
 
 typedef struct tPhysics_object {
     br_actor* actor;

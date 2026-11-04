@@ -311,7 +311,7 @@ extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor
 
 // FindForceEdge
 
-// DoXZSplitting
+extern int C2_HOOK_FASTCALL DoXZSplitting(tCollision_contact* pContacts, float* pImpulses, int pCount);
 
 // DoYSplitting
 

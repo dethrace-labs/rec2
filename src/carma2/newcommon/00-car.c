@@ -3704,12 +3704,11 @@ int C2_HOOK_FASTCALL TrySplitCarOnVerticalForce(tCollision_contact* pContacts, f
     float threshold;
     tPhysics_object* object;
     tCar_spec* car;
-    extern int C2_HOOK_FASTCALL FUN_00430e30(tCollision_contact* pContacts, float* pImpulses, int pCount);
     extern int C2_HOOK_FASTCALL SplitCheck(tCar_spec* pCar, int pMode, const br_vector3* pLine, br_scalar pHeight, br_vector4* pPlane);
     extern void C2_HOOK_FASTCALL SplitCar(tCar_spec* pCar, br_vector4* pPlane, int pFlag);
     extern float gMin_force_to_split_Y_per_tonne;
 
-    if (FUN_00430e30(pContacts, pImpulses, pCount) != 0) {
+    if (DoXZSplitting(pContacts, pImpulses, pCount) != 0) {
         return 1;
     }
     count = pCount;
@@ -3780,13 +3779,6 @@ int C2_HOOK_FASTCALL ScaleCollisionImpulses(tCollision_contact* pContacts, float
     NOT_IMPLEMENTED();
     return 0;
 }
-
-// STUB: CARMA2_HW 0x00430e30
-int C2_HOOK_FASTCALL FUN_00430e30(tCollision_contact* pContacts, float* pImpulses, int pCount) {
-    NOT_IMPLEMENTED();
-    return 0;
-}
-
 
 // FUNCTION: CARMA2_HW 0x00431310
 int C2_HOOK_FASTCALL FullyDetachSnappedBits(tCollision_contact* pContacts, float* pImpulses, int pCount) {
