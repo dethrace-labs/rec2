@@ -641,6 +641,16 @@ void C2_HOOK_FASTCALL StartDinputEffect(int pIndex) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00457ed0
+void C2_HOOK_FASTCALL StopDinputEffect(int pIndex) {
+    IDirectInputEffect* effect;
+
+    effect = gDirectInputEffects[pIndex];
+    if (effect != NULL) {
+        IDirectInputEffect_Stop(effect);
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0045a390
 int C2_HOOK_FASTCALL ReadIforceEffectsNames(const char *path, char **names, size_t capacity) {
     /* Implementation differs */
