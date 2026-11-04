@@ -510,3 +510,22 @@ void C2_HOOK_FASTCALL WorkerPedModelChangeUndo(int field_0x0, int field_0x4, int
         FUN_0040b500(ped->character, field_0x4, field_0xc, field_0xa);
     }
 }
+
+// FUNCTION: CARMA2_HW 0x004ca900
+void C2_HOOK_FASTCALL WorkerPedDismember(int field_0x0, int field_0x4, int field_0x7) {
+    extern const int gPow2_array[32];
+    extern tPhysics_object* C2_HOOK_FASTCALL MakeCharacterPhysicsForBone(tPed_character_instance* pCharacter, int pBone_index, undefined4 pArg3, undefined4 pArg4);
+    tPedestrian* ped;
+    tPed_character_instance* character;
+    br_actor* actor;
+
+    ped = (tPedestrian*)field_0x0;
+    ped->character->field_0xc |= gPow2_array[field_0x4];
+    ped->character->field_0x6 = *(tS8*)&field_0x7;
+    MakeCharacterPhysicsForBone(ped->character, field_0x4, 1, 0);
+    character = ped->character;
+    actor = character->personality->form->actor_sets[(tS8)character->field_0x4].actors[field_0x4];
+    if (actor->parent == NULL && (field_0x4 == 0 || (gPow2_array[field_0x4] & character->field_0xc) != 0)) {
+        BrActorAdd(gNon_track_actor, actor);
+    }
+}
