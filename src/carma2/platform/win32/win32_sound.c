@@ -111,6 +111,11 @@ int C2_HOOK_FASTCALL PDS3Init(void) {
     return 1;
 }
 
+// FUNCTION: CARMA2_HW 0x005699a3
+int C2_HOOK_FASTCALL PDS3Return0(void) {
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x00569a2c
 int C2_HOOK_FASTCALL PDS3DDXInit(void) {
 #ifdef DSOUND_ENABLED
