@@ -8,9 +8,22 @@
 
 #include "22-replay.h"
 
-#include "18-graphics2.h"
-#include "30-opponent.h"
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "globvars.h"
+#include "30-opponent.h"
+#include "18-graphics2.h"
+#include "23-piping.h"
+#include "41-utility.h"
+#include "59-camera.h"
+#include "08-loading1.h"
+#include "10-loading2.h"
+#include "13-crush1.h"
+#include "32-spark.h"
+#include "56-aiworld.h"
+#include "57-drone.h"
+#include "61-pedestrn.h"
 
 // GLOBAL: CARMA2_HW 0x006768fc
 // GLOBAL: CARMA2_SW 0x0067106c
@@ -63,6 +76,10 @@ tPolyhedron_edge_indexes gDefault_box_collision_wireframe_edges[12] = {
     { 0, 2 }, { 1, 3 }, { 4, 6 }, { 5, 7 },
     { 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 },
 };
+
+// GLOBAL: CARMA2_HW 0x006a2388
+br_pixelmap* gReplay_pixelmaps[11];
+
 
 // ActualActionReplayHeadups
 
@@ -121,4 +138,30 @@ void C2_HOOK_FASTCALL ApplyTime(tU32 pTime) {
 void C2_HOOK_FASTCALL ARSetPause(int pPause) {
     gPaused = pPause;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+// FUNCTION: CARMA2_HW 0x00408580
+tPhysics_object* C2_HOOK_FASTCALL MakeCharacterPhysicsForBone(tPed_character_instance* pCharacter, int pBone_index, undefined4 pArg3, undefined4 pArg4) {
+    extern int C2_HOOK_FASTCALL MakeCharacterPhysics(tPed_character_instance* pCharacter, tPhysics_object* pObject, br_actor* pActor, void* pFrame, br_vector3* pBonePos, int pKind, undefined4 pArg3, int pFlag, int pBoneIndex, br_vector3* pBoneVec, br_vector3* pBonePtr);
+    tPed_form* form;
+    int iVar1;
+    int iVar2;
+
+    form = pCharacter->personality->form;
+    iVar1 = (int)form->boned_physicing + (tS8)pCharacter->field_0x6 * 8;
+    pBone_index *= 4;
+    iVar2 = *(int*)((int)form->actor_sets + 4 + (tS8)pCharacter->field_0x4 * 8);
+    iVar2 = *(int*)(iVar2 + pBone_index);
+    iVar2 = MakeCharacterPhysics(pCharacter, (tPhysics_object*)*(int*)(*(int*)(iVar1 + 4) + pBone_index), (br_actor*)iVar2, (void*)(*(int*)(iVar2 + 0x18) + 0x34), NULL, 3, pArg3, pArg4, 0, NULL, NULL);
+    if (iVar2 != 0) {
+        return (tPhysics_object*)*(int*)(*(int*)(iVar1 + 4) + pBone_index);
+    }
+    return NULL;
+}
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+// RESIDUAL 97.44% in work-v4 (reccmp: effective 100): one symmetric SIB encoding differs at 0x4085c5 ([eax+esi] vs [esi+eax]); operand swap in the source flips the return-path load too, so it is the allocator's choice
 
