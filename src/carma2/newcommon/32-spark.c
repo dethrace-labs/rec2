@@ -69,6 +69,9 @@ int gNum_dust_tables;
 // GLOBAL: CARMA2_SW 0x006a3fc8
 int gSpark_flags;
 
+// GLOBAL: CARMA2_HW 0x006a9b80
+tSpark gSparks[32] = { 0 };
+
 // GLOBAL: CARMA2_HW 0x006aa5ac
 // GLOBAL: CARMA2_SW 0x006a3ffc
 br_pixelmap* gIt_shade_table;

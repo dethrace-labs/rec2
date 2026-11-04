@@ -23,6 +23,7 @@ extern br_pixelmap** gShade_table;
 extern tSmash_vertex gSmash_glass_fragments[200];
 extern int gNum_dust_tables;
 extern int gSpark_flags;
+extern tSpark gSparks[32];
 extern br_pixelmap* gIt_shade_table;
 extern int gSmoke_flags;
 extern int gSmoke_num;
