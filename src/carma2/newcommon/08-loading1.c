@@ -1109,6 +1109,10 @@ void C2_HOOK_FASTCALL DisposeRaceInfo(tRace_info* pRace_info) {
     // empty
 }
 
+// FUNCTION: CARMA2_HW 0x0044bf80
+void C2_HOOK_FASTCALL LoadingNoOp(void) {
+}
+
 // FUNCTION: CARMA2_HW 0x0044bfa0
 // FUNCTION: CARMA2_SW 0x0044bd50
 void C2_HOOK_FASTCALL DisposeOpponentsCars(tRace_info* pRace_info) {
