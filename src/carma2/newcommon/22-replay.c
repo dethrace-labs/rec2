@@ -751,3 +751,50 @@ void C2_HOOK_FASTCALL CreateSmashedGlassFragments(tU32 pSeed, br_vector3* pDirec
 #pragma auto_inline(on)
 #endif
 // PARTIAL 30.58%: work-v4 has only a stub here, so this port is unverified. Logic follows the original; the frame is 8 bytes smaller than the original's 0x3ed8 and the argument-test/loop scheduling differs.
+
+extern int gReplay_splash_flags;
+extern tReplay_splash gReplay_splashes[10];
+
+// FUNCTION: CARMA2_HW 0x004fef40
+void C2_HOOK_FASTCALL WorkerExtendedSplash(int field_0x0, int field_0x4, int field_0x8, br_vector3* pField_0xc, br_vector3* pField_0x18) {
+    int i;
+    int free_slot;
+    tReplay_splash* p;
+    int* src;
+
+    free_slot = -1;
+    i = 0;
+    p = gReplay_splashes;
+    do {
+        if (!(gReplay_splash_flags & (1 << i))) {
+            if (free_slot < 0) {
+                free_slot = i;
+            }
+        } else if (p->object.actor == (br_actor*)field_0x0) {
+            goto found;
+        }
+        p++;
+        i++;
+    } while (p < &gReplay_splashes[10]);
+    if (free_slot < 0) {
+        free_slot = IRandomBetween(0, 10);
+    }
+    gReplay_splash_flags |= 1 << free_slot;
+    gReplay_splashes[free_slot].object.actor = (br_actor*)field_0x0;
+    gReplay_splashes[free_slot].type = field_0x4;
+    i = free_slot;
+found:
+    *(int*)&gReplay_splashes[i].water_density = field_0x8;
+    src = (int*)pField_0xc;
+    *(int*)&gReplay_splashes[i].normal.v[0] = src[0];
+    *(int*)&gReplay_splashes[i].normal.v[1] = src[1];
+    *(int*)&gReplay_splashes[i].normal.v[2] = src[2];
+    src = (int*)pField_0x18;
+    *(int*)&gReplay_splashes[i].bb.min.v[0] = src[0];
+    *(int*)&gReplay_splashes[i].bb.min.v[1] = src[1];
+    *(int*)&gReplay_splashes[i].bb.min.v[2] = src[2];
+    *(int*)&gReplay_splashes[i].bb.max.v[0] = src[3];
+    *(int*)&gReplay_splashes[i].bb.max.v[1] = src[4];
+    *(int*)&gReplay_splashes[i].bb.max.v[2] = src[5];
+}
+// PARTIAL 55.32% (work-v4 measures 65.69% on the same body): logic complete; register roles (free_slot/i/pointer) and the found-path offset hoist differ from the original.
