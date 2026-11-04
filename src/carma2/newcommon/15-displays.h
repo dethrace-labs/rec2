@@ -116,6 +116,8 @@ extern void C2_HOOK_FASTCALL AwardTime(tU32 pTime);
 
 extern void C2_HOOK_FASTCALL AwardTime5(tU32 pTime);
 
+extern void C2_HOOK_FASTCALL DisplayTimedMessage(char* pText);
+
 // DoTestHeadup
 
 extern int C2_HOOK_FASTCALL HighResHeadupWidth(int pWidth);

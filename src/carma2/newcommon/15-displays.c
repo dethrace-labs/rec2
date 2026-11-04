@@ -920,6 +920,15 @@ void C2_HOOK_FASTCALL AwardTime5(tU32 pTime) {
 #endif
 }
 
+// FUNCTION: CARMA2_HW 0x0044ba10
+void C2_HOOK_FASTCALL DisplayTimedMessage(char* pText) {
+    LoadFont(1);
+    ClearEntireScreen();
+    DRPixelmapText(gBack_screen, 20, 50, &gFonts[1], pText, 600);
+    PDScreenBufferSwap(0);
+    WaitFor(500);
+}
+
 // DoTestHeadup
 
 // FUNCTION: CARMA2_HW 0x0044ba60
