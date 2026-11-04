@@ -2571,9 +2571,23 @@ void C2_HOOK_FASTCALL ARDoActionReplay(int pFrames, tReplay_between_sessions_cal
     }
 }
 
-// STUB: CARMA2_HW 0x004e70d0
+/* UNCERTAIN: unreferenced dword (0x006a23b4 is only seen as the DisposeReplayPixelmaps loop end) */
+// GLOBAL: CARMA2_HW 0x006a23b4
+int gUNK_006a23b4 = 0;
+
+// FUNCTION: CARMA2_HW 0x004e70d0
 void C2_HOOK_FASTCALL DisposeReplayPixelmaps(void) {
-    NOT_IMPLEMENTED();
+    br_pixelmap** pp;
+
+    pp = gReplay_pixelmaps;
+    do {
+        if (*pp != NULL) {
+            BrMapRemove(*pp);
+            BrPixelmapFree(*pp);
+            *pp = NULL;
+        }
+        pp++;
+    } while ((int)pp < (int)&gUNK_006a23b4);
 }
 
 
