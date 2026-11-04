@@ -131,3 +131,17 @@ void C2_HOOK_FASTCALL WorkerPHILObject(int field_0x0, br_matrix34* pField_0x4) {
     BrMatrix34Copy(&object->actor->t.t.mat, pField_0x4);
 }
 
+// FUNCTION: CARMA2_HW 0x004ca8d0
+void C2_HOOK_FASTCALL WorkerPedModelChange(int field_0x0, int field_0x4, int field_0x6, int field_0x8) {
+    extern void C2_HOOK_FASTCALL SetCharacterAllBonesModel(tPed_character_instance* pCharacter, undefined4 pArg2, int pArg3);
+    extern int C2_HOOK_FASTCALL SetCharacterBoneModel(tPed_character_instance* pCharacter, int pBone_index, int pArg3, int pArg4);
+    tPedestrian* ped;
+
+    ped = (tPedestrian*)field_0x0;
+    if (field_0x4 < 0) {
+        SetCharacterAllBonesModel(ped->character, field_0x6, field_0x8);
+    } else {
+        SetCharacterBoneModel(ped->character, field_0x4, field_0x6, field_0x8);
+    }
+}
+
