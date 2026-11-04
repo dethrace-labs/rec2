@@ -817,6 +817,24 @@ void C2_HOOK_FASTCALL WorkerSpark(int field_0x0, void* pField_0x4, void* pField_
     gSparks[i].colour = field_0x0 >> 8;
 }
 
+// FUNCTION: CARMA2_HW 0x004f86f0
+void C2_HOOK_FASTCALL WorkerShrapnel(int field_0x0, void* pField_0x4, tU16 field_0x10, int field_0x14) {
+    int i;
+
+    i = field_0x0 & 0x7fff;
+    if ((gShrapnel_flags & (1 << i)) == 0) {
+        BrActorAdd(gNon_track_actor, gShrapnel[i].actor);
+    }
+    gShrapnel_flags |= 1 << i;
+    gShrapnel[i].actor->t.t.translate.t.v[0] = ((br_vector3*)pField_0x4)->v[0];
+    gShrapnel[i].actor->t.t.translate.t.v[1] = ((br_vector3*)pField_0x4)->v[1];
+    gShrapnel[i].actor->t.t.translate.t.v[2] = ((br_vector3*)pField_0x4)->v[2];
+    if ((field_0x0 & 0x8000) != 0) {
+        gShrapnel[i].age = field_0x10;
+        gShrapnel[i].actor->material = (br_material*)field_0x14;
+    }
+}
+
 // PARTIAL 30.58%: work-v4 has only a stub here, so this port is unverified. Logic follows the original; the frame is 8 bytes smaller than the original's 0x3ed8 and the argument-test/loop scheduling differs.
 
 extern int gReplay_splash_flags;

@@ -69,6 +69,12 @@ int gNum_dust_tables;
 // GLOBAL: CARMA2_SW 0x006a3fc8
 int gSpark_flags;
 
+// GLOBAL: CARMA2_HW 0x006aa584
+int gShrapnel_flags;
+
+// GLOBAL: CARMA2_HW 0x006a9180
+tShrapnel gShrapnel[30] = { 0 };
+
 // GLOBAL: CARMA2_HW 0x006a9b80
 tSpark gSparks[32] = { 0 };
 
