@@ -953,6 +953,15 @@ void C2_HOOK_FASTCALL S3ToggleMidiEnabled(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0056a45c
+int C2_HOOK_FASTCALL S3IsMidiEnabled(void) {
+
+    if (gS3_enable_midi) {
+        return 1;
+    }
+    return 0;
+}
+
 
 // FUNCTION: CARMA2_HW 0x00565b7f
 // FUNCTION: CARMA2_SW 0x0056121f
