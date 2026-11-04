@@ -9,6 +9,7 @@
 #include "15-displays.h"
 
 #include "08-loading1.h"
+#include "10-loading2.h"
 #include "16-graphics1.h"
 #include "18-graphics2.h"
 #include "18b-graphics2.h"
@@ -636,6 +637,33 @@ void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont) {
 
     if (pHeadup_index >= 0) {
         gHeadups[pHeadup_index].data.image_info.font = &gFonts[-pFont];
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0044a950
+void C2_HOOK_FASTCALL ChangeHeadupImage(int pHeadup_index, int pImage_index) {
+    tHeadup* headup;
+    br_pixelmap* image;
+    int justification;
+
+    if (pHeadup_index >= 0) {
+        image = gHeadup_images[pImage_index];
+        headup = &gHeadups[pHeadup_index];
+        justification = headup->justification;
+        *(br_pixelmap**)headup->data.image_info.text = image;
+        switch (justification) {
+        case eJust_left:
+            headup->x = headup->original_x;
+            break;
+        case eJust_right:
+            headup->x = headup->original_x - image->width;
+            return;
+        case eJust_centre:
+            headup->x = headup->original_x - (image->width >> 1);
+            return;
+        default:
+            return;
+        }
     }
 }
 
