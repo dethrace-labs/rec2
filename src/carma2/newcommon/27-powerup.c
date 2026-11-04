@@ -161,6 +161,14 @@ int gInstant_handbrake;
 // GLOBAL: CARMA2_SW 0x0069aaac
 tPowerup* gPowerup_array;
 
+// FUNCTION: CARMA2_HW 0x004c8fb0
+void C2_HOOK_FASTCALL PipeSingleMatrix34Type66(br_actor* pActor) {
+    extern void C2_HOOK_CDECL ARDoSingleVariedSession(int pType, uintptr_t pOwner, int pCount, ...);
+
+    ARDoSingleVariedSession(0x42, (uintptr_t)pActor, 1,
+        0x30, 0, (uintptr_t)&pActor->t.t.mat);
+}
+
 // FUNCTION: CARMA2_HW 0x004d8d10
 // FUNCTION: CARMA2_SW 0x004d5240
 char* C2_HOOK_FASTCALL GetPowerupMessage(int pPowerup_index) {
