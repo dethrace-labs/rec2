@@ -284,7 +284,7 @@ extern void C2_HOOK_FASTCALL RestoreListOmega(tPhysics_object* pObject);
 
 // NewAddFrictionObjectObject
 
-// NewAddFriction
+void C2_HOOK_FASTCALL NewAddFriction(tPhysics_joint_force* pContact, tWorld_callbacks* pWorld_callbacks);
 
 // ApplyForces
 
