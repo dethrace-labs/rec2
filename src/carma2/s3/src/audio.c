@@ -1154,6 +1154,12 @@ int C2_HOOK_FASTCALL S3IRandomBetween(int pMin, int pMax, int pDefault) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0056432c
+double C2_HOOK_STDCALL S3FRandomBetween2(double pMin, double pMax) {
+
+    return (pMax - pMin) * (double)rand() / 32767.0 + pMin;
+}
+
 // FUNCTION: CARMA2_HW 0x005663a0
 int C2_HOOK_FASTCALL S3IRandomBetween__dup(int pMin, int pMax, int pDefault) {
 
