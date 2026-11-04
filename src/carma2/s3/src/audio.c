@@ -1135,6 +1135,20 @@ int C2_HOOK_FASTCALL S3ReleaseSound(int pSound_id) {
     return eS3_error_none;
 }
 
+// FUNCTION: CARMA2_HW 0x00568a11
+void C2_HOOK_FASTCALL S3LoadSampleList(int* pSample_ids, int pCount) {
+    int sample_id;
+
+    if (gS3_enabled != 0) {
+        while (pCount != 0) {
+            sample_id = *pSample_ids;
+            S3LoadSample(sample_id);
+            pSample_ids++;
+            pCount--;
+        }
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00566454
 double C2_HOOK_STDCALL S3FRandomBetween(double pMin, double pMax) {
 
