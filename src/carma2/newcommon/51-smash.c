@@ -589,9 +589,15 @@ void C2_HOOK_FASTCALL CopyExplosionData(int pIndex, tExplosion* pExplosion) {
 
 // STUB: CARMA2_HW 0x004ead00
 // STUB: CARMA2_SW 0x004e69e0
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 void C2_HOOK_FASTCALL Explode(tExplosion_animation *pExplosion_animation,br_actor *pActor, const br_bounds3* pBounds, const br_vector3* pPos) {
     NOT_IMPLEMENTED();
 }
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
@@ -784,7 +790,9 @@ void C2_HOOK_FASTCALL DoPowerupRespawnSmash(br_actor* pActor) {
 
 
 // (reference only)
-// PARTIAL 84.68%: work-v4 body ported verbatim; see reccmp diff
+// PARTIAL 99.05%: work-v4 body; callers must not auto-inline Explode/EarnCredits100 (they are separate TUs in
+// the original) or they absorb the NOT_IMPLEMENTED stub. Remaining: one store schedule slot, [c] vs [gYon_squared]
+// and the stub-target naming of call Explode
 // FUNCTION: CARMA2_HW 0x004ed490
 void C2_HOOK_FASTCALL SmashItIntoVerySmallPiecesIndeed(tPhysics_object* pObject, tSmashable_item_spec* pSpec, undefined4 pArg3, tConnotations* pConnotations, tU32 pSeed, undefined4 pArg6, const br_vector3* pPoint, const br_vector3* pSound_position, br_actor* pActor, tU32 pTime, undefined4 pArg11, br_matrix34* pTransform, br_bounds3* pBounds, br_vector3* pPosition, float pDistance, undefined4 pArg16, int pFlag) {
     int i;
@@ -2602,7 +2610,7 @@ void C2_HOOK_FASTCALL UpdateCrushTimers(void) {
 }
 
 
-// PARTIAL 69.15%: work-v4 body ported verbatim; see reccmp diff
+// PARTIAL 94.36%: work-v4 body; auto_inline(off) on the FUN_004cd9e0 stub stops it being folded into this body
 // FUNCTION: CARMA2_HW 0x004cd640
 int C2_HOOK_FASTCALL FUN_004cd640(tPedestrian* pPed, int pSpeed, int pMove1, int pMove2, tPhysics_object* pCollision_info) {
     int limit;
@@ -3039,7 +3047,7 @@ int C2_HOOK_FASTCALL FUN_004f0d50(const float* pPoint, const float* pNormal, flo
     return 0;
 }
 
-// PARTIAL 20.08%: work-v4 body ported verbatim; see reccmp diff
+// PARTIAL 21.47%: work-v4 body; auto_inline(off) on the FUN_004f3820/FUN_004f39a0 stubs
 // FUNCTION: CARMA2_HW 0x004f18d0
 float C2_HOOK_FASTCALL FUN_004f18d0(tPhysics_object* pObject, br_material* pMaterial, br_actor* pActor, tSmashable_item_spec* pSpec, tSmashable_item_spec* pSpec2, tFace_ref* pFace, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pArg11, int pArg12, int* pFlag, int pNetwork) {
     int tri_verts[8] = { 0, 0, 1, 2, 2, 1, 3, 3 };
@@ -3825,27 +3833,52 @@ int gNumber_of_icons;
 // GLOBAL: CARMA2_HW 0x006a0ad0
 int gNumber_of_powerups;
 
-/* Owned by 15-displays.c in work-v4 (0x0044b450). */
+/* Owned by 15-displays.c in work-v4 (0x0044b450). It lives in this TU here, so auto_inline must be
+   off: the original TU calls it instead of inlining it into the smash functions. */
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 // FUNCTION: CARMA2_HW 0x0044b450
 void C2_HOOK_FASTCALL EarnCredits100(int pAmount) {
 
     EarnCredits(pAmount - (pAmount + 50) % 100 + 50);
 }
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // STUB: CARMA2_HW 0x004cd9e0
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 int C2_HOOK_FASTCALL FUN_004cd9e0(tPedestrian* pPed, int pBoneIndex) {
     NOT_IMPLEMENTED();
     return 0;
 }
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // STUB: CARMA2_HW 0x004f3820
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 br_actor* C2_HOOK_FASTCALL FUN_004f3820(tFace_ref* pFace, br_vertex* pQuad, br_material* pMaterial, void* pPoly_array, void* pVertex_array) {
     NOT_IMPLEMENTED();
     return NULL;
 }
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // STUB: CARMA2_HW 0x004f39a0
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 int C2_HOOK_FASTCALL FUN_004f39a0(const void* pMap, br_actor* pActor, br_vertex* pQuad, tU8* pEdge_at_bounds, tU8** pCorner, br_material* pMaterial, void* pPoly_array, void* pVertex_array) {
     NOT_IMPLEMENTED();
     return 0;
 }
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
