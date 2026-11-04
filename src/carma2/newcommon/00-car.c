@@ -216,6 +216,7 @@ void C2_HOOK_FASTCALL SwitchCarModels(tCar_spec* pCar, int pIndex) {
 }
 
 // FUNCTION: CARMA2_HW 0x00413f70
+// FUNCTION: CARMA2_SW 0x00413fa0
 void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) {
     int index;
     int j;
@@ -260,7 +261,7 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
     for (j = 0; j < REC2_ASIZE(pCar->oldd); j++) {
         pCar->oldd[j] = pCar->ride_height;
     }
-    pCar->gear = 0.0f;
+    pCar->gear = 0;
     pCar->revs = 0.0f;
     pCar->traction_control = 1;
     BrVector3Negate(&pCar->direction, (br_vector3*)pCar->car_master_actor->t.t.mat.m[2]);
