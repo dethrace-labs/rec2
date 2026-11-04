@@ -256,7 +256,7 @@ extern int C2_HOOK_FASTCALL FlagsAreGo(tPhysics_object* pCollision_1, tPhysics_o
 
 // DoCollisions
 
-// AddDoubleTorqueToMatrix
+int C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(tPhysics_object* pObject);
 
 // DRMatrix33Inverse
 
