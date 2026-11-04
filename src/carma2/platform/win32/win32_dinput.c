@@ -631,6 +631,16 @@ int C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_effect_des
     return effect_id;
 }
 
+// FUNCTION: CARMA2_HW 0x00457eb0
+void C2_HOOK_FASTCALL StartDinputEffect(int pIndex) {
+    IDirectInputEffect* effect;
+
+    effect = gDirectInputEffects[pIndex];
+    if (effect != NULL) {
+        IDirectInputEffect_Start(effect, 1, 0);
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0045a390
 int C2_HOOK_FASTCALL ReadIforceEffectsNames(const char *path, char **names, size_t capacity) {
     /* Implementation differs */
