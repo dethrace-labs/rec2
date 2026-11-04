@@ -158,7 +158,7 @@ extern void C2_HOOK_FASTCALL CreateJointTorque(tPhysics_object* pObject, tPhysic
 
 // LimitOmega
 
-// CapOmega
+extern void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject);
 
 // ListLimitOmega
 
