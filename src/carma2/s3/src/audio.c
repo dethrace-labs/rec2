@@ -1248,6 +1248,29 @@ int C2_HOOK_FASTCALL S3SetVolume(int pVolume) {
     return 0;
 }
 
+// FUNCTION: CARMA2_HW 0x00564a56
+tS3_error_codes C2_HOOK_FASTCALL FUN_00564a56(tS3_sound_tag pChannel_tag, int pPitch) {
+    tS3_channel* channel;
+
+    if (gS3_enabled) {
+        if (pPitch == -1) {
+            pPitch = 0x10000;
+        }
+        channel = S3GetChannelForTag(pChannel_tag);
+        if (channel == NULL) {
+            return eS3_error_bad_stag;
+        }
+        if (channel->type == 0) {
+            channel->rate = (int)((double)channel->descriptor->buffer_description->sample_rate
+                    * ldexp((double)pPitch, -16));
+            if (!PDS3UpdateChannelFrequency(channel)) {
+                return eS3_error_function_failed;
+            }
+        }
+    }
+    return eS3_error_none;
+}
+
 // FUNCTION: CARMA2_HW 0x00569752
 // FUNCTION: CARMA2_SW 0x00564df2
 int C2_HOOK_FASTCALL S3ServiceChannel(tS3_channel* pChannel) {
