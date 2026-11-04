@@ -316,7 +316,135 @@ tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList2(br_vector3* pPosition, br_vecto
 
 // FaceOnCount
 
-// EliminateFaces
+// FUNCTION: CARMA2_HW 0x00423320
+int C2_HOOK_FASTCALL EliminateFaces(tPhysics_object* pObject, int* pCtx, br_matrix34* pMatrix) {
+    float* pfVar1;
+    float fVar2;
+    float fVar3;
+    float fVar4;
+    float fVar5;
+    float fVar6;
+    int iVar7;
+    float fVar8;
+    float* pfVar9;
+    tU32 uVar10;
+    int* piVar13;
+    int iVar14;
+    int iVar15;
+    int local_3c;
+    float local_24[9];
+    float local_30[3];
+    float* pfVar11;
+    float* pfVar12;
+
+    iVar7 = *(int*)pObject;
+    pfVar1 = (float*)((char*)pCtx + 0x1c);
+    iVar14 = 0;
+    local_3c = 0;
+    GetNewBoundingBox((br_bounds*)pfVar1, (br_bounds*)(pCtx + 1), pMatrix);
+    pfVar9 = (float*)((char*)pCtx + 0x10);
+    iVar15 = 3;
+    pfVar11 = pfVar1;
+    do {
+        if (pfVar9[-3] < *pfVar11) {
+            *pfVar11 = pfVar9[-3];
+        }
+        if (pfVar11[3] < *pfVar9) {
+            pfVar11[3] = *pfVar9;
+        }
+        pfVar11 = pfVar11 + 1;
+        pfVar9 = pfVar9 + 1;
+        iVar15 = iVar15 + -1;
+    } while (iVar15 != 0);
+    BrMatrix34ApplyV((br_vector3*)local_30, (br_vector3*)pfVar1, (br_matrix34*)(iVar7 + 0x2c));
+    fVar2 = *(float*)(iVar7 + 0x50);
+    pfVar11 = local_24 + 1;
+    pfVar9 = (float*)(iVar7 + 0x34);
+    fVar3 = *(float*)(iVar7 + 0x54);
+    iVar15 = 3;
+    fVar4 = *(float*)(iVar7 + 0x58);
+    pfVar12 = pfVar1;
+    do {
+        fVar8 = pfVar12[3] - *pfVar12;
+        fVar5 = pfVar9[-1];
+        fVar6 = *pfVar9;
+        pfVar11[-1] = pfVar9[-2] * fVar8;
+        *pfVar11 = fVar5 * fVar8;
+        pfVar12 = pfVar12 + 1;
+        pfVar11 = pfVar11 + 3;
+        *(float*)(((int)local_24 - (iVar7 + 0x2c)) + (int)pfVar9) = fVar6 * fVar8;
+        pfVar9 = pfVar9 + 3;
+        iVar15 = iVar15 + -1;
+    } while (iVar15 != 0);
+    uVar10 = (tU32)*(tU16*)((char*)pObject + 0x174);
+    piVar13 = (int*)((char*)gFace_list__car + uVar10 * 0x50);
+    if (*(tU16*)((char*)pObject + 0x176) != uVar10 &&
+        -1 < (int)(*(tU16*)((char*)pObject + 0x176) - uVar10)) {
+        do {
+            pfVar9 = local_24 + 2;
+            iVar15 = 3;
+            fVar5 = ((local_30[1] + fVar3) - (float)piVar13[2]) * (float)piVar13[0xe] +
+                    (float)piVar13[0xf] * ((local_30[2] + fVar4) - (float)piVar13[3]) +
+                    (float)piVar13[0xd] * ((local_30[0] + fVar2) - (float)piVar13[1]);
+            fVar6 = fVar5;
+            do {
+                fVar8 = *pfVar9 * (float)piVar13[0xf] +
+                        (float)piVar13[0xe] * pfVar9[-1] + (float)piVar13[0xd] * pfVar9[-2];
+                if (0.0 <= fVar8) {
+                    fVar5 = fVar8 + fVar5;
+                }
+                else {
+                    fVar6 = fVar6 + fVar8;
+                }
+                pfVar9 = pfVar9 + 3;
+                iVar15 = iVar15 + -1;
+            } while (iVar15 != 0);
+            if ((((0.005 < fVar5) && (0.005 < fVar6)) || ((fVar5 < -0.005 && (fVar6 < -0.005)))) ||
+               ((iVar15 = *piVar13, iVar15 != 0 && (**(char**)(iVar15 + 4) == '!')))) {
+                piVar13[0x10] = piVar13[0x10] | 0x80;
+            }
+            else if (**(char**)(iVar15 + 4) == '>') {
+                piVar13[0x10] = piVar13[0x10] | 0x80;
+            }
+            else {
+                pfVar9 = (float*)(iVar7 + 0x34);
+                iVar15 = 3;
+                pfVar11 = pfVar1;
+                do {
+                    fVar5 = *(float*)(iVar7 + 0x54) * pfVar9[-1] +
+                            *(float*)(iVar7 + 0x50) * pfVar9[-2] + *(float*)(iVar7 + 0x58) * *pfVar9;
+                    fVar8 = (float)piVar13[2] * pfVar9[-1] +
+                            (float)piVar13[1] * pfVar9[-2] + *pfVar9 * (float)piVar13[3];
+                    fVar6 = (*pfVar11 - 0.005) + fVar5;
+                    if (fVar6 <= fVar8) {
+                        fVar5 = (pfVar11[3] + fVar5) - -0.005;
+                        if (((fVar5 < fVar8) &&
+                            (fVar5 < (float)piVar13[6] * *pfVar9 +
+                                     pfVar9[-2] * (float)piVar13[4] + pfVar9[-1] * (float)piVar13[5])) &&
+                           (fVar5 < (float)piVar13[9] * *pfVar9 +
+                                    pfVar9[-2] * (float)piVar13[7] + pfVar9[-1] * (float)piVar13[8]))
+                            goto LAB_00423642;
+                    }
+                    else if (((float)piVar13[6] * *pfVar9 +
+                              pfVar9[-2] * (float)piVar13[4] + pfVar9[-1] * (float)piVar13[5] < fVar6) &&
+                             ((float)piVar13[9] * *pfVar9 +
+                              pfVar9[-2] * (float)piVar13[7] + pfVar9[-1] * (float)piVar13[8] < fVar6)) {
+LAB_00423642:
+                        piVar13[0x10] = piVar13[0x10] | 0x80;
+                    }
+                    pfVar11 = pfVar11 + 1;
+                    pfVar9 = pfVar9 + 3;
+                    iVar15 = iVar15 - 1;
+                } while (iVar15 != 0);
+                local_3c = local_3c + 1;
+                piVar13[0x10] = piVar13[0x10] & 0xffffff7f;
+            }
+            iVar14 = iVar14 + 1;
+            piVar13 = piVar13 + 0x14;
+        } while (iVar14 < (int)((tU32)*(tU16*)((char*)pObject + 0x176) - (tU32)*(tU16*)((char*)pObject + 0x174)));
+    }
+    return local_3c;
+}
 
 // GetShapePoint
 
