@@ -262,7 +262,10 @@ void C2_HOOK_FASTCALL ResetSparks(void) {
 
 // CreateShrapnelShowerWorld
 
-// CreateShrapnelShower
+// STUB: CARMA2_HW 0x004f8800
+void C2_HOOK_FASTCALL CreateShrapnelShower(const br_vector3* pPosition, const br_vector3* pVelocity, const br_vector3* pDirection, br_scalar pStrength, tCar_spec* pCar1, tCar_spec* pCar2, int pMaterialCount, br_material** pMaterials) {
+    NOT_IMPLEMENTED();
+}
 
 // random
 

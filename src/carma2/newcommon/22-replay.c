@@ -835,6 +835,17 @@ void C2_HOOK_FASTCALL WorkerShrapnel(int field_0x0, void* pField_0x4, tU16 field
     }
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+// FUNCTION: CARMA2_HW 0x004f8b50
+void C2_HOOK_FASTCALL FUN_004f8b50(const br_vector3* pPosition, const br_vector3* pVelocity, const br_vector3* pDirection, br_scalar pStrength, int pMaterialCount, br_material** pMaterials) {
+    extern void C2_HOOK_FASTCALL CreateShrapnelShower(const br_vector3* pPosition, const br_vector3* pVelocity, const br_vector3* pDirection, br_scalar pStrength, tCar_spec* pCar1, tCar_spec* pCar2, int pMaterialCount, br_material** pMaterials);
+    CreateShrapnelShower(pPosition, pVelocity, pDirection, pStrength, NULL, NULL, pMaterialCount, pMaterials);
+}
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 // PARTIAL 30.58%: work-v4 has only a stub here, so this port is unverified. Logic follows the original; the frame is 8 bytes smaller than the original's 0x3ed8 and the argument-test/loop scheduling differs.
 
 extern int gReplay_splash_flags;
