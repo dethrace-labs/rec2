@@ -529,3 +529,12 @@ void C2_HOOK_FASTCALL WorkerPedDismember(int field_0x0, int field_0x4, int field
         BrActorAdd(gNon_track_actor, actor);
     }
 }
+
+extern void C2_HOOK_FASTCALL DoGibShower(int pId, int pTime, int pSeed, int pForce, int pSize_index, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8);
+
+// FUNCTION: CARMA2_HW 0x004ccae0
+void C2_HOOK_FASTCALL WorkerGibShower(int field_0x0, int field_0xc, int field_0x8, int field_0x10, int field_0x4, br_vector3* pField_0x14, br_vector3* pField_0x20, br_vector3* pField_0x2c) {
+
+    DoGibShower(field_0x0, field_0xc, field_0x8, field_0x10, field_0x4, pField_0x14, pField_0x20, pField_0x2c);
+}
+
