@@ -462,3 +462,24 @@ update_state:
     ped->character->field_0x5 = field_0xa;
 }
 // PARTIAL 92.12%: same block structure and early return as the original; residual is in register/x87 allocation around the matrix copy and setters.
+
+// FUNCTION: CARMA2_HW 0x004ca830
+void C2_HOOK_FASTCALL WorkerPedPos(int field_0x0, br_vector3* pVec) {
+    extern int gBOOL_00744804;
+    extern void C2_HOOK_FASTCALL SetCharacterPosition(tPed_character_instance* pCharacter, br_vector3* pPos, int pArg3);
+    tPedestrian* ped;
+
+    ped = (tPedestrian*)field_0x0;
+    if (gBOOL_00744804 != 0) {
+        return;
+    }
+    if (pVec->v[0] == 0.0f && pVec->v[1] == 0.0f && pVec->v[2] == 0.0f) {
+        ped->flags |= 0x80;
+        return;
+    }
+    SetCharacterPosition(ped->character, pVec, -1);
+    if (ped->flags & 0x80) {
+        ped->flags &= ~0x80;
+    }
+}
+// PARTIAL 86.96% (work-v4 measures 89.55%): zero-vector test and flags clear are correct; register allocation differs.
