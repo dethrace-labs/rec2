@@ -56,7 +56,7 @@ extern void C2_HOOK_FASTCALL SwitchCarModels(tCar_spec* pCar, int pIndex);
 
 extern void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag);
 
-// InitialiseCar
+extern void C2_HOOK_FASTCALL InitialiseCar(tCar_spec* pCar);
 
 // InitialiseCarsEtc
 
