@@ -951,6 +951,17 @@ void C2_HOOK_FASTCALL S3StopCDA(void) {
     gS3_CDA_enabled = 0;
 }
 
+// FUNCTION: CARMA2_HW 0x00565b93
+void C2_HOOK_FASTCALL S3ToggleCDA(void) {
+
+    if (gS3_CDA_enabled) {
+        S3StopCDAInternal();
+        gS3_CDA_enabled = 0;
+    } else {
+        gS3_CDA_enabled = 1;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0056a7bd
 // FUNCTION: CARMA2_SW 0x00565e5d
 void C2_HOOK_FASTCALL S3StopMidiInternal(void) {
