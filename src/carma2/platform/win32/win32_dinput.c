@@ -399,6 +399,16 @@ tButtonJoystickInfo* C2_HOOK_FASTCALL AllocateCurrentJoystickButtonInfos(size_t 
     return NULL;
 }
 
+// FUNCTION: CARMA2_HW 0x00459f30
+void C2_HOOK_FASTCALL FreeCurrentJoystickButtonInfos(void) {
+
+    if (gJoystick_index != -1 && gDirectInputJoystickInfos[gJoystick_index].data != NULL) {
+        BrMemFree(gDirectInputJoystickInfos[gJoystick_index].data);
+        gDirectInputJoystickInfos[gJoystick_index].data = NULL;
+        gDirectInputJoystickInfos[gJoystick_index].sizeData = 0;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00459fe0
 // FUNCTION: CARMA2_SW 0x00459d70
 void C2_HOOK_FASTCALL AttachJoystickButtonInfos(size_t pSize, tWin32_void_voidptr_cbfn pCallback) {
