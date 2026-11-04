@@ -251,6 +251,13 @@ void C2_HOOK_FASTCALL S3BindListenerVelocityBRender(br_vector3* vel) {
     gS3_listener_vel_is_brender = 1;
 }
 
+// FUNCTION: CARMA2_HW 0x0056600e
+void C2_HOOK_FASTCALL S3BindListenerLeft(br_vector3* left) {
+
+    gS3_listener_left_ptr = left;
+    gS3_listener_left_is_brender = 0;
+}
+
 // FUNCTION: CARMA2_HW 0x0056602b
 // FUNCTION: CARMA2_SW 0x005616cb
 void C2_HOOK_FASTCALL S3BindListenerLeftBRender(br_vector3* left) {
