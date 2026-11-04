@@ -264,6 +264,18 @@ int C2_HOOK_FASTCALL GetAnInt(FILE* pF) {
     return value;
 }
 
+// FUNCTION: CARMA2_HW 0x0048fb50
+tU32 C2_HOOK_FASTCALL DecimalDigitsToBitmask(tU32 pValue) {
+    tU32 result;
+    tU32 v;
+
+    result = 0;
+    for (v = pValue; v != 0; v /= 10) {
+        result = (v % 10) | (result + result);
+    }
+    return result;
+}
+
 // FUNCTION: CARMA2_HW 0x004900e0
 // FUNCTION: CARMA2_SW 0x0048d350
 float C2_HOOK_FASTCALL GetAFloat(FILE* pF) {
