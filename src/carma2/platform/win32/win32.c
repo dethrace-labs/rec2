@@ -804,6 +804,13 @@ void C2_HOOK_FASTCALL PDEnterDebugger(const char *pStr) {
     ShowCursor(FALSE);
 }
 
+// FUNCTION: CARMA2_HW 0x0051a7d0
+int C2_HOOK_CDECL PDMissingMaterial(const char* pName) {
+
+    dr_dprintf("SOMETHING MISSING WARNING - Can't find material '%s'", pName);
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x0051d4b0
 // FUNCTION: CARMA2_SW 0x00518cd0
 int C2_HOOK_FASTCALL PDFileUnlock(const char *pThe_path) {
