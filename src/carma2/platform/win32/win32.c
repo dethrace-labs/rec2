@@ -861,6 +861,13 @@ void C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCallback, 
     SetCurrentDirectoryA(originalCurrentDirectory);
 }
 
+// FUNCTION: CARMA2_HW 0x00492830
+tU32 C2_HOOK_FASTCALL GetLastTickCount(void) {
+    extern tU32 gLast_tick_count;
+
+    return gLast_tick_count;
+}
+
 // FUNCTION: CARMA2_HW 0x00486c20
 // FUNCTION: CARMA2_SW 0x00483d60
 int C2_HOOK_FASTCALL PDmkdir(const char *path) {
