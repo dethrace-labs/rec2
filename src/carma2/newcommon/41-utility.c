@@ -1644,6 +1644,15 @@ br_actor* C2_HOOK_FASTCALL CreateBoundsActor(br_actor* pParent, const br_bounds*
     return actor;
 }
 
+// FUNCTION: CARMA2_HW 0x00518660
+void C2_HOOK_FASTCALL DisposeActorAndModel(br_actor* pActor) {
+
+    BrModelRemove(pActor->model);
+    BrModelFree(pActor->model);
+    BrActorRemove(pActor);
+    BrActorFree(pActor);
+}
+
 // FUNCTION: CARMA2_HW 0x00518690
 void C2_HOOK_FASTCALL WhitenVertexRGB(br_model** pModels, int pCount) {
     int i;
