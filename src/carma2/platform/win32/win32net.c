@@ -546,3 +546,10 @@ int C2_HOOK_FASTCALL PDNetSendMessageToAddress(tNet_game_details* pDetails, tNet
     NetDisposeMessage(pDetails,(tNet_message *)pMessage);
     return 0;
 }
+
+// FUNCTION: CARMA2_HW 0x0051a690
+int C2_HOOK_FASTCALL PDNetInitClient(void) {
+
+    dr_dprintf("PDNetInitClient()");
+    return 0;
+}
