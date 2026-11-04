@@ -1537,3 +1537,14 @@ void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes)
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004c86b0
+void C2_HOOK_FASTCALL FUN_004c86b0(uintptr_t pId, br_actor* pActor) {
+    br_actor* old_parent;
+
+    old_parent = pActor->parent;
+    ARDoSingleVariedSession(0x19, (uintptr_t)pActor, 3,
+        4, 0, (uintptr_t)pActor,
+        4, 4, (uintptr_t)old_parent,
+        4, 8, pId);
+}
+
