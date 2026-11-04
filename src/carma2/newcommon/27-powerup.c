@@ -157,6 +157,9 @@ tU32 gInventory_timeout;
 // GLOBAL: CARMA2_SW 0x007951b0
 int gInstant_handbrake;
 
+// GLOBAL: CARMA2_HW 0x006a0960
+tRepulse_link gRepulse_links[6] = { 0 };
+
 // GLOBAL: CARMA2_HW 0x006a0a54
 // GLOBAL: CARMA2_SW 0x0069aaac
 tPowerup* gPowerup_array;
