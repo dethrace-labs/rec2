@@ -199,6 +199,14 @@ int C2_HOOK_STDCALL FUN_00565e39(float a1, float a2, float a3) {
     return 0;
 }
 
+// FUNCTION: CARMA2_HW 0x00565ea0
+void C2_HOOK_FASTCALL S3SetVector3(tS3_vector3* pVec, float pX, float pY, float pZ) {
+
+    pVec->x = pX;
+    pVec->y = pY;
+    pVec->z = pZ;
+}
+
 // FUNCTION: CARMA2_HW 0x00565d70
 // FUNCTION: CARMA2_SW 0x00561410
 int C2_HOOK_STDCALL S3Set3DSoundEnvironment(float a1, float a2, float a3) {
