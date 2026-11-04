@@ -494,6 +494,8 @@ extern int C2_HOOK_FASTCALL FUN_004be550(br_scalar* pOut1, br_scalar* pOut2, br_
 
 extern int C2_HOOK_FASTCALL FUN_004becf0(br_scalar* pOut1, br_scalar* pOut2, br_scalar* pOut3, br_scalar* pOut4, tPhysics_object* pObject);
 
+extern void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tU16* pOrientation);
+
 #endif // GUARD_49_PHYSICS_H
 
 void C2_HOOK_FASTCALL AddCollisionInfoChild(tPhysics_object* pParent, tPhysics_object* pChild);

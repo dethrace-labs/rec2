@@ -2444,4 +2444,27 @@ int C2_HOOK_FASTCALL FUN_004becf0(br_scalar* pOut1, br_scalar* pOut2, br_scalar*
 #pragma auto_inline(on)
 #endif
 
+extern br_quat* C2_HOOK_CDECL BrQuatNormalise(br_quat* q, const br_quat* qq);
+extern br_matrix34* C2_HOOK_CDECL BrQuatToMatrix34(br_matrix34* mat, const br_quat* q);
+
+// FUNCTION: CARMA2_HW 0x0049c000
+void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tU16* pOrientation) {
+    br_quat quaternion;
+    br_scalar x;
+    br_scalar y;
+    br_scalar z;
+    br_scalar w;
+
+    x = (br_scalar)pOrientation[0] * 1.5259255e-05f;
+    y = (br_scalar)pOrientation[1] * 1.5259255e-05f;
+    z = (br_scalar)pOrientation[2] * 1.5259255e-05f;
+    w = (br_scalar)pOrientation[3] * 1.5259255e-05f;
+    quaternion.x = (x + x) - 1.0f;
+    quaternion.y = (y + y) - 1.0f;
+    quaternion.z = (z + z) - 1.0f;
+    quaternion.w = (w + w) - 1.0f;
+    BrQuatNormalise(&quaternion, &quaternion);
+    BrQuatToMatrix34(pMatrix, &quaternion);
+}
+
 
