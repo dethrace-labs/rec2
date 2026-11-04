@@ -2956,9 +2956,54 @@ void C2_HOOK_FASTCALL FUN_004bf490(br_scalar* pMatrix, int pStride, tPhysics_joi
     NOT_IMPLEMENTED();
 }
 
-// STUB: CARMA2_HW 0x004b77b0
+// FUNCTION: CARMA2_HW 0x004b77b0
 void C2_HOOK_FASTCALL FUN_004b77b0(br_scalar* pVelocity, tPhysics_joint_force** pRecords, int pCount) {
-    NOT_IMPLEMENTED();
+    tPhysics_joint_force* record;
+    tPhysics_object* object1;
+    tPhysics_object* object2;
+    float angular_delta[3];
+    int offset;
+
+    if (pCount <= 0) {
+        return;
+    }
+    offset = (int)pVelocity - (int)pRecords;
+    do {
+        record = *pRecords;
+        object1 = record->object_a;
+        if (record->type == eJoint_limit_11) {
+            *(br_scalar*)((tU8*)pRecords + offset) = -(record->direction_a.v[1] * object1->omega.v[1]
+                + record->direction_a.v[2] * object1->omega.v[2]
+                + record->direction_a.v[0] * object1->omega.v[0]);
+            record = *pRecords;
+            object2 = record->object_b;
+            if (object2 != NULL) {
+                *(br_scalar*)((tU8*)pRecords + offset) = record->direction_b.v[1] * object2->omega.v[1]
+                    + record->direction_b.v[0] * object2->omega.v[0]
+                    + record->direction_b.v[2] * object2->omega.v[2]
+                    + *(br_scalar*)((tU8*)pRecords + offset);
+            }
+        } else {
+            angular_delta[0] = record->point_a.v[2] * object1->omega.v[1] - record->point_a.v[1] * object1->omega.v[2] + object1->velocity_car_space.v[0];
+            angular_delta[1] = record->point_a.v[0] * object1->omega.v[2] - record->point_a.v[2] * object1->omega.v[0] + object1->velocity_car_space.v[1];
+            angular_delta[2] = record->point_a.v[1] * object1->omega.v[0] - record->point_a.v[0] * object1->omega.v[1] + object1->velocity_car_space.v[2];
+            *(br_scalar*)((tU8*)pRecords + offset) = -(record->direction_a.v[1] * angular_delta[1]
+                + record->direction_a.v[2] * angular_delta[2]
+                + record->direction_a.v[0] * angular_delta[0]);
+            record = *pRecords;
+            object2 = record->object_b;
+            if (object2 != NULL) {
+                angular_delta[0] = record->point_b.v[2] * object2->omega.v[1] - record->point_b.v[1] * object2->omega.v[2] + object2->velocity_car_space.v[0];
+                angular_delta[1] = record->point_b.v[0] * object2->omega.v[2] - record->point_b.v[2] * object2->omega.v[0] + object2->velocity_car_space.v[1];
+                angular_delta[2] = record->point_b.v[1] * object2->omega.v[0] - record->point_b.v[0] * object2->omega.v[1] + object2->velocity_car_space.v[2];
+                *(br_scalar*)((tU8*)pRecords + offset) = record->direction_b.v[0] * angular_delta[0]
+                    + record->direction_b.v[1] * angular_delta[1]
+                    + record->direction_b.v[2] * angular_delta[2]
+                    + *(br_scalar*)((tU8*)pRecords + offset);
+            }
+        }
+        pRecords++;
+    } while (--pCount != 0);
 }
 
 // STUB: CARMA2_HW 0x004b7960
