@@ -3124,9 +3124,27 @@ void C2_HOOK_FASTCALL WeldCarByNetwork(tCar_spec* pCar) {
     NOT_IMPLEMENTED();
 }
 
-// STUB: CARMA2_HW 0x0043df10
+// FUNCTION: CARMA2_HW 0x0043df10
 void C2_HOOK_FASTCALL WeldCarPartial(tCar_spec* pCar) {
-    NOT_IMPLEMENTED();
+    extern void C2_HOOK_FASTCALL SplitCar(tCar_spec* pCar, br_vector4* pPlane, int pFlag);
+    tCar_crush_spec* spec;
+    const tU16* pData;
+    br_vector4 plane;
+
+    spec = pCar->car_crush_spec;
+    if (spec == NULL) {
+        return;
+    }
+    pData = (const tU16*)((tU8*)pCar->collision_info + 0x484);
+    ExpandVector3((br_vector3*)&plane, (const tCompressed_vector3*)pData, -1.f, 1.f);
+    plane.v[3] = DRU16ToScalar(pData[3], -2.5f, 2.5f);
+    if (spec->field_0x4b8 != 0) {
+        if (spec->field_0x548.v[0] == plane.v[0] && spec->field_0x548.v[1] == plane.v[1] && spec->field_0x548.v[2] == plane.v[2] && spec->field_0x554 == plane.v[3]) {
+            return;
+        }
+        WeldCar(pCar);
+    }
+    SplitCar(pCar, &plane, 0);
 }
 
 // STUB: CARMA2_HW 0x0043ceb0
