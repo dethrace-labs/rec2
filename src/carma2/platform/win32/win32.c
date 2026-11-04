@@ -1277,6 +1277,13 @@ void C2_HOOK_FASTCALL PDScreenBufferSwap(int pRendering_area_only) {
 #endif
 }
 
+// FUNCTION: CARMA2_HW 0x0051c540
+void C2_HOOK_FASTCALL PDRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_uint_16 w, br_uint_16 h) {
+    if (src != dst) {
+        BrPixelmapRectangleCopy(dst, dx, dy, src, sx, sy, w, h);
+    }
+}
+
 #ifdef REC2_SW
 // FUNCTION: CARMA2_SW 0x00517560
 void C2_HOOK_FASTCALL PDPixelmapRectangleCopy(br_pixelmap* pDest, int pDst_x, int pDst_y, br_pixelmap* pSrc, int pSrc_x, int pSrc_y, int width, int height) {
