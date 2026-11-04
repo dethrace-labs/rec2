@@ -24,6 +24,7 @@
 #include "56-aiworld.h"
 #include "57-drone.h"
 #include "61-pedestrn.h"
+#include "51-smash.h"
 
 // GLOBAL: CARMA2_HW 0x006768fc
 // GLOBAL: CARMA2_SW 0x0067106c
@@ -75,6 +76,17 @@ tPolyhedron_edge_indexes gDefault_box_collision_wireframe_edges[12] = {
     { 0, 1 }, { 2, 3 }, { 4, 5 }, { 6, 7 },
     { 0, 2 }, { 1, 3 }, { 4, 6 }, { 5, 7 },
     { 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 },
+};
+
+
+// GLOBAL: CARMA2_HW 0x0065ff08
+int gSplit_triangle_vertex_orders[6][3] = {
+    { 0, 1, 2 },
+    { 0, 2, 1 },
+    { 1, 0, 2 },
+    { 1, 2, 0 },
+    { 2, 0, 1 },
+    { 2, 1, 0 },
 };
 
 // GLOBAL: CARMA2_HW 0x006a2388
@@ -538,3 +550,204 @@ void C2_HOOK_FASTCALL WorkerGibShower(int field_0x0, int field_0xc, int field_0x
     DoGibShower(field_0x0, field_0xc, field_0x8, field_0x10, field_0x4, pField_0x14, pField_0x20, pField_0x2c);
 }
 
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+// FUNCTION: CARMA2_HW 0x004ec370
+void C2_HOOK_FASTCALL CreateSmashedGlassFragments(tU32 pSeed, br_vector3* pDirection, br_actor* pSource_actor, tU32 pTime, int pFace_count, const tU16* pSource_faces, int pVertex_count, const tU16* pSource_vertices, tU32 pOwner, tU32 pFlags, float pLongest_edge_squared, tMovement_spec* pInitial_speed, const int* pLifetime_range, tU32 pFragment_owner, br_matrix34* pSource_transform) {
+    float vertex_data[2000];
+    tU16 face_data[4000];
+    int saved_seed;
+    int face_count;
+    int vertex_count;
+    int face_index;
+    int subdivision;
+    int i;
+    int j;
+    br_vector3 centre;
+    br_vector3 fragment_centre;
+    br_vector3 transformed;
+    float extents;
+    float speed_scale;
+    float edge01;
+    float edge02;
+    float edge12;
+    float fraction;
+    float* vtx[3];
+    float* new_vertex;
+    float* next_vertex;
+    float* midpoint0;
+    float* midpoint1;
+    tU16* face_in;
+    tU16* face_out;
+    const int* order;
+    tSmash_vertex* fragment;
+    tU16 face0;
+    tU16 face1;
+    tU16 face2;
+    tU16 index;
+
+    if (pFace_count != 0 && pSource_faces != NULL && pVertex_count != 0 && pSource_vertices != NULL) {
+    saved_seed = rand();
+    srand(pSeed);
+    for (i = 0; i < 2000; i++) {
+        vertex_data[i] = 0.0f;
+    }
+    for (i = 0; i < pVertex_count; i++) {
+        *(br_vertex*)&vertex_data[i * 10] = pSource_actor->model->vertices[pSource_vertices[i]];
+    }
+    vertex_count = pVertex_count;
+    for (i = 0; i < 4000; i++) {
+        face_data[i] = 0;
+    }
+    for (i = 0; i < pFace_count; i++) {
+        face_data[i * 20 + 0] = pSource_faces[i * 3 + 0];
+        face_data[i * 20 + 1] = pSource_faces[i * 3 + 1];
+        face_data[i * 20 + 2] = pSource_faces[i * 3 + 2];
+        *(tU32*)&face_data[i * 20 + 4] = pOwner;
+        *(tU8*)&face_data[i * 20 + 8] = 0;
+    }
+    face_count = pFace_count;
+    face_in = face_data;
+    for (face_index = 0; face_index < face_count; face_index++) {
+        if (198 < face_count || 198 < vertex_count) {
+            break;
+        }
+        face_out = &face_data[face_count * 20];
+        new_vertex = &vertex_data[vertex_count * 10];
+        for (subdivision = 0; subdivision < 4; subdivision++) {
+            if (198 < face_count || 198 < vertex_count) {
+                break;
+            }
+            for (j = 0; j < 3; j++) {
+                vtx[j] = &vertex_data[face_in[j] * 10];
+            }
+            edge01 = (vtx[0][0] - vtx[1][0]) * (vtx[0][0] - vtx[1][0]) + (vtx[0][2] - vtx[1][2]) * (vtx[0][2] - vtx[1][2]) + (vtx[0][1] - vtx[1][1]) * (vtx[0][1] - vtx[1][1]);
+            edge02 = (vtx[0][0] - vtx[2][0]) * (vtx[0][0] - vtx[2][0]) + (vtx[0][2] - vtx[2][2]) * (vtx[0][2] - vtx[2][2]) + (vtx[0][1] - vtx[2][1]) * (vtx[0][1] - vtx[2][1]);
+            edge12 = (vtx[1][0] - vtx[2][0]) * (vtx[1][0] - vtx[2][0]) + (vtx[1][2] - vtx[2][2]) * (vtx[1][2] - vtx[2][2]) + (vtx[1][1] - vtx[2][1]) * (vtx[1][1] - vtx[2][1]);
+            if (edge01 < pLongest_edge_squared && edge02 < pLongest_edge_squared && edge12 < pLongest_edge_squared && PercentageChance(0) == 0) {
+                break;
+            }
+            if (edge01 < edge02 && edge01 < edge12) {
+                order = gSplit_triangle_vertex_orders[4 + IRandomBetween(0, 1)];
+            } else if (edge12 < edge02 && edge12 < edge01) {
+                order = gSplit_triangle_vertex_orders[0 + IRandomBetween(0, 1)];
+            } else {
+                order = gSplit_triangle_vertex_orders[2 + IRandomBetween(0, 1)];
+            }
+            midpoint0 = new_vertex;
+            midpoint1 = new_vertex + 10;
+            next_vertex = new_vertex + 20;
+            vertex_count += 2;
+            fraction = FRandomBetween(0.2f, 0.8f);
+            for (j = 0; j < 3; j++) {
+                midpoint0[j] = (vtx[order[1]][j] - vtx[order[0]][j]) * fraction + vtx[order[0]][j];
+            }
+            for (j = 0; j < 2; j++) {
+                midpoint0[j + 3] = (vtx[order[1]][j + 3] - vtx[order[0]][j + 3]) * fraction + vtx[order[0]][j + 3];
+            }
+            fraction = FRandomBetween(0.2f, 0.8f);
+            for (j = 0; j < 3; j++) {
+                midpoint1[j] = (vtx[order[2]][j] - vtx[order[0]][j]) * fraction + vtx[order[0]][j];
+            }
+            for (j = 0; j < 2; j++) {
+                midpoint1[j + 3] = (vtx[order[2]][j + 3] - vtx[order[0]][j + 3]) * fraction + vtx[order[0]][j + 3];
+            }
+            face_out[0] = face_in[order[1]];
+            face_out[1] = (tU16)(vertex_count - 2);
+            face_out[2] = (tU16)(vertex_count - 1);
+            *(tU32*)&face_out[4] = pOwner;
+            *(tU8*)&face_out[8] = 0;
+            face_out[20] = face_in[order[1]];
+            face_out[21] = face_in[order[2]];
+            face_out[22] = (tU16)(vertex_count - 1);
+            *(tU32*)&face_out[24] = pOwner;
+            *(tU8*)&face_out[28] = 0;
+            face_in[order[1]] = (tU16)(vertex_count - 2);
+            face_in[order[2]] = (tU16)(vertex_count - 1);
+            face_out += 40;
+            face_count += 2;
+            new_vertex = next_vertex;
+        }
+        face_in += 20;
+    }
+    centre.v[0] = 0.0f;
+    centre.v[1] = 0.0f;
+    centre.v[2] = 0.0f;
+    for (i = 0; i < vertex_count; i++) {
+        BrMatrix34ApplyP(&transformed, (br_vector3*)&vertex_data[i * 10], pSource_transform);
+        vertex_data[i * 10 + 0] = transformed.v[0];
+        vertex_data[i * 10 + 1] = transformed.v[1];
+        vertex_data[i * 10 + 2] = transformed.v[2];
+        if ((pFlags & 1) != 0) {
+            centre.v[0] += transformed.v[0];
+            centre.v[1] += transformed.v[1];
+            centre.v[2] += transformed.v[2];
+        }
+    }
+    centre.v[0] /= (float)vertex_count;
+    centre.v[1] /= (float)vertex_count;
+    centre.v[2] /= (float)vertex_count;
+    for (face_index = 0; face_index < face_count; face_index++) {
+        fragment = FindShrapnelFragment(NULL, pFragment_owner, 3);
+        if (fragment == NULL) {
+            break;
+        }
+        face0 = face_data[face_index * 20 + 0];
+        face1 = face_data[face_index * 20 + 1];
+        face2 = face_data[face_index * 20 + 2];
+        for (i = 0; i < 3; i++) {
+            if (i == 0) {
+                index = face0;
+            } else if (i == 1) {
+                index = face1;
+            } else {
+                index = face2;
+            }
+            for (j = 0; j < 3; j++) {
+                fragment->actor->model->vertices[i].p.v[j] = vertex_data[index * 10 + j];
+            }
+            fragment->actor->model->vertices[i].map.v[0] = vertex_data[index * 10 + 3];
+            fragment->actor->model->vertices[i].map.v[1] = vertex_data[index * 10 + 4];
+        }
+        fragment->actor->model->faces[0].material = (br_material*)pOwner;
+        fragment_centre.v[0] = (fragment->actor->model->vertices[0].p.v[0] + fragment->actor->model->vertices[1].p.v[0] + fragment->actor->model->vertices[2].p.v[0]) / (float)fragment->actor->model->nvertices;
+        fragment_centre.v[1] = (fragment->actor->model->vertices[0].p.v[1] + fragment->actor->model->vertices[1].p.v[1] + fragment->actor->model->vertices[2].p.v[1]) / (float)fragment->actor->model->nvertices;
+        fragment_centre.v[2] = (fragment->actor->model->vertices[0].p.v[2] + fragment->actor->model->vertices[1].p.v[2] + fragment->actor->model->vertices[2].p.v[2]) / (float)fragment->actor->model->nvertices;
+        for (i = 0; i < fragment->actor->model->nvertices; i++) {
+            fragment->actor->model->vertices[i].p.v[0] -= fragment_centre.v[0];
+            fragment->actor->model->vertices[i].p.v[1] -= fragment_centre.v[1];
+            fragment->actor->model->vertices[i].p.v[2] -= fragment_centre.v[2];
+        }
+        BrMatrix34Identity(&fragment->actor->t.t.mat);
+        for (i = 0; i < 3; i++) {
+            if ((pFlags & 1) != 0) {
+                fragment->actor->t.t.translate.t.v[i] = FRandomPosNeg(0.04f) + centre.v[i];
+            } else {
+                fragment->actor->t.t.translate.t.v[i] = FRandomPosNeg(0.015f) + fragment_centre.v[i];
+            }
+        }
+        BrModelUpdate(fragment->actor->model, 0x15);
+        extents = 0.0f;
+        for (i = 0; i < 3; i++) {
+            extents += fragment->actor->model->bounds.max.v[i] - fragment->actor->model->bounds.min.v[i];
+        }
+        if (extents < 0.1) {
+            speed_scale = (float)((0.2 - extents) * 5.0);
+        } else {
+            speed_scale = 0.5f;
+        }
+        ApplyInitialMovement(pInitial_speed, pDirection, &fragment->v, &fragment->omega, speed_scale, (br_vector3*)&fragment->actor->model->prepared->groups[0].faces[0].eqn, NULL, NULL);
+        fragment->field_0xc = pTime;
+        fragment->time_last_move = pTime;
+        fragment->end_time = pTime + pLifetime_range[1];
+        fragment->field_0x10 = pTime + IRandomBetween(pLifetime_range[0], pLifetime_range[1]);
+    }
+    srand(saved_seed);
+    }
+}
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+// PARTIAL 30.58%: work-v4 has only a stub here, so this port is unverified. Logic follows the original; the frame is 8 bytes smaller than the original's 0x3ed8 and the argument-test/loop scheduling differs.

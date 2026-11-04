@@ -68,4 +68,6 @@ extern void C2_HOOK_FASTCALL ApplyTime(tU32 pTime);
 
 extern void C2_HOOK_FASTCALL ARSetPause(int pPause);
 
+extern void C2_HOOK_FASTCALL CreateSmashedGlassFragments(tU32 pSeed, br_vector3* pDirection, br_actor* pSource_actor, tU32 pTime, int pFace_count, const tU16* pSource_faces, int pVertex_count, const tU16* pSource_vertices, tU32 pOwner, tU32 pFlags, float pLongest_edge_squared, tMovement_spec* pInitial_speed, const int* pLifetime_range, tU32 pFragment_owner, br_matrix34* pSource_transform);
+
 #endif // GUARD_22_REPLAY_H
