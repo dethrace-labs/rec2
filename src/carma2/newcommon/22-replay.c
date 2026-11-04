@@ -166,6 +166,18 @@ tPhysics_object* C2_HOOK_FASTCALL MakeCharacterPhysicsForBone(tPed_character_ins
 // RESIDUAL 97.44% in work-v4 (reccmp: effective 100): one symmetric SIB encoding differs at 0x4085c5 ([eax+esi] vs [esi+eax]); operand swap in the source flips the return-path load too, so it is the allocator's choice
 
 extern void C2_HOOK_CDECL BrMatrix34ToTransform(br_transform* xform, const br_matrix34* mat);
+extern br_uint_8 C2_HOOK_CDECL ActorToActorMatrix34Local(br_matrix34* m, br_actor* a, br_actor* b);
+
+// FUNCTION: CARMA2_HW 0x0040ca40
+void C2_HOOK_CDECL RelinkActorKeepWorldTransform(br_actor* pParent, br_actor* pActor) {
+    br_matrix34 mat;
+
+    if (pActor->parent != pParent) {
+        ActorToActorMatrix34Local(&mat, pActor, pParent);
+        BrMatrix34ToTransform(&pActor->t, &mat);
+        BrActorAdd(pParent, BrActorRemove(pActor));
+    }
+}
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
