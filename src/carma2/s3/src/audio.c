@@ -171,6 +171,17 @@ void C2_HOOK_FASTCALL S3Disable(void) {
     gS3_enabled = 0;
 }
 
+// FUNCTION: CARMA2_HW 0x00564d0a
+void C2_HOOK_FASTCALL S3ToggleEnabled(void) {
+
+    if (gS3_enabled) {
+        S3StopAllOutletSounds();
+        gS3_enabled = 0;
+    } else {
+        gS3_enabled = 1;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00564bfd
 // FUNCTION: CARMA2_SW 0x0056029d
 int C2_HOOK_FASTCALL S3StopChannel(tS3_channel* pChannel) {
