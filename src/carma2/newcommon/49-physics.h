@@ -504,6 +504,8 @@ extern void C2_HOOK_FASTCALL FUN_004b8fe0(tPhysics_object* pObject, float pDelta
 
 extern void C2_HOOK_FASTCALL FUN_004b8ee0(tPhysics_object* pObject, float pDelta_time);
 
+extern int C2_HOOK_FASTCALL FUN_004b8350(tPhysics_object* pObject, tPhysics_joint_force* pForce);
+
 #endif // GUARD_49_PHYSICS_H
 
 void C2_HOOK_FASTCALL AddCollisionInfoChild(tPhysics_object* pParent, tPhysics_object* pChild);
