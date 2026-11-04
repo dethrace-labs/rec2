@@ -1415,6 +1415,24 @@ int C2_HOOK_FASTCALL GetCharacterModelSet(tPed_character_instance* pCharacter) {
     return pCharacter->field_0xa;
 }
 
+// FUNCTION: CARMA2_HW 0x0040b5a0
+int C2_HOOK_FASTCALL GetCharacterBoneIndexByName(tPed_character_instance* pCharacter, const char* pBone_name) {
+    int bone_index;
+    int count_bones;
+
+    bone_index = 0;
+    count_bones = pCharacter->personality->form->count_bones;
+    if (count_bones <= 0) {
+        return -1;
+    }
+    for (; bone_index < count_bones; bone_index++) {
+        if (strcmp(pBone_name, pCharacter->personality->form->bones[bone_index].name) == 0) {
+            return bone_index;
+        }
+    }
+    return -1;
+}
+
 // BonerPassiveCollision
 
 // BonerActiveHalted
