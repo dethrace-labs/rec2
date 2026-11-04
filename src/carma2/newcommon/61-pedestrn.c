@@ -1452,3 +1452,7 @@ void C2_HOOK_FASTCALL DisableRetainRootMode(void) {
     gPed_retain_root_mode = 0;
 }
 
+// FUNCTION: CARMA2_HW 0x0040c640
+void C2_HOOK_FASTCALL PedNoOp(void) {
+}
+
