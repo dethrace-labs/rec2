@@ -500,6 +500,8 @@ extern br_scalar C2_HOOK_FASTCALL PhysicsObjectWeightedSquareSum(tPhysics_object
 
 extern br_scalar C2_HOOK_FASTCALL FUN_004b7290(tPhysics_object* pObject);
 
+extern void C2_HOOK_FASTCALL FUN_004b8fe0(tPhysics_object* pObject, float pDelta_time);
+
 #endif // GUARD_49_PHYSICS_H
 
 void C2_HOOK_FASTCALL AddCollisionInfoChild(tPhysics_object* pParent, tPhysics_object* pChild);
