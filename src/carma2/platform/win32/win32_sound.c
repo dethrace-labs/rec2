@@ -363,6 +363,11 @@ void C2_HOOK_FASTCALL PDS3Stop(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00569b29
+int C2_HOOK_FASTCALL PDS3Return0_B(void) {
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x00569f1b
 // FUNCTION: CARMA2_SW 0x005655bb
 int C2_HOOK_FASTCALL PDS3IsMIDIStopped(tS3_channel *pChannel) {
