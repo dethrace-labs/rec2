@@ -16,6 +16,7 @@
 #include "34-finteray.h"
 #include "37-brucetrk.h"
 #include "52-errors.h"
+#include "60-phil.h"
 #include "65-hull.h"
 #include "globvars.h"
 #include "platform.h"
@@ -1663,7 +1664,75 @@ void C2_HOOK_FAKE_THISCALL RotateObjectFirstOrder(tPhysics_object* pObject, unde
     pObject->omega.v[2] = rotated.v[2] / pObject->I.v[2];
 }
 
-// RotateObject
+extern tNet_mode gNet_mode;
+
+// FUNCTION: CARMA2_HW 0x004c1be0
+void C2_HOOK_FAKE_THISCALL RotateObject(tPhysics_object* pObject, undefined4 pUnused, br_scalar pDelta_time) {
+    br_matrix34 rotation;
+    br_vector3 axis;
+    br_vector3 momentum;
+    br_vector3 rotated;
+    tFixed_quat packed_rotation;
+    br_vector3 translation;
+    br_scalar rad_rate;
+    br_scalar rad;
+    br_scalar rad_squared;
+    int steps;
+    int i;
+
+    (void)pUnused;
+    pObject->rotate_omega.v[0] = pObject->omega.v[0];
+    rad_squared = pDelta_time * pDelta_time * BrVector3LengthSquared(&pObject->omega);
+    pObject->rotate_omega.v[1] = pObject->omega.v[1];
+    pObject->rotate_omega.v[2] = pObject->omega.v[2];
+    if (rad_squared < 0.0000001) {
+        return;
+    }
+    if (rad_squared > 0.008f) {
+        steps = (int)sqrt(rad_squared * 31.25f) + 1;
+        pDelta_time /= steps;
+        for (i = 0; i < steps && i < 400; i++) {
+            rad_rate = BrVector3Length(&pObject->omega);
+            axis.v[0] = pObject->omega.v[0] / rad_rate;
+            axis.v[1] = pObject->omega.v[1] / rad_rate;
+            axis.v[2] = pObject->omega.v[2] / rad_rate;
+            momentum.v[0] = pObject->omega.v[0] * pObject->I.v[0];
+            momentum.v[1] = pObject->omega.v[1] * pObject->I.v[1];
+            momentum.v[2] = pObject->omega.v[2] * pObject->I.v[2];
+            rad = rad_rate * pDelta_time;
+            BrMatrix34Rotate(&rotation, (br_angle)(BrRadianToAngle(rad) >> 1), &axis);
+            BrMatrix34TApplyV(&rotated, &momentum, &rotation);
+            axis.v[0] = rotated.v[0] / pObject->I.v[0];
+            axis.v[1] = rotated.v[1] / pObject->I.v[1];
+            axis.v[2] = rotated.v[2] / pObject->I.v[2];
+            rad_rate = BrVector3Length(&axis);
+            axis.v[0] = axis.v[0] / rad_rate;
+            axis.v[1] = axis.v[1] / rad_rate;
+            axis.v[2] = axis.v[2] / rad_rate;
+            rad = rad_rate * pDelta_time;
+            BrMatrix34Rotate(&rotation, BrRadianToAngle(rad), &axis);
+            BrMatrix34PreTranslate(&rotation, -pObject->cmpos.v[0], -pObject->cmpos.v[1], -pObject->cmpos.v[2]);
+            BrMatrix34PostTranslate(&rotation, pObject->cmpos.v[0], pObject->cmpos.v[1], pObject->cmpos.v[2]);
+            BrMatrix34Pre(&pObject->actor->t.t.mat, &rotation);
+            BrMatrix34TApplyV(&rotated, &momentum, &rotation);
+            pObject->omega.v[0] = rotated.v[0] / pObject->I.v[0];
+            pObject->omega.v[1] = rotated.v[1] / pObject->I.v[1];
+            pObject->omega.v[2] = rotated.v[2] / pObject->I.v[2];
+        }
+    } else {
+        RotateObjectFirstOrder(pObject, pDelta_time, pDelta_time);
+    }
+    if (gNet_mode != 0) {
+        GetOrientationFromMatrix(&packed_rotation, &pObject->actor->t.t.mat);
+        translation.v[0] = pObject->actor->t.t.mat.m[3][0];
+        translation.v[1] = pObject->actor->t.t.mat.m[3][1];
+        translation.v[2] = pObject->actor->t.t.mat.m[3][2];
+        GetMatrixFromOrientation(&pObject->actor->t.t.mat, packed_rotation.v);
+        pObject->actor->t.t.mat.m[3][0] = translation.v[0];
+        pObject->actor->t.t.mat.m[3][1] = translation.v[1];
+        pObject->actor->t.t.mat.m[3][2] = translation.v[2];
+    }
+}
 
 // TranslateObject
 

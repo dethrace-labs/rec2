@@ -298,7 +298,7 @@ void C2_HOOK_FASTCALL NewAddFriction(tPhysics_joint_force* pContact, tWorld_call
 
 extern void C2_HOOK_FAKE_THISCALL RotateObjectFirstOrder(tPhysics_object* pObject, undefined4 pUnused, br_scalar pTime);
 
-// RotateObject
+void C2_HOOK_FAKE_THISCALL RotateObject(tPhysics_object* pObject, undefined4 pUnused, br_scalar pDelta_time);
 
 // TranslateObject
 
