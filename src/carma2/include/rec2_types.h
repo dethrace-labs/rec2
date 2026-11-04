@@ -4292,7 +4292,9 @@ typedef struct tPhysics_object {
     tPhysics_joint* physics_joint1;
     tPhysics_joint* physics_joint2;
     tU8 uid;
-    undefined field_0x191[11];
+    undefined field_0x191[0x194-0x191];
+    undefined4 field_0x194;
+    undefined4 field_0x198;
     int flags;
     int field_0x1a0;
     undefined4 field_0x1a4;
@@ -4330,7 +4332,7 @@ typedef struct tPhysics_object {
     undefined field_0x262[6];
     tU32 message_time; // 0x268
     undefined field_0x26c[560];
-    undefined4 field_0x49c; /* tU32 last_car_car_collision: */
+    undefined4 field_0x49c;
     undefined field_0x4a0[52];
     tU8 drivable_on;
     undefined field_0x4d5[3];

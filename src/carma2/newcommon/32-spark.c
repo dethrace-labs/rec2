@@ -457,7 +457,7 @@ void C2_HOOK_FASTCALL CreatePuffOfSmoke(br_vector3* pPos, br_vector3* pV, float 
         }
     }
     BrVector3InvScale(&gSmoke[gSmoke_num].v, pV, WORLD_SCALE);
-    gSmoke[gSmoke_num].v.v[1] = (br_scalar)(gSmoke[gSmoke_num].v.v[1] + 1.0 / 6.9);
+    gSmoke[gSmoke_num].v.v[1] = (br_scalar)(gSmoke[gSmoke_num].v.v[1] + 1.0 / WORLD_SCALE);
     BrVector3Copy(&gSmoke[gSmoke_num].pos, pPos);
     gSmoke[gSmoke_num].radius = 0.05f;
     if ((pType & 0xf) == 7) {

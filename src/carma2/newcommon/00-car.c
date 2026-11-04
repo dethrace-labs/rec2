@@ -820,7 +820,7 @@ void C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
                 car->end_steering_damage_effect = 0;
             }
         } else {
-            if (PercentageChance((int)(pTime_difference * (car->damage_units[eDamage_steering].damage_level - 40) * 0.0045)) && fabs(car->collision_info->velocity_car_space.v[2]) > 1. / (10000. * 6.9f)) {
+            if (PercentageChance((int)(pTime_difference * (car->damage_units[eDamage_steering].damage_level - 40) * 0.0045)) && fabs(car->collision_info->velocity_car_space.v[2]) > 1. / (10000. * WORLD_SCALE)) {
                 if (car->keys.left || car->keys.right) {
                     car->false_key_left = !car->keys.left;
                     car->false_key_right = !car->keys.right;
@@ -864,7 +864,7 @@ void C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
     br_scalar factor;
     tS32 joy;
 
-    speed = -pCar->collision_info->velocity_car_space.v[2] * 6.9;
+    speed = -pCar->collision_info->velocity_car_space.v[2] * WORLD_SCALE_D;
     pCar->acc_force = 0.f;
     if (pCar->revs == 0.f) {
         CAR_GEAR(pCar) = 0;
@@ -994,7 +994,7 @@ void C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject, br_scal
         drag *= pObject->water_depth_factor;
     }
 
-    k = BrVector3Length(&pObject->v) * drag * 6.9 / pObject->M;
+    k = BrVector3Length(&pObject->v) * drag * WORLD_SCALE_D / pObject->M;
     v.v[0] = pObject->v.v[0] * k;
     v.v[1] = pObject->v.v[1] * k;
     v.v[2] = pObject->v.v[2] * k;
@@ -1486,7 +1486,21 @@ void C2_HOOK_FASTCALL ControlCar5(tCar_spec* pCar, br_scalar pDt) {
 
 // SteeringSelfCentre
 
-// NonCarSnapOff
+// FUNCTION: CARMA2_HW 0x00420310
+int C2_HOOK_FASTCALL NonCarSnapOff(tPhysics_object* pObject) {
+    tNon_car_spec* non_car;
+
+    non_car = (tNon_car_spec*)pObject->owner;
+    pObject->field_0xed = 1;
+    pObject->field_0x194 = 0;
+    pObject->field_0x198 = 0;
+    if (non_car->snap_off_cosine < 1.0f) {
+        pObject->physics_joint2 = NULL;
+    }
+    pObject->field_0x218 = 0;
+    BrVector3Set(&pObject->v, 0.0f, 0.0f, 0.0f);
+    return 0;
+}
 
 // TestNonCarSnapOff
 
@@ -1616,9 +1630,9 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt) {
     b.v[0] = -mat->m[1][0];
     b.v[1] = -mat->m[1][1];
     b.v[2] = -mat->m[1][2];
-    v.v[0] = pCar->collision_info->v.v[0] * 6.9;
-    v.v[1] = pCar->collision_info->v.v[1] * 6.9;
-    v.v[2] = pCar->collision_info->v.v[2] * 6.9;
+    v.v[0] = pCar->collision_info->v.v[0] * WORLD_SCALE_D;
+    v.v[1] = pCar->collision_info->v.v[1] * WORLD_SCALE_D;
+    v.v[2] = pCar->collision_info->v.v[2] * WORLD_SCALE_D;
     road_normal.v[0] = 0.f;
     road_normal.v[1] = 0.f;
     road_normal.v[2] = 0.f;
@@ -1753,13 +1767,13 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt) {
                 * norm[i].v[1] + *pd;
         }
         if (*pd < -0.5f
-                || pCar->wheel_dam_offset[i ^ 2] * 6.9 + pCar->susp_height[i / 2] < *pd) {
+                || pCar->wheel_dam_offset[i ^ 2] * WORLD_SCALE_D + pCar->susp_height[i / 2] < *pd) {
             force[i] = 0.f;
             d[i] = pCar->susp_height[i / 2];
         } else {
             BrVector3Accumulate(&road_normal, &norm[i]);
             normnum++;
-            d[i] = d[i] - pCar->wheel_dam_offset[i ^ 2] * 6.9;
+            d[i] = d[i] - pCar->wheel_dam_offset[i ^ 2] * WORLD_SCALE_D;
             force[i] = (pCar->susp_height[i / 2] - d[i]) * pCar->sk[i / 2];
             force[i] = force[i] - (d[i] - pCar->oldd[i]) / pDt * pCar->sb[i / 2];
             if (pCar->susp_height[i / 2] == pCar->oldd[i]
@@ -1789,7 +1803,7 @@ void C2_HOOK_FASTCALL CalcForce(tCar_spec* pCar, br_scalar pDt) {
             continue;
         }
         objs[i]->disable_move_rotate = 0;
-        ts = pCar->collision_info->M * pDt / (force[i] / 6.9);
+        ts = pCar->collision_info->M * pDt / (force[i] / WORLD_SCALE_D);
         tmp.v[0] = ts * b.v[0];
         tmp.v[1] = ts * b.v[1];
         tmp.v[2] = ts * b.v[2];
@@ -3331,7 +3345,7 @@ void C2_HOOK_FASTCALL MoveNonCar(tNon_car_spec* pNon_car, br_scalar pDt) {
     pNon_car->collision_info->field_0x54.v[1] = -gravity;
     pNon_car->collision_info->field_0x54.v[2] = 0.f;
     pNon_car->collision_info->v.v[1] -= gravity;
-    speed = BrVector3Length(&pNon_car->collision_info->v) * 6.9;
+    speed = BrVector3Length(&pNon_car->collision_info->v) * WORLD_SCALE_D;
     if (last_special_volume != NULL) {
         speed *= last_special_volume->viscosity_multiplier;
     }
@@ -3664,25 +3678,6 @@ void C2_HOOK_FASTCALL PutOpponentsInNeutral(void) {
     } else {
         NewTextHeadupSlot(4, 0, 3000, -4, "Back in gear");
     }
-}
-
-
-// FUNCTION: CARMA2_HW 0x00420310
-int C2_HOOK_FASTCALL FUN_00420310(tPhysics_object* pObject) {
-    tNon_car_spec* non_car;
-
-    non_car = (tNon_car_spec*)pObject->owner;
-    pObject->field_0xed = 1;
-    *(int*)((tU8*)pObject + 0x194) = 0;
-    *(int*)((tU8*)pObject + 0x198) = 0;
-    if (non_car->snap_off_cosine < 1.0f) {
-        pObject->physics_joint2 = NULL;
-    }
-    pObject->field_0x218 = 0;
-    pObject->v.v[0] = 0.0f;
-    pObject->v.v[1] = 0.0f;
-    pObject->v.v[2] = 0.0f;
-    return 0;
 }
 
 
