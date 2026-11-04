@@ -2418,14 +2418,6 @@ void C2_HOOK_FASTCALL CrashNoise(br_vector3* pForce, br_vector3* pPosition, int 
 
 // FUNCTION: CARMA2_HW 0x0041deb0
 void C2_HOOK_FASTCALL CrushAndDamageCar(tCar_spec* pCar1, br_vector3* pPoint, br_vector3* pForce, tCar_spec* pCar2, int pChain_count, br_vector3* pChain, br_actor* pActor) {
-    extern int gIt_or_fox;
-    extern void C2_HOOK_FASTCALL FUN_0043fb70(tCar_spec* pCar, br_vector3* pPoint, br_vector3* pForce, int pCars_touch);
-    extern void C2_HOOK_FASTCALL DoPratcamHit(br_vector3* pVelocity);
-    extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
-    extern tNet_game_player_info* C2_HOOK_FASTCALL NetPlayerFromCar(tCar_spec* pCar);
-    extern void C2_HOOK_FASTCALL CarInContactWithFox(tNet_game_player_info* pPlayer);
-    extern void C2_HOOK_FASTCALL PipeSingleCarIncident(tCar_spec* pCar, br_vector3* pPosition, float pForce);
-    extern void C2_HOOK_FASTCALL PipeSingleLocalCarIncident(br_vector3* pPosition, float pForce);
     br_vector3 vForce;
     br_vector3 vOther;
     br_vector3 vWorld;
@@ -2532,7 +2524,7 @@ void C2_HOOK_FASTCALL CrushAndDamageCar(tCar_spec* pCar1, br_vector3* pPoint, br
         }
     }
     if (gNet_mode != eNet_mode_client || pCar2 == NULL) {
-        FUN_0043fb70(pCar1, pPoint, &vForce, pCar2 != NULL);
+        DamageSystems(pCar1, pPoint, &vForce, pCar2 != NULL);
     }
     QueueCarCrush(pCar1, pChain_count, pChain, &vOther, gPHIL_last_physics_tick);
     if (pCar2 != NULL && pCar2->driver == eDriver_local_human && power > 0.003) {
@@ -3671,12 +3663,6 @@ void C2_HOOK_FASTCALL FUN_0042d400(tCar_spec* pCar, int pChain_count, br_vector3
     }
     SetCrush(&gCrush_lists[list_i].items[crush_i], unique_count, unique_points, &average, &scaled_force, force_magnitude, pTick);
 }
-
-// STUB: CARMA2_HW 0x0043fb70
-void C2_HOOK_FASTCALL FUN_0043fb70(tCar_spec* pCar, br_vector3* pPoint, br_vector3* pForce, int pCars_touch) {
-    NOT_IMPLEMENTED();
-}
-
 
 // FUNCTION: CARMA2_HW 0x0041f4a0
 void C2_HOOK_FASTCALL PutOpponentsInNeutral(void) {

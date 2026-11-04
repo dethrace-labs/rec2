@@ -289,8 +289,6 @@ extern void C2_HOOK_FASTCALL PhysicsObjectApplyTorque(tPhysics_object* pObject, 
 
 extern void C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar pV, int pMaterial_index);
 
-extern void C2_HOOK_FASTCALL FUN_0043fb70(tCar_spec* pCar, br_vector3* pPoint, br_vector3* pForce, int pCars_touch);
-
 extern int C2_HOOK_FASTCALL ScaleCollisionImpulses(tCollision_contact* pContacts, float* pImpulses, int pCount, int* pSmash_indices, int pNum_impacts, float pMax_impulse);
 
 #endif // GUARD_00_CAR_H

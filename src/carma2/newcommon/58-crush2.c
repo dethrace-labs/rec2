@@ -214,7 +214,10 @@ void C2_HOOK_FASTCALL DoPratcamHit(br_vector3* pVelocity) {
     }
 }
 
-// DamageSystems
+// STUB: CARMA2_HW 0x0043fb70
+void C2_HOOK_FASTCALL DamageSystems(tCar_spec* pCar, br_vector3* pImpact_point, br_vector3* pEnergy_vector, int pWas_hitting_a_car) {
+    NOT_IMPLEMENTED();
+}
 
 // GetDirection
 
