@@ -495,7 +495,81 @@ int C2_HOOK_FASTCALL GetSphereToEdgePoints(tPhysics_object* pObject, int pEdx, i
     return pParam2;
 }
 
-// GetCornerToFacePoints
+// FUNCTION: CARMA2_HW 0x00423ed0
+int C2_HOOK_FASTCALL GetCornerToFacePoints(tPhysics_object* pObject, int pEdx, tU32 pParam1, int pParam2, int pParam3, char* pParam4, tU32 pParam5) {
+    int local_54;
+    float local_4c;
+    float local_48[3];
+    float local_3c[3];
+    float local_30[3];
+    float local_24[3];
+    float local_18[3];
+    float local_c[3];
+    float fVar1;
+    float fVar2;
+    float fVar3;
+    float fVar4;
+    float* pfVar5;
+    int* piVar;
+    int iVar4;
+    int start;
+    int count;
+
+    if (3 < pParam3) {
+        local_54 = 0;
+        if (*(short*)(pParam4 + 0x700) != 0) {
+            pfVar5 = (float*)(pParam4 + 0x304);
+            piVar = (int*)(pParam4 + 0x600);
+            do {
+                if (*piVar == 0) {
+                    local_48[0] = pfVar5[-1] - pfVar5[-0xc1];
+                    local_48[1] = *pfVar5 - pfVar5[-0xc0];
+                    local_48[2] = pfVar5[1] - pfVar5[-0xbf];
+                    fVar4 = (float)sqrt(local_48[2] * local_48[2] + local_48[1] * local_48[1] + local_48[0] * local_48[0]);
+                    if (fVar4 <= 2.3841858e-07f) {
+                        local_3c[0] = 1.0f;
+                        local_3c[1] = 0.0f;
+                        fVar4 = 0.0f;
+                    } else {
+                        fVar4 = 1.0f / fVar4;
+                        local_3c[0] = fVar4 * local_48[0];
+                        local_3c[1] = fVar4 * local_48[1];
+                        fVar4 = fVar4 * local_48[2];
+                    }
+                    local_3c[2] = fVar4;
+                    local_3c[0] = local_3c[0] * 0.0010434783f;
+                    local_3c[1] = local_3c[1] * 0.0010434783f;
+                    local_3c[2] = local_3c[2] * 0.0010434783f;
+                    local_48[0] = local_3c[0] + local_48[0];
+                    local_48[1] = local_3c[1] + local_48[1];
+                    local_48[2] = local_3c[2] + local_48[2];
+                    start = (int)*(tU16*)((char*)pObject + 0x174);
+                    count = (int)*(tU16*)((char*)pObject + 0x176) - start;
+                    iVar4 = (int)RayCastThruFaceList((br_vector3*)local_48, (br_vector3*)local_3c, (br_vector3*)local_c, (br_scalar*)&local_4c, (br_vector3*)local_30, (tFace_ref*)((char*)gFace_list__car + start * 0x50), (int)count);
+                    if (iVar4 != 0) {
+                        BrMatrix34TApplyV((br_vector3*)local_3c, (br_vector3*)local_30, (br_matrix34*)((char*)pObject + 0x8c));
+                        fVar1 = local_30[0] * local_48[0];
+                        fVar3 = local_30[1] * local_48[1];
+                        fVar2 = local_30[2] * local_48[2];
+                        local_24[0] = pfVar5[-0xc1] - *(float*)((char*)pObject + 0xb0);
+                        local_24[1] = pfVar5[-0xc0] - *(float*)((char*)pObject + 0xb4);
+                        local_24[2] = pfVar5[-0xbf] - *(float*)((char*)pObject + 0xb8);
+                        BrMatrix34TApplyV((br_vector3*)local_18, (br_vector3*)local_24, (br_matrix34*)((char*)pObject + 0x8c));
+                        pParam2 = AddObjectWallForce((float*)pParam4, (br_vector3*)local_18, fVar2 + fVar3 + fVar1, (br_vector3*)local_3c, 0, pParam2, pObject, 1.0f, local_4c, NULL);
+                    }
+                }
+                piVar = piVar + 1;
+                local_54 = local_54 + 1;
+                pfVar5 = pfVar5 + 3;
+            } while (local_54 < (int)(tU32)*(short*)(pParam4 + 0x700));
+        }
+        if (3 < pParam2) {
+            pParam2 = 4;
+        }
+        return pParam2;
+    }
+    return 0;
+}
 
 // CylinderCheck
 
