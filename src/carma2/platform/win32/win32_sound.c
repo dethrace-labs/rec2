@@ -380,6 +380,13 @@ int C2_HOOK_FASTCALL PDS3IsMIDIStopped(tS3_channel *pChannel) {
     return 1;
 }
 
+// FUNCTION: CARMA2_HW 0x00569f69
+int C2_HOOK_FASTCALL PDS3StopMidiChannelWrapper(tS3_channel* pChannel, int pArg2, int pArg3, int pArg4, int pArg5, int pArg6) {
+
+    PDS3StopMidiChannel(pChannel);
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x0056a260
 int C2_HOOK_FASTCALL PDS3IsCDAPlaying(void) {
 
