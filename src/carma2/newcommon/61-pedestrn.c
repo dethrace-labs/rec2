@@ -869,6 +869,12 @@ void C2_HOOK_FASTCALL UnmakeMaterialBlendy(br_material* pMaterial) {
   BrMaterialUpdate(pMaterial, BR_MATU_ALL);
 }
 
+// FUNCTION: CARMA2_HW 0x004d6c00
+void C2_HOOK_FASTCALL DeetherealiseCharacter1(void* pCharacter) {
+
+    *(tU32*)((char*)pCharacter + 0x19c) &= ~4;
+}
+
 // TurnOffCollisions
 
 // TurnOnCollisions
