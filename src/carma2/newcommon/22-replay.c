@@ -758,6 +758,36 @@ void C2_HOOK_FASTCALL CreateSmashedGlassFragments(tU32 pSeed, br_vector3* pDirec
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
 #endif
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+// STUB: CARMA2_HW 0x004eb8f0
+void C2_HOOK_FASTCALL WorkerShrapnelShower(tU32 pOwner, tU32 pShrapnel, tU32 pSeed, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, tU32 pActor, tU32 pTime, tU32 pArg9, br_vector3* pTransform, br_vector3* pFragment_owner, br_vector3* pPosition, tU32 pDistance, br_vector3* pArg14, tU32 pArg15) {
+    NOT_IMPLEMENTED();
+}
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+extern void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32 pTime, float pDelta_time);
+
+// FUNCTION: CARMA2_HW 0x004f0380
+void C2_HOOK_FASTCALL WorkerShrapnelShowerUndo(tU32 chunk_0x48, tU32 prev_0x4, tU32 prev_0x84, tU32 prev_0x44, br_vector3* prev_0x8, br_vector3* prev_0x20, br_vector3* prev_0x2c, tU32 prev_0x50, tU32 prev_0x48, tU32 prev_0x0, br_vector3* prev_0x54, br_vector3* prev_0x88, br_vector3* prev_0x14, tU32 prev_0xa0, br_vector3* prev_0x38) {
+    int i;
+    tSmash_vertex* fragment;
+    float delta_time;
+
+    WorkerShrapnelShower(prev_0x4, prev_0x84, prev_0x44, prev_0x8, prev_0x20, prev_0x2c, prev_0x50, prev_0x48, prev_0x0, prev_0x54, prev_0x88, prev_0x14, prev_0xa0, prev_0x38, 0);
+    delta_time = (float)(chunk_0x48 - prev_0x48);
+    for (i = 0, fragment = gSmash_glass_fragments; i < 200; i++, fragment++) {
+        if (fragment->end_time != 0 && fragment->field_0x18 == prev_0x0) {
+            fragment->field_0x34 = 0;
+            DoFragMovement(fragment, GetTotalTime(), delta_time);
+            fragment->field_0x34 = 1;
+        }
+    }
+}
+
 // PARTIAL 30.58%: work-v4 has only a stub here, so this port is unverified. Logic follows the original; the frame is 8 bytes smaller than the original's 0x3ed8 and the argument-test/loop scheduling differs.
 
 extern int gReplay_splash_flags;
