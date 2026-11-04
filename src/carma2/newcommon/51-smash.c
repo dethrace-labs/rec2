@@ -80,7 +80,7 @@ void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32 pTime, float
 void C2_HOOK_FASTCALL SmashItIntoVerySmallPiecesIndeed(tPhysics_object* pObject, tSmashable_item_spec* pSpec, undefined4 pArg3, tConnotations* pConnotations, tU32 pSeed, undefined4 pArg6, const br_vector3* pPoint, const br_vector3* pSound_position, br_actor* pActor, tU32 pTime, undefined4 pArg11, br_matrix34* pTransform, br_bounds3* pBounds, br_vector3* pPosition, float pDistance, undefined4 pArg16, int pFlag);
 void C2_HOOK_FASTCALL FUN_004d9d00(tPhysics_object* pObject, int pMode);
 
-extern int gCrush_deferred;
+extern int gPHIL_doing_physics;
 extern int gPed_dismemberfest;
 extern const double gConst_world_scale;
 extern const double gConst_2pi;
@@ -2447,7 +2447,8 @@ void C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_effects* 
 #pragma auto_inline(off)
 #endif
 // (reference)
-// PARTIAL 94.50%: work-v4 body ported verbatim; see reccmp diff
+// PARTIAL 100.00 (effective only): reads gPHIL_doing_physics (0x74a5f8) as the original does; remaining diff is the
+// x87 schedule of the three FRandomPosNeg(0.5f) sites (push imm before vs after fdivp)
 // FUNCTION: CARMA2_HW 0x004d9d00
 void C2_HOOK_FASTCALL FUN_004d9d00(tPhysics_object* pObject, int pMode) {
     int previous_dismemberfest;
@@ -2456,7 +2457,7 @@ void C2_HOOK_FASTCALL FUN_004d9d00(tPhysics_object* pObject, int pMode) {
         if (!IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells()) {
             return;
         }
-        if ((((tU8*)((tPed_character_instance*)pObject->owner)->ped->character)[0x14] & 4) == 0 && gCrush_deferred == 0) {
+        if ((((tU8*)((tPed_character_instance*)pObject->owner)->ped->character)[0x14] & 4) == 0 && gPHIL_doing_physics == 0) {
             SetThisPedPhysicing(((tPed_character_instance*)pObject->owner)->ped);
         }
         if (pMode != 0xe) {
@@ -2683,7 +2684,8 @@ int C2_HOOK_FASTCALL FUN_004cd640(tPedestrian* pPed, int pSpeed, int pMove1, int
 }
 
 
-// PARTIAL 93.78%: work-v4 body ported verbatim; see reccmp diff
+// PARTIAL 100.00 (effective only): free-slot scan is an index for-loop as in the original; remaining diff is two
+// hoisted setup instructions (mov [esp+0x14],ebx and lea edi) scheduled earlier than the original
 // FUNCTION: CARMA2_HW 0x004ed860
 void C2_HOOK_FASTCALL QueueNonCarCuboidActivation(br_actor* pActor, tNon_car_cuboid_activations* pActivations, void* pContext) {
     tNon_car_search_context search;
@@ -2691,7 +2693,6 @@ void C2_HOOK_FASTCALL QueueNonCarCuboidActivation(br_actor* pActor, tNon_car_cub
     br_bounds3 bounds;
     br_matrix34* matrix;
     tNon_car_cuboid_activation* activation;
-    int* pActive;
     tU32 time;
     tU32 min_column_x;
     tU32 min_column_z;
@@ -2747,16 +2748,10 @@ void C2_HOOK_FASTCALL QueueNonCarCuboidActivation(br_actor* pActor, tNon_car_cub
             delayed.actor_time_actions[j].actor = search.actors[j];
             delayed.actor_time_actions[j].time = time + IRandomBetween((tU16)activation->field_0x0, (tU16)activation->field_0x2);
         }
-        pActive = &gSmash_explosions[0].active;
-        slot_index = 0;
-test_active:
-        if (*pActive == 0) {
-            goto have_free_slot;
-        }
-        pActive = (int*)((tU8*)pActive + sizeof(tSmash_explosion));
-        slot_index++;
-        if ((intptr_t)pActive < (intptr_t)&gSmash_explosions[REC2_ASIZE(gSmash_explosions)].active) {
-            goto test_active;
+        for (slot_index = 0; slot_index < (int)REC2_ASIZE(gSmash_explosions); slot_index++) {
+            if (gSmash_explosions[slot_index].active == 0) {
+                goto have_free_slot;
+            }
         }
         goto no_free_slot;
 have_free_slot:
