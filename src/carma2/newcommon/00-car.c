@@ -303,6 +303,10 @@ void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) 
     case eDriver_local_human:
         pCar->car_ID = 0;
         break;
+#ifndef REC2_MATCHING
+    default:
+        break;
+#endif
     }
     PossibleService();
     pCar->collision_info->box_face_ref = gFace_num__car - 2;
