@@ -1210,6 +1210,25 @@ int C2_HOOK_FASTCALL S3GetRepetitions(tS3_channel* pChannel) {
     return pChannel->repetitions;
 }
 
+// FUNCTION: CARMA2_HW 0x0056570c
+int C2_HOOK_FASTCALL S3CountActiveChannels(tS3_outlet* pOutlet) {
+    int count;
+    tS3_channel* channel;
+
+    count = 0;
+    if (gS3_enabled != 0) {
+        channel = pOutlet->channel_list;
+        while (channel != NULL) {
+            if (channel->active != 0) {
+                count += 1;
+            }
+            channel = channel->next;
+        }
+        return count;
+    }
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x005657f5
 // FUNCTION: CARMA2_SW 0x00560e95
 int C2_HOOK_FASTCALL S3SoundStillPlaying(int pTag) {
