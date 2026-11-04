@@ -167,6 +167,8 @@ tU16 gNext_crush_actor_id = 10000;
 
 int gCrush_deferred;
 
+extern int gPHIL_doing_physics;
+
 extern int gNum_active_non_cars;
 extern tNon_car_spec* gActive_non_car_list[99];
 
@@ -4654,6 +4656,8 @@ int C2_HOOK_CDECL ToggleDoorsActorCallback(br_actor* pActor, void* data) {
 }
 
 
+// PARTIAL 85.05%: work-v4 body; reads gPHIL_doing_physics (0x74a5f8) as the original does; list traversal,
+// zero-register vs immediate and actor register allocation still differ
 // FUNCTION: CARMA2_HW 0x0042f170
 tCrush_info* C2_HOOK_FASTCALL FUN_0042f170(tCrush_info_buffer* pInfo_buffer, br_actor* pActor, tCar_spec* pCar) {
     int i;
@@ -4673,7 +4677,7 @@ tCrush_info* C2_HOOK_FASTCALL FUN_0042f170(tCrush_info_buffer* pInfo_buffer, br_
     if (i == count) {
         tPhysics_object* object;
 
-        if (gCrush_deferred) {
+        if (gPHIL_doing_physics) {
             return NULL;
         }
         start_index = (int)pInfo_buffer->field_0x8;
