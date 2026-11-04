@@ -1628,6 +1628,29 @@ int C2_HOOK_FASTCALL S3SetChannelVolume(int pChannel_tag, int pVolume) {
     return eS3_error_none;
 }
 
+// FUNCTION: CARMA2_HW 0x005648c3
+tS3_error_codes C2_HOOK_FASTCALL S3SetChannelPitch(tS3_sound_tag pChannel_tag, int pPitch) {
+    tS3_channel* channel;
+
+    if (gS3_enabled) {
+        if (pPitch == -1) {
+            pPitch = 0x10000;
+        }
+        channel = S3GetChannelForTag(pChannel_tag);
+        if (channel == NULL) {
+            return eS3_error_bad_stag;
+        }
+        if (channel->type == 0) {
+            channel->rate = (int)((double)channel->descriptor->buffer_description->sample_rate
+                    * ldexp((double)pPitch, -16));
+            if (!PDS3UpdateChannelFrequency(channel)) {
+                return eS3_error_function_failed;
+            }
+        }
+    }
+    return eS3_error_none;
+}
+
 // FUNCTION: CARMA2_HW 0x00564e9b
 // FUNCTION: CARMA2_SW 0x0056053b
 int C2_HOOK_FASTCALL S3StartSound2(tS3_outlet* pOutlet, tS3_sound_id pSound, unsigned int pRepeats, int pLeft_volume, int pRight_volume,  tS32 pLeft_pitch, tS32 pRight_pitch) {
