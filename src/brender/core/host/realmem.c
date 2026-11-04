@@ -14,7 +14,7 @@ extern br_uint_16 _RealSelector;
 
 // FUNCTION: CARMA2_HW 0x0054009c
 // FUNCTION: CARMA2_SW 0x0053b73c
-C2_NAKED void C2_HOOK_CDECL HostRealBlockWrite(br_uint_16 offset, br_uint_16 seg, void *block, br_uint_32 count) {
+C2_MATCHING_NAKED void C2_HOOK_CDECL HostRealBlockWrite(br_uint_16 offset, br_uint_16 seg, void *block, br_uint_32 count) {
 #ifdef REC2_MATCHING
     __asm {
         push ebp
@@ -45,7 +45,7 @@ C2_NAKED void C2_HOOK_CDECL HostRealBlockWrite(br_uint_16 offset, br_uint_16 seg
 
 // FUNCTION: CARMA2_HW 0x005400c6
 // FUNCTION: CARMA2_SW 0x0053b766
-C2_NAKED void C2_HOOK_CDECL HostRealBlockFill(br_uint_16 offset, br_uint_16 seg, br_uint_8 value, br_uint_32 count) {
+C2_MATCHING_NAKED void C2_HOOK_CDECL HostRealBlockFill(br_uint_16 offset, br_uint_16 seg, br_uint_8 value, br_uint_32 count) {
 #ifdef REC2_MATCHING
     __asm {
         push ebp
@@ -77,7 +77,7 @@ C2_NAKED void C2_HOOK_CDECL HostRealBlockFill(br_uint_16 offset, br_uint_16 seg,
 
 // FUNCTION: CARMA2_HW 0x005400f2
 // FUNCTION: CARMA2_SW 0x0053b792
-C2_NAKED void C2_HOOK_CDECL HostRealBlockRead(br_uint_16 offset, br_uint_16 seg, void *block, br_uint_32 count) {
+C2_MATCHING_NAKED void C2_HOOK_CDECL HostRealBlockRead(br_uint_16 offset, br_uint_16 seg, void *block, br_uint_32 count) {
 #ifdef REC2_MATCHING
     __asm {
         push ebp
@@ -108,7 +108,7 @@ C2_NAKED void C2_HOOK_CDECL HostRealBlockRead(br_uint_16 offset, br_uint_16 seg,
 
 // FUNCTION: CARMA2_HW 0x0054011c
 // FUNCTION: CARMA2_SW 0x0053b7bc
-C2_NAKED br_uint_32 C2_HOOK_CDECL HostRealStringWrite(br_uint_16 offset, br_uint_16 seg, br_uint_8 *string, br_uint_32 max) {
+C2_MATCHING_NAKED br_uint_32 C2_HOOK_CDECL HostRealStringWrite(br_uint_16 offset, br_uint_16 seg, br_uint_8 *string, br_uint_32 max) {
 #ifdef REC2_MATCHING
     __asm {
         push ebp
@@ -150,7 +150,7 @@ C2_NAKED br_uint_32 C2_HOOK_CDECL HostRealStringWrite(br_uint_16 offset, br_uint
 
 // FUNCTION: CARMA2_HW 0x00540157
 // FUNCTION: CARMA2_SW 0x0053b7f7
-C2_NAKED br_uint_32 C2_HOOK_CDECL HostRealStringRead(br_uint_16 offset, br_uint_16 seg, br_uint_8 *string, br_uint_32 max) {
+C2_MATCHING_NAKED br_uint_32 C2_HOOK_CDECL HostRealStringRead(br_uint_16 offset, br_uint_16 seg, br_uint_8 *string, br_uint_32 max) {
 #ifdef REC2_MATCHING
     __asm {
         push ebp
@@ -192,7 +192,7 @@ C2_NAKED br_uint_32 C2_HOOK_CDECL HostRealStringRead(br_uint_16 offset, br_uint_
 
 // FUNCTION: CARMA2_HW 0x00540191
 // FUNCTION: CARMA2_SW 0x0053b831
-C2_NAKED void C2_HOOK_CDECL HostRealByteWrite(br_uint_16 offset, br_uint_16 seg, br_uint_8 value) {
+C2_MATCHING_NAKED void C2_HOOK_CDECL HostRealByteWrite(br_uint_16 offset, br_uint_16 seg, br_uint_8 value) {
 #ifdef REC2_MATCHING
     __asm {
         push ebp
@@ -215,7 +215,7 @@ C2_NAKED void C2_HOOK_CDECL HostRealByteWrite(br_uint_16 offset, br_uint_16 seg,
 
 // FUNCTION: CARMA2_HW 0x005401ad
 // FUNCTION: CARMA2_SW 0x0053b84d
-C2_NAKED br_uint_8 C2_HOOK_CDECL HostRealByteRead(br_uint_16 offset, br_uint_16 seg) {
+C2_MATCHING_NAKED br_uint_8 C2_HOOK_CDECL HostRealByteRead(br_uint_16 offset, br_uint_16 seg) {
 #ifdef REC2_MATCHING
     __asm {
         push ebp
@@ -237,7 +237,7 @@ C2_NAKED br_uint_8 C2_HOOK_CDECL HostRealByteRead(br_uint_16 offset, br_uint_16 
 
 // FUNCTION: CARMA2_HW 0x005401c6
 // FUNCTION: CARMA2_SW 0x0053b866
-C2_NAKED void C2_HOOK_CDECL HostRealWordWrite(br_uint_16 offset, br_uint_16 seg, br_uint_16 value) {
+C2_MATCHING_NAKED void C2_HOOK_CDECL HostRealWordWrite(br_uint_16 offset, br_uint_16 seg, br_uint_16 value) {
 #ifdef REC2_MATCHING
     __asm {
         push ebp
@@ -260,7 +260,7 @@ C2_NAKED void C2_HOOK_CDECL HostRealWordWrite(br_uint_16 offset, br_uint_16 seg,
 
 // FUNCTION: CARMA2_HW 0x005401e4
 // FUNCTION: CARMA2_SW 0x0053b884
-C2_NAKED br_uint_16 C2_HOOK_CDECL HostRealWordRead(br_uint_16 offset, br_uint_16 seg) {
+C2_MATCHING_NAKED br_uint_16 C2_HOOK_CDECL HostRealWordRead(br_uint_16 offset, br_uint_16 seg) {
 #ifdef REC2_MATCHING
     __asm {
         push ebp
@@ -282,7 +282,7 @@ C2_NAKED br_uint_16 C2_HOOK_CDECL HostRealWordRead(br_uint_16 offset, br_uint_16
 
 // FUNCTION: CARMA2_HW 0x005401fe
 // FUNCTION: CARMA2_SW 0x0053b89e
-C2_NAKED void C2_HOOK_CDECL HostRealDWordWrite(br_uint_16 offset, br_uint_16 seg, br_uint_32 value) {
+C2_MATCHING_NAKED void C2_HOOK_CDECL HostRealDWordWrite(br_uint_16 offset, br_uint_16 seg, br_uint_32 value) {
 #ifdef REC2_MATCHING
     __asm {
         push ebp
@@ -305,7 +305,7 @@ C2_NAKED void C2_HOOK_CDECL HostRealDWordWrite(br_uint_16 offset, br_uint_16 seg
 
 // FUNCTION: CARMA2_HW 0x0054021a
 // FUNCTION: CARMA2_SW 0x0053b8ba
-C2_NAKED br_uint_32 C2_HOOK_CDECL HostRealDWordRead(br_uint_16 offset, br_uint_16 seg) {
+C2_MATCHING_NAKED br_uint_32 C2_HOOK_CDECL HostRealDWordRead(br_uint_16 offset, br_uint_16 seg) {
 #ifdef REC2_MATCHING
     __asm {
         push ebp

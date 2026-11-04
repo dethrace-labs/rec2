@@ -10,7 +10,7 @@
 
 // FUNCTION: CARMA2_HW 0x0053e682
 // FUNCTION: CARMA2_SW 0x00539d22
-C2_NAKED br_uint_16 C2_HOOK_CDECL GetSysQual(void) {
+C2_MATCHING_NAKED br_uint_16 C2_HOOK_CDECL GetSysQual(void) {
 #ifdef REC2_MATCHING
     __asm {
         mov ax, ds;

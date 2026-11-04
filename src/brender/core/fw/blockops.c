@@ -13,7 +13,7 @@
 
 
 // FUNCTION: CARMA2_HW 0x00528130
-C2_NAKED void C2_HOOK_CDECL BrBlockFill(void* pDestination, int pValue, int pCount_dwords) {
+C2_MATCHING_NAKED void C2_HOOK_CDECL BrBlockFill(void* pDestination, int pValue, int pCount_dwords) {
 #ifdef REC2_MATCHING
     __asm {
         push        ebp
@@ -41,7 +41,7 @@ C2_NAKED void C2_HOOK_CDECL BrBlockFill(void* pDestination, int pValue, int pCou
 }
 
 // FUNCTION: CARMA2_HW 0x0052814e
-C2_NAKED void C2_HOOK_CDECL BrBlockCopy(void* pDestination, const void* pSource, int pCount_dwords) {
+C2_MATCHING_NAKED void C2_HOOK_CDECL BrBlockCopy(void* pDestination, const void* pSource, int pCount_dwords) {
 #ifdef REC2_MATCHING
     __asm {
         push        ebp
@@ -69,7 +69,7 @@ C2_NAKED void C2_HOOK_CDECL BrBlockCopy(void* pDestination, const void* pSource,
 }
 
 // FUNCTION: CARMA2_HW 0x0052816c
-C2_NAKED void C2_HOOK_CDECL BrFarBlockCopy(void *pDestination, const void *pSource, int pCount_dwords) {
+C2_MATCHING_NAKED void C2_HOOK_CDECL BrFarBlockCopy(void *pDestination, const void *pSource, int pCount_dwords) {
 #ifdef REC2_MATCHING
     __asm {
         push        ebp
