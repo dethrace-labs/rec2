@@ -272,42 +272,42 @@ extern void C2_HOOK_FASTCALL TurnOnNonCar(int pIndex);
 
 extern void C2_HOOK_FASTCALL TurnOffNonCar(int pIndex);
 
-void C2_HOOK_FASTCALL DragChildren(tCar_spec* pCar, tPhysics_object* pChild);
+extern void C2_HOOK_FASTCALL DragChildren(tCar_spec* pCar, tPhysics_object* pChild);
 
-void C2_HOOK_FASTCALL MoveAndCollideNonCar(tNon_car_spec* pNon_car, br_scalar pDt);
+extern void C2_HOOK_FASTCALL MoveAndCollideNonCar(tNon_car_spec* pNon_car, br_scalar pDt);
 
-void C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt);
+extern void C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt);
+
+extern float C2_HOOK_FASTCALL ComputeCarImpact(tCar_spec* pCar, tU32 pDelta, float* pOut);
+
+extern void C2_HOOK_FASTCALL UpdateCrushVertices(tCar_spec* pCar, tU8* pData);
+
+extern void C2_HOOK_FASTCALL WeldCarByNetwork(tCar_spec* pCar);
+
+extern void C2_HOOK_FASTCALL UpdateCrushPainList(void);
+
+extern void C2_HOOK_FASTCALL CheckForDeAttachmentOfNonCars(tU32 pTime);
+
+extern void C2_HOOK_FASTCALL FinishCars(tU32 pLast_frame_time, tU32 pTime);
+
+extern void C2_HOOK_FASTCALL SendCarData(tU32 pNext_frame_time);
+
+extern void C2_HOOK_FASTCALL SendMines(tU32 pNext_frame_time);
+
+extern int C2_HOOK_FASTCALL BoundsOverlapTest__finteray(br_bounds* b1, br_bounds* b2);
+
+extern void C2_HOOK_FASTCALL ConditionallyNoteSkid(tCar_spec* pCar, tFace_ref** faces, int pIndex);
+
+extern void C2_HOOK_FASTCALL FlushSmashQueue(int pFlush_powerups);
+
+extern void C2_HOOK_FASTCALL PhysicsObjectApplyTorque(tPhysics_object* pObject, const br_vector3* pTorque);
+
+extern void C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar pV, int pMaterial_index);
+
+extern void C2_HOOK_FASTCALL FUN_0043fb70(tCar_spec* pCar, br_vector3* pPoint, br_vector3* pForce, int pCars_touch);
+
+extern int C2_HOOK_FASTCALL ScaleCollisionImpulses(tCollision_contact* pContacts, float* pImpulses, int pCount, int* pSmash_indices, int pNum_impacts, float pMax_impulse);
+
+extern int C2_HOOK_FASTCALL FUN_00430e30(tCollision_contact* pContacts, float* pImpulses, int pCount);
 
 #endif // GUARD_00_CAR_H
-
-float C2_HOOK_FASTCALL ComputeCarImpact(tCar_spec* pCar, tU32 pDelta, float* pOut);
-
-void C2_HOOK_FASTCALL UpdateCrushVertices(tCar_spec* pCar, tU8* pData);
-
-void C2_HOOK_FASTCALL WeldCarByNetwork(tCar_spec* pCar);
-
-void C2_HOOK_FASTCALL UpdateCrushPainList(void);
-
-void C2_HOOK_FASTCALL CheckForDeAttachmentOfNonCars(tU32 pTime);
-
-void C2_HOOK_FASTCALL FinishCars(tU32 pLast_frame_time, tU32 pTime);
-
-void C2_HOOK_FASTCALL SendCarData(tU32 pNext_frame_time);
-
-void C2_HOOK_FASTCALL SendMines(tU32 pNext_frame_time);
-
-int C2_HOOK_FASTCALL BoundsOverlapTest__finteray(br_bounds* b1, br_bounds* b2);
-
-void C2_HOOK_FASTCALL ConditionallyNoteSkid(tCar_spec* pCar, tFace_ref** faces, int pIndex);
-
-void C2_HOOK_FASTCALL FlushSmashQueue(int pFlush_powerups);
-
-void C2_HOOK_FASTCALL PhysicsObjectApplyTorque(tPhysics_object* pObject, const br_vector3* pTorque);
-
-void C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar pV, int pMaterial_index);
-
-void C2_HOOK_FASTCALL FUN_0043fb70(tCar_spec* pCar, br_vector3* pPoint, br_vector3* pForce, int pCars_touch);
-
-int C2_HOOK_FASTCALL ScaleCollisionImpulses(tCollision_contact* pContacts, float* pImpulses, int pCount, int* pSmash_indices, int pNum_impacts, float pMax_impulse);
-
-int C2_HOOK_FASTCALL FUN_00430e30(tCollision_contact* pContacts, float* pImpulses, int pCount);
