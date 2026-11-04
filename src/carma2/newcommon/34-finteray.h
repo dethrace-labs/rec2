@@ -98,7 +98,7 @@ extern int C2_HOOK_FASTCALL LinePolyCollWithSphere(br_vector3* pStart, br_vector
 
 // ShapeRayCast
 
-// ShapeRayCastWithSphere
+extern int C2_HOOK_FASTCALL ShapeRayCastWithSphere(br_vector3* pStart, br_vector3* pEnd, tPhysics_shape* pShape, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pT);
 
 extern tFace_ref* C2_HOOK_FASTCALL CastRayDownThruFaces(br_vector3* pPosition, tFace_ref* pFaces, int pCount, br_scalar pOffset, br_vector3* pCollision_position);
 
