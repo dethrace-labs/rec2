@@ -346,3 +346,47 @@ void C2_HOOK_FASTCALL WorkerCrushUndo(int field_0x4, void* pField_0x8, void* pFi
     pModel->flags |= BR_MODF_CUSTOM;
 }
 // PARTIAL 89.03%: identical logic; the x87 sequence stores the first accumulated component one instruction earlier than the original (extra `fstp [eax+edi]`, shifted store), and the skip branch is one byte longer.
+
+// FUNCTION: CARMA2_HW 0x004c9070
+void C2_HOOK_FASTCALL WorkerSmudge(tPipe_chunk** pChunk, int pScale) {
+    tCar_spec* car;
+    tU8* a;
+    tU32 code;
+    int i;
+    tU8* esi;
+
+    code = *(tU32*)*pChunk;
+    if ((code & 0xffffff00) == 0) {
+        car = &gProgram_state.current_car;
+    } else {
+        car = GetCarSpec(code >> 8, code & 0xff);
+    }
+    a = *(tU8**)((tU8*)car + 0xe10);
+    i = 0;
+    if (*(tU16*)((tU8*)*pChunk + 4) <= 0) {
+        return;
+    }
+    esi = *(tU8**)(a + 0x18);
+    do {
+        tU32* colors = *(tU32**)(*(tU8**)(*(tU8**)(esi + 0x4c) + 0x18) + 0x14);
+        tU16 idx = *(tU16*)((tU8*)*pChunk + i * 4 + 0xc);
+        tS8 bright = (tS8)((tS8)*(tU8*)((tU8*)*pChunk + i * 4 + 0xe) * (tS8)pScale);
+        tU32 alpha24 = ((tU32)(tU8)bright) << 24;
+        tU32 c = colors[idx];
+
+        colors[idx] = ((c & 0xff000000) + alpha24) & 0xff000000;
+        if (*(tU8*)(esi + 0x20) & 0x80) {
+            tU8* q = *(tU8**)(esi + 0x4c);
+            tU8* w = *(tU8**)(q + 0x18);
+            tU32* colors2 = (tU32*)(*(tU8**)(w + 0x14));
+            tU16* idx2 = (tU16*)(*(tU8**)(w + 0x18));
+            tU8 dl = (tU8)(colors2[idx] >> 24) + (tU8)bright;
+            tU8* arr = *(tU8**)(esi + 8);
+            tU16 ix = idx2[idx];
+
+            arr[(tU32)ix * 40 + 0x14] = dl;
+        }
+        i++;
+    } while (i < *(tU16*)((tU8*)*pChunk + 4));
+}
+// PARTIAL 77.78%: work-v4 measures 78.32% on the same body; register/param-home allocation differs (edi vs esi for pChunk), logic and call sequence identical.
