@@ -99,7 +99,7 @@ extern void C2_HOOK_FASTCALL ChristmasLights(tCar_spec* pCar, int pMin_damage, i
 extern void C2_HOOK_FASTCALL FUN_004c86f0(int pOwner, void* pData, tU32 pArg3);
 extern int C2_HOOK_FASTCALL PHILAddActiveObjectImmediately(tPhysics_object* pInfo, br_matrix34* pMatrix, const br_vector3* pArg3, const br_vector3* pArg4);
 extern tSmashable_level* C2_HOOK_FASTCALL FUN_004ee290(tCar_spec* pCar, tPhysics_object* pCollision_info, br_vector3* pPos, br_vector3* pOptional_position, br_actor* pActor, undefined4 pArg6, tCar_crush_smashable_part* pSmashable, float pDamage, undefined4 pArg9, undefined4 pArg10);
-extern void C2_HOOK_FASTCALL ARPowerupLose(tPowerup* pPowerup, tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL PipeSinglePowerupLose(tPowerup* pPowerup, tCar_spec* pCar_spec);
 extern undefined4* gCrush_space;
 extern int gINT_006a3334;
 extern br_scalar gMax_crush_dist_sq;
@@ -5857,7 +5857,7 @@ void C2_HOOK_FASTCALL FUN_0043c7a0(br_vector3* pVertex, int pCount, float* pVect
 }
 
 
-// PARTIAL 97.22%: work-v4 body ported verbatim; see reccmp diff
+// PARTIAL 100.00 (effective only): only a lea operand-order artifact remains
 // FUNCTION: CARMA2_HW 0x004df070
 void C2_HOOK_FASTCALL LoseCarPowerups(tCar_spec* pCar_spec) {
     if (pCar_spec == NULL || pCar_spec->driver != eDriver_local_human) {
@@ -5884,7 +5884,7 @@ void C2_HOOK_FASTCALL LoseCarPowerups(tCar_spec* pCar_spec) {
                             powerup->lose_proc(powerup, powerup->car);
                         }
                         if (powerup->net_type & 0x80) {
-                            ARPowerupLose(powerup, powerup->car);
+                            PipeSinglePowerupLose(powerup, powerup->car);
                         }
                         if (gNet_mode != eNet_mode_none) {
                             message = NetBuildGuaranteedMessage(0x16, 0);
