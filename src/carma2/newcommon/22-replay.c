@@ -122,3 +122,12 @@ void C2_HOOK_FASTCALL ARSetPause(int pPause) {
     gPaused = pPause;
 }
 
+// FUNCTION: CARMA2_HW 0x004b7220
+void C2_HOOK_FASTCALL WorkerPHILObject(int field_0x0, br_matrix34* pField_0x4) {
+    tPhysics_object* object;
+
+    object = (tPhysics_object*)field_0x0;
+    BrMatrix34Copy(&object->transform_matrix, pField_0x4);
+    BrMatrix34Copy(&object->actor->t.t.mat, pField_0x4);
+}
+
