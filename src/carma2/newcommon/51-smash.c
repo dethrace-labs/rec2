@@ -33,6 +33,284 @@
 
 #include <stdio.h>
 
+/* Declarations carried over from work-v4 51-smash.c: the TUs that define these
+   symbols are not ported in this branch yet. */
+extern int C2_HOOK_FASTCALL IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells(void);
+extern void C2_HOOK_FASTCALL EarnCredits(int pAmount);
+extern void C2_HOOK_FASTCALL EarnCredits100(int pAmount);
+extern void C2_HOOK_FASTCALL AwardTime(tU32 pTime);
+extern void C2_HOOK_FASTCALL AwardTime5(tU32 pTime);
+extern void C2_HOOK_FASTCALL NewTextHeadupSlot2(int pSlot_index, int pFlash_rate, int pLifetime, int pFont_index, const char* pText, int pQueue_it);
+extern void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex);
+extern int C2_HOOK_FASTCALL GetRuntimeVariable(int pAddress);
+extern int C2_HOOK_FASTCALL AccumulateRuntimeVariable(int pAddress, int pDelta);
+extern int C2_HOOK_FASTCALL ToggleRuntimeVariable(int pAddress);
+extern void C2_HOOK_FASTCALL RaceCompleted(tRace_over_reason pReason);
+extern tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex);
+extern void C2_HOOK_FASTCALL FillInBounds(tBounds* pBounds);
+extern int C2_HOOK_FASTCALL FindFacesInBox(tBounds* pBounds, tFace_ref* pFace_list, int pMax_face, tWorld_callbacks* pWorld_callbacks);
+extern tWorld_callbacks gWorld_callbacks;
+extern void C2_HOOK_FASTCALL FlushSmashQueue(int pFlush_powerups);
+extern void C2_HOOK_FASTCALL SetThisPedPhysicing(tPedestrian* pPed);
+extern int C2_HOOK_FASTCALL FUN_004cd640(tPedestrian* pPed, int pSpeed, int pMove1, int pMove2, tPhysics_object* pCollision_info);
+extern int C2_HOOK_FASTCALL FUN_004cd9e0(tPedestrian* pPed, int pBoneIndex);
+extern void C2_HOOK_FASTCALL MakePedNoise(tPedestrian* pPed, int pArg2, int pArg3, tPhysics_object* pCollision_info);
+extern void C2_HOOK_FASTCALL SetPedMove(tPedestrian* pPed, int pMove_action, int pWalk_speed_factor, int pArg4, int pArg5, int pArg6, int pAction);
+extern void C2_HOOK_FASTCALL KillPedestrian(tPedestrian* pPed, tPhysics_object* pCollision_info);
+extern void C2_HOOK_FASTCALL XZToColumnXZ(tU8* pColumn_x, tU8* pColumn_z, br_scalar pX, br_scalar pZ, tTrack_spec* pTrack_spec);
+extern void C2_HOOK_FASTCALL AddChangedPoint(const br_vector3* pPoint);
+extern void C2_HOOK_FASTCALL CreateSmokeColumn2(int pType, br_actor* pActor, tCar_spec* pCar, tPhysics_object* pObject, int pColour, int pVertex, tU32 pLifetime);
+extern br_actor* C2_HOOK_FASTCALL FUN_004f3820(tFace_ref* pFace, br_vertex* pQuad, br_material* pMaterial, void* pPoly_array, void* pVertex_array);
+extern int C2_HOOK_FASTCALL FUN_004f39a0(const void* pMap, br_actor* pActor, br_vertex* pQuad, tU8* pEdge_at_bounds, tU8** pCorner, br_material* pMaterial, void* pPoly_array, void* pVertex_array);
+extern tSmashable_level* C2_HOOK_FASTCALL FUN_004ee290(tCar_spec* pCar, tPhysics_object* pCollision_info, br_vector3* pPos, br_vector3* pOptional_position, br_actor* pActor, undefined4 pArg6, tCar_crush_smashable_part* pSmashable, float pDamage, undefined4 pArg9, undefined4 pArg10);
+extern void C2_HOOK_CDECL BrMatrix23ApplyP(br_vector2* pA, const br_vector2* pB, const br_matrix23* pC);
+extern tNet_message* C2_HOOK_FASTCALL NetBuildGuaranteedMessage(tU8 pNet_message_type, int pOption);
+extern int C2_HOOK_FASTCALL NetGuaranteedSendMessageToAllPlayers(tNet_game_details* pDetails, tNet_message* pMessage, undefined4* pArg3);
+extern tNet_game_player_info* C2_HOOK_FASTCALL NetPlayerFromCar(tCar_spec* pCar);
+extern void C2_HOOK_FASTCALL WorkerShrapnelShower(int pArg3, tShrapnel_spec* pShrapnel, tU32 pSeed, undefined4 pArg6, const br_vector3* pPoint, const br_vector3* pSound_position, br_actor* pActor, tU32 pTime, undefined4 pArg11, br_matrix34* pTransform, br_bounds3* pBounds, br_vector3* pPosition, float pDistance, const br_vector3* pOffset, int pFlag);
+
+/* Forward declarations of the functions ported below. */
+void C2_HOOK_FASTCALL QueueNonCarCuboidActivation(br_actor* pActor, tNon_car_cuboid_activations* pActivations, void* pContext);
+void C2_HOOK_FASTCALL FUN_004edbe0(tSmashable_item_spec* pSpec, void* pObject, tShrapnel_side_effects* pSide_effects, undefined4 pArg16, float pDistance);
+void C2_HOOK_FASTCALL FUN_004f1030(tPhysics_object* pObject, int pMode, br_actor* pActor);
+int C2_HOOK_FASTCALL FUN_004f0d50(const float* pPoint, const float* pNormal, float pPlane_distance, const float* pVertex0, const float* pVertex1, const float* pVertex2);
+float C2_HOOK_FASTCALL FUN_004f18d0(tPhysics_object* pObject, br_material* pMaterial, br_actor* pActor, tSmashable_item_spec* pSpec, tSmashable_item_spec* pSpec2, tFace_ref* pFace, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pArg11, int pArg12, int* pFlag, int pNetwork);
+int C2_HOOK_FASTCALL FUN_004f4c70(tFace_ref* pFace, br_vector3* pPoint, tFace_ref* pOut, int pFlag);
+void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32 pTime, float pDelta_time);
+void C2_HOOK_FASTCALL SmashItIntoVerySmallPiecesIndeed(tPhysics_object* pObject, tSmashable_item_spec* pSpec, undefined4 pArg3, tConnotations* pConnotations, tU32 pSeed, undefined4 pArg6, const br_vector3* pPoint, const br_vector3* pSound_position, br_actor* pActor, tU32 pTime, undefined4 pArg11, br_matrix34* pTransform, br_bounds3* pBounds, br_vector3* pPosition, float pDistance, undefined4 pArg16, int pFlag);
+void C2_HOOK_FASTCALL FUN_004d9d00(tPhysics_object* pObject, int pMode);
+
+extern int gCrush_deferred;
+extern int gPed_dismemberfest;
+extern const double gConst_world_scale;
+extern const double gConst_2pi;
+extern int gINT_006a8290;
+extern int gINT_006a3334;
+extern int gExploding_pedestrians;
+extern int gImmortal_peds;
+extern int gGoreLevel;
+extern int gPed_severing_damage;
+extern int gPed_severing_chance;
+extern const int gPow2_array[32];
+extern int gFace_num__car;
+extern int gCapacity_track_smashables;
+extern tSmashable_item_spec* gSmashable_track_indexable_triggers[100];
+extern br_matrix34 gShrapnel_shower_matrix;
+extern br_vector3 gVector3_006a4688;
+extern tU32 gPHIL_last_physics_tick;
+extern float gFloat_0058aec4;
+extern double gDouble_0058aec8;
+
+/* Per-triangle uv -> position mapping (size 0x30), as used by FUN_004f36c0. */
+typedef struct {
+    float p0[3];
+    float uv0[2];
+    float uv_apex[2];
+    float m[4];
+    br_face* face;
+} tSmash_uv_triangle;
+
+/* Mapping info of a quad made of two triangles sharing the longest edge (size 0x84). */
+typedef struct {
+    int axis[3];
+    float plane[4];
+    float uv_delta1[2];
+    tSmash_uv_triangle tri[2];
+} tSmash_uv_map;
+
+/* Fields of the smashable environment spec that are not named in tSmashable_item_spec. */
+#define SMASH_SPEC_FACE_A(pSpec)    (*(br_face**)((tU8*)(pSpec) + 0x98))
+#define SMASH_SPEC_FACE_B(pSpec)    (*(br_face**)((tU8*)(pSpec) + 0x9c))
+#define SMASH_SPEC_FLAGS_A(pSpec)   (*((tU8*)(pSpec) + 0xa0))
+#define SMASH_SPEC_FLAGS_B(pSpec)   (*((tU8*)(pSpec) + 0xa1))
+
+/* Remember which edge of which face was cut (a spec keeps up to two faces). */
+static void SmashSpecRecordEdgeFace(tSmashable_item_spec* pSpec, br_face* pFace, tU8 pEdge_flag) {
+
+    if (SMASH_SPEC_FACE_A(pSpec) == pFace) {
+        SMASH_SPEC_FLAGS_A(pSpec) |= pEdge_flag;
+    } else if (SMASH_SPEC_FACE_B(pSpec) == pFace) {
+        SMASH_SPEC_FLAGS_B(pSpec) |= pEdge_flag;
+    }
+    if (SMASH_SPEC_FACE_A(pSpec) == NULL) {
+        SMASH_SPEC_FLAGS_A(pSpec) |= pEdge_flag;
+        SMASH_SPEC_FACE_A(pSpec) = pFace;
+    } else {
+        SMASH_SPEC_FLAGS_B(pSpec) |= pEdge_flag;
+        SMASH_SPEC_FACE_B(pSpec) = pFace;
+    }
+}
+
+/* Mark an edge of a face: directly when the level already exists, otherwise remember it in the spec. */
+static void SmashSpecMarkEdgeFace(tSmashable_item_spec* pSpec, int pAlready_marked, int pRecord, br_face* pFace, tU8 pEdge_flag) {
+
+    if (pAlready_marked) {
+        if (pFace != NULL) {
+            pFace->flags |= pEdge_flag;
+        }
+    } else if (pRecord) {
+        SmashSpecRecordEdgeFace(pSpec, pFace, pEdge_flag);
+    }
+}
+
+/* Apply the edge flags remembered in the spec to the faces. Returns 0 when nothing was remembered. */
+static int SmashSpecApplyRecordedEdgeFlags(tSmashable_item_spec* pSpec) {
+    br_face* face_a;
+    br_face* face_b;
+
+    face_a = SMASH_SPEC_FACE_A(pSpec);
+    face_b = SMASH_SPEC_FACE_B(pSpec);
+    if (face_a == NULL && face_b == NULL) {
+        return 0;
+    }
+    if (face_a != NULL) {
+        face_a->flags |= SMASH_SPEC_FLAGS_A(pSpec);
+    }
+    face_b = SMASH_SPEC_FACE_B(pSpec);
+    if (face_b != NULL) {
+        face_b->flags |= SMASH_SPEC_FLAGS_B(pSpec);
+    }
+    return 1;
+}
+
+/* Which edge flag to set for the cut edge. */
+static void SmashSpecMarkCutEdge(tSmashable_item_spec* pSpec, int pAlready_marked, int pRecord, int pEdge, br_face* pCurrent_face, br_face* pAdjacent_face) {
+
+    switch (pEdge) {
+    case 0:
+        SmashSpecMarkEdgeFace(pSpec, pAlready_marked, pRecord, pAdjacent_face, 4);
+        break;
+    case 1:
+        SmashSpecMarkEdgeFace(pSpec, pAlready_marked, pRecord, pCurrent_face, 1);
+        break;
+    case 2:
+        SmashSpecMarkEdgeFace(pSpec, pAlready_marked, pRecord, pCurrent_face, 2);
+        break;
+    case 3:
+        SmashSpecMarkEdgeFace(pSpec, pAlready_marked, pRecord, pAdjacent_face, 2);
+        break;
+    }
+}
+
+/* Reorder a triangle so that its two first vertices form the longest edge. */
+static void SmashOrderTriangleByLongestEdge(tU8** pCorner) {
+    float* v0;
+    float* v1;
+    float* v2;
+    tU8* swap;
+    float d01;
+    float d02;
+    float d12;
+
+    v0 = (float*)pCorner[0];
+    v1 = (float*)pCorner[1];
+    v2 = (float*)pCorner[2];
+    d01 = (v0[0] - v1[0]) * (v0[0] - v1[0]) + (v0[2] - v1[2]) * (v0[2] - v1[2]) + (v0[1] - v1[1]) * (v0[1] - v1[1]);
+    d02 = (v0[0] - v2[0]) * (v0[0] - v2[0]) + (v0[2] - v2[2]) * (v0[2] - v2[2]) + (v0[1] - v2[1]) * (v0[1] - v2[1]);
+    d12 = (v1[0] - v2[0]) * (v1[0] - v2[0]) + (v1[2] - v2[2]) * (v1[2] - v2[2]) + (v1[1] - v2[1]) * (v1[1] - v2[1]);
+    swap = pCorner[0];
+    if (d02 <= d01 || d02 <= d12) {
+        if (d01 < d12 && d02 < d12) {
+            pCorner[0] = pCorner[2];
+            pCorner[2] = swap;
+        }
+    } else {
+        swap = pCorner[1];
+        pCorner[1] = pCorner[2];
+        pCorner[2] = swap;
+    }
+}
+
+/* If the triangle contains both vertices of the edge (pIndex0, pIndex1), return its third vertex index, else -1. */
+static int SmashFindTriangleApex(const br_uint_16* pVertices, int pIndex0, int pIndex1) {
+    int a;
+    int b;
+    int c;
+
+    a = pVertices[0];
+    b = pVertices[1];
+    c = pVertices[2];
+    if ((a == pIndex0 && b == pIndex1) || (b == pIndex0 && a == pIndex1)) {
+        return c;
+    }
+    if ((a == pIndex0 && c == pIndex1) || (c == pIndex0 && a == pIndex1)) {
+        return b;
+    }
+    if ((b == pIndex0 && c == pIndex1) || (c == pIndex0 && b == pIndex1)) {
+        return a;
+    }
+    return -1;
+}
+
+/* the smash record this function builds and copies into gSmash_explosions[].what
+   (0x94 bytes: the original copies 0x25 dwords, not sizeof(tDelayed_smash)) */
+typedef struct {
+    br_vector3 velocity;
+    br_vector3 position;
+    tU32 time;
+    br_vector3 impulse;
+    tU8 field_0x28[0xc];
+    tSmashable_item_spec* spec;
+    tFace_ref face;
+    undefined4 type;
+    float scale;
+    void* object;
+} tSmash_record;
+
+struct tNet_stored_smash {
+    undefined4 field_0x0;
+    undefined4 field_0x4;
+    tU32 player;
+    br_scalar field_0xc;
+    br_vector3 field_0x10;
+    br_vector3 field_0x1c;
+    br_vector3 field_0x28;
+    undefined4 field_0x34;
+};
+
+/* defined in work-v4 27-powerup.c; that file is not ported in this branch yet */
+// GLOBAL: CARMA2_HW 0x0058abe0
+const double gConst_world_scale = 6.9;
+
+// GLOBAL: CARMA2_HW 0x0058abe8
+const double gConst_2pi = 6.283185307179586;
+
+// GLOBAL: CARMA2_HW 0x006a8294
+int gINT_006a8294 = 0;
+
+// GLOBAL: CARMA2_HW 0x006a8290
+int gINT_006a8290 = 0;
+
+// GLOBAL: CARMA2_HW 0x006a829c
+int gCount_shrapnel_shower_calls = 0;
+
+// GLOBAL: CARMA2_HW 0x0058aec0
+float gFloat_0058aec0 = 0.0f;
+
+// GLOBAL: CARMA2_HW 0x0058af38
+float gFloat_0058af38 = 0.33333334f;
+
+// GLOBAL: CARMA2_HW 0x006b9c60
+int gUnknown_006b9c60[100] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x0058aee8
+const double gDouble_0058aee8 = 0.001;
+
+// GLOBAL: CARMA2_HW 0x0058aef8
+const double gDOUBLE_0058aef8 = 0.1;
+
+// GLOBAL: CARMA2_HW 0x0058af20
+const float gFLOAT_0058af20 = -1.0f;
+
+// GLOBAL: CARMA2_HW 0x0058af88
+const double gDOUBLE_0058af88 = 0.5;
+
+// GLOBAL: CARMA2_HW 0x0058afa8
+const double gDOUBLE_0058afa8 = 0.01;
+
+// GLOBAL: CARMA2_HW 0x0058afb0
+float gFloat_0058afb0 = 0.25f;
+
 // GLOBAL: CARMA2_HW 0x006a8298
 // GLOBAL: CARMA2_SW 0x006a22f8
 int gAllow_material_adapt;
@@ -504,7 +782,103 @@ void C2_HOOK_FASTCALL DoPowerupRespawnSmash(br_actor* pActor) {
 
 // DoConnotationsMultiLevel
 
-// SmashItIntoVerySmallPiecesIndeed
+
+// (reference only)
+// PARTIAL 84.68%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004ed490
+void C2_HOOK_FASTCALL SmashItIntoVerySmallPiecesIndeed(tPhysics_object* pObject, tSmashable_item_spec* pSpec, undefined4 pArg3, tConnotations* pConnotations, tU32 pSeed, undefined4 pArg6, const br_vector3* pPoint, const br_vector3* pSound_position, br_actor* pActor, tU32 pTime, undefined4 pArg11, br_matrix34* pTransform, br_bounds3* pBounds, br_vector3* pPosition, float pDistance, undefined4 pArg16, int pFlag) {
+    int i;
+    tCar_spec* owner;
+    tSide_effects* side_effects;
+    tSpecial_effects_spec* special_effects;
+    tSmash_run_time_variable_change* variable_change;
+    int value;
+    extern float gFloat_0058aec0;
+
+    if (pConnotations->count_sounds != 0) {
+        DRS3StartSound3D(gCar_outlet, pConnotations->sounds[IRandomBetween(0, pConnotations->count_sounds - 1)], pSound_position, &gZero_v__car, 1, 255, IRandomBetween(0xe000, 0x12000), 0x10000);
+    }
+    if (pFlag == 0) {
+        side_effects = &pConnotations->side_effects;
+        if (side_effects->activations.count_activations != 0) {
+            QueueNonCarCuboidActivation(pActor, &side_effects->activations, pObject);
+        }
+        if (side_effects->side_effects.count_side_effects != 0) {
+            FUN_004edbe0(pSpec, pObject, &side_effects->side_effects, pArg16, pDistance);
+        }
+        if (side_effects->room_turn_on_code != 0
+                && pObject != NULL
+                && pObject->owner != NULL
+                && pObject->flags_0x238 == 1
+                && ((tCar_spec*)pObject->owner)->driver == eDriver_local_human) {
+            if (BR_SQR3(pObject->actor->t.t.translate.t.v[0] - pPoint->v[0], pObject->actor->t.t.translate.t.v[1] - pPoint->v[1], pObject->actor->t.t.translate.t.v[2] - pPoint->v[2]) < 2.0) {
+                FUN_004f1030(pObject, side_effects->room_turn_on_code, NULL);
+            }
+        }
+    }
+    for (i = 0; i < pConnotations->count_shrapnel; i++) {
+        WorkerShrapnelShower(pArg3, &pConnotations->shrapnel[i], pSeed, pArg6, pPoint, pSound_position, pActor, pTime, pArg11, pTransform, pBounds, pPosition, pDistance, (br_vector3*)&pObject->transform_matrix.m[3], pFlag);
+    }
+    if (pFlag == 0) {
+        owner = (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 == 1) ? (tCar_spec*)pObject->owner : NULL;
+        if ((owner != NULL
+                    && (pConnotations->award.frequency == kRepeatability_Repeated
+                        || (pConnotations->award.frequency == kRepeatability_SingleShot && *(int*)pConnotations->field_0x28c == 0))
+                    && owner->driver == eDriver_local_human)
+                || pConnotations->award.frequency == kRepeatability_DoItRegardless) {
+            *(int*)pConnotations->field_0x28c = 1;
+            if (pConnotations->award.field_0x4 > gFloat_0058aec0) {
+                EarnCredits((int)pConnotations->award.field_0x4);
+            } else {
+                float credits;
+                credits = -(pDistance * pConnotations->award.field_0x4);
+                if (credits >= 20000.0f) {
+                    credits = 20000.0f;
+                }
+                EarnCredits100((int)credits);
+            }
+            if (pConnotations->award.field_0x8 > gFloat_0058aec0) {
+                AwardTime((int)pConnotations->award.field_0x8);
+            } else {
+                float time;
+                time = -(pDistance * pConnotations->award.field_0x8);
+                if (time >= 60.0f) {
+                    time = 60.0f;
+                }
+                AwardTime5((int)time);
+            }
+            if (pConnotations->award.field_0xc != 0) {
+                NewTextHeadupSlot2(4, 0, 3000, -4, GetMiscString(pConnotations->award.field_0xc), 0);
+            }
+            if (pConnotations->award.field_0x10 != 0) {
+                DoFancyHeadup(pConnotations->award.field_0x10);
+            }
+        }
+    }
+    special_effects = &pConnotations->special_effects;
+    pDistance = gYon_squared;
+    if (gAction_replay_mode != 0 || PointOutOfSight(&pActor->t.t.translate.t, pDistance) == 0) {
+        if (special_effects->explosion_animation.count_groups != 0) {
+            Explode(&special_effects->explosion_animation, pActor, pBounds, NULL);
+        }
+    }
+    if (special_effects->slick.material != NULL) {
+        DoSpillage(&special_effects->slick, pActor);
+    }
+    variable_change = pConnotations->variable_changes.runtime_changes;
+    for (i = 0; i < pConnotations->variable_changes.count; i++, variable_change++) {
+        value = variable_change->field_0x0;
+        if (value != 9999) {
+            AccumulateRuntimeVariable((tU16)variable_change->field_0x2, value);
+        } else {
+            ToggleRuntimeVariable((tU16)variable_change->field_0x2);
+        }
+    }
+    if (gCurrent_race.race_spec->race_type >= kRaceType_Smash
+            && GetRuntimeVariable(gCurrent_race.race_spec->options.smash.var_smash_number) >= gCurrent_race.race_spec->options.smash.var_smash_target) {
+        RaceCompleted(eRace_over_3);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004ecfa0
 // FUNCTION: CARMA2_SW 0x004e8c70
@@ -1150,7 +1524,57 @@ void C2_HOOK_FASTCALL InitSmashing(void) {
 
 // VerySimpleRotate
 
-// DoFragMovement
+// PARTIAL: DoFragMovement - frame (0x20), prologue, matrix-pointer tail and branch layout match; the x87 scheduling of
+// the translate/omega block still differs (original keeps f_dt on the x87 stack, spills CSE temps at [esp+0x1c]/[esp+0x18]
+// and finishes the v[1] update before the omega loads). 'pos' doubles as the per-axis delta temporary.
+// (reference only)
+// (reference only)
+// PARTIAL 66.23%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004eff30
+void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32 pTime, float pDelta_time) {
+    extern float gFloat_0058aec0;
+    float f_dt;
+    double angle;
+    float omega;
+    br_vector3 pos;
+    br_vector3 axis;
+    br_matrix34* mat;
+
+    f_dt = pDelta_time * 0.001f;
+    if (f_dt != gFloat_0058aec0 && pFragment->field_0x34 == 0) {
+        pos.v[0] = pFragment->v.v[0] * f_dt;
+        pos.v[1] = pFragment->v.v[1] * f_dt - 4.9 * gGravity_multiplier * f_dt * f_dt;
+        pos.v[2] = pFragment->v.v[2] * f_dt;
+        pFragment->actor->t.t.translate.t.v[0] -= pos.v[0] * -0.14492753;
+        pFragment->actor->t.t.translate.t.v[1] -= pos.v[1] * -0.14492753;
+        pFragment->actor->t.t.translate.t.v[2] -= pos.v[2] * -0.14492753;
+        mat = &pFragment->actor->t.t.mat;
+        pos.v[1] = f_dt * gGravity_multiplier * 9.8;
+        pFragment->v.v[1] -= pos.v[1];
+        omega = BrVector3Length(&pFragment->omega);
+        axis.v[0] = pFragment->omega.v[0] / omega;
+        axis.v[1] = pFragment->omega.v[1] / omega;
+        axis.v[2] = pFragment->omega.v[2] / omega;
+        angle = omega * f_dt;
+        if (fabs(angle) >= 0.0001) {
+            pos.v[0] = mat->m[3][0];
+            pos.v[1] = mat->m[3][1];
+            pos.v[2] = mat->m[3][2];
+            mat->m[3][0] = 0.f;
+            mat->m[3][1] = 0.f;
+            mat->m[3][2] = 0.f;
+            BrMatrix34PostRotate(mat, BrRadianToAngle(angle), &axis);
+            mat->m[3][0] = pos.v[0];
+            mat->m[3][1] = pos.v[1];
+            mat->m[3][2] = pos.v[2];
+        }
+    }
+    if (pTime >= pFragment->field_0x10) {
+        pFragment->actor->render_style = BR_RSTYLE_NONE;
+    } else {
+        pFragment->actor->render_style = BR_RSTYLE_FACES;
+    }
+}
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
@@ -1791,9 +2215,59 @@ void C2_HOOK_FASTCALL ChangeSmashTexture(br_material* pMaterial, tCar_spec* pCar
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
 #endif
-// STUB: CARMA2_HW 0x004f6130
+// PARTIAL 42.31%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004f6130
 void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash) {
-    NOT_IMPLEMENTED();
+    tCar_spec* car;
+    tPhysics_object* pCollision;
+    br_vector3* pPoint;
+    tBounds bounds;
+    br_matrix34 matrix;
+    tFace_ref faces[20];
+    int car_id;
+    int count;
+    int i;
+
+    pCollision = NULL;
+    car_id = pSmash->field_0x8[0];
+    if (car_id != -1) {
+        if (gNet_mode == eNet_mode_none) {
+            if ((car_id & 0xffffff00) == 0) {
+                car = &gProgram_state.current_car;
+            } else {
+                car = GetCarSpec(car_id >> 8, car_id & 0xff);
+            }
+        } else if (car_id < gNumber_of_net_players) {
+            car = gNet_players[car_id].car;
+        } else {
+            car = NULL;
+        }
+        if (car != NULL) {
+            pCollision = car->collision_info;
+        }
+    }
+    if (pCollision != NULL) {
+        BrMatrix34Identity(&matrix);
+        bounds.mat = &matrix;
+        pPoint = (br_vector3*)&pSmash->field_0x8[2];
+        *(br_vector3*)matrix.m[3] = *pPoint;
+        BrVector3Set(&bounds.original_bounds.min, -0.05f, -0.05f, -0.05f);
+        BrVector3Set(&bounds.original_bounds.max, 0.05f, 0.05f, 0.05f);
+        FillInBounds(&bounds);
+        count = FindFacesInBox(&bounds, faces, 20, &gWorld_callbacks);
+        for (i = 0; i < count; i++) {
+            if (FUN_004f0d50((const float*)pPoint, (const float*)&faces[i].normal, faces[i].d, (const float*)&faces[i].v[0], (const float*)&faces[i].v[1], (const float*)&faces[i].v[2]) != 0) {
+                break;
+            }
+        }
+        if (i == count) {
+            return;
+        }
+        gINT_006a8294 = pSmash->field_0x8[11] & 1;
+        SmashEnvironment((tPhysics_object*)pPoint, (undefined4*)&faces[i], *(float*)&pSmash->field_0x8[1], (br_vector3*)pSmash, (br_vector3*)&pSmash->field_0x8[5], (br_vector3*)&pSmash->field_0x8[8], (pSmash->field_0x8[11] >> 1) & 1, 1);
+        FlushSmashQueue(0);
+        gINT_006a8294 = 0;
+    }
 }
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
@@ -1972,9 +2446,45 @@ void C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_effects* 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
 #endif
-// STUB: CARMA2_HW 0x004d9d00
+// (reference)
+// PARTIAL 94.50%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004d9d00
 void C2_HOOK_FASTCALL FUN_004d9d00(tPhysics_object* pObject, int pMode) {
-    NOT_IMPLEMENTED();
+    int previous_dismemberfest;
+
+    if ((pObject->field_0x1a0 & 0xf0000) != 0) {
+        if (!IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells()) {
+            return;
+        }
+        if ((((tU8*)((tPed_character_instance*)pObject->owner)->ped->character)[0x14] & 4) == 0 && gCrush_deferred == 0) {
+            SetThisPedPhysicing(((tPed_character_instance*)pObject->owner)->ped);
+        }
+        if (pMode != 0xe) {
+            pObject->v.v[0] = 0.0f;
+            pObject->v.v[1] = 0.0f;
+            pObject->v.v[2] = 0.0f;
+        }
+        pObject->v.v[1] = (float)((double)FRandomBetween(0.7f, 1.0f) / ((double)pObject->M * gConst_world_scale) + pObject->v.v[1]);
+        pObject->omega.v[2] = (float)((double)FRandomPosNeg(0.5f) * gConst_2pi / pObject->M + pObject->omega.v[2]);
+        pObject->omega.v[0] = (float)((double)FRandomPosNeg(0.5f) * gConst_2pi / pObject->M + pObject->omega.v[0]);
+        pObject->disable_move_rotate = 0;
+        previous_dismemberfest = gPed_dismemberfest;
+        gPed_dismemberfest = 1;
+        FUN_004cd640(((tPed_character_instance*)pObject->owner)->ped, 500, 0x61, 0x61, gProgram_state.current_car.collision_info);
+        gPed_dismemberfest = previous_dismemberfest;
+        return;
+    }
+    if (pObject != NULL && pObject->flags_0x238 == 0x10) {
+        pObject->v.v[1] = (float)((double)FRandomBetween(3.0f, 4.0f) / ((double)pObject->M * gConst_world_scale) + pObject->v.v[1]);
+        pObject->omega.v[2] = (float)((double)FRandomPosNeg(1.75f) * gConst_2pi / pObject->M + pObject->omega.v[2]);
+        pObject->omega.v[0] = (float)((double)FRandomPosNeg(1.75f) * gConst_2pi / pObject->M + pObject->omega.v[0]);
+        pObject->disable_move_rotate = 0;
+    } else {
+        pObject->v.v[1] = (float)((double)FRandomBetween(1.0f, 2.0f) / ((double)pObject->M * gConst_world_scale) + pObject->v.v[1]);
+        pObject->omega.v[2] = (float)((double)FRandomPosNeg(0.5f) * gConst_2pi / pObject->M + pObject->omega.v[2]);
+        pObject->omega.v[0] = (float)((double)FRandomPosNeg(0.5f) * gConst_2pi / pObject->M + pObject->omega.v[0]);
+        pObject->disable_move_rotate = 0;
+    }
 }
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
@@ -2088,4 +2598,1259 @@ void C2_HOOK_FASTCALL UpdateCrushTimers(void) {
         }
         smash++;
     }
+}
+
+
+// PARTIAL 69.15%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004cd640
+int C2_HOOK_FASTCALL FUN_004cd640(tPedestrian* pPed, int pSpeed, int pMove1, int pMove2, tPhysics_object* pCollision_info) {
+    int limit;
+    double a;
+    int move_time;
+    int count;
+    float time_left;
+
+    count = 0;
+    a = 0.068 / pPed->character->personality->form->simple_physicing[pPed->character->field_0x5].collision_info->M;
+    move_time = (int)(a * a * pSpeed);
+    if (pPed->character->personality->form->non_humanoid != 0 && (gPed_dismemberfest != 0 || gExploding_pedestrians != 0)) {
+        if (move_time < 100) {
+            move_time = 100;
+        }
+    }
+    time_left = (float)move_time;
+    if (pCollision_info != NULL && gImmortal_peds == 0 && gGoreLevel >= 2) {
+        while (1) {
+            if (gPed_dismemberfest != 0) {
+                limit = 5;
+            } else {
+                limit = gPed_severing_damage;
+            }
+            time_left = time_left - (float)limit;
+            if (time_left < 0.0f) {
+                break;
+            }
+            if (count >= 5) {
+                break;
+            }
+            if (gExploding_pedestrians == 0 && gPed_dismemberfest == 0) {
+                if (!PercentageChance(gPed_severing_chance)) {
+                    continue;
+                }
+            }
+            count += FUN_004cd9e0(pPed, IRandomBetween(1, pPed->character->personality->form->count_bones - 1));
+        }
+    }
+    if (count > 4) {
+        ((tU8*)pPed->field_0x0c)[0x2e] |= 2;
+    }
+    if (pPed->hit_points <= 0) {
+        if (move_time <= 2) {
+            return 1;
+        }
+        MakePedNoise(pPed, 5, 0, pCollision_info);
+        return 1;
+    }
+    if (pPed->character->personality->form->non_humanoid != 0 && pPed->character->field_0xc != 0) {
+        pPed->hit_points = 0;
+        move_time = 0;
+    }
+    if ((pPed->character->field_0xc & gPow2_array[pPed->character->personality->form->index_head_bone]) != 0) {
+        pPed->hit_points = 0;
+    } else if (move_time >= 100) {
+        pPed->hit_points = 0;
+    } else {
+        pPed->hit_points -= (tS8)move_time;
+    }
+    if (gImmortal_peds != 0) {
+        if (pPed->hit_points <= 0) {
+            pPed->hit_points = 1;
+        }
+    }
+    if (pPed->hit_points > 0) {
+        if (pMove1 >= 0) {
+            SetPedMove(pPed, pMove1, -1, 0, 1, GetTotalTime(), 5);
+        }
+        MakePedNoise(pPed, 4, 0, pCollision_info);
+        return 0;
+    }
+    if (pMove2 >= 0) {
+        SetPedMove(pPed, pMove2, -1, 0, 1, GetTotalTime(), 5);
+    }
+    MakePedNoise(pPed, 1, 0, pCollision_info);
+    KillPedestrian(pPed, pCollision_info);
+    return 1;
+}
+
+
+// PARTIAL 93.78%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004ed860
+void C2_HOOK_FASTCALL QueueNonCarCuboidActivation(br_actor* pActor, tNon_car_cuboid_activations* pActivations, void* pContext) {
+    tNon_car_search_context search;
+    tDelayed_non_car delayed;
+    br_bounds3 bounds;
+    br_matrix34* matrix;
+    tNon_car_cuboid_activation* activation;
+    int* pActive;
+    tU32 time;
+    tU32 min_column_x;
+    tU32 min_column_z;
+    tU32 max_column_x;
+    tU32 max_column_z;
+    int slot_index;
+    int column_x;
+    int column_z;
+    int axis;
+    int i;
+    int j;
+
+    time = GetTotalTime();
+    if (pActor == NULL || pActor->identifier == NULL || pActor->identifier[0] != '&') {
+        matrix = (br_matrix34*)((tU8*)pContext + 0x8c);
+    } else {
+        matrix = (br_matrix34*)((tU8*)pActor + 0x2c);
+    }
+    activation = pActivations->activations;
+    for (i = 0; i < pActivations->count_activations; i++, activation++) {
+        search.count = 0;
+        if (activation->field_0x4 == 1) {
+            bounds = activation->bounds;
+        } else {
+            BrMatrix34ApplyP(&bounds.min, &activation->bounds.min, matrix);
+            BrMatrix34ApplyP(&bounds.max, &activation->bounds.max, matrix);
+            for (axis = 0; axis < 3; axis++) {
+                if (bounds.min.v[axis] > bounds.max.v[axis]) {
+                    br_scalar value = bounds.min.v[axis];
+
+                    bounds.min.v[axis] = bounds.max.v[axis];
+                    bounds.max.v[axis] = value;
+                }
+            }
+        }
+        search.bounds = &bounds;
+        search.field_0x4 = (tU8)activation->field_0x8;
+        XZToColumnXZ((tU8*)&min_column_x, (tU8*)&min_column_z, bounds.min.v[0], bounds.min.v[2], &gProgram_state.track_spec);
+        XZToColumnXZ((tU8*)&max_column_x, (tU8*)&max_column_z, bounds.max.v[0], bounds.max.v[2], &gProgram_state.track_spec);
+        for (column_x = (int)(min_column_x & 0xff); column_x <= (int)(max_column_x & 0xff); column_x++) {
+            for (column_z = (int)(min_column_z & 0xff); column_z <= (int)(max_column_z & 0xff); column_z++) {
+                if (gProgram_state.track_spec.columns[column_z][column_x].actor_0x0 != NULL
+                    && DRActorEnumRecurse(gProgram_state.track_spec.columns[column_z][column_x].actor_0x0, FUN_004edb20, &search) != 0) {
+                    break;
+                }
+            }
+        }
+        delayed.field_0x0 = *(br_vector3*)((tU8*)pContext + 0x68);
+        delayed.field_0xc = *(br_vector3*)((tU8*)matrix + 0x24);
+        delayed.field_0x18 = (undefined4*)&activation->field_0x24;
+        delayed.count_actions = search.count;
+        for (j = 0; j < delayed.count_actions; j++) {
+            delayed.actor_time_actions[j].actor = search.actors[j];
+            delayed.actor_time_actions[j].time = time + IRandomBetween((tU16)activation->field_0x0, (tU16)activation->field_0x2);
+        }
+        pActive = &gSmash_explosions[0].active;
+        slot_index = 0;
+test_active:
+        if (*pActive == 0) {
+            goto have_free_slot;
+        }
+        pActive = (int*)((tU8*)pActive + sizeof(tSmash_explosion));
+        slot_index++;
+        if ((intptr_t)pActive < (intptr_t)&gSmash_explosions[REC2_ASIZE(gSmash_explosions)].active) {
+            goto test_active;
+        }
+        goto no_free_slot;
+have_free_slot:
+        gSmash_explosions[slot_index].type = 0;
+        gSmash_explosions[slot_index].active = (int)(intptr_t)pContext;
+        gSmash_explosions[slot_index].what.non_car = delayed;
+no_free_slot:
+        ;
+    }
+}
+
+
+// PARTIAL 55.76%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004edbe0
+void C2_HOOK_FASTCALL FUN_004edbe0(tSmashable_item_spec* pSpec, void* pObject, tShrapnel_side_effects* pSide_effects, undefined4 pArg16, float pDistance) {
+    tSmash_record record;
+    tBounds bounds;
+    tFace_ref face_list[400];
+    tSmash_side_effect* eff;
+    br_vector3 direction;
+    tSmashable_item_spec* volatile spec;
+    br_vector3 centroid;
+    tFace_ref* pFace;
+    br_actor* actor;
+    const char* identifier;
+    int side_effect_index;
+    int face_count;
+    int type;
+    int axis;
+    int slot_index;
+    int* pActive;
+    tU32 time;
+    tU32 random_time;
+    float offset_x;
+    float offset_y;
+    float offset_z;
+    float length;
+
+    time = GetTotalTime();
+    eff = pSide_effects->side_effects;
+    for (side_effect_index = 0; side_effect_index < pSide_effects->count_side_effects; side_effect_index++, eff++) {
+        if (eff->field_0x4 == 1) {
+            bounds.original_bounds = eff->bounds;
+        } else {
+            BrMatrix34ApplyP(&bounds.original_bounds.min, &eff->bounds.min, (br_matrix34*)((tU8*)pObject + 0x8c));
+            BrMatrix34ApplyP(&bounds.original_bounds.max, &eff->bounds.max, (br_matrix34*)((tU8*)pObject + 0x8c));
+            for (axis = 0; axis < 3; axis++) {
+                if (bounds.original_bounds.min.v[axis] > bounds.original_bounds.max.v[axis]) {
+                    br_scalar value = bounds.original_bounds.min.v[axis];
+
+                    bounds.original_bounds.min.v[axis] = bounds.original_bounds.max.v[axis];
+                    bounds.original_bounds.max.v[axis] = value;
+                }
+            }
+        }
+        bounds.mat = (br_matrix34*)((tU8*)gTrack_actor + 0x2c);
+        face_count = FindFacesInBox(&bounds, face_list, 400, NULL);
+        if (eff->field_0x44 == 0) {
+            direction.v[0] = direction.v[0] / pDistance;
+            direction.v[1] = direction.v[1] / pDistance;
+            direction.v[2] = direction.v[2] / pDistance;
+        }
+        if (face_count > 0) {
+            pFace = face_list;
+            do {
+                type = -1;
+                spec = NULL;
+                actor = NULL;
+                identifier = NULL;
+                if (pFace->material != NULL) {
+                    identifier = pFace->material->identifier;
+                }
+                if (identifier != NULL && strlen(identifier) == 0xb && identifier[5] == '|') {
+                    if (eff->field_0x28 == 0 || eff->field_0x28 == 1) {
+                        goto material_centroid;
+                    }
+                    if (eff->field_0x28 != 4) {
+                        goto next_face;
+                    }
+                    if (strcmp(identifier, eff->field_0x8) != 0) {
+                        goto next_face;
+                    }
+material_centroid:
+                    centroid.v[0] = (pFace->v[0].v[0] + pFace->v[1].v[0] + pFace->v[2].v[0]) * gFloat_0058af38;
+                    centroid.v[1] = (pFace->v[0].v[1] + pFace->v[1].v[1] + pFace->v[2].v[1]) * gFloat_0058af38;
+                    centroid.v[2] = (pFace->v[0].v[2] + pFace->v[2].v[2] + pFace->v[1].v[2]) * gFloat_0058af38;
+                    type = 0;
+                    spec = &gTrack_smashable_environment_specs[(tU8)identifier[6] - 1];
+                    goto check;
+                }
+                actor = pFace->a;
+                if (actor != NULL) {
+                    identifier = actor->identifier;
+                }
+                if (identifier == NULL) {
+                    goto check;
+                }
+                if (!((strlen(identifier) == 0xb && identifier[5] == '|') || ((tU8)identifier[1] == 0xa3))) {
+                    if (*identifier != '&') {
+                        goto check;
+                    }
+                    if (gUnknown_006b9c60[(tS8)identifier[2] + 10 * (tS8)identifier[1]] == 0) {
+                        goto check;
+                    }
+                }
+                if (*identifier == '&' && identifier[1] >= '0' && identifier[1] <= '9') {
+                    if (identifier[3] == '!') {
+                        goto next_face;
+                    }
+                    if (eff->field_0x28 == 0 || eff->field_0x28 == 3) {
+                        goto actor_centroid;
+                    }
+                    if (eff->field_0x28 != 6) {
+                        goto next_face;
+                    }
+                    if (identifier[1] != eff->field_0x8[1] || identifier[2] != eff->field_0x8[2]) {
+                        goto next_face;
+                    }
+                } else {
+                    if (eff->field_0x28 == 0 || eff->field_0x28 == 2) {
+                        goto actor_centroid;
+                    }
+                    if (eff->field_0x28 != 5) {
+                        goto next_face;
+                    }
+                    if (strcmp(identifier, eff->field_0x8) != 0) {
+                        goto next_face;
+                    }
+                }
+actor_centroid:
+                centroid.v[0] = *(br_scalar*)((tU8*)actor + 0x50);
+                centroid.v[1] = *(br_scalar*)((tU8*)actor + 0x54);
+                centroid.v[2] = *(br_scalar*)((tU8*)actor + 0x58);
+                type = 1;
+                spec = &gTrack_smashable_environment_specs[(tU8)identifier[6] - 1];
+check:
+                if (type == -1) {
+                    goto next_face;
+                }
+                pActive = (int*)&gSmash_explosions[0].what.smash.field_0x80;
+                do {
+                    if (*(pActive - 0x21) != 0 && *(pActive - 0x22) == 1) {
+                        if (type == 1 && *pActive == (int)(intptr_t)pFace->a) {
+                            spec = NULL;
+                            break;
+                        }
+                        if (type == 0 && *pActive == (int)(intptr_t)pFace->a
+                                && *(tS16*)((tU8*)pActive + 4) == pFace->g
+                                && *(tS16*)((tU8*)pActive + 6) == pFace->f) {
+                            spec = NULL;
+                            break;
+                        }
+                    }
+                    pActive += 0x32;
+                } while ((tU8*)pActive < (tU8*)&gSmash_explosions[REC2_ASIZE(gSmash_explosions)].what.smash.field_0x80);
+                if (spec != NULL && pFace->a != *(br_actor**)pObject) {
+                        record.velocity = *(br_vector3*)((tU8*)pObject + 0x68);
+                        random_time = IRandomBetween((tU16)eff->field_0x0, (tU16)eff->field_0x2);
+                        record.type = type;
+                        record.time = random_time + time;
+                        if (eff->field_0x44 == 1) {
+                            offset_x = *(br_scalar*)((tU8*)pObject + 0xb0) - centroid.v[0];
+                            offset_y = *(br_scalar*)((tU8*)pObject + 0xb4) - centroid.v[1];
+                            offset_z = *(br_scalar*)((tU8*)pObject + 0xb8) - centroid.v[2];
+                            length = sqrt(offset_x * offset_x + offset_y * offset_y + offset_z * offset_z);
+                            if (length <= gFloat_0058aec4) {
+                                direction.v[0] = 1.0f;
+                                direction.v[1] = 0.0f;
+                                direction.v[2] = 0.0f;
+                            } else {
+                                direction.v[0] = offset_x * (gDouble_0058aec8 / length);
+                                direction.v[1] = offset_y * (gDouble_0058aec8 / length);
+                                direction.v[2] = offset_z * (gDouble_0058aec8 / length);
+                            }
+                        } else if (eff->field_0x44 == 2) {
+                            offset_x = centroid.v[0] - *(br_scalar*)((tU8*)pObject + 0xb0);
+                            offset_y = centroid.v[1] - *(br_scalar*)((tU8*)pObject + 0xb4);
+                            offset_z = centroid.v[2] - *(br_scalar*)((tU8*)pObject + 0xb8);
+                            length = sqrt(offset_x * offset_x + offset_y * offset_y + offset_z * offset_z);
+                            if (length <= gFloat_0058aec4) {
+                                direction.v[0] = 1.0f;
+                                direction.v[1] = 0.0f;
+                                direction.v[2] = 0.0f;
+                            } else {
+                                direction.v[0] = offset_x * (gDouble_0058aec8 / length);
+                                direction.v[1] = offset_y * (gDouble_0058aec8 / length);
+                                direction.v[2] = offset_z * (gDouble_0058aec8 / length);
+                            }
+                        }
+                        if (eff->field_0x48 < gFloat_0058aec0) {
+                            record.scale = -(pDistance * eff->field_0x48);
+                            record.impulse.v[0] = direction.v[0] * record.scale;
+                            record.impulse.v[1] = direction.v[1] * record.scale;
+                            record.impulse.v[2] = direction.v[2] * record.scale;
+                        } else {
+                            record.impulse.v[0] = eff->field_0x48 * direction.v[0];
+                            record.impulse.v[1] = eff->field_0x48 * direction.v[1];
+                            record.impulse.v[2] = eff->field_0x48 * direction.v[2];
+                            record.scale = eff->field_0x48;
+                        }
+                        record.position = centroid;
+                        record.spec = spec;
+                        record.face = *pFace;
+                        record.object = pObject;
+                        pActive = &gSmash_explosions[0].active;
+                        for (slot_index = 0; *pActive != 0; slot_index++) {
+                            pActive = (int*)((tU8*)pActive + sizeof(tSmash_explosion));
+                            if ((tU8*)pActive >= (tU8*)&gSmash_explosions[REC2_ASIZE(gSmash_explosions)].active) {
+                                break;
+                            }
+                        }
+                        if (slot_index < (int)REC2_ASIZE(gSmash_explosions)) {
+                            gSmash_explosions[slot_index].type = 1;
+                            gSmash_explosions[slot_index].active = (int)(intptr_t)pObject;
+                            *(tSmash_record*)&gSmash_explosions[slot_index].what.smash = record;
+                        }
+                    }
+next_face:
+                pFace++;
+            } while (--face_count != 0);
+        }
+    }
+}
+
+// PARTIAL 52.20%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004f0d50
+int C2_HOOK_FASTCALL FUN_004f0d50(const float* pPoint, const float* pNormal, float pPlane_distance, const float* pVertex0, const float* pVertex1, const float* pVertex2) {
+    float local_c[3];
+    float a, b, c, d, e, f, g, h, denom, u, v;
+    int axis;
+    int i8;
+    int i11;
+
+    f = (pNormal[0] * pPoint[0] + (pNormal[1] * pPoint[1] + pNormal[2] * pPoint[2])) - pPlane_distance;
+    if (fabs(f) > 0.5) {
+        return 0;
+    }
+    f = -f;
+    local_c[0] = pNormal[0] * f + pPoint[0];
+    local_c[1] = pNormal[1] * f + pPoint[1];
+    local_c[2] = pNormal[2] * f + pPoint[2];
+    axis = 0;
+    if (fabs(pNormal[0]) < fabs(pNormal[1])) {
+        axis = 1;
+    }
+    if (fabs(pNormal[axis]) < fabs(pNormal[2])) {
+        axis = 2;
+    }
+    switch (axis) {
+    case 0:
+        i8 = 1;
+        i11 = 2;
+        break;
+    case 1:
+        i8 = 0;
+        i11 = 2;
+        break;
+    case 2:
+        i8 = 0;
+        i11 = 1;
+        break;
+    }
+    a = pVertex0[i8];
+    b = pVertex1[i8] - a;
+    c = pVertex0[i11];
+    d = pVertex1[i11] - c;
+    e = pVertex2[i11] - c;
+    f = pVertex2[i8] - a;
+    g = local_c[i8] - a;
+    h = local_c[i11] - c;
+    if (fabs(b) > 2.3841858e-07) {
+        denom = e * b - d * f;
+        if (denom == 0.0f) {
+            return 0;
+        }
+        u = (h * b - d * g) / denom;
+        v = (g - u * f) / b;
+    } else {
+        u = g / f;
+        v = (h - u * e) / d;
+    }
+    if (v >= -0.0001 && u >= -0.0001 && u + v <= 1.0001) {
+        return 1;
+    }
+    return 0;
+}
+
+// PARTIAL 20.08%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004f18d0
+float C2_HOOK_FASTCALL FUN_004f18d0(tPhysics_object* pObject, br_material* pMaterial, br_actor* pActor, tSmashable_item_spec* pSpec, tSmashable_item_spec* pSpec2, tFace_ref* pFace, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pArg11, int pArg12, int* pFlag, int pNetwork) {
+    int tri_verts[8] = { 0, 0, 1, 2, 2, 1, 3, 3 };
+    tSmash_uv_map mapinfo;
+    tFace_ref replacement_face_ref;
+    tFace_ref neighbour_face_ref;
+    tFace_ref* face_ref;
+    tSmashable_item_spec* spec;
+    tSmashable_item_spec* candidate;
+    tSmashable_level* level;
+    br_actor* level_actor;
+    br_actor* child_actor;
+    br_model* model;
+    br_vertex* child_vertices;
+    br_vertex* corner[4];
+    float* p0;
+    float* p1;
+    float* p2;
+    float* p3;
+    br_face* faces;
+    br_face* current_face;
+    br_face* adjacent_face;
+    br_vector2 uv[4];
+    br_vertex quad[4];
+    br_vector3 contact;
+    br_vector3 nudged;
+    br_vector3 mid;
+    br_vector3 opposite;
+    float plane[4];
+    float e1[3];
+    float e2[3];
+    float e3[3];
+    float result;
+    float dist;
+    float abs_x;
+    float abs_y;
+    float abs_z;
+    float du1;
+    float dv1;
+    float du2;
+    float dv2;
+    float du3;
+    float dv3;
+    float det;
+    float neg_det;
+    float delta_a;
+    float delta_b;
+    float v_hit;
+    float u_floor;
+    float v_floor;
+    float u_ceil;
+    float v_ceil;
+    float u_min;
+    float v_min;
+    float u_max;
+    float v_max;
+    float u_center;
+    float v_center;
+    double u_hit;
+    tU8 edge_cut[4];
+    tU8 edge_at_bounds[4];
+    int depth;
+    int already_marked;
+    int use_bounds;
+    int num_faces;
+    int idx0;
+    int idx1;
+    int apex;
+    int axis_a;
+    int axis_b;
+    int axis_c;
+    int found;
+    int opposite_edge;
+    int a;
+    int b;
+    int n;
+    int k;
+    int i;
+    int dummy_flag;
+
+    face_ref = pFace;
+    result = -1.0f;
+    already_marked = 0;
+    *pFlag = 0;
+    depth = gINT_006a8290;
+    gINT_006a8290 = depth + 1;
+    if (depth >= 0x10
+            || (pSpec2->mode == kSmashableMode_Decal) == ((pActor->model->flags >> 7) & 1)
+            || gCount_track_smashable_environment_specs >= gCapacity_track_smashables
+            || pSpec2->mode_data.texture_change.count_levels <= 1
+            || pMagnitude < gDOUBLE_0058aef8
+            || pSpec2->mode_data.texture_change.count_levels - 1 <= (int)pSpec2->mode_data.texture_change.field_0x4c) {
+        return result;
+    }
+
+    dist = DistanceFromFace(pPosition, face_ref);
+    contact.v[0] = face_ref->normal.v[0] * -dist + pPosition->v[0];
+    contact.v[1] = face_ref->normal.v[1] * -dist + pPosition->v[1];
+    contact.v[2] = face_ref->normal.v[2] * -dist + pPosition->v[2];
+
+    if (pArg11 < 0 && pSpec->field_0x2d8 != 0 && pSpec->mode == kSmashableMode_TextureChange) {
+        if (!FUN_004f4c70(face_ref, &contact, &replacement_face_ref, 1)) {
+            return gFLOAT_0058af20;
+        }
+        pMaterial = replacement_face_ref.material;
+        face_ref = &replacement_face_ref;
+        pSpec = &gTrack_smashable_environment_specs[(tU8)replacement_face_ref.material->identifier[6] - 1];
+        pSpec2 = pSpec;
+        pArg12 = (pSpec2->field_0x2dc == 0);
+    }
+
+    use_bounds = ((tSmashable_level*)pSpec2->mode_data.texture_change.levels)[1].flags & 2;
+    model = face_ref->a->model;
+    current_face = NULL;
+    adjacent_face = NULL;
+
+    if (face_ref->g < 0) {
+        faces = model->faces;
+        current_face = &faces[(tU16)face_ref->f];
+        num_faces = model->nfaces;
+        for (k = 0; k < 3; k++) {
+            corner[k] = &model->vertices[current_face->vertices[k]];
+        }
+        SmashOrderTriangleByLongestEdge((tU8**)corner);
+        idx0 = corner[0] - model->vertices;
+        idx1 = corner[1] - model->vertices;
+        apex = -1;
+        for (n = 0; n < num_faces; n++) {
+            br_face* candidate_face;
+
+            candidate_face = &faces[n];
+            if (candidate_face == current_face) {
+                continue;
+            }
+            if (current_face->material != candidate_face->material) {
+                continue;
+            }
+            apex = SmashFindTriangleApex(candidate_face->vertices, idx0, idx1);
+            if (apex >= 0) {
+                adjacent_face = candidate_face;
+                break;
+            }
+        }
+        if (n >= num_faces) {
+            return gFLOAT_0058af20;
+        }
+        corner[3] = &model->vertices[apex];
+        plane[0] = current_face->n.v[0];
+        plane[1] = current_face->n.v[1];
+        plane[2] = current_face->n.v[2];
+        plane[3] = current_face->d;
+        p0 = (float*)corner[0];
+        p1 = (float*)corner[1];
+        p2 = (float*)corner[2];
+        p3 = (float*)corner[3];
+        for (k = 0; k < 4; k++) {
+            BrMatrix23ApplyP(&uv[k], &corner[k]->map, &face_ref->material->map_transform);
+        }
+    } else {
+        v11group* group;
+        v11face* group_faces;
+        v11face* current_group_face;
+        fmt_vertex* corner2[4];
+
+        group = &model->prepared->groups[face_ref->g];
+        group_faces = group->faces;
+        current_group_face = &group_faces[(tU16)face_ref->f];
+        num_faces = group->nfaces;
+        for (k = 0; k < 3; k++) {
+            corner2[k] = &group->vertices[current_group_face->vertices[k]];
+        }
+        SmashOrderTriangleByLongestEdge((tU8**)corner2);
+        idx0 = corner2[0] - group->vertices;
+        idx1 = corner2[1] - group->vertices;
+        apex = -1;
+        for (n = 0; n < num_faces; n++) {
+            if (&group_faces[n] == current_group_face) {
+                continue;
+            }
+            apex = SmashFindTriangleApex(group_faces[n].vertices, idx0, idx1);
+            if (apex >= 0) {
+                break;
+            }
+        }
+        if (n >= num_faces) {
+            return gFLOAT_0058af20;
+        }
+        corner2[3] = &group->vertices[apex];
+        plane[0] = current_group_face->eqn.v[0];
+        plane[1] = current_group_face->eqn.v[1];
+        plane[2] = current_group_face->eqn.v[2];
+        plane[3] = current_group_face->eqn.v[3];
+        p0 = (float*)corner2[0];
+        p1 = (float*)corner2[1];
+        p2 = (float*)corner2[2];
+        p3 = (float*)corner2[3];
+        for (k = 0; k < 4; k++) {
+            BrMatrix23ApplyP(&uv[k], &corner2[k]->map, &face_ref->material->map_transform);
+        }
+    }
+
+    abs_x = fabs(face_ref->normal.v[0]);
+    abs_y = fabs(face_ref->normal.v[1]);
+    abs_z = fabs(face_ref->normal.v[2]);
+    if (abs_x > abs_y && abs_x > abs_z) {
+        axis_a = 2;
+        axis_b = 1;
+        axis_c = 0;
+    } else if (abs_y > abs_x && abs_y > abs_z) {
+        axis_a = 0;
+        axis_b = 2;
+        axis_c = 1;
+    } else {
+        axis_a = 0;
+        axis_b = 1;
+        axis_c = 2;
+    }
+
+    e1[0] = p1[0] - p0[0];
+    e1[1] = p1[1] - p0[1];
+    e1[2] = p1[2] - p0[2];
+    e2[0] = p2[0] - p0[0];
+    e2[1] = p2[1] - p0[1];
+    e2[2] = p2[2] - p0[2];
+    du1 = uv[1].v[0] - uv[0].v[0];
+    dv1 = uv[1].v[1] - uv[0].v[1];
+    du2 = uv[2].v[0] - uv[0].v[0];
+    dv2 = uv[2].v[1] - uv[0].v[1];
+
+    mapinfo.axis[0] = axis_a;
+    mapinfo.axis[1] = axis_b;
+    mapinfo.axis[2] = axis_c;
+    mapinfo.plane[0] = plane[0];
+    mapinfo.plane[1] = plane[1];
+    mapinfo.plane[2] = plane[2];
+    mapinfo.plane[3] = plane[3];
+    mapinfo.uv_delta1[0] = du1;
+    mapinfo.uv_delta1[1] = dv1;
+
+    det = e1[axis_a] * e2[axis_b] - e1[axis_b] * e2[axis_a];
+    neg_det = e1[axis_b] * e2[axis_a] - e1[axis_a] * e2[axis_b];
+    mapinfo.tri[0].p0[0] = p0[0];
+    mapinfo.tri[0].p0[1] = p0[1];
+    mapinfo.tri[0].p0[2] = p0[2];
+    mapinfo.tri[0].uv0[0] = uv[0].v[0];
+    mapinfo.tri[0].uv0[1] = uv[0].v[1];
+    mapinfo.tri[0].uv_apex[0] = uv[2].v[0];
+    mapinfo.tri[0].uv_apex[1] = uv[2].v[1];
+    mapinfo.tri[0].m[0] = (e2[axis_b] * du1 - e1[axis_b] * du2) / det;
+    mapinfo.tri[0].m[1] = (e2[axis_a] * du1 - e1[axis_a] * du2) / neg_det;
+    mapinfo.tri[0].m[2] = (e2[axis_b] * dv1 - e1[axis_b] * dv2) / det;
+    mapinfo.tri[0].m[3] = (e2[axis_a] * dv1 - e1[axis_a] * dv2) / neg_det;
+    mapinfo.tri[0].face = current_face;
+
+    e3[0] = p3[0] - p0[0];
+    e3[1] = p3[1] - p0[1];
+    e3[2] = p3[2] - p0[2];
+    du3 = uv[3].v[0] - uv[0].v[0];
+    dv3 = uv[3].v[1] - uv[0].v[1];
+    det = e1[axis_a] * e3[axis_b] - e1[axis_b] * e3[axis_a];
+    neg_det = e1[axis_b] * e3[axis_a] - e1[axis_a] * e3[axis_b];
+    mapinfo.tri[1].p0[0] = p0[0];
+    mapinfo.tri[1].p0[1] = p0[1];
+    mapinfo.tri[1].p0[2] = p0[2];
+    mapinfo.tri[1].uv0[0] = uv[0].v[0];
+    mapinfo.tri[1].uv0[1] = uv[0].v[1];
+    mapinfo.tri[1].uv_apex[0] = uv[3].v[0];
+    mapinfo.tri[1].uv_apex[1] = uv[3].v[1];
+    mapinfo.tri[1].m[0] = (e3[axis_b] * du1 - e1[axis_b] * du3) / det;
+    mapinfo.tri[1].m[1] = (e3[axis_a] * du1 - e1[axis_a] * du3) / neg_det;
+    mapinfo.tri[1].m[2] = (e3[axis_b] * dv1 - e1[axis_b] * dv3) / det;
+    mapinfo.tri[1].m[3] = (e3[axis_a] * dv1 - e1[axis_a] * dv3) / neg_det;
+    mapinfo.tri[1].face = adjacent_face;
+
+    if (uv[3].v[0] == uv[2].v[0] && uv[3].v[1] == uv[2].v[1]) {
+        return gFLOAT_0058af20;
+    }
+
+    delta_a = contact.v[axis_a] - mapinfo.tri[0].p0[axis_a];
+    delta_b = contact.v[axis_b] - mapinfo.tri[0].p0[axis_b];
+    u_hit = mapinfo.tri[0].m[0] * delta_a + mapinfo.tri[0].m[1] * delta_b + uv[0].v[0];
+    v_hit = mapinfo.tri[0].m[2] * delta_a + mapinfo.tri[0].m[3] * delta_b + uv[0].v[1];
+    u_floor = (float)floor(u_hit);
+    v_floor = (float)floor((double)v_hit);
+    u_ceil = (float)ceil(u_hit);
+    v_ceil = (float)ceil((double)v_hit);
+
+    u_min = uv[0].v[0];
+    v_min = uv[0].v[1];
+    u_max = uv[0].v[0];
+    v_max = uv[0].v[1];
+    for (k = 1; k < 4; k++) {
+        if (uv[k].v[0] < u_min) {
+            u_min = uv[k].v[0];
+        }
+        if (uv[k].v[1] < v_min) {
+            v_min = uv[k].v[1];
+        }
+        if (uv[k].v[0] > u_max) {
+            u_max = uv[k].v[0];
+        }
+        if (v_max < uv[k].v[1]) {
+            v_max = uv[k].v[1];
+        }
+    }
+    if (use_bounds) {
+        u_floor = u_min;
+        v_floor = v_min;
+        u_ceil = u_max;
+        v_ceil = v_max;
+    }
+
+    edge_cut[0] = 0;
+    edge_cut[1] = 0;
+    edge_cut[2] = 0;
+    edge_cut[3] = 0;
+    edge_at_bounds[0] = 0;
+    edge_at_bounds[1] = 0;
+    edge_at_bounds[2] = 0;
+    edge_at_bounds[3] = 0;
+    if (fabs(u_floor - u_min) < gDOUBLE_0058afa8) {
+        edge_at_bounds[0] = 1;
+        u_floor = u_min;
+    } else if (u_floor < u_min) {
+        edge_at_bounds[0] = 1;
+        u_floor = u_min;
+        edge_cut[0] = 1;
+    }
+    if (fabs(v_floor - v_min) < gDOUBLE_0058afa8) {
+        edge_at_bounds[1] = 1;
+        v_floor = v_min;
+    } else if (v_floor < v_min) {
+        edge_at_bounds[1] = 1;
+        v_floor = v_min;
+        edge_cut[1] = 1;
+    }
+    if (fabs(u_ceil - u_max) < gDOUBLE_0058afa8) {
+        edge_at_bounds[2] = 1;
+        u_ceil = u_max;
+    } else if (u_ceil > u_max) {
+        edge_at_bounds[2] = 1;
+        u_ceil = u_max;
+        edge_cut[2] = 1;
+    }
+    if (fabs(v_ceil - v_max) < gDOUBLE_0058afa8) {
+        edge_at_bounds[3] = 1;
+        v_ceil = v_max;
+    } else if (v_ceil > v_max) {
+        edge_at_bounds[3] = 1;
+        v_ceil = v_max;
+        edge_cut[3] = 1;
+    }
+    if (u_floor == u_ceil || v_floor == v_ceil) {
+        return gFLOAT_0058af20;
+    }
+
+    quad[0].map.v[0] = u_floor;
+    quad[0].map.v[1] = v_floor;
+    quad[1].map.v[0] = u_ceil;
+    quad[1].map.v[1] = v_floor;
+    quad[2].map.v[0] = u_floor;
+    quad[2].map.v[1] = v_ceil;
+    quad[3].map.v[0] = u_ceil;
+    quad[3].map.v[1] = v_ceil;
+    for (k = 0; k < 4; k++) {
+        quad[k].n.v[0] = face_ref->normal.v[0];
+        quad[k].n.v[1] = face_ref->normal.v[1];
+        quad[k].n.v[2] = face_ref->normal.v[2];
+        quad[k].red = 0xff;
+        quad[k].grn = 0xff;
+        quad[k].blu = 0xff;
+    }
+    for (k = 0; k < 4; k++) {
+        FUN_004f36c0(&mapinfo, &quad[k].map, &quad[k].p);
+    }
+
+    u_center = (quad[3].map.v[0] + quad[2].map.v[0] + quad[1].map.v[0] + quad[0].map.v[0]) * gFloat_0058afb0;
+    v_center = (quad[3].map.v[1] + quad[2].map.v[1] + quad[1].map.v[1] + quad[0].map.v[1]) * gFloat_0058afb0;
+    for (k = 0; k < 4; k++) {
+        i = (u_center <= quad[k].map.v[0]);
+        if (v_center < quad[k].map.v[1]) {
+            i |= 2;
+        }
+        gShrapnel_shower_matrix.m[i][0] = quad[k].p.v[0];
+        gShrapnel_shower_matrix.m[i][1] = quad[k].p.v[1];
+        gShrapnel_shower_matrix.m[i][2] = quad[k].p.v[2];
+    }
+    gVector3_006a4688.v[0] = mapinfo.plane[0];
+    gVector3_006a4688.v[1] = mapinfo.plane[1];
+    gVector3_006a4688.v[2] = mapinfo.plane[2];
+    gINT_006a3334 = 1;
+
+    spec = pSpec2;
+    level_actor = pActor;
+    if (pSpec2->field_0x2dc == 0) {
+        found = 0;
+        for (candidate = (tSmashable_item_spec*)pSpec->field_0x2d8; candidate != NULL && !found; candidate = (tSmashable_item_spec*)candidate->field_0x2d8) {
+            child_actor = (br_actor*)candidate->field_0x2d4;
+            if (child_actor != NULL) {
+                child_vertices = child_actor->model->vertices;
+                for (k = 0; k < 4; k++) {
+                    if (fabs(child_vertices[k].p.v[0] - quad[k].p.v[0]) >= gDOUBLE_0058afa8
+                            || fabs(child_vertices[k].p.v[1] - quad[k].p.v[1]) >= gDOUBLE_0058afa8
+                            || fabs(child_vertices[k].p.v[2] - quad[k].p.v[2]) >= gDOUBLE_0058afa8) {
+                        break;
+                    }
+                }
+                if (k == 4) {
+                    pSpec2 = candidate;
+                    level_actor = child_actor;
+                    found = 1;
+                }
+            }
+        }
+        spec = pSpec2;
+
+        if (!found && (spec->flags & 0x80000000) == 0) {
+            tSmashable_item_spec* clone;
+            tSmashable_level* levels;
+            int levels_size;
+
+            clone = &gTrack_smashable_environment_specs[gCount_track_smashable_environment_specs];
+            memcpy(clone, spec, sizeof(tSmashable_item_spec));
+            if (spec->trigger_type != (tSmashable_trigger_type)-1
+                    && (spec->mode == kSmashableMode_Decal || spec->mode == kSmashableMode_TextureChange)
+                    && spec->mode_data.texture_change.levels != NULL) {
+                levels_size = spec->mode_data.texture_change.count_levels * sizeof(tSmashable_level);
+                levels = BrMemAllocate(levels_size, kMem_cloned_block);
+                memcpy(levels, spec->mode_data.texture_change.levels, levels_size);
+                clone->mode_data.texture_change.levels = levels;
+            }
+            if (clone->trigger_object.material != NULL) {
+                clone->trigger_object.material = DRMaterialClone(clone->trigger_object.material, 0);
+                clone->trigger_object.material->identifier = BrResStrDup(clone->trigger_object.material, spec->trigger_object.material->identifier);
+                clone->mode_data.texture_change.trigger.material = clone->trigger_object.material;
+                clone->flags |= 0x80000000;
+                SplondificatalizeIdentifier((br_actor*)clone->trigger_object.material, &clone->trigger_object.material->identifier, (int)(clone - gTrack_smashable_environment_specs));
+            }
+
+            gCount_track_smashable_environment_specs++;
+            clone->mode_data.texture_change.field_0x74 = 2;
+            clone->mode_data.texture_change.field_0x78 = (void*)(uintptr_t)BrMemAllocate(12, kMem_smash_poly_array);
+            clone->mode_data.texture_change.field_0x6c = 4;
+            clone->mode_data.texture_change.field_0x70 = (void*)(uintptr_t)BrMemAllocate(8, kMem_smash_vertex_array);
+            SMASH_SPEC_FACE_A(clone) = NULL;
+            SMASH_SPEC_FACE_B(clone) = NULL;
+            clone->field_0x2dc = 1;
+            FogAccordingToGPSCDE(clone->trigger_object.material);
+
+            if (clone->mode == kSmashableMode_Decal) {
+                level_actor = FUN_004f3820(face_ref, quad, clone->trigger_object.material, clone->mode_data.texture_change.field_0x78, clone->mode_data.texture_change.field_0x70);
+                clone->field_0x2d4 = (undefined4)(uintptr_t)level_actor;
+            } else {
+                if (!FUN_004f39a0(&mapinfo, face_ref->a, quad, edge_at_bounds, (tU8**)corner, clone->trigger_object.material, clone->mode_data.texture_change.field_0x78, clone->mode_data.texture_change.field_0x70)) {
+                    FreeEnvSmash(clone);
+                    gCount_track_smashable_environment_specs--;
+                    return gFLOAT_0058af20;
+                }
+                pObject->box_face_ref = (tU16)(gFace_num__car - 2);
+                pObject->box_face_start = 0;
+                pObject->box_face_end = 0;
+            }
+            clone->field_0x2d8 = spec->field_0x2d8;
+            spec->field_0x2d8 = (undefined4)(uintptr_t)clone;
+            spec = clone;
+        }
+    }
+
+    level = FUN_004ee290(NULL, pObject, &contact, pForce, level_actor, (undefined4)(uintptr_t)pSpec,
+        (void*)&spec->mode_data, pMagnitude, spec->mode != kSmashableMode_Decal, pNetwork);
+    already_marked = (level != NULL && level->collision_type == kTextureLevelCollisionChange_Edges);
+    if (level != NULL && (level->collision_type == kTextureLevelCollisionChange_PassThrough
+            || level->collision_type == kTextureLevelCollisionChange_Edges)) {
+        result = level->trigger_threshold;
+    }
+    *pFlag = 1;
+
+    if (pArg11 >= 0) {
+        if (already_marked && SmashSpecApplyRecordedEdgeFlags(spec)) {
+            /* the recorded flags were applied to the faces */
+        } else if (pArg11 <= 3) {
+            SmashSpecMarkCutEdge(spec, already_marked, pArg12, pArg11, current_face, adjacent_face);
+        }
+    }
+
+    for (i = 0; i < 4; i++) {
+        if (i == pArg11 || !edge_cut[i]) {
+            continue;
+        }
+        a = tri_verts[i];
+        b = tri_verts[i + 4];
+        mid.v[0] = (float)((quad[a].p.v[0] + quad[b].p.v[0]) * gDOUBLE_0058af88);
+        mid.v[1] = (float)((quad[a].p.v[1] + quad[b].p.v[1]) * gDOUBLE_0058af88);
+        mid.v[2] = (float)((quad[a].p.v[2] + quad[b].p.v[2]) * gDOUBLE_0058af88);
+        opposite_edge = (i + 2) & 3;
+        a = tri_verts[opposite_edge];
+        b = tri_verts[opposite_edge + 4];
+        opposite.v[0] = (float)((quad[a].p.v[0] + quad[b].p.v[0]) * gDOUBLE_0058af88);
+        opposite.v[1] = (float)((quad[a].p.v[1] + quad[b].p.v[1]) * gDOUBLE_0058af88);
+        opposite.v[2] = (float)((quad[a].p.v[2] + quad[b].p.v[2]) * gDOUBLE_0058af88);
+        nudged.v[0] = (float)((mid.v[0] - opposite.v[0]) * gDouble_0058aee8 + mid.v[0]);
+        nudged.v[1] = (float)((mid.v[1] - opposite.v[1]) * gDouble_0058aee8 + mid.v[1]);
+        nudged.v[2] = (float)((mid.v[2] - opposite.v[2]) * gDouble_0058aee8 + mid.v[2]);
+
+        if (!FUN_004f4c70(face_ref, &nudged, &neighbour_face_ref, 0)) {
+            continue;
+        }
+        if (already_marked) {
+            if (!SmashSpecApplyRecordedEdgeFlags(spec)) {
+                SmashSpecMarkCutEdge(spec, already_marked, pArg12, i, current_face, adjacent_face);
+            }
+        } else {
+            SmashSpecMarkCutEdge(spec, already_marked, pArg12, i, current_face, adjacent_face);
+        }
+        if (pSpec2->field_0x2dc != 0) {
+            for (n = 0; n < gCount_track_smashable_environment_specs; n++) {
+                candidate = &gTrack_smashable_environment_specs[n];
+                if (candidate->trigger_type == kSmashableTrigger_Material
+                        && candidate->trigger_object.material == neighbour_face_ref.material
+                        && (candidate->mode == kSmashableMode_TextureChange || candidate->mode == kSmashableMode_Decal)) {
+                    pSpec2 = candidate;
+                    break;
+                }
+            }
+        }
+        FUN_004f18d0(pObject, pMaterial, pActor, pSpec, pSpec2, &neighbour_face_ref, pMagnitude, &nudged, pNormal, pForce, opposite_edge, pArg12, &dummy_flag, pNetwork);
+    }
+    return result;
+}
+
+// Walks the triangles/polygons attached to a face and finds the one that
+// contains pPoint; the matching triangle's material is written to pOut.
+// pFlag != 0 allows re-selecting the current edge, otherwise it is skipped.
+// PARTIAL 100.00 (effective only)%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004f4c70
+int C2_HOOK_FASTCALL FUN_004f4c70(tFace_ref* pFace, br_vector3* pPoint, tFace_ref* pOut, int pFlag) {
+    tU8* p1;
+    tU8* yNode;
+    tU8* zNode;
+    tU8* wNode;
+    tU16* puVar7;
+    int iVar2;
+    int iVar5;
+    int iVar1;
+    int iVar9;
+    int iVar3;
+
+    p1 = (tU8*)pFace;
+    memcpy(pOut, p1, 0x50);
+    yNode = *(tU8**)(*(tU8**)(p1 + 0x48) + 0x18);
+    if (*(tS16*)(p1 + 0x4c) < 0) {
+        iVar2 = *(int*)(yNode + 8);
+        puVar7 = *(tU16**)(yNode + 0xc);
+        iVar1 = *(tU16*)(yNode + 0x12);
+        for (iVar5 = 0; iVar5 < iVar1; iVar5++, puVar7 += 0x14) {
+            if (pFlag == 0 && iVar5 == *(tU16*)(p1 + 0x4e)) {
+                continue;
+            }
+            if (FUN_004f0d50((const float*)pPoint, (const float*)((tU8*)puVar7 + 0x18), *(br_scalar*)((tU8*)puVar7 + 0x24),
+                             (const float*)(iVar2 + (tU32)puVar7[0] * 0x28),
+                             (const float*)(iVar2 + (tU32)puVar7[1] * 0x28),
+                             (const float*)(iVar2 + (tU32)puVar7[2] * 0x28)) != 0) {
+                goto found_triangle;
+            }
+        }
+        return 0;
+found_triangle:
+        pOut->f = (tS16)iVar5;
+        pOut->normal = *(br_vector3*)((tU8*)puVar7 + 0x18);
+        pOut->d = *(br_scalar*)((tU8*)puVar7 + 0x24);
+        pOut->material = *(br_material**)((tU8*)puVar7 + 8);
+        return 1;
+    } else {
+        zNode = *(tU8**)(yNode + 0x4c);
+        iVar3 = (int)*(tS16*)(p1 + 0x4c);
+        wNode = *(tU8**)(zNode + 0x18);
+        iVar5 = *(tU16*)(wNode + 0x1c + iVar3 * 0x24);
+        iVar2 = *(int*)(wNode + 0x10 + iVar3 * 0x24);
+        puVar7 = *(tU16**)(wNode + 4 + iVar3 * 0x24);
+        for (iVar9 = 0; iVar9 < iVar5; iVar9++, puVar7 += 0xe) {
+            if (iVar9 == *(tU16*)(p1 + 0x4e)) {
+                continue;
+            }
+            if (FUN_004f0d50((const float*)pPoint, (const float*)((tU8*)puVar7 + 0xc), *(br_scalar*)((tU8*)puVar7 + 0x18),
+                             (const float*)((tU32)puVar7[0] * 0x20 + iVar2),
+                             (const float*)((tU32)puVar7[1] * 0x20 + iVar2),
+                             (const float*)((tU32)puVar7[2] * 0x20 + iVar2)) != 0) {
+                goto found_polygon;
+            }
+        }
+        return 0;
+found_polygon:
+        pOut->f = (tS16)iVar9;
+        pOut->normal = *(br_vector3*)((tU8*)puVar7 + 0xc);
+        pOut->d = *(br_scalar*)((tU8*)puVar7 + 0x18);
+        return 1;
+    }
+    return 0;
+}
+
+
+// PARTIAL 58.41%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004f4e20
+float C2_HOOK_FASTCALL ApplySmashTriggerEffect(tSmashable_item_spec* pSpec, tPhysics_object* pObject, br_actor* pActor, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int* pFlag, int pNetwork) {
+    br_matrix34 matrix;
+    br_bounds3 bounds;
+    br_vector3 v;
+    int seed;
+    tU32 time;
+    float result;
+    tPhysics_object* object;
+    char* identifier;
+    br_actor* child;
+    int changed;
+    int i;
+
+    object = pObject;
+    result = -1.f;
+    time = GetTotalTime();
+    gINT_006a3334 = 0;
+    *pFlag = 0;
+    if (pMagnitude < pSpec->mode_data.shrapnel.removal_threshold) {
+        return -1.f;
+    }
+    v.v[0] = ((float*)object->field_0x1b4)[0] * 6.9;
+    v.v[1] = ((float*)object->field_0x1b4)[1] * 6.9;
+    v.v[2] = ((float*)object->field_0x1b4)[2] * 6.9;
+    seed = (int)pForce->v[1] ^ (int)pForce->v[2] ^ (int)pForce->v[0];
+    bounds = pActor->model->bounds;
+    gINT_006a3334 = 0;
+    changed = 0;
+    switch (pSpec->mode) {
+    case kSmashableMode_NoChange:
+        if (pSpec->field_0x10 == 0) {
+            changed = 1;
+        }
+        pSpec->field_0x10 = GetTotalTime();
+        break;
+    case kSmashableMode_Remove:
+        if (pActor->render_style != 1) {
+            changed = 1;
+            pActor->render_style = 1;
+            PipeSingleSmashModelChange(pActor, pActor->model, NULL);
+            if (pActor != NULL && (identifier = pActor->identifier) != NULL && identifier[0] == '&'
+                    && gSmashable_track_indexable_triggers[10 * (identifier[1] - '0') + (identifier[2] - '0')] != NULL
+                    && pActor == object->actor) {
+                pActor->t.t.translate.t.v[1] = -1000.f;
+                object->transform_matrix.m[3][1] = -1000.f;
+            }
+        }
+        object->box_face_end = 0;
+        object->box_face_start = 0;
+        object->box_face_ref = gFace_num__car - 2;
+        break;
+    case kSmashableMode_ReplaceModel:
+        if (pActor->model != pSpec->replace.model) {
+            changed = 1;
+            PipeSingleSmashModelChange(pActor, pActor->model, pSpec->replace.model);
+            pActor->model = pSpec->replace.model;
+            if (PercentageChance(pSpec->replace.smoke_fire_chance.chance_fire) && pSpec->replace.smoke_fire_chance.model_1_int > 0) {
+                for (i = 0; i < pSpec->replace.smoke_fire_chance.model_1_int; i++) {
+                    CreateSmokeColumn2(0, pActor, NULL, NULL, IRandomBetween(pSpec->replace.smoke_fire_chance.model_2_int, pSpec->replace.smoke_fire_chance.model_3_int), IRandomBetween(0, pActor->model->prepared->groups->nvertices), 10000000);
+                }
+            }
+            for (child = pActor->children; child != NULL; child = child->next) {
+                PipeSingleSmashModelChange(child, child->model, NULL);
+                child->render_style = 1;
+            }
+            AddChangedPoint(&pActor->t.t.translate.t);
+        }
+        object->box_face_ref = gFace_num__car - 2;
+        object->box_face_end = 0;
+        object->box_face_start = 0;
+        break;
+    default:
+        break;
+    }
+    if (changed) {
+        result = pSpec->mode_data.shrapnel.removal_threshold;
+        *pFlag = 1;
+        BrActorToActorMatrix34(&matrix, pActor, gUniverse_actor);
+        SmashItIntoVerySmallPiecesIndeed(object, pSpec, 0, &pSpec->mode_data.shrapnel.connotations, seed, (undefined4)&v, &pActor->t.t.translate.t, pPosition, pActor, time, gCount_shrapnel_shower_calls, &matrix, &bounds, &gZero_vector__smash, pMagnitude, (undefined4)pForce, pNetwork);
+    }
+    return result;
+}
+
+// PARTIAL 96.08%: work-v4 body ported verbatim; see reccmp diff
+// FUNCTION: CARMA2_HW 0x004f5110
+void C2_HOOK_FASTCALL ApplySmashTriggerNumber(tPhysics_object* pObject, tFace_ref* pFace, br_scalar pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pArg7) {
+    tCar_spec* car;
+    void* owner;
+    int driver;
+    tNet_message* message;
+    tNet_stored_smash* chunk;
+    tNet_stored_smash* stored;
+    br_vector3 point;
+    float d;
+    int id;
+
+    if (gNet_mode == eNet_mode_none) {
+        return;
+    }
+    if (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 == 1) {
+        owner = pObject->owner;
+        driver = *(int*)((char*)owner + 0xc);
+        if (driver > 5) {
+            if (owner == NULL || driver != eDriver_local_human) {
+                return;
+            }
+        }
+    }
+    if (pFace != NULL) {
+        d = DistanceFromFace(pPosition, pFace);
+        BrVector3Scale(&point, &pFace->normal, -d);
+        BrVector3Add(&point, &point, pPosition);
+    } else {
+        BrVector3Copy(&point, pPosition);
+    }
+    message = NetBuildGuaranteedMessage(0x21, 0);
+    chunk = (tNet_stored_smash*)&message->guaranteed;
+    chunk->field_0x4 = gPHIL_last_physics_tick + 40;
+    if (pObject != NULL && pObject->owner != NULL && pObject->flags_0x238 == 1) {
+        car = (tCar_spec*)pObject->owner;
+        if (car != NULL && car->driver > 5) {
+            if (gNet_mode != eNet_mode_none) {
+                id = (int)(NetPlayerFromCar(car) - gNet_players);
+            } else {
+                id = (tU16)car->car_ID;
+            }
+        } else {
+            id = -1;
+        }
+    } else {
+        id = -1;
+    }
+    chunk->player = id;
+    chunk->field_0xc = pMagnitude;
+    BrVector3Copy(&chunk->field_0x10, &point);
+    chunk->field_0x1c = *pNormal;
+    chunk->field_0x28 = *pForce;
+    if (pArg7 != 0) {
+        chunk->field_0x34 = 2;
+    } else {
+        chunk->field_0x34 = 0;
+    }
+    NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, message, NULL);
+    if (gNet_mode == eNet_mode_host && gCount_host_smashes < 1000) {
+        stored = (tNet_stored_smash*)&gNet_host_smashes[gCount_host_smashes];
+        gCount_host_smashes++;
+        *stored = *chunk;
+    }
+}
+
+/* ---------------------------------------------------------------------------------------
+   Link support for the smash code. These symbols are used by the bodies above but are
+   owned by source files that this branch has not ported yet, or by the legacy
+   src/carma2/common tree (which is not linked into CARMA2_HW). Remove each definition
+   when its owning TU is ported.
+   --------------------------------------------------------------------------------------- */
+
+// GLOBAL: CARMA2_HW 0x006a3334
+int gINT_006a3334 = 0;
+
+// GLOBAL: CARMA2_HW 0x006ba4a0
+tSmashable_item_spec* gSmashable_track_indexable_triggers[100] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x006a3330
+int gCapacity_track_smashables;
+
+// GLOBAL: CARMA2_HW 0x006a4688
+br_vector3 gVector3_006a4688;
+
+// GLOBAL: CARMA2_HW 0x0069bc0c
+int gPed_severing_chance;
+
+// GLOBAL: CARMA2_HW 0x00694234
+int gPed_severing_damage;
+
+/* Powerup counters: owned by src/carma2/common/powerups.c (not linked into CARMA2_HW). */
+// GLOBAL: CARMA2_HW 0x006a0944
+int gNumber_of_icons;
+
+// GLOBAL: CARMA2_HW 0x006a0ad0
+int gNumber_of_powerups;
+
+/* Owned by 15-displays.c in work-v4 (0x0044b450). */
+// FUNCTION: CARMA2_HW 0x0044b450
+void C2_HOOK_FASTCALL EarnCredits100(int pAmount) {
+
+    EarnCredits(pAmount - (pAmount + 50) % 100 + 50);
+}
+
+// STUB: CARMA2_HW 0x004cd9e0
+int C2_HOOK_FASTCALL FUN_004cd9e0(tPedestrian* pPed, int pBoneIndex) {
+    NOT_IMPLEMENTED();
+    return 0;
+}
+
+// STUB: CARMA2_HW 0x004f3820
+br_actor* C2_HOOK_FASTCALL FUN_004f3820(tFace_ref* pFace, br_vertex* pQuad, br_material* pMaterial, void* pPoly_array, void* pVertex_array) {
+    NOT_IMPLEMENTED();
+    return NULL;
+}
+
+// STUB: CARMA2_HW 0x004f39a0
+int C2_HOOK_FASTCALL FUN_004f39a0(const void* pMap, br_actor* pActor, br_vertex* pQuad, tU8* pEdge_at_bounds, tU8** pCorner, br_material* pMaterial, void* pPoly_array, void* pVertex_array) {
+    NOT_IMPLEMENTED();
+    return 0;
 }
