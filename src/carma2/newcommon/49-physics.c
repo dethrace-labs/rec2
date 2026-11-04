@@ -4016,3 +4016,18 @@ br_scalar C2_HOOK_FASTCALL PhysicsObjectWeightedSquareSum(tPhysics_object* pObje
     }
     return sum;
 }
+
+// FUNCTION: CARMA2_HW 0x004b7290
+br_scalar C2_HOOK_FASTCALL FUN_004b7290(tPhysics_object* pObject) {
+    br_scalar sum;
+    br_scalar object_sum;
+
+    sum = 0.0f;
+    while (pObject != NULL) {
+        object_sum = PhysicsObjectWeightedSquareSum(pObject);
+        sum += object_sum;
+        sum += FUN_004b7290(pObject->child);
+        pObject = pObject->next;
+    }
+    return sum;
+}

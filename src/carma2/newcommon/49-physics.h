@@ -498,6 +498,8 @@ extern void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, cons
 
 extern br_scalar C2_HOOK_FASTCALL PhysicsObjectWeightedSquareSum(tPhysics_object* pObject);
 
+extern br_scalar C2_HOOK_FASTCALL FUN_004b7290(tPhysics_object* pObject);
+
 #endif // GUARD_49_PHYSICS_H
 
 void C2_HOOK_FASTCALL AddCollisionInfoChild(tPhysics_object* pParent, tPhysics_object* pChild);
