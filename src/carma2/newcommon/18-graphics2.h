@@ -111,4 +111,6 @@ extern void C2_HOOK_FASTCALL RemoveTransientBitmaps(int pGraphically_remove_them
 
 extern void C2_HOOK_FASTCALL ClearEntireScreen(void);
 
+extern void C2_HOOK_FASTCALL FadePaletteUp(void);
+
 #endif // GUARD_18_GRAPHICS2_H
