@@ -137,4 +137,6 @@ extern void C2_HOOK_FASTCALL AddPlayerToShapeStatusLists(int pPlayer_id, int pCo
 
 // RemovePlayerFromShapeStatusLists
 
+extern tU32 gPHIL_last_physics_tick;
+
 #endif // GUARD_04_NETGAME_H
