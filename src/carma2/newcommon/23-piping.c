@@ -1327,6 +1327,21 @@ int C2_HOOK_FASTCALL CalcShrapnelLength(tPipe_chunk* pChunk) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004e70d0
+void C2_HOOK_FASTCALL DisposeReplayPixelmaps(void) {
+    br_pixelmap** pp;
+
+    pp = gReplay_pixelmaps;
+    do {
+        if (*pp != NULL) {
+            BrMapRemove(*pp);
+            BrPixelmapFree(*pp);
+            *pp = NULL;
+        }
+        pp++;
+    } while ((int)pp < (int)&gUNK_006a23b4);
+}
+
 // CalcSmudgeLength
 
 // CalcModelMashLength
