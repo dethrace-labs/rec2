@@ -74,13 +74,13 @@ extern int C2_HOOK_FASTCALL PHILMakeObjectActive(tPhysics_object* pObject, const
 
 extern int C2_HOOK_FASTCALL PHILSetPassiveObjectsMatrix(tPhysics_object* pObject, const br_matrix34* pMatrix);
 
-// PHILAddActiveObject
+extern int C2_HOOK_FASTCALL PHILAddActiveObject(tPhysics_object* pInfo, br_matrix34* pMatrix, const br_vector3* pArg3, const br_vector3* pArg4);
 
 // PHILAddObjectImmediately
 
 // PHILAddActiveObjectImmediately
 
-// PHILSetObjectProperty
+extern int C2_HOOK_CDECL PHILSetObjectProperty(tPhysics_object* pObject, int pProperty, ...);
 
 extern float C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object* pObject, int pProperty);
 
@@ -109,6 +109,8 @@ extern void C2_HOOK_FASTCALL MarkObjectAndChildrenAsPassive(tPhysics_object* pOb
 // PHILDoPhysics
 
 // PHILApplyPHILObject
+
+extern float C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object *pCollision_info, int pParam);
 
 extern float gFLOAT_00692dd0;
 
