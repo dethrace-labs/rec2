@@ -165,7 +165,7 @@ extern void C2_HOOK_FASTCALL CompressCrush(tCompressed_car_crush* pDest, const t
 
 // RemoveDuplicatePoints
 
-// SimpleCrushModel
+extern void C2_HOOK_FASTCALL SimpleCrushModel(br_model* pModel, int pCount, float* pPoints, float* pDir, float* pBounds);
 
 // CrushDrone
 
@@ -355,7 +355,7 @@ extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor
 
 // ReAttachOrFullyDetachDifficultBits
 
-// BendCar
+extern void C2_HOOK_FASTCALL BendCar(tCar_spec* pCar, br_angle pAngle_x, br_angle pAngle_y, br_angle pAngle_z, const br_vector3* pArg5, float pArg6, int pArg7);
 
 // QuantizeAngle
 
@@ -558,5 +558,15 @@ extern tSmashable_level* C2_HOOK_FASTCALL FUN_004ee290(tCar_spec* pCar, tPhysics
 extern intptr_t C2_HOOK_CDECL FUN_004f5a70(br_actor* pActor, void* pContext);
 
 extern void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec);
+
+extern br_scalar gFLOAT_00589a2c;
+
+extern int gCollision_face_mask__raycast;
+
+extern int C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* pObject, int pBounds_shape, undefined4 pRay_shape, int pCollision_count, int pFace, int pPolyhedron_data);
+
+extern tToggled_door gToggled_doors[16];
+
+extern void C2_HOOK_FASTCALL FUN_0043bca0(undefined4* pArg1, void* pArg2, br_model* pModel, const br_vector3* pSrc, const float* pScalars);
 
 #endif // GUARD_13_CRUSH1_H

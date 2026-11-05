@@ -538,4 +538,17 @@ extern float C2_HOOK_FASTCALL ARGetReplayRate(void);
 
 extern float C2_HOOK_FASTCALL ARGetReplayRate(void);
 
+extern undefined4* gCrush_space;
+
+extern int gUNK_006a23b4;
+
+extern tU8* gPipe_play_ptr;
+
+extern tU8* gPipe_record_ptr;
+
+typedef struct {
+    tU32 value;
+} tPipe_stack_word;
+
+
 #endif // GUARD_23_PIPING_H
