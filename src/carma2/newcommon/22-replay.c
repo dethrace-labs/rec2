@@ -11,6 +11,8 @@
 #include "18-graphics2.h"
 #include "30-opponent.h"
 #include "globvars.h"
+#include "41-utility.h"
+#include "27-powerup.h"
 
 // GLOBAL: CARMA2_HW 0x006768fc
 // GLOBAL: CARMA2_SW 0x0067106c
@@ -48,6 +50,9 @@ int gAR_camera_type = 2;
 // GLOBAL: CARMA2_HW 0x0058f6a4
 // GLOBAL: CARMA2_SW 0x0058a6a4
 int gCar_car_collisions = 1;
+
+// GLOBAL: CARMA2_HW 0x006a2388
+br_pixelmap* gReplay_pixelmaps[11];
 
 // GLOBAL: CARMA2_HW 0x0058f6b0
 // GLOBAL: CARMA2_SW 0x0058a6b0

@@ -19,6 +19,7 @@
 #include "69-sound.h"
 #include "globvars.h"
 #include "platform.h"
+#include "22-replay.h"
 
 #include <s3/internal/audio.h>
 
@@ -87,6 +88,9 @@ tU32 gPipe_sound_start_time;
 // GLOBAL: CARMA2_HW 0x006768a8
 // GLOBAL: CARMA2_SW 0x00671018
 tU32 gPipe_sound_time_window;
+
+// GLOBAL: CARMA2_HW 0x006a23b4
+int gUNK_006a23b4 = 0;
 
 // ARReplayForwards
 

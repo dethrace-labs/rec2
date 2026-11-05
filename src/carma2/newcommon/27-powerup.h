@@ -440,4 +440,6 @@ extern void C2_HOOK_FASTCALL TurnOffCloaking(tPowerup* pPowerup, tCar_spec* pCar
 
 // PeriodicCloaking
 
+extern tRepulse_link gRepulse_links[6];
+
 #endif // GUARD_27_POWERUP_H

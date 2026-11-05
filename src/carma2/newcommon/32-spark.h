@@ -257,4 +257,6 @@ extern void* C2_HOOK_FASTCALL GetSplashIndex(tPhysics_object* pObject);
 
 // InitReplaySplashes
 
+extern void C2_HOOK_CDECL AFEModelUpdate(br_actor* pActor, br_model* pModel, br_material* pMaterial, void* pArg4, br_uint_8 pArg5, int pArg6);
+
 #endif // GUARD_32_SPARK_H

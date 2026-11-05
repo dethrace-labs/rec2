@@ -68,4 +68,6 @@ extern void C2_HOOK_FASTCALL ApplyTime(tU32 pTime);
 
 extern void C2_HOOK_FASTCALL ARSetPause(int pPause);
 
+extern br_pixelmap* gReplay_pixelmaps[11];
+
 #endif // GUARD_22_REPLAY_H
