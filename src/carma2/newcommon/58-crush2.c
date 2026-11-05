@@ -372,3 +372,29 @@ void C2_HOOK_FASTCALL ChristmasLights(tCar_spec* pCar, int pMin_damage, int pMax
     }
     pCar->damage_magnitude_accumulator += 0.5f;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0043b470
+intptr_t C2_HOOK_CDECL FUN_0043b470(br_actor* pActor, tModel_mash_context_local* pContext) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x00434320
+intptr_t C2_HOOK_CDECL FUN_00434320(br_actor* pActor, int pValue) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
