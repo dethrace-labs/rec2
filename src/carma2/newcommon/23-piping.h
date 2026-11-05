@@ -72,7 +72,7 @@ extern int C2_HOOK_FASTCALL ARSomeReplayLeft(void);
 
 // StartPipingSession2
 
-// ARStartPipingSession
+extern void C2_HOOK_FASTCALL ARStartPipingSession(tPipe_chunk_type pType);
 
 extern void C2_HOOK_FASTCALL EndPipingSession2(int pMunge_reentrancy);
 
@@ -537,5 +537,18 @@ extern volatile undefined4 gUNK_0069410c;
 extern float C2_HOOK_FASTCALL ARGetReplayRate(void);
 
 extern float C2_HOOK_FASTCALL ARGetReplayRate(void);
+
+extern undefined4* gCrush_space;
+
+extern int gUNK_006a23b4;
+
+extern tU8* gPipe_play_ptr;
+
+extern tU8* gPipe_record_ptr;
+
+typedef struct {
+    tU32 value;
+} tPipe_stack_word;
+
 
 #endif // GUARD_23_PIPING_H
