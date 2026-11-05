@@ -174,6 +174,15 @@ void C2_HOOK_FASTCALL CalcOpponentConspicuousnessWithAViewToCheatingLikeFuck(tOp
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004a95f0
+void C2_HOOK_FASTCALL SetChallengerIndexIf(int pIndex, int pSet) {
+    extern int gChallenger_index__opponent;
+
+    if (pSet) {
+        gChallenger_index__opponent = pIndex;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x004ac180
 // FUNCTION: CARMA2_SW 0x004a82f0
 int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pRoute, tRoute_section* pBest_route, int* pBest_count, tS16 pTarget, int pDepth, br_scalar pLength, tOpponent_spec* pOpponent_spec) {
