@@ -125,6 +125,9 @@ br_pixelmap* gFog_shade_table;
 // GLOBAL: CARMA2_SW 0x00795184
 br_pixelmap* gAcid_shade_table;
 
+// GLOBAL: CARMA2_HW 0x006aa568
+int gDust_rotate;
+
 // DrawDot
 
 // SetWorldToScreen

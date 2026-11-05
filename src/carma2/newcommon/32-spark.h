@@ -257,4 +257,6 @@ extern void* C2_HOOK_FASTCALL GetSplashIndex(tPhysics_object* pObject);
 
 // InitReplaySplashes
 
+extern int gDust_rotate;
+
 #endif // GUARD_32_SPARK_H
