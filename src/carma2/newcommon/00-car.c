@@ -114,6 +114,9 @@ br_scalar gMin_world_y;
 // GLOBAL: CARMA2_SW 0x00673b54
 tPhysics_object* gUnknown_car_collision_info;
 
+// GLOBAL: CARMA2_HW 0x0058f680
+int gMetal_crunch_sound_id[5] = { 5000, 5001, 5002, 5003, 5004 };
+
 // FUNCTION: CARMA2_HW 0x00413cc0
 // FUNCTION: CARMA2_SW 0x00413cf0
 void C2_HOOK_FASTCALL DamageUnit(tCar_spec* pCar, tDamage_type pUnit_type, int pDamage_amount) {
@@ -841,7 +844,39 @@ void C2_HOOK_FASTCALL MakeLiftGoUp(tNon_car_spec* pNon_car) {
 
 // StopSkid
 
-// CrashNoise
+// FUNCTION: CARMA2_HW 0x0041ddc0
+void C2_HOOK_FASTCALL CrashNoise(br_vector3* pForce, br_vector3* pPosition, int pMaterial) {
+    // GLOBAL: CARMA2_HW 0x00679410
+    static tS3_sound_tag crunch_tag;
+    // GLOBAL: CARMA2_HW 0x0067935c
+    static tS3_volume last_crunch_vol;
+    tS3_volume vol;
+    br_vector3 velocity;
+
+    extern tS3_outlet* gCar_outlet;
+    extern int C2_HOOK_FASTCALL DRS3SoundStillPlaying(int pTag);
+    extern int C2_HOOK_FASTCALL DRS3StartSound3D(tS3_outlet* pOutlet, int pSound_id, const br_vector3* pInitial_position, const br_vector3* pInitial_velocity, int pRepeats, int pVolume, int pPitch, int pSpeed);
+
+    vol = 60.0 * BrVector3Length(pForce);
+    if (gCurrent_race.material_modifiers[pMaterial].crash_noise_index == -1) {
+    } else {
+        if (vol > 255) {
+            vol = 255;
+        }
+        if (crunch_tag == 0 || !DRS3SoundStillPlaying(crunch_tag)) {
+            if (vol > 30) {
+                last_crunch_vol = vol;
+                (void)last_crunch_vol;
+                velocity.v[0] = 0.f;
+                velocity.v[1] = 0.f;
+                velocity.v[2] = 0.f;
+                crunch_tag = DRS3StartSound3D(gCar_outlet,
+                    gMetal_crunch_sound_id[IRandomBetween(0, 4)],
+                    pPosition, &velocity, 1, vol, IRandomBetween(49152, 81920), 0x10000);
+            }
+        }
+    }
+}
 
 // CrushAndDamageCar
 
@@ -1092,6 +1127,16 @@ void C2_HOOK_FASTCALL FreezeMechanics(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0041f4a0
+void C2_HOOK_FASTCALL PutOpponentsInNeutral(void) {
+    gStop_opponents_moving = !gStop_opponents_moving;
+    if (gStop_opponents_moving) {
+        NewTextHeadupSlot(4, 0, 3000, -4, "Opponents in neutral");
+    } else {
+        NewTextHeadupSlot(4, 0, 3000, -4, "Back in gear");
+    }
+}
+
 // FlyCar
 
 // GetCarOverallBoundsMinY
@@ -1131,6 +1176,44 @@ tNon_car_spec* C2_HOOK_FASTCALL PullActorFromWorld(br_actor* pActor) {
 tNon_car_spec* C2_HOOK_FASTCALL DoPullActorFromWorld(br_actor* pActor) {
     NOT_IMPLEMENTED();
     return NULL;
+}
+
+// FUNCTION: CARMA2_HW 0x00420310
+int C2_HOOK_FASTCALL FUN_00420310(tPhysics_object* pObject) {
+    tNon_car_spec* non_car;
+
+    non_car = (tNon_car_spec*)pObject->owner;
+    pObject->field_0xed = 1;
+    *(int*)((tU8*)pObject + 0x194) = 0;
+    *(int*)((tU8*)pObject + 0x198) = 0;
+    if (non_car->snap_off_cosine < 1.0f) {
+        pObject->physics_joint2 = NULL;
+    }
+    pObject->field_0x218 = 0;
+    pObject->v.v[0] = 0.0f;
+    pObject->v.v[1] = 0.0f;
+    pObject->v.v[2] = 0.0f;
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00420360
+int C2_HOOK_FASTCALL FUN_00420360(tPhysics_object* pObject) {
+    tNon_car_spec* non_car;
+
+    non_car = (tNon_car_spec*)pObject->owner;
+    if (*(br_scalar*)((tU8*)pObject->actor + 0x3c) < non_car->snap_off_cosine) {
+        pObject->field_0xed = 1;
+        *(int*)((tU8*)pObject + 0x194) = 0;
+        *(int*)((tU8*)pObject + 0x198) = 0;
+        if (non_car->snap_off_cosine < 1.0f) {
+            pObject->physics_joint2 = NULL;
+        }
+        pObject->field_0x218 = 0;
+        pObject->v.v[0] = 0.0f;
+        pObject->v.v[1] = 0.0f;
+        pObject->v.v[2] = 0.0f;
+    }
+    return 0;
 }
 
 #ifdef REC2_MATCHING
@@ -1185,6 +1268,58 @@ void C2_HOOK_FASTCALL TurnOnNonCar(int pIndex) {
 // FUNCTION: CARMA2_SW 0x00420980
 void C2_HOOK_FASTCALL TurnOffNonCar(int pIndex) {
     gProgram_state.track_spec.non_car_list[pIndex]->render_style = BR_RSTYLE_NONE;
+}
+
+// FUNCTION: CARMA2_HW 0x0043d900
+int C2_HOOK_FASTCALL FUN_0043d900(tCar_spec* pCar) {
+    tCar_crush_spec* crush;
+    int* node;
+    int i;
+    int total;
+    int result;
+
+    crush = pCar->car_crush_spec;
+    if (crush->field_0x4b8 != 0) {
+        result = 1;
+        node = *(int**)(*(int*)((tU8*)pCar + 8) + 0x20);
+        if (node != NULL) {
+            do {
+                if (node[0] == 1 || node[0] == 3) {
+                    result = result + 1 + node[0xe] * 6;
+                }
+                node = (int*)node[0xd];
+            } while (node != NULL);
+        }
+        return result;
+    }
+    total = 0;
+    for (i = 0; i < crush->count_shapes; i++) {
+        total += crush->field_0x4[i].count_points;
+    }
+    return total * 6 + 1;
+}
+
+// FUNCTION: CARMA2_HW 0x0043d960
+int C2_HOOK_FASTCALL GetCompressedCrushVertexDataSize(tU8* pData) {
+    tU8 count_or_points;
+    int count;
+    int size;
+
+    count_or_points = *pData++;
+    if (count_or_points <= 4) {
+        count = count_or_points;
+        size = 1;
+        if (count > 0) {
+            do {
+                count_or_points = *pData;
+                size = size + 1 + count_or_points * 6;
+                pData = pData + count_or_points * 6 + 1;
+                count--;
+            } while (count != 0);
+        }
+        return size;
+    }
+    return count_or_points * 6 + 1;
 }
 
 // FUNCTION: CARMA2_HW 0x0043dce0
@@ -1260,4 +1395,19 @@ void C2_HOOK_FASTCALL WeldCarByNetwork(tCar_spec* pCar) {
         break;
     }
     BendCar(pCar, id_a, id_b, id_c, &v, temp, 0);
+}
+
+// FUNCTION: CARMA2_HW 0x00498460
+void C2_HOOK_FASTCALL CompressCarDataChunk(tNet_message_chunk* pMessage, int pPlayer_index) {
+    tU8* chunk;
+    tCar_spec* car;
+    br_actor* actor;
+
+    chunk = (tU8*)pMessage;
+    car = gNet_players[pPlayer_index].car;
+    CompressVector3((tCompressed_vector3*)(chunk + 8), &car->car_master_actor->t.t.translate.t, -500.f, 500.f);
+    actor = car->car_master_actor;
+    *(tS16*)(chunk + 2) = (tS16)BrRadianToAngle(atan2(actor->t.t.mat.m[2][0], actor->t.t.mat.m[2][2]));
+    *(int*)(chunk + 4) = gNet_players[pPlayer_index].ID;
+    *(int*)(chunk + 0x10) = *(int*)((tU8*)car + 0x18a4);
 }

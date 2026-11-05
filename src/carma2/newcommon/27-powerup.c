@@ -161,6 +161,20 @@ int gInstant_handbrake;
 // GLOBAL: CARMA2_SW 0x0069aaac
 tPowerup* gPowerup_array;
 
+// GLOBAL: CARMA2_HW 0x0058ac00
+const float gConst_0p5 = 0.5f;
+
+// GLOBAL: CARMA2_HW 0x0058ac70
+const double gConst_minus_0p15 = -0.15;
+
+// FUNCTION: CARMA2_HW 0x004c8fb0
+void C2_HOOK_FASTCALL PipeSingleMatrix34Type66(br_actor* pActor) {
+    extern void C2_HOOK_CDECL ARDoSingleVariedSession(int pType, uintptr_t pOwner, int pCount, ...);
+
+    ARDoSingleVariedSession(0x42, (uintptr_t)pActor, 1,
+        0x30, 0, (uintptr_t)&pActor->t.t.mat);
+}
+
 // FUNCTION: CARMA2_HW 0x004d8d10
 // FUNCTION: CARMA2_SW 0x004d5240
 char* C2_HOOK_FASTCALL GetPowerupMessage(int pPowerup_index) {
@@ -172,7 +186,19 @@ char* C2_HOOK_FASTCALL GetPowerupMessage(int pPowerup_index) {
 
 // DoPowerupTextHeadup
 
-// QueueIconGoing
+// FUNCTION: CARMA2_HW 0x004d9670
+void C2_HOOK_FASTCALL QueueIconGoing(tPowerup* pPowerup, tHeadup_icon* pHeadup_icons, int* pCount_icons) {
+    int i;
+
+    for (i = 0; i < *pCount_icons; i++) {
+        if (pPowerup == pHeadup_icons[i].powerup) {
+            pHeadup_icons[i].fizzle_stage = 3;
+            pHeadup_icons[i].fizzle_direction = -1;
+            pHeadup_icons[i].fizzle_start = GetTotalTime();
+            break;
+        }
+    }
+}
 
 // QueueIconComing
 
@@ -380,7 +406,28 @@ void C2_HOOK_FASTCALL GotPowerup9(void) {
 
 // GotCredits
 
-// GainAPO2
+// FUNCTION: CARMA2_HW 0x004dc3e0
+int C2_HOOK_FASTCALL GainAPO2(tCar_spec* pCar, int pIndex, int pAmount) {
+    int old;
+
+    while (pAmount < 0) {
+        if (pCar->power_up_levels[pIndex] >= pCar->power_up_slots[pIndex]) {
+            return 0;
+        }
+        pAmount = pCar->power_up_slots[pIndex] - pCar->power_up_levels[pIndex];
+    }
+    if (pIndex == 1 && gNet_mode != eNet_mode_none
+        && gCurrent_net_game->type == eNet_game_type_foxy
+        && gThis_net_player_index == gIt_or_fox) {
+        return 0;
+    }
+    old = pCar->power_up_levels[pIndex];
+    pCar->power_up_levels[pIndex] = old + pAmount;
+    if (pCar->power_up_levels[pIndex] > pCar->power_up_slots[pIndex]) {
+        pCar->power_up_levels[pIndex] = pCar->power_up_slots[pIndex];
+    }
+    return pCar->power_up_levels[pIndex] - old;
+}
 
 // GainAPOPot2
 
@@ -678,6 +725,78 @@ int C2_HOOK_FASTCALL SetDamageMultiplier(tPowerup* pPowerup, tCar_spec* pCar) {
 
     pCar->damage_multiplier = pPowerup->float_params[0];
     return pPowerup - gPowerup_array;
+}
+
+// FUNCTION: CARMA2_HW 0x004dd3f0
+void C2_HOOK_FASTCALL ConfigureShitMine(tShit_mine* pMine, tPowerup* pPowerup, tCar_spec* pCar) {
+
+    pMine->flags = 5;
+    pMine->flags = 5 + (pPowerup->integer_params[0] != 0 ? 0x40 : 0);
+    pMine->next_think_time = GetTotalTime() - (tU32)(pPowerup->float_params[0] * -1000.0);
+    pMine->field3_0xc = pPowerup->float_params[1];
+    pMine->initial_y_speed_factor = pPowerup->float_params[2];
+    pMine->initial_z_omega_factor = pPowerup->float_params[3];
+    pMine->initial_x_omega_factor = pPowerup->float_params[4];
+    ((float*)pMine->field_0x1c)[0] = pPowerup->float_params[5];
+    ((float*)pMine->field_0x1c)[1] = pPowerup->float_params[6];
+    ((float*)pMine->field_0x1c)[2] = pPowerup->float_params[7];
+    pMine->collision_info->field_0xed = 1;
+    pMine->collision_info->disable_move_rotate = 0;
+    pMine->collision_info->flags &= ~0x40;
+    if (pMine->collision_info->actor->parent == NULL) {
+        BrActorAdd(gNon_track_actor, pMine->collision_info->actor);
+    }
+    pMine->collision_info->actor->render_style = BR_RSTYLE_FACES;
+    pMine->field_0x34 = (tU8)(pPowerup - gPowerup_array);
+    PHILAddActiveObject(pMine->collision_info, NULL, NULL, NULL);
+    PHILSetObjectProperty(pMine->collision_info, 0, 1.0);
+    PHILSetObjectProperty(pMine->collision_info, 7, 1);
+    PHILSetObjectProperty(pMine->collision_info, 6, 1);
+    pMine->field_0x30 = pCar;
+    pMine->collision_info->last_special_volume = pCar->collision_info->last_special_volume;
+    pMine->collision_info->auto_special_volume = pCar->collision_info->auto_special_volume;
+    pMine->collision_info->water_d = pCar->collision_info->water_d;
+    pMine->collision_info->water_normal.v[0] = pCar->collision_info->water_normal.v[0];
+    pMine->collision_info->water_normal.v[1] = pCar->collision_info->water_normal.v[1];
+    pMine->collision_info->water_normal.v[2] = pCar->collision_info->water_normal.v[2];
+}
+
+// FUNCTION: CARMA2_HW 0x004dd590
+void C2_HOOK_FASTCALL InitializeMineMotion(tShit_mine* pMine, tCar_spec* pCar) {
+    extern const double gConst_minus_0p15;
+    br_matrix34 car_transform;
+    br_vector3 impulse;
+    double d;
+
+    if (pMine->flags & 0x40) {
+        BrMatrix34Translate(&pMine->collision_info->actor->t.t.mat,
+                            0.f,
+                            (pCar->collision_info->bb1.max.v[1] - pCar->collision_info->bb1.min.v[1]) * gConst_0p5,
+                            pCar->collision_info->bb1.min.v[2] - 0.15);
+    } else {
+        BrMatrix34Translate(&pMine->collision_info->actor->t.t.mat,
+                            0.f,
+                            (pCar->collision_info->bb1.max.v[1] - pCar->collision_info->bb1.min.v[1]) * gConst_0p5,
+                            pCar->collision_info->bb1.max.v[2] - gConst_minus_0p15);
+    }
+    BrMatrix34Copy(&car_transform, &pCar->collision_info->transform_matrix);
+    BrMatrix34Post(&pMine->collision_info->actor->t.t.mat, &car_transform);
+    BrMatrix34Copy(&pMine->collision_info->transform_matrix, &pMine->collision_info->actor->t.t.mat);
+    impulse.v[0] = 0.f;
+    impulse.v[1] = (float)(d = ((float*)pMine->field_0x1c)[1]);
+    impulse.v[2] = (float)(d = ((float*)pMine->field_0x1c)[2]);
+    BrMatrix34ApplyV(&pMine->collision_info->v, &impulse, &car_transform);
+    pMine->collision_info->v.v[0] = pCar->collision_info->v.v[0] + pMine->collision_info->v.v[0];
+    pMine->collision_info->v.v[1] = pCar->collision_info->v.v[1] + pMine->collision_info->v.v[1];
+    pMine->collision_info->v.v[2] = pCar->collision_info->v.v[2] + pMine->collision_info->v.v[2];
+    if (pMine->flags & 0x40) {
+        pMine->collision_info->v.v[0] = pCar->collision_info->v.v[0] + pMine->collision_info->v.v[0];
+        pMine->collision_info->v.v[1] = pCar->collision_info->v.v[1] + pMine->collision_info->v.v[1];
+        pMine->collision_info->v.v[2] = pCar->collision_info->v.v[2] + pMine->collision_info->v.v[2];
+    }
+    pMine->collision_info->omega.v[0] = 0.f;
+    pMine->collision_info->omega.v[1] = 0.f;
+    pMine->collision_info->omega.v[2] = 0.f;
 }
 
 // FillInMine
@@ -1330,6 +1449,31 @@ br_actor* C2_HOOK_FASTCALL CreateBillBoard(br_pixelmap* pTexture) {
     BrMaterialAdd(material);
     BrModelAdd(model);
     return actor;
+}
+
+// FUNCTION: CARMA2_HW 0x004e0ba0
+void C2_HOOK_FASTCALL DisposeBillBoard(br_actor* pActor) {
+    extern br_material* C2_HOOK_CDECL BrMaterialRemove(br_material* pMaterial);
+    extern void C2_HOOK_CDECL BrMaterialFree(br_material* pMaterial);
+    extern br_model* C2_HOOK_CDECL BrModelRemove(br_model* pModel);
+    extern void C2_HOOK_CDECL BrModelFree(br_model* pModel);
+    extern br_actor* C2_HOOK_CDECL BrActorRemove(br_actor* pActor);
+    extern void C2_HOOK_CDECL BrActorFree(br_actor* pActor);
+
+    if (pActor != NULL) {
+        if (pActor->material != NULL) {
+            BrMaterialRemove(pActor->material);
+            BrMaterialFree(pActor->material);
+        }
+        if (pActor->model != NULL) {
+            BrModelRemove(pActor->model);
+            BrModelFree(pActor->model);
+        }
+        if (pActor->parent != NULL) {
+            BrActorRemove(pActor);
+        }
+        BrActorFree(pActor);
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004e0c00

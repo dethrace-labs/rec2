@@ -59,15 +59,15 @@ extern void C2_HOOK_FASTCALL MungePalette(void);
 
 extern void C2_HOOK_FASTCALL ResetPalette(void);
 
-// Darken
+extern void C2_HOOK_FASTCALL Darken(tU8 *pPtr, tU32 pDarken_amount);
 
-// SetFadedPalette
+extern void C2_HOOK_FASTCALL SetFadedPalette(tU32 pDegree);
 
 extern void C2_HOOK_FASTCALL FadePaletteDown(void);
 
 extern void C2_HOOK_FASTCALL FadePaletteUp(void);
 
-// EnsurePaletteUp
+extern void C2_HOOK_FASTCALL EnsurePaletteUp(void);
 
 extern void C2_HOOK_FASTCALL EnsureRenderPalette(void);
 
@@ -104,5 +104,13 @@ extern void C2_HOOK_FASTCALL SplashScreenWith(const char* pPixmap_name);
 extern void C2_HOOK_FASTCALL DRPixelmapRectangleMaskedCopy(br_pixelmap* pDest, br_int_16 pDest_x, br_int_16 pDest_y, const br_pixelmap* pSource, br_int_16 pSource_x, br_int_16 pSource_y, br_int_16 pWidth, br_int_16 pHeight);
 
 extern void C2_HOOK_FASTCALL DRMaskedStamp(br_int_16 pDest_x, br_int_16 pDest_y, br_pixelmap* pSource);
+
+extern void C2_HOOK_FASTCALL FadePaletteDown(void);
+
+extern void C2_HOOK_FASTCALL RemoveTransientBitmaps(int pGraphically_remove_them);
+
+extern void C2_HOOK_FASTCALL ClearEntireScreen(void);
+
+extern void C2_HOOK_FASTCALL FadePaletteUp(void);
 
 #endif // GUARD_18_GRAPHICS2_H
