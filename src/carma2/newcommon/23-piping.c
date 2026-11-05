@@ -68,9 +68,6 @@ int gPlay_direction;
 // GLOBAL: CARMA2_SW 0x00671070
 float gReplay_rate;
 
-// GLOBAL: CARMA2_HW 0x0067690c
-int gPipe_undo_enabled = 0;
-
 // GLOBAL: CARMA2_HW 0x006768c8
 tU8* gPipe_buffer_end_marker = NULL;
 
