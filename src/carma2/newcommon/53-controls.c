@@ -598,5 +598,16 @@ void C2_HOOK_FASTCALL RichardsSphere(int pNum) {
     NewTextHeadupSlot(4, 0, 2000, -4, "STEEL GONAD O' DEATH");
 }
 
+// FUNCTION: CARMA2_HW 0x00444fa0
+void C2_HOOK_FASTCALL ToggleShellModel(void) {
+
+    gCar_to_view->use_shell_model = !gCar_to_view->use_shell_model;
+    if (gCar_to_view->use_shell_model) {
+        NewTextHeadupSlot(4, 0, 2000, -4, "SHELL MODEL");
+    } else {
+        NewTextHeadupSlot(4, 0, 2000, -4, "COMPLEX MODELS");
+    }
+}
+
 // ToggleHeadupLevel
 
