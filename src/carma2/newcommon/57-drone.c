@@ -22,6 +22,7 @@
 #include "platform.h"
 
 #include "c2_stdio.h"
+#include "23-piping.h"
 
 #include <math.h>
 
@@ -68,6 +69,9 @@ int gINT_00681fb0;
 // GLOBAL: CARMA2_HW 0x00684514
 // GLOBAL: CARMA2_SW 0x0067ec54
 int gFrame;
+
+// GLOBAL: CARMA2_HW 0x00589dc4
+float gDrone_render_zero = 0.0f;
 
 // DoNotDprintf
 
@@ -276,6 +280,19 @@ int C2_HOOK_FASTCALL DroneTrainWithinProcessingDistance(const br_vector3* pPos) 
         return 0;
     }
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0044cfc0
+void C2_HOOK_CDECL DoNotDprintf_drone(const char* pMessage, ...) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // CalcRenderBoundsCentre
 
