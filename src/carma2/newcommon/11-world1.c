@@ -112,6 +112,24 @@ void C2_HOOK_FASTCALL LoadAdditionalStuff(void) {
     BrActorAdd(gUniverse_actor, gAdditional_actors);
 }
 
+// FUNCTION: CARMA2_HW 0x00508e50
+intptr_t C2_HOOK_CDECL MoveModelVertices(br_actor* pActor, br_vector3* pOffset) {
+    int i;
+
+    if (pActor->model != NULL) {
+        i = 0;
+        if (pActor->model->nvertices > 0) {
+            do {
+                pActor->model->vertices[i].p.v[0] += pOffset->v[0];
+                pActor->model->vertices[i].p.v[1] += pOffset->v[1];
+                pActor->model->vertices[i].p.v[2] += pOffset->v[2];
+                i++;
+            } while (i < pActor->model->nvertices);
+        }
+    }
+    return 0;
+}
+
 // SetSpecVolMatSize
 
 // UpdateSpecVol
