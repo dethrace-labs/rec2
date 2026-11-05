@@ -58,7 +58,7 @@ extern int C2_HOOK_FASTCALL GetHierarchyNetworkSize(tPhysics_object* pObject);
 
 extern void C2_HOOK_FASTCALL PHILDisable(void);
 
-// PHILAddObject
+extern int C2_HOOK_FASTCALL PHILAddObject(tPhysics_object* pObject);
 
 extern int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pObject);
 
@@ -74,13 +74,13 @@ extern int C2_HOOK_FASTCALL PHILMakeObjectActive(tPhysics_object* pObject, const
 
 extern int C2_HOOK_FASTCALL PHILSetPassiveObjectsMatrix(tPhysics_object* pObject, const br_matrix34* pMatrix);
 
-// PHILAddActiveObject
+extern int C2_HOOK_FASTCALL PHILAddActiveObject(tPhysics_object* pInfo, br_matrix34* pMatrix, const br_vector3* pArg3, const br_vector3* pArg4);
 
 // PHILAddObjectImmediately
 
 // PHILAddActiveObjectImmediately
 
-// PHILSetObjectProperty
+extern int C2_HOOK_CDECL PHILSetObjectProperty(tPhysics_object* pObject, int pProperty, ...);
 
 extern float C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object* pObject, int pProperty);
 
@@ -109,5 +109,15 @@ extern void C2_HOOK_FASTCALL MarkObjectAndChildrenAsPassive(tPhysics_object* pOb
 // PHILDoPhysics
 
 // PHILApplyPHILObject
+
+extern float C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object *pCollision_info, int pParam);
+
+extern float gFLOAT_00692dd0;
+
+extern float gFLOAT_00692dd4;
+
+extern int gPHIL_munging_objects;
+
+extern int gPHIL_object_added;
 
 #endif // GUARD_60_PHIL_H
