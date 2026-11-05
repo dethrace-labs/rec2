@@ -138,6 +138,9 @@ br_actor* gHud_actor_storage[128];
 // GLOBAL: CARMA2_SW 0x0069c31c
 int gNumber_of_lollipops;
 
+// GLOBAL: CARMA2_HW 0x006a2128
+void* gLollipop_queue[100] = { 0 };
+
 // MungeClipPlane
 
 // TryThisEdge
