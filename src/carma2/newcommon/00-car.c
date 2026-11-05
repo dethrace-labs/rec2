@@ -114,6 +114,9 @@ br_scalar gMin_world_y;
 // GLOBAL: CARMA2_SW 0x00673b54
 tPhysics_object* gUnknown_car_collision_info;
 
+// GLOBAL: CARMA2_HW 0x0058f680
+int gMetal_crunch_sound_id[5] = { 5000, 5001, 5002, 5003, 5004 };
+
 // FUNCTION: CARMA2_HW 0x00413cc0
 // FUNCTION: CARMA2_SW 0x00413cf0
 void C2_HOOK_FASTCALL DamageUnit(tCar_spec* pCar, tDamage_type pUnit_type, int pDamage_amount) {
