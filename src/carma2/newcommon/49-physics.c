@@ -23,6 +23,7 @@
 #include "c2_math.h"
 #include "c2_string.h"
 #include "c2_stdlib.h"
+#include "60-phil.h"
 
 #include <stddef.h>
 
@@ -170,6 +171,19 @@ tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList(br_vector3* pPosition, br_vector
 tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList2(br_vector3* pPosition, br_vector3* pDirection, br_vector3* pNormal, br_scalar* pT, br_vector3* pCollision_position, tFace_ref* pFaces, int pCount) {
     NOT_IMPLEMENTED();
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x00425ba0
+int C2_HOOK_FASTCALL BoundsOverlapTest__finteray(br_bounds* b1, br_bounds* b2) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // RayCastInBox
 
@@ -1527,6 +1541,19 @@ void C2_HOOK_FASTCALL InitPhysics(void) {
     PhysicsSetErrorHandler(DoPhysicsError);
     InitPhysicsWorkspace(gTemporary_physics_render_buffer, sizeof(gTemporary_physics_render_buffer));
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004bd720
+int C2_HOOK_FASTCALL ClampObjectSpin(tPhysics_object* pObject) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 #if defined(REC2_MATCHING) && defined(_MSC_VER)
 #pragma inline_depth()

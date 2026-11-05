@@ -431,4 +431,8 @@ extern void C2_HOOK_FASTCALL InitPhysics(void);
 
 // GetCollObjFromID
 
+extern int C2_HOOK_FASTCALL ClampObjectSpin(tPhysics_object* pObject);
+
+extern int C2_HOOK_FASTCALL BoundsOverlapTest__finteray(br_bounds* b1, br_bounds* b2);
+
 #endif // GUARD_49_PHYSICS_H
