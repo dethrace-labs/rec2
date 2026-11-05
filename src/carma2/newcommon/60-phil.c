@@ -23,6 +23,12 @@ tPhysics_object* gPHIL_list_collision_infos;
 // GLOBAL: CARMA2_SW 0x007410ac
 tU32 gPHIL_last_physics_tick;
 
+// GLOBAL: CARMA2_HW 0x00692dd0
+float gFLOAT_00692dd0;
+
+// GLOBAL: CARMA2_HW 0x00692dd4
+float gFLOAT_00692dd4;
+
 // GLOBAL: CARMA2_HW 0x0074a5e8
 int gPHIL_munging_objects;
 
@@ -343,7 +349,18 @@ int C2_HOOK_FASTCALL PHILSetPassiveObjectsMatrix(tPhysics_object* pObject, const
     }
 }
 
-// PHILAddActiveObject
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004b6210
+int C2_HOOK_FASTCALL PHILAddActiveObject(tPhysics_object* pInfo, br_matrix34* pMatrix, const br_vector3* pArg3, const br_vector3* pArg4) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004b62b0
 int C2_HOOK_FASTCALL PHILAddObjectImmediately(tPhysics_object* pObject) {
@@ -362,7 +379,18 @@ int C2_HOOK_FASTCALL PHILAddObjectImmediately(tPhysics_object* pObject) {
 
 // PHILAddActiveObjectImmediately
 
-// PHILSetObjectProperty
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004b63b0
+int C2_HOOK_CDECL PHILSetObjectProperty(tPhysics_object* pObject, int pProperty, ...) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // STUB: CARMA2_HW 0x004b6530
 // STUB: CARMA2_SW 0x004b2c50

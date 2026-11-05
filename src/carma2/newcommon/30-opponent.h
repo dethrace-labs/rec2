@@ -218,4 +218,8 @@ extern void C2_HOOK_FASTCALL TwoCarsHitEachOther(tCar_spec* pA_car, tCar_spec* p
 
 // GetOpponentMood
 
+extern int gStop_opponents_moving;
+
+extern float gOppo_render_zero;
+
 #endif // GUARD_30_OPPONENT_H
