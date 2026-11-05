@@ -19,6 +19,7 @@
 #include "69-sound.h"
 #include "globvars.h"
 #include "platform.h"
+#include "60-phil.h"
 
 #include <s3/internal/audio.h>
 
@@ -88,6 +89,15 @@ tU32 gPipe_sound_start_time;
 // GLOBAL: CARMA2_SW 0x00671018
 tU32 gPipe_sound_time_window;
 
+// GLOBAL: CARMA2_HW 0x006940d4
+tPipe_smudge_data* gSmudge_space;
+
+// GLOBAL: CARMA2_HW 0x0067690c
+int gPipe_undo_enabled = 0;
+
+// GLOBAL: CARMA2_HW 0x0069410c
+volatile undefined4 gUNK_0069410c;
+
 // ARReplayForwards
 
 // FUNCTION: CARMA2_HW 0x00402360
@@ -129,6 +139,26 @@ void C2_HOOK_FASTCALL ARResetPiping(void) {
     gPipe_buffer_working_end = gPipe_buffer_phys_end;
     gPipe_buffer_oldest = NULL;
     gReentrancy_count = 0;
+}
+
+// FUNCTION: CARMA2_HW 0x00402540
+int C2_HOOK_FASTCALL ARReplayPlaying(void) {
+
+    if (gPipe_play_ptr == gPipe_record_ptr) {
+        return 0;
+    }
+    if (gPipe_play_ptr == gPipe_buffer_oldest) {
+        return 1;
+    }
+    if (gReplay_rate != 0.f) {
+        if (gReplay_rate > 0.f) {
+            return 1;
+        } else {
+            return 0;
+        }
+    } else {
+        return gPlay_direction > 0;
+    }
 }
 
 // ARInitialise
@@ -254,6 +284,16 @@ tU8* C2_HOOK_FASTCALL ARGetPipePlayPtr(void) {
 // FUNCTION: CARMA2_SW 0x00402e00
 void C2_HOOK_FASTCALL ARSetPipePlayPtr(tU8* pPtr) {
     gPipe_play_ptr = pPtr;
+}
+
+// FUNCTION: CARMA2_HW 0x004030d0
+void C2_HOOK_FASTCALL SetPipeUndoFlag(void) {
+    gPipe_undo_enabled = 1;
+}
+
+// FUNCTION: CARMA2_HW 0x004030e0
+void C2_HOOK_FASTCALL ClearPipeUndoFlag(void) {
+    gPipe_undo_enabled = 0;
 }
 
 // ApplyPipedSession
@@ -457,11 +497,78 @@ void C2_HOOK_FASTCALL AddSmokeColumnToPipingSession(int pIndex, const tSmoke_col
         SIZE_OFFSET_PIPING(tPipe_chunk_smoke_column, vertex), pVertex);
 }
 
-// AddFlameToPipingSession
+// FUNCTION: CARMA2_HW 0x004c73a0
+void C2_HOOK_FASTCALL AddSoundToPipingSession(tS3_outlet* pOutlet, int pSound, tS3_volume pL_volume, tS3_volume pR_volume, int pPitch, const br_vector3* pPosition) {
+    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_shunk_single_sound, pitch, 0x4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_shunk_single_sound, position, 0x4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_shunk_single_sound, position, 0xc);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_shunk_single_sound, outlet, 0x10);
+    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_shunk_single_sound, outlet, 0x2);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_shunk_single_sound, volume, 0x12);
+    C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_shunk_single_sound, volume, 0x2);
 
-// AddSplashToPipingSession
+    if (!gAction_replay_mode && gProgram_state.racing) {
+        if (pPosition == NULL) {
+            pPosition = &gZero_vector__smash;
+        }
+        ARAddVariedDataToSession(ePipe_chunk_single_sound, pSound, 4,
+            SIZE_OFFSET_PIPING(tPipe_shunk_single_sound, pitch), pPitch,
+            SIZE_OFFSET_PIPING(tPipe_shunk_single_sound, position), pPosition,
+            SIZE_OFFSET_PIPING(tPipe_shunk_single_sound, outlet), GetIndexFromOutlet(pOutlet),
+            SIZE_OFFSET_PIPING(tPipe_shunk_single_sound, volume), (pR_volume << 8) + pL_volume);
+    }
+}
 
-// AddExtendedSplashToPipingSession
+// FUNCTION: CARMA2_HW 0x004c7500
+void C2_HOOK_FASTCALL FUN_004c7500(uintptr_t pOwner, void* pData, tU32 pArg3) {
+
+    ARAddVariedDataToSession(0x16, pOwner, 2,
+        0x30, 0, (uintptr_t)pData,
+        4, 0x30, pArg3);
+}
+
+// FUNCTION: CARMA2_HW 0x004c70f0
+void C2_HOOK_FASTCALL AddFlameToPipingSession(int pIndex, int pFrame, br_scalar pScale_x, br_scalar pScale_y, br_scalar pOffset_x, br_scalar pOffset_z) {
+    tU32 bits;
+
+    (void)pScale_y;
+    (void)pOffset_x;
+    (void)pOffset_z;
+    memcpy(&bits, &pScale_x, sizeof(bits));
+    gUNK_0069410c = bits;
+    ARAddVariedDataToSession((tPipe_chunk_type)18, pIndex, 5,
+        2, 0, pFrame, 4, 4, bits, 4, 8, bits, 4, 12, bits, 4, 16, bits);
+}
+
+// FUNCTION: CARMA2_HW 0x004c7130
+void C2_HOOK_FASTCALL AddSplashToPipingSession(tPhysics_object* pCollision) {
+    br_scalar water_d;
+
+    water_d = pCollision->water_d;
+    *(volatile br_scalar*)&gUNK_0069410c = water_d;
+    ARAddVariedDataToSession((tPipe_chunk_type)0x14, (uintptr_t)pCollision, 2,
+        4, 0, *(tU32*)&gUNK_0069410c,
+        0xc, 4, &pCollision->water_normal);
+}
+
+// FUNCTION: CARMA2_HW 0x004c7160
+void C2_HOOK_FASTCALL AddExtendedSplashToPipingSession(tPhysics_object* pCollision, void* pArg2) {
+    tU8 flag;
+    br_scalar water_d;
+
+    if (PHILGetObjectProperty(pCollision, 6) != 0.0f) {
+        flag = 0xff;
+    } else {
+        flag = pCollision->flags_0x238;
+    }
+    water_d = pCollision->water_d;
+    *(volatile br_scalar*)&gUNK_0069410c = water_d;
+    ARAddVariedDataToSession((tPipe_chunk_type)0x3b, (uintptr_t)pArg2, 4,
+        1, 0, (*(int*)&flag) & 0xff,
+        4, 4, *(tU32*)&gUNK_0069410c,
+        0xc, 8, &pCollision->water_normal,
+        0x18, 0x14, &pCollision->bb2);
+}
 
 // AddCarToPipingSession
 
@@ -565,13 +672,29 @@ void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volum
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004c8500
+void C2_HOOK_FASTCALL FUN_004c8500(uintptr_t pOwner, const br_vector3* pVector) {
+    br_vector3 vector;
+
+    vector = *pVector;
+    ARDoSingleSession(7, pOwner, &vector, sizeof(vector));
+}
+
 // FUNCTION: CARMA2_HW 0x004c8530
 // FUNCTION: CARMA2_SW 0x004c4c60
 void C2_HOOK_FASTCALL PipeSingleSpecial(tSpecial_type pType) {
     ARDoSingleVariedSession(ePipe_chunk_special, pType, 0);
 }
 
-// PipeSingleCarIncident
+// FUNCTION: CARMA2_HW 0x004c8540
+void C2_HOOK_FASTCALL PipeSingleCarIncident(tCar_spec* pCar, br_vector3* pPosition, float pForce) {
+
+    gUNK_0069410c = *(tU32*)&pForce;
+    ARDoSingleVariedSession(ePipe_chunk_ped_incident, 1, 3,
+        4, 0, *(tU32*)&pForce,
+        2, 4, (tU16)pCar->car_ID,
+        0xc, 8, pPosition);
+}
 
 // PipeSinglePedIncident
 
@@ -709,7 +832,15 @@ void C2_HOOK_FASTCALL PipeSinglePedDismember(tPedestrian* pPed, tU8 pBone_index,
         SIZE_OFFSET_PIPING(tPipe_single_ped_dismember, new_value), pNew_value);
 }
 
-// PipeSinglePedFPChange
+// FUNCTION: CARMA2_HW 0x004c8c30
+void C2_HOOK_FASTCALL PipeSinglePedFPChange(tPedestrian* pPed, float pValue, float pUnused) {
+
+    gUNK_0069410c = *(tU32*)&pValue;
+    /* chunk type 45 (0x2d): no tPipe_chunk_type constant yet (adding enum constants to rec2_types.h shifts codegen elsewhere) */
+    ARDoSingleVariedSession(45, (uintptr_t)pPed, 2,
+        4, 0, *(tU32*)&pValue,
+        4, 4, *(tU32*)&pValue);
+}
 
 // FUNCTION: CARMA2_HW 0x004c8c60
 // FUNCTION: CARMA2_SW 0x004c5390

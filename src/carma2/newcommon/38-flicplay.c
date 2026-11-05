@@ -171,11 +171,11 @@ int gPending_flic = -1;
 // GLOBAL: CARMA2_SW 0x0068094c
 int gPending_pending_flic;
 
-// GLOBAL: CARMA2_HW 0x00686328
-tU32 gSound_time;
-
 // GLOBAL: CARMA2_HW 0x00686300
 int gSound_ID;
+
+// GLOBAL: CARMA2_HW 0x00686328
+tU32 gSound_time;
 
 // GLOBAL: CARMA2_HW 0x005964d0
 // GLOBAL: CARMA2_SW 0x00591418
