@@ -136,9 +136,9 @@ extern void C2_HOOK_FASTCALL SuspendPendingFlic(void);
 
 extern void C2_HOOK_FASTCALL ResumePendingFlic(void);
 
-extern int gSound_ID;
-
 extern tU32 gSound_time;
+
+extern int gSound_ID;
 
 extern void C2_HOOK_FASTCALL TurnOnPanelFlics(void);
 

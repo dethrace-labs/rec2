@@ -118,13 +118,13 @@ extern void C2_HOOK_FASTCALL DisallowDuplicates(void);
 
 extern void C2_HOOK_FASTCALL AllowDuplicates(void);
 
-extern int gNumber_of_additional_models;
+extern br_actor* gLast_actor;
 
 extern br_model* gAdditional_models[1000];
 
-extern char gAdditional_actor_path[256];
+extern int gNumber_of_additional_models;
 
-extern br_actor* gLast_actor;
+extern char gAdditional_actor_path[256];
 
 extern char gAdditional_model_path[256];
 
