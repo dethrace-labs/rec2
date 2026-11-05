@@ -14,8 +14,8 @@
 #include "41-utility.h"
 #include "69-sound.h"
 #include "globvars.h"
-#include "38-flicplay.h"
 #include "32-spark.h"
+#include "38-flicplay.h"
 
 // FUNCTION: CARMA2_HW 0x0043e750
 // FUNCTION: CARMA2_SW 0x0043e860
