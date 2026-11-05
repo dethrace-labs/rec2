@@ -934,6 +934,14 @@ void C2_HOOK_FASTCALL StopFlapping(br_actor* pActor, tCar_spec* pCar_spec) {
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x00439500
+void C2_HOOK_FASTCALL FUN_00439500(void) {
+    extern tCar_spec* gCar_to_view;
+    extern void C2_HOOK_FASTCALL DeleteFarCrushes(tCar_spec* pCar);
+
+    DeleteFarCrushes(gCar_to_view);
+}
+
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
 #endif
