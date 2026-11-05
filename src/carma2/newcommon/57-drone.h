@@ -209,4 +209,13 @@ extern void C2_HOOK_CDECL DoNotDprintf_drone(const char* pMessage, ...);
 
 extern float gDrone_render_zero;
 
+typedef struct {
+    br_model* model;
+    float crushability;
+    br_bounds3 bounds;
+} tDrone_crush_data;
+
+
+extern tDrone_crush_data gDrone_crush_data;
+
 #endif // GUARD_57_DRONE_H
