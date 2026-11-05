@@ -465,7 +465,24 @@ void C2_HOOK_FASTCALL AddSmokeColumnToPipingSession(int pIndex, const tSmoke_col
 
 // AddSplashToPipingSession
 
-// AddExtendedSplashToPipingSession
+// FUNCTION: CARMA2_HW 0x004c7160
+void C2_HOOK_FASTCALL AddExtendedSplashToPipingSession(tPhysics_object* pCollision, void* pArg2) {
+    tU8 flag;
+    br_scalar water_d;
+
+    if (PHILGetObjectProperty(pCollision, 6) != 0.0f) {
+        flag = 0xff;
+    } else {
+        flag = pCollision->flags_0x238;
+    }
+    water_d = pCollision->water_d;
+    *(volatile br_scalar*)&gUNK_0069410c = water_d;
+    ARAddVariedDataToSession((tPipe_chunk_type)0x3b, (uintptr_t)pArg2, 4,
+        1, 0, (*(int*)&flag) & 0xff,
+        4, 4, *(tU32*)&gUNK_0069410c,
+        0xc, 8, &pCollision->water_normal,
+        0x18, 0x14, &pCollision->bb2);
+}
 
 // AddCarToPipingSession
 
