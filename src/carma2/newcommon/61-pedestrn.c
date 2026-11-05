@@ -1268,7 +1268,18 @@ void C2_HOOK_FASTCALL SetObjectV(tPhysics_object* pObject, const br_vector3* pV)
 
 // RecalculateOrientationOfRoot
 
-// BonerActiveHalted2
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x00409400
+int C2_HOOK_FASTCALL BonerActiveHalted2(tPed_character_instance* pCharacter, undefined4 pArg2) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // CharacterNoLongerPhysicworthy
 
