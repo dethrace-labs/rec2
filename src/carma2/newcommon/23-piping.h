@@ -530,4 +530,9 @@ extern int C2_HOOK_FASTCALL CalcShrapnelLength(tPipe_chunk* pChunk);
 
 extern int gUNK_006a23b4;
 
+typedef struct {
+    tU32 value;
+} tPipe_stack_word;
+
+
 #endif // GUARD_23_PIPING_H

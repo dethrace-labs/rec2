@@ -13,6 +13,7 @@
 #include "globvars.h"
 #include "41-utility.h"
 #include "27-powerup.h"
+#include "23-piping.h"
 
 // GLOBAL: CARMA2_HW 0x006768fc
 // GLOBAL: CARMA2_SW 0x0067106c
