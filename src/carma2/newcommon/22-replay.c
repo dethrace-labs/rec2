@@ -157,6 +157,16 @@ void C2_HOOK_FASTCALL WorkerPedMoveUndo(tPedestrian* pPed, int field_0x6, int fi
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004ca650
+void C2_HOOK_FASTCALL WorkerPedFPChange(int field_0x0, tPipe_stack_word field_0x4) {
+    extern int gBOOL_00744804;
+    extern int C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pCharacter, int pMove_action, float pSpeed, int pArg4, int pArg5, int pArg6);
+
+    if (!gBOOL_00744804) {
+        SetCharacterMove(((tPedestrian*)field_0x0)->character, -1, *(float*)&field_0x4.value, 0, 0, GetTotalTime());
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x004da960
 void C2_HOOK_FASTCALL WorkerRepulseRay(int field_0x0, int field_0x4, int field_0x8, int field_0xc) {
     extern tRepulse_link gRepulse_links[6];
