@@ -1622,3 +1622,23 @@ void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes)
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004c7f40
+void C2_HOOK_FASTCALL FUN_004c7f40(br_model* pModel, br_vector3* pSrc, const float* pScalars) {
+    extern void C2_HOOK_FASTCALL ARDoSingleSession(int pType, uintptr_t pOwner, void* pData, tU32 pSize);
+    extern void C2_HOOK_FASTCALL FUN_0043bca0(undefined4* pArg1, void* pArg2, br_model* pModel, const br_vector3* pSrc, const float* pScalars);
+    undefined4* crush_space;
+    tU32 size;
+
+    crush_space = gCrush_space;
+    if (crush_space == NULL) {
+        return;
+    }
+    size = (tU32)pModel->nvertices * 2 + 0xa;
+    if (size > 0x4000) {
+        FatalError(kFatalError_ChunkIsTooLargeToPipe);
+    }
+    *(br_model**)crush_space = pModel;
+    FUN_0043bca0(crush_space + 1, (char*)crush_space + 0xa, pModel, pSrc, pScalars);
+    ARDoSingleSession(3, (uintptr_t)-1, crush_space, size);
+}
+
