@@ -574,9 +574,30 @@ void C2_HOOK_FASTCALL CalcGraphicalWheelStuff(tCar_spec* pCar) {
 
 // MungeCarsMass
 
-// AddDrag
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// DragChildren
+// STUB: CARMA2_HW 0x00415ef0
+void C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject, br_scalar pDt) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+// FUNCTION: CARMA2_HW 0x00416030
+void C2_HOOK_FASTCALL DragChildren(tCar_spec* pCar, tPhysics_object* pChild) {
+
+    while (pChild != NULL) {
+        AddDrag(pCar, pChild, 0.04f);
+        if (pChild->child != NULL) {
+            DragChildren(pCar, pChild->child);
+        }
+        pChild = pChild->next;
+    }
+}
 
 // DoCarStuff
 
@@ -1299,6 +1320,131 @@ int C2_HOOK_FASTCALL GetCompressedCrushVertexDataSize(tU8* pData) {
         return size;
     }
     return count_or_points * 6 + 1;
+}
+
+// FUNCTION: CARMA2_HW 0x0043db00
+void C2_HOOK_FASTCALL UpdateCrushVertices(tCar_spec* pCar, tU8* pData) {
+    extern float C2_HOOK_FASTCALL GetCarOverallBoundsMinY(tCar_spec* pCar_spec);
+    extern void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape);
+    extern void C2_HOOK_FASTCALL UpdateCollisionObject(tPhysics_object* pCollision_info);
+    tPhysics_shape* shape;
+    tCar_crush_shape_info* shape_info;
+    int i;
+    int j;
+    int count;
+
+    if (pCar->car_crush_spec->field_0x4b8 != 0) {
+        count = *pData++;
+        shape = pCar->collision_info->shape;
+        while (shape != NULL && count > 0) {
+            if (shape->common.type == kCollisionShapeType_Polyhedron
+                    || shape->common.type == kCollisionShapeType_Wireframe_Polyhedron) {
+                shape->polyhedron.polyhedron.count_points = *pData++;
+                for (i = 0; i < shape->polyhedron.polyhedron.count_points; i++) {
+                    ExpandVector3(&shape->polyhedron.polyhedron.points[i], (const tCompressed_vector3*)pData, -2.5f, 2.5f);
+                    pData += 6;
+                }
+                count--;
+            }
+            shape = shape->common.next;
+        }
+    } else {
+        pData++;
+        for (i = 0; i < pCar->car_crush_spec->count_shapes; i++) {
+            shape_info = &pCar->car_crush_spec->field_0x4[i];
+            for (j = 0; j < shape_info->count_points; j++) {
+                ExpandVector3(&shape_info->field_0x18[j].field_0x18, (const tCompressed_vector3*)pData, -2.5f, 2.5f);
+                pData += 6;
+                shape_info->field_0x18[j].field_0xc.v[0] = shape_info->field_0x18[j].field_0x18.v[0];
+                shape_info->field_0x18[j].field_0xc.v[1] = shape_info->field_0x18[j].field_0x18.v[1];
+                shape_info->field_0x18[j].field_0xc.v[2] = shape_info->field_0x18[j].field_0x18.v[2];
+                shape_info->field_0x0->polyhedron.points[j].v[0] = shape_info->field_0x18[j].field_0xc.v[0];
+                shape_info->field_0x0->polyhedron.points[j].v[1] = shape_info->field_0x18[j].field_0xc.v[1];
+                shape_info->field_0x0->polyhedron.points[j].v[2] = shape_info->field_0x18[j].field_0xc.v[2];
+            }
+            FillInShape((tPhysics_shape*)shape_info->field_0x0);
+        }
+    }
+    UpdateCollisionObject(pCar->collision_info);
+    pCar->collision_info->bb2.min.v[1] = GetCarOverallBoundsMinY(pCar);
+    pCar->car_crush_spec->field_0x26 = PO_U16(pCar->collision_info, 0x290);
+    pCar->car_crush_spec->field_0x24 = pCar->car_crush_spec->field_0x26;
+    pCar->car_crush_spec->expand_bounding_box = 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0043dce0
+void C2_HOOK_FASTCALL WeldCarByNetwork(tCar_spec* pCar) {
+    extern br_scalar gFLOAT_00589a2c;
+    extern void C2_HOOK_FASTCALL BendCar(tCar_spec* pCar, br_angle pAngle_x, br_angle pAngle_y, br_angle pAngle_z, const br_vector3* pArg5, float pArg6, int pArg7);
+    tCar_crush_spec* spec;
+    tPhysics_object* info;
+    br_scalar temp;
+    br_scalar m1;
+    tU8 f;
+    int flag;
+    tU16 id_a;
+    tU16 id_b;
+    tU16 id_c;
+    br_vector3 v;
+    int c2;
+    int c1;
+
+    spec = pCar->car_crush_spec;
+    if (spec->field_0x144 != 0) {
+        info = pCar->collision_info;
+        f = *(tU8*)((tU8*)info + 0x481);
+        c1 = (((f & 1) != 0 && spec->field_0x174 == spec->bend_z_min)
+                || ((f & 1) == 0 && spec->field_0x174 == spec->bend_z_max)) & 1;
+        c2 = ((f & 2) != 0 && *(tU16*)((tU8*)spec + 0x190) == *(tU16*)((tU8*)info + 0x482))
+            || ((f & 4) != 0 && *(tU16*)((tU8*)spec + 0x192) == *(tU16*)((tU8*)info + 0x482))
+            || ((f & 8) != 0 && *(tU16*)((tU8*)spec + 0x194) == *(tU16*)((tU8*)info + 0x482));
+        if (c1 & c2) {
+            return;
+        }
+        UnBendCar(pCar, 2000, &temp);
+    }
+    info = pCar->collision_info;
+    id_a = 0;
+    v.v[0] = 0.f;
+    v.v[1] = 0.f;
+    v.v[2] = 0.f;
+    id_c = 0;
+    id_b = 0;
+    if ((*(tU8*)((tU8*)info + 0x481) & 1) != 0) {
+        v.v[2] = spec->bend_z_min;
+        temp = info->bb1.max.v[2];
+        flag = 1;
+    } else {
+        v.v[2] = spec->bend_z_max;
+        temp = info->bb1.min.v[2];
+        flag = 0;
+    }
+    switch (*(tU8*)((tU8*)info + 0x481) >> 1) {
+    case 1:
+        id_a = *(tU16*)((tU8*)info + 0x482);
+        if ((id_a < 0x7ff8 && flag) || (id_a > 0x7ff8 && !flag)) {
+            v.v[1] = info->bb1.min.v[1];
+        } else {
+            v.v[1] = info->bb1.max.v[1];
+        }
+        break;
+    case 2:
+        id_b = *(tU16*)((tU8*)info + 0x482);
+        if ((id_b > 0x7ff8 && flag) || (id_b < 0x7ff8 && !flag)) {
+            v.v[0] = info->bb1.min.v[0];
+        } else {
+            v.v[0] = info->bb1.max.v[0];
+        }
+        break;
+    case 4:
+        id_c = *(tU16*)((tU8*)info + 0x482);
+        m1 = info->bb1.max.v[0];
+        v.v[0] = (m1 + info->bb1.min.v[0]) * gFLOAT_00589a2c;
+        m1 = info->bb1.min.v[1];
+        v.v[1] = (m1 + info->bb1.max.v[1]) * gFLOAT_00589a2c;
+        break;
+    }
+    BendCar(pCar, id_a, id_b, id_c, &v, temp, 0);
 }
 
 // FUNCTION: CARMA2_HW 0x00498460
