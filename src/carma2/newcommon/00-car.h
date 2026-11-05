@@ -241,4 +241,7 @@ extern void C2_HOOK_FASTCALL TurnOnNonCar(int pIndex);
 
 extern void C2_HOOK_FASTCALL TurnOffNonCar(int pIndex);
 
+#define PO_U16(o, off) (*(tU16*)((char*)(o) + (off)))
+
+
 #endif // GUARD_00_CAR_H
