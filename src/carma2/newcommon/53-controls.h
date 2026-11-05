@@ -134,7 +134,7 @@ extern void C2_HOOK_FASTCALL TDamageLFWheel(void);
 
 extern void C2_HOOK_FASTCALL AlignChildren(tPhysics_object* pCollision_info);
 
-// FlipUpCar
+extern void C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec);
 
 extern void C2_HOOK_FASTCALL GetPowerup(int pNum);
 
@@ -200,8 +200,10 @@ extern void C2_HOOK_FASTCALL DisposeAbuseomatic(void);
 
 // ToggleHeadupLevel
 
-extern void C2_HOOK_FASTCALL FUN_0045acf0(void);
+extern tU32 gPalette_fade_time;
 
 extern void C2_HOOK_FASTCALL FUN_0045a670(void);
+
+extern void C2_HOOK_FASTCALL FUN_0045acf0(void);
 
 #endif // GUARD_53_CONTROLS_H
