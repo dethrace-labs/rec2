@@ -91,7 +91,7 @@ extern void C2_HOOK_FASTCALL CalcGraphicalWheelStuff(tCar_spec* pCar);
 
 // MungeCarsMass
 
-// AddDrag
+extern void C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject, br_scalar pDt);
 
 // DragChildren
 
@@ -242,6 +242,16 @@ extern void C2_HOOK_FASTCALL TurnOnNonCar(int pIndex);
 extern void C2_HOOK_FASTCALL TurnOffNonCar(int pIndex);
 
 extern int gMetal_crunch_sound_id[5];
+
+extern tFace_ref gFace_list__car[300];
+
+typedef struct {
+    tCar_spec* car;
+    float step;
+    float* total_displacement;
+    float displacement;
+} tCrush_displacement_context_local;
+
 
 #define PO_U16(o, off) (*(tU16*)((char*)(o) + (off)))
 
