@@ -1556,6 +1556,12 @@ void C2_HOOK_FASTCALL FUN_004c7fa0(tU16 pCar_ID, int pModel_index, int pVertex_c
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004ee250
+void C2_HOOK_FASTCALL FUN_004ee250(tCar_spec* pCar, tPhysics_object* pCollision_info, br_vector3* pPos, void* pArg4, br_actor* pActor, int pArg6, tCar_crush_smashable_part* pSmashable, float pDamage, int pArg9) {
+    gINT_006a3334 = 0;
+    FUN_004ee290(pCar, pCollision_info, pPos, pArg4, pActor, pArg6, pSmashable, pDamage, pArg9, 0);
+}
+
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
 #endif
