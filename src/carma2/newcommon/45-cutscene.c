@@ -92,3 +92,12 @@ void C2_HOOK_FASTCALL StartLoadingScreen(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x00461980
+void C2_HOOK_FASTCALL FUN_00461980(int pSound_ID, tU32 pSound_time) {
+    extern int gSound_ID;
+    extern tU32 gSound_time;
+
+    gSound_ID = pSound_ID;
+    gSound_time = pSound_time;
+}
+
