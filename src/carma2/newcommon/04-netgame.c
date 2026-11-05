@@ -22,6 +22,7 @@
 #include "globvrpb.h"
 #include "platform.h"
 #include "rec2_macros.h"
+#include "rec2_types.h"
 
 // GLOBAL: CARMA2_HW 0x0075b8f8
 // GLOBAL: CARMA2_SW 0x00751e58
