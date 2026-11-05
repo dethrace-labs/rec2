@@ -23,7 +23,6 @@
 #include "rec2_macros.h"
 
 #include "c2_string.h"
-#include "22-replay.h"
 
 // GLOBAL: CARMA2_HW 0x00660110
 // GLOBAL: CARMA2_SW 0x0065aa58

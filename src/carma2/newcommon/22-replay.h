@@ -72,6 +72,4 @@ extern void C2_HOOK_FASTCALL WorkerShrapnelShower(tU32 field_0x4, tU32 field_0x8
 
 extern br_pixelmap* gReplay_pixelmaps[11];
 
-extern void C2_HOOK_FASTCALL WorkerExtendedSplash(int field_0x0, int field_0x4, int field_0x8, br_vector3* pField_0xc, br_vector3* pField_0x18);
-
 #endif // GUARD_22_REPLAY_H
