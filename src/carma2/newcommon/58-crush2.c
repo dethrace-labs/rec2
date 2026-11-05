@@ -395,6 +395,26 @@ intptr_t C2_HOOK_CDECL FUN_00434320(br_actor* pActor, int pValue) {
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x0043b400
+int C2_HOOK_FASTCALL FUN_0043b400(tPhysics_object* pObject, tCrush_displacement_context_local* pContext) {
+    tCrush_displacement_context_local* context;
+    tModel_mash_context_local model_context;
+
+    context = pContext;
+    model_context.car = context->car;
+    model_context.step = context->step;
+    model_context.displacement = 0.0f;
+    model_context.total_displacement = context->total_displacement;
+
+    ARStartPipingSession(0x18);
+    DRActorEnumRecurse(pObject->actor, (br_actor_enum_cbfn*)FUN_0043b470, &model_context);
+    AREndPipingSession();
+    DRActorEnumRecurse(pObject->actor, (br_actor_enum_cbfn*)FUN_00434320, NULL);
+
+    context->displacement += model_context.displacement;
+    return 0;
+}
+
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
 #endif
