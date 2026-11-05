@@ -1571,6 +1571,11 @@ tSmashable_level* C2_HOOK_FASTCALL FUN_004ee290(tCar_spec* pCar, tPhysics_object
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x004f5a60
+void C2_HOOK_FASTCALL FUN_004f5a60(tCar_spec* pCar_spec) {
+    DRActorEnumRecurse(pCar_spec->car_master_actor, FUN_004f5a70, pCar_spec);
+}
+
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
 #endif
