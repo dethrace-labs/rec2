@@ -22,6 +22,7 @@
 #include "globvrpb.h"
 #include "platform.h"
 #include "rec2_macros.h"
+#include "rec2_types.h"
 
 // GLOBAL: CARMA2_HW 0x0075b8f8
 // GLOBAL: CARMA2_SW 0x00751e58
@@ -40,6 +41,18 @@ int gLast_it_change;
 tU32 gTime_for_punishment;
 
 // SendShapeNumbers
+
+// FUNCTION: CARMA2_HW 0x0043d670
+void C2_HOOK_FASTCALL ToggleFlapsFromNetwork(tNet_message_chunk* pChunk) {
+    extern int C2_HOOK_FASTCALL ToggleFlapsCB(tPhysics_object* pCollision_info, void* data);
+    extern int C2_HOOK_FASTCALL PhysicsObjectRecurse(tPhysics_object* pObject, tEnumCollision_cbfn* pCallback, void* pContext);
+    tCar_spec* car;
+
+    car = NetCarFromPlayerID(pChunk->toggle_doors.id);
+    if (car != NULL) {
+        PhysicsObjectRecurse(car->collision_info, ToggleFlapsCB, car);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x00497ef0
 // FUNCTION: CARMA2_SW 0x00494b20
@@ -84,7 +97,18 @@ int C2_HOOK_FASTCALL CarShapeNeedsSendingToPlayer(tCar_crush_network_shapes* pSh
 
 // SendCarData
 
-// ReceivedRecover
+// FUNCTION: CARMA2_HW 0x00498390
+void C2_HOOK_FASTCALL ReceivedRecover(tNet_message_chunk_recover* pContents) {
+    int i;
+
+    if (gNet_players[gThis_net_player_index].ID != pContents->player) {
+        for (i = 0; i < gNumber_of_net_players; i++) {
+            if (gNet_players[i].ID == pContents->player) {
+                gNet_players[i].car->time_to_recover = pContents->time;
+            }
+        }
+    }
+}
 
 // CopyMechanics
 
@@ -103,7 +127,18 @@ void C2_HOOK_FASTCALL ReceivedCopInfo(void) {
 
 // SendAllNonCarPositions
 
-// ReceivedNonCarPosition
+// FUNCTION: CARMA2_HW 0x00498bc0
+void C2_HOOK_FASTCALL ReceivedNonCarPosition(tNet_message_chunk_non_car_position* pContents) {
+    br_actor* actor;
+
+    actor = gProgram_state.track_spec.non_car_list[pContents->ID];
+    if (actor != NULL && gNet_mode != eNet_mode_host) {
+        BrMatrix34Copy(&actor->t.t.mat, &pContents->mat);
+        if (pContents->flags != 0) {
+            actor->identifier[3] = '!';
+        }
+    }
+}
 
 // ReceivedNonCar
 
@@ -464,5 +499,52 @@ void C2_HOOK_FASTCALL AddPlayerToShapeStatusLists(int pPlayer_id, int pCount, tN
     }
 }
 
-// RemovePlayerFromShapeStatusLists
+// FUNCTION: CARMA2_HW 0x0049be40
+void C2_HOOK_FASTCALL RemovePlayerFromShapeStatusLists(tPlayer_ID pPlayer_id, int pPlayer_count, tNet_game_player_info* pPlayers) {
+    tCar_crush_network_shapes* shapes;
+    int j;
 
+    for (; pPlayer_count > 0; pPlayer_count--, pPlayers++) {
+        if (pPlayers->car != NULL && pPlayers->car->car_crush_spec != NULL) {
+            shapes = pPlayers->car->car_crush_spec->network_stuff;
+            for (j = 0; j < (int)REC2_ASIZE(shapes->items); j++) {
+                if (shapes->items[j].network_id == pPlayer_id) {
+                    shapes->items[j].network_id = 0;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0043d690
+void C2_HOOK_FASTCALL SendSplitHalfNonCarData(tNon_car_spec* pNon_car, undefined4 pArg2, tNet_game_player_info* pRecipient) {
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x0043d7d0
+void C2_HOOK_FASTCALL FUN_43d7d0(tNet_game_player_info* pRecipient) {
+    int i;
+    tNon_car_spec** pNon_car;
+
+    i = 0;
+    if (gNum_active_non_cars > 0) {
+        pNon_car = gActive_non_car_list;
+        do {
+            if ((*pNon_car)->driver == 3) {
+                SendSplitHalfNonCarData(*pNon_car, -1, pRecipient);
+            }
+            i++;
+            pNon_car++;
+        } while (i < gNum_active_non_cars);
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif

@@ -30,6 +30,9 @@
 
 #include "c2_stdio.h"
 #include "c2_string.h"
+#include "23-piping.h"
+#include "28-world3.h"
+#include "57-drone.h"
 
 // GLOBAL: CARMA2_HW 0x006a0414
 // GLOBAL: CARMA2_SW 0x0069a46c
@@ -137,6 +140,12 @@ int gPed_cache_notify_flags;
 // RecachePedestrian
 
 // SetCharacterDirectionAR
+
+// FUNCTION: CARMA2_HW 0x00402dd0
+void C2_HOOK_FASTCALL FUN_00402dd0(void) {
+
+    gPipe_play_ptr = gPipe_record_ptr;
+}
 
 // FUNCTION: CARMA2_HW 0x004ca4d0
 // FUNCTION: CARMA2_SW 0x004c6c00
@@ -305,7 +314,17 @@ FILE* C2_HOOK_FASTCALL BonerOpenRemaps(const char* pFile_name) {
     return DRfopen(path, "rb");
 }
 
-// BonerReadPersonalityModels
+// FUNCTION: CARMA2_HW 0x004cbc10
+void C2_HOOK_FASTCALL BonerReadPersonalityModels(const char* pName) {
+    tPath_name path;
+
+    PathCat(path, gApplication_path, gPedsFolder);
+    PathCat(path, path, "PEEPS");
+    PathCat(path, path, pName);
+    DisallowDuplicates();
+    LoadAllStuffInDirectory(&gPedStorage, path, kRendererShadingType_Diffuse1);
+    AllowDuplicates();
+}
 
 // FUNCTION: CARMA2_HW 0x004cbc70
 // FUNCTION: CARMA2_SW 0x004c8370
@@ -442,6 +461,63 @@ void C2_HOOK_FASTCALL CBFillInObject(tPhysics_object* pObject, undefined4 pType)
     } else {
         pObject->field_0x1a0 = 0x10000;
         pObject->field_0x1a4 = 0x50000;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004cdeb0
+void C2_HOOK_FASTCALL PedProcessContact(tPedestrian* pPed, tPhysics_object* pCollision_info) {
+    tPedestrian* other_ped;
+    tCar_spec* pCar;
+
+    if (pCollision_info == NULL) {
+        return;
+    }
+    if (pPed->field_0x0c == NULL) {
+        return;
+    }
+    if (pCollision_info->owner != NULL
+            && pCollision_info->flags_0x238 >= 2
+            && pCollision_info->flags_0x238 <= 4
+            && pPed->field_0x0c->field_0xc0 == NULL) {
+        other_ped = ((tPed_character_instance*)pCollision_info->owner)->ped;
+        if (other_ped != NULL && other_ped->field_0x0c != NULL) {
+            pPed->field_0x0c->field_0xc0 = other_ped->field_0x0c->field_0xc0;
+        }
+    }
+    if ((pCollision_info->owner == NULL || pCollision_info->flags_0x238 != 1)
+            && (pCollision_info->flags_0x238 != 0x20
+                || (gMutant_tail_state != 2 && GetTotalTime() - gINT_00705b70 >= 7500))
+            && pCollision_info->flags_0x238 != 0x40
+            && pCollision_info->flags_0x238 != 0x10) {
+        return;
+    }
+    if (pCollision_info->flags_0x238 == 0x40) {
+        pCar = ((tShit_mine*)pCollision_info->owner)->field_0x30;
+    } else if (pCollision_info->flags_0x238 == 0x10) {
+        pCar = (tCar_spec*)((tDrone_spec*)pCollision_info->owner)->field_0x5d4;
+    } else {
+        pCar = (tCar_spec*)pCollision_info->owner;
+    }
+    if ((pCar != NULL && pCar->driver > 5) || pCollision_info->parent != NULL) {
+        pPed->field_0x0c->field_0xc0 = pCar;
+        if (pCollision_info->owner != NULL && pCollision_info->flags_0x238 == 0x20) {
+            ((tU8*)pPed->field_0x0c)[0x2e] |= 8;
+        }
+        if (pCollision_info->owner != NULL
+                && pCollision_info->flags_0x238 == 0x20
+                && gMutant_tail_state == 1) {
+            ((tU8*)pPed->field_0x0c)[0x2e] |= 0x10;
+        }
+        if (pCollision_info->flags_0x238 == 0x40) {
+            pPed->field_0x0c->field_0x2e = 0x40;
+        }
+        if (pCollision_info->flags_0x238 == 0x10) {
+            pPed->field_0x0c->field_0x2e = 1;
+            return;
+        }
+    } else if (pCar != NULL && pPed->field_0x0c->field_0xc0 == NULL) {
+        pPed->field_0x0c->field_0xc0 = (tCar_spec*)pCar->field_0xc8;
+        ((tU8*)pPed->field_0x0c)[0x2e] |= 1;
     }
 }
 
@@ -1059,7 +1135,22 @@ void C2_HOOK_FASTCALL SetGoreLevel(int pNewLevel) {
 
 // ScaleModel
 
-// DisposeMove
+// FUNCTION: CARMA2_HW 0x00404350
+void C2_HOOK_FASTCALL DisposeMove(tPed_move* pMove) {
+    int i;
+
+    for (i = 0; i < pMove->count_frames; i++) {
+        if (pMove->frames[i].axis != NULL) {
+            BrMemFree(pMove->frames[i].axis);
+        }
+    }
+    if (pMove->frames != NULL) {
+        BrMemFree(pMove->frames);
+    }
+    if (pMove != NULL) {
+        BrMemFree(pMove);
+    }
+}
 
 // DisposeAllLoadedMoves
 
@@ -1266,7 +1357,26 @@ void C2_HOOK_FASTCALL SetObjectV(tPhysics_object* pObject, const br_vector3* pV)
 
 // MakeCharacterPhysicworthy
 
-// RecalculateOrientationOfRoot
+// FUNCTION: CARMA2_HW 0x00409340
+void C2_HOOK_FASTCALL RecalculateOrientationOfRoot(tPed_character_instance* pPed) {
+    br_matrix34* character_matrix;
+    tPed_form* form;
+    br_matrix34 inverse;
+
+    form = pPed->personality->form;
+    if (pPed->field_0x4 < 0) {
+        character_matrix = &pPed->field_0x2c;
+    } else if (pPed->field_0xe8 != NULL) {
+        character_matrix = pPed->field_0xe8;
+    } else {
+        character_matrix = &form->actor_sets[pPed->field_0x4].actors[0]->t.t.mat;
+    }
+    BrMatrix34LPInverse(&inverse, &form->moves[pPed->field_0x7].move->frames[(short)pPed->field_0x1c].mat);
+    BrMatrix34Mul(&pPed->field_0x8c, &inverse, character_matrix);
+    pPed->field_0x8c.m[3][0] = 0.f;
+    pPed->field_0x8c.m[3][1] = 0.f;
+    pPed->field_0x8c.m[3][2] = 0.f;
+}
 
 // BonerActiveHalted2
 
@@ -1286,7 +1396,18 @@ void C2_HOOK_FASTCALL SetObjectV(tPhysics_object* pObject, const br_vector3* pV)
 
 // ResetAnimation
 
-// SetCharacterMove
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0040a050
+int C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pCharacter, int pMove_action, float pSpeed, int pArg4, int pArg5, int pArg6) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // DRMatrix34RotateCos
 
@@ -1306,7 +1427,18 @@ void C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pPed, const
 #pragma auto_inline(on)
 #endif
 
-// SetCharacterPosition
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0040b0a0
+void C2_HOOK_FASTCALL SetCharacterPosition(tPed_character_instance* pChar, br_vector3* pPosition, int pMode) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // DisposeClonedMaterials
 
@@ -1379,6 +1511,24 @@ int C2_HOOK_FASTCALL GetCharacterModelSet(tPed_character_instance* pCharacter) {
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPed_character_instance, field_0xa, 0xa);
 
     return pCharacter->field_0xa;
+}
+
+// FUNCTION: CARMA2_HW 0x0040b5a0
+int C2_HOOK_FASTCALL GetCharacterBoneIndexByName(tPed_character_instance* pCharacter, const char* pBone_name) {
+    int bone_index;
+    int count_bones;
+
+    bone_index = 0;
+    count_bones = pCharacter->personality->form->count_bones;
+    if (count_bones <= 0) {
+        return -1;
+    }
+    for (; bone_index < count_bones; bone_index++) {
+        if (strcmp(pBone_name, pCharacter->personality->form->bones[bone_index].name) == 0) {
+            return bone_index;
+        }
+    }
+    return -1;
 }
 
 // BonerPassiveCollision
