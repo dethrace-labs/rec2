@@ -144,6 +144,36 @@ tDriver gSplit_car_driver;
 // GLOBAL: CARMA2_SW 0x00673e24
 tPhysics_shape* gGonad_sphere_collision_shape;
 
+// GLOBAL: CARMA2_HW 0x00589a40
+br_scalar gCrushZero = 0.0f;
+
+// FUNCTION: CARMA2_HW 0x0041fbe0
+float C2_HOOK_FASTCALL GetCarOverallBoundsMinY(tCar_spec* pCar_spec) {
+    float rear;
+    float rear_susp;
+    float rear_min;
+    float front_min;
+    float min_value;
+
+    rear = pCar_spec->wpos[0].v[1];
+    rear_susp = pCar_spec->susp_height[0];
+    rear_min = rear - rear_susp;
+    front_min = pCar_spec->wpos[2].v[1] - pCar_spec->susp_height[1];
+    rear_min = rear_min * (1.0f / WORLD_SCALE);
+    front_min = front_min * (1.0f / WORLD_SCALE);
+    min_value = pCar_spec->collision_info->bb1.min.v[1];
+
+    if (rear_min < front_min) {
+        if (rear_min < min_value) {
+            return rear_min;
+        }
+    }
+    if (front_min < min_value) {
+        return front_min;
+    }
+    return min_value;
+}
+
 // FUNCTION: CARMA2_HW 0x00429bb0
 // FUNCTION: CARMA2_SW 0x00429c40
 void C2_HOOK_FASTCALL ReadCrushSettings(FILE* pF) {
@@ -931,6 +961,14 @@ void C2_HOOK_FASTCALL StopFlapping(br_actor* pActor, tCar_spec* pCar_spec) {
     NOT_IMPLEMENTED();
 }
 
+// FUNCTION: CARMA2_HW 0x00439500
+void C2_HOOK_FASTCALL FUN_00439500(void) {
+    extern tCar_spec* gCar_to_view;
+    extern void C2_HOOK_FASTCALL DeleteFarCrushes(tCar_spec* pCar);
+
+    DeleteFarCrushes(gCar_to_view);
+}
+
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
 #endif
@@ -961,6 +999,44 @@ int C2_HOOK_FASTCALL BitObjectIsSufficientlyOutsideCarObjectToDetach(tPhysics_ob
         alignment = BrVector3Dot(limit_direction, &parent_direction);
         if (alignment > 0.707107f) {
             return 1;
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004358a0
+intptr_t C2_HOOK_FASTCALL FUN_004358a0(br_actor* pActor, br_vector3* pDelta, void* pContext) {
+    tUser_crush_data* user_crush_data;
+    tCar_spec** ppCar;
+    br_actor** piVar2;
+    int i;
+
+    user_crush_data = pActor->user;
+    if (user_crush_data != NULL) {
+        ppCar = pContext;
+        for (i = 0, piVar2 = (*ppCar)->wheel_actors; i < 6; i++, piVar2++) {
+            if (pActor == piVar2[6]) {
+                return 0;
+            }
+            if (pActor == piVar2[0]) {
+                return 0;
+            }
+        }
+        if (user_crush_data->groove != NULL) {
+            PipeSingleGrooveOnOff(0, pActor, 3);
+            DisableGroovidelic(pActor, 3);
+            PipeSingleTransformType(pActor, 5);
+            pActor->t.type = 5;
+        }
+        if (user_crush_data->crush_data != NULL) {
+            i = 0;
+            if (0 < (*ppCar)->count_detail_levels) {
+                do {
+                    FUN_00435960(((void**)user_crush_data)[i], pDelta, ppCar, pActor);
+                    i++;
+                } while (i < (*ppCar)->count_detail_levels);
+            }
+            user_crush_data->crush_data->field_0x2c = 1;
         }
     }
     return 0;
@@ -1122,6 +1198,32 @@ void C2_HOOK_FASTCALL SetModelForUpdate(br_model* pModel) {
     }
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x00435960
+void C2_HOOK_FASTCALL FUN_00435960(br_model* pModel, const br_vector3* pOffset, tCar_spec** ppCar, br_actor* pActor) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x00435d40
+void C2_HOOK_FASTCALL DeleteFarCrushes(tCar_spec* pCar) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
 // RandomlyXZSplitCar
 
 // RandomlyBendCar
@@ -1144,6 +1246,24 @@ intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseUltraPlus(br_actor* pActor, br_actor
         }
     }
     return pCallback(actor, pArg);
+}
+
+// FUNCTION: CARMA2_HW 0x004367a0
+void C2_HOOK_FASTCALL CrushShapeMorphVertex(float* pOut, int pAxis, float pVertexComponent, float pDirectionComponent, tU32 pFlags, tCar_crush_limits* pLimits, int pFound) {
+    int index;
+    float t;
+
+    index = ((pFlags & 0xffff) >> ((pAxis * 2 + (pDirectionComponent > gCrushZero)) * 2)) & 3;
+    if (index > pFound) {
+        *pOut = 0.0f;
+        return;
+    }
+    t = (pLimits->limits[pAxis][pDirectionComponent > gCrushZero].values[index] - pVertexComponent) / pDirectionComponent;
+    if (t < gCrushZero) {
+        *pOut = 0.0f;
+    } else if (t < *pOut) {
+        *pOut = t;
+    }
 }
 
 // FireOffBitsCB
@@ -1535,5 +1655,21 @@ void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes)
             pShapes->items[i].field_0x4 = 1;
         }
     }
+}
+
+// FUNCTION: CARMA2_HW 0x004c86b0
+void C2_HOOK_FASTCALL FUN_004c86b0(uintptr_t pId, br_actor* pActor) {
+    br_actor* old_parent;
+
+    old_parent = pActor->parent;
+    ARDoSingleVariedSession(0x19, (uintptr_t)pActor, 3,
+        4, 0, (uintptr_t)pActor,
+        4, 4, (uintptr_t)old_parent,
+        4, 8, pId);
+}
+
+// FUNCTION: CARMA2_HW 0x004c86f0
+void C2_HOOK_FASTCALL FUN_004c86f0(int pOwner, void* pData, tU32 pArg3) {
+    ARDoSingleVariedSession(0x1b, pOwner, 2, 0x10, 0, pData, 4, 0x10, pArg3);
 }
 
