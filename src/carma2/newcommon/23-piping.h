@@ -528,4 +528,8 @@ extern int C2_HOOK_FASTCALL CalcShrapnelLength(tPipe_chunk* pChunk);
 
 // CalcRemoveFacesLength
 
+extern tU8* gPipe_play_ptr;
+
+extern tU8* gPipe_record_ptr;
+
 #endif // GUARD_23_PIPING_H

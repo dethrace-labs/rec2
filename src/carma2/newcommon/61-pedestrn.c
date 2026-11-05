@@ -30,6 +30,9 @@
 
 #include "c2_stdio.h"
 #include "c2_string.h"
+#include "23-piping.h"
+#include "28-world3.h"
+#include "57-drone.h"
 
 // GLOBAL: CARMA2_HW 0x006a0414
 // GLOBAL: CARMA2_SW 0x0069a46c

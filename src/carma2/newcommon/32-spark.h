@@ -257,4 +257,8 @@ extern void* C2_HOOK_FASTCALL GetSplashIndex(tPhysics_object* pObject);
 
 // InitReplaySplashes
 
+extern int gReplay_splash_flags;
+
+extern const br_scalar gFLOAT_0058b008;
+
 #endif // GUARD_32_SPARK_H

@@ -23,6 +23,7 @@
 #include "rec2_macros.h"
 
 #include "c2_string.h"
+#include "22-replay.h"
 
 // GLOBAL: CARMA2_HW 0x00660110
 // GLOBAL: CARMA2_SW 0x0065aa58
@@ -124,6 +125,12 @@ br_pixelmap* gFog_shade_table;
 
 // GLOBAL: CARMA2_SW 0x00795184
 br_pixelmap* gAcid_shade_table;
+
+// GLOBAL: CARMA2_HW 0x006aa574
+int gReplay_splash_flags;
+
+// GLOBAL: CARMA2_HW 0x0058b008
+const br_scalar gFLOAT_0058b008 = 0.0f;
 
 // DrawDot
 
@@ -941,6 +948,19 @@ void* C2_HOOK_FASTCALL GetSplashIndex(tPhysics_object* pObject) {
     }
     return NULL;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004fef40
+void C2_HOOK_FASTCALL WorkerExtendedSplash(int field_0x0, int field_0x4, int field_0x8, br_vector3* pField_0xc, br_vector3* pField_0x18) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // ClearSplashes
 

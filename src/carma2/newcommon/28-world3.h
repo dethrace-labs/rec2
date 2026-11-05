@@ -118,4 +118,10 @@ extern void C2_HOOK_FASTCALL DisallowDuplicates(void);
 
 extern void C2_HOOK_FASTCALL AllowDuplicates(void);
 
+extern void C2_HOOK_FASTCALL DisallowDuplicates(void);
+
+extern void C2_HOOK_FASTCALL LoadAllStuffInDirectory(tBrender_storage* pStorage, const char* pPath, tRendererShadingType pShading);
+
+extern void C2_HOOK_FASTCALL AllowDuplicates(void);
+
 #endif // GUARD_28_WORLD3_H

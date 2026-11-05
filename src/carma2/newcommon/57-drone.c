@@ -69,6 +69,9 @@ int gINT_00681fb0;
 // GLOBAL: CARMA2_SW 0x0067ec54
 int gFrame;
 
+// GLOBAL: CARMA2_HW 0x00705b70
+tU32 gINT_00705b70;
+
 // DoNotDprintf
 
 // CrappyLittleVector3DPrintf
