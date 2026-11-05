@@ -440,6 +440,8 @@ extern void C2_HOOK_FASTCALL TurnOffCloaking(tPowerup* pPowerup, tCar_spec* pCar
 
 // PeriodicCloaking
 
-extern void C2_HOOK_FASTCALL UpdateCollisionObject(tPhysics_object* pCollision_info);
+extern const float gConst_0p5;
+
+extern const double gConst_minus_0p15;
 
 #endif // GUARD_27_POWERUP_H

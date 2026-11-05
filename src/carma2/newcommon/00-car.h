@@ -241,6 +241,8 @@ extern void C2_HOOK_FASTCALL TurnOnNonCar(int pIndex);
 
 extern void C2_HOOK_FASTCALL TurnOffNonCar(int pIndex);
 
+extern int gMetal_crunch_sound_id[5];
+
 #define PO_U16(o, off) (*(tU16*)((char*)(o) + (off)))
 
 

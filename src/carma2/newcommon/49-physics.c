@@ -23,7 +23,7 @@
 #include "c2_math.h"
 #include "c2_string.h"
 #include "c2_stdlib.h"
-#include "27-powerup.h"
+#include "60-phil.h"
 
 #include <stddef.h>
 
@@ -190,9 +190,45 @@ tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList2(br_vector3* pPosition, br_vecto
 
 // GetSphereToFacePoints
 
-// CheckSingleEdgeWithSphere
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// GetSphereToEdgePoints
+// STUB: CARMA2_HW 0x00423ce0
+int C2_HOOK_FASTCALL CheckSingleEdgeWithSphere(br_vector3* pEdgeStart, br_vector3* pEdgeEnd, tPhysics_object* pObject, float* pSphere, float* pWalls, int pCount, br_vector3* pStart, br_vector3* pEnd, tFace_ref* pFace) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+// FUNCTION: CARMA2_HW 0x00423c00
+int C2_HOOK_FASTCALL GetSphereToEdgePoints(tPhysics_object* pObject, int pEdx, int pParam1, int pParam2, int pParam3, int pParam4, int pParam5, int pParam6) {
+    int local_4;
+    char* puVar1;
+
+    local_4 = (int)*(tU16*)((char*)pObject + 0x174);
+    puVar1 = (char*)gFace_list__car + local_4 * 0x50;
+    if (local_4 < (int)*(tU16*)((char*)pObject + 0x176)) {
+        do {
+            if ((*(tU32*)(puVar1 + 0x40) & 0x80) == 0) {
+                if ((*(tU32*)(puVar1 + 0x40) & 1) == 0) {
+                    pParam2 = CheckSingleEdgeWithSphere((br_vector3*)(puVar1 + 0x4), (br_vector3*)(puVar1 + 0x10), pObject, (float*)pEdx, (float*)pParam1, pParam2, (br_vector3*)pParam4, (br_vector3*)pParam5, (tFace_ref*)puVar1);
+                }
+                if ((*(tU32*)(puVar1 + 0x40) & 2) == 0) {
+                    pParam2 = CheckSingleEdgeWithSphere((br_vector3*)(puVar1 + 0x10), (br_vector3*)(puVar1 + 0x1c), pObject, (float*)pEdx, (float*)pParam1, pParam2, (br_vector3*)pParam4, (br_vector3*)pParam5, (tFace_ref*)puVar1);
+                }
+                if ((*(tU32*)(puVar1 + 0x40) & 4) == 0) {
+                    pParam2 = CheckSingleEdgeWithSphere((br_vector3*)(puVar1 + 0x1c), (br_vector3*)(puVar1 + 0x4), pObject, (float*)pEdx, (float*)pParam1, pParam2, (br_vector3*)pParam4, (br_vector3*)pParam5, (tFace_ref*)puVar1);
+                }
+            }
+            local_4 = local_4 + 1;
+            puVar1 = puVar1 + 0x50;
+        } while ((int)local_4 < (int)(tU32)*(tU16*)((char*)pObject + 0x176));
+    }
+    return pParam2;
+}
 
 // GetCornerToFacePoints
 
@@ -418,6 +454,54 @@ void C2_HOOK_FASTCALL CreateJointForce(tPhysics_object* pObject, tPhysics_object
     pForce->type = 10;
 }
 
+// FUNCTION: CARMA2_HW 0x004b8cf0
+void C2_HOOK_FASTCALL FUN_004b8cf0(tPhysics_object* pObject) {
+    int uVar1;
+    int uVar2;
+    int i;
+    int* piVar4;
+    char* puVar3;
+    int local_174[6];
+    float local_15c[15];
+    tPhysics_joint_force rows[3];
+    tPhysics_object* pObject2;
+    tPhysics_object* pOther;
+
+    pObject2 = pObject->field_0x230;
+    pOther = (tPhysics_object*)*(int*)(*(int*)((tU8*)pObject + 0x1e4) + 4);
+    if (pOther != pObject2) {
+        pObject2 = pObject;
+        pObject = pOther;
+    }
+    CreateJointForce(pObject, pObject2, &rows[0], (br_vector3*)((char*)pObject->physics_joint1 + 0x38));
+    CreateJointTorque(pObject, pObject2, &rows[1], (br_vector3*)((char*)pObject->physics_joint1 + 0x20));
+    CreateJointTorque(pObject, pObject2, &rows[2], (br_vector3*)((char*)pObject->physics_joint1 + 0x2c));
+    piVar4 = local_174;
+    puVar3 = (char*)rows;
+    i = 3;
+    do {
+        *piVar4 = (int)puVar3;
+        puVar3 += 0x60;
+        piVar4++;
+        i--;
+    } while (i != 0);
+    uVar1 = *(int*)&pObject2->field_0x1e0[4];
+    uVar2 = *(int*)&pObject->field_0x1e0[4];
+    *(int*)&pObject->field_0x1e0[4] = 0;
+    *(int*)&pObject2->field_0x1e0[4] = 0;
+    FUN_004bf490(&local_15c[3], 3, (tPhysics_joint_force**)local_174, 3);
+    FUN_004be350((float*)(uVar2 + 8), &local_15c[3]);
+    FUN_004b77b0((br_scalar*)&local_174[3], (tPhysics_joint_force**)local_174, 3);
+    BrMatrix34ApplyV((br_vector3*)&local_15c[0], (br_vector3*)&local_174[3], (br_matrix34*)(uVar2 + 8));
+    i = 0;
+    do {
+        FUN_004b7960((tPhysics_joint_force*)*(int*)((char*)local_174 + i), *(float*)((char*)local_15c + i));
+        i += 4;
+    } while (i < 0xc);
+    *(int*)&pObject->field_0x1e0[4] = uVar2;
+    *(int*)&pObject2->field_0x1e0[4] = uVar1;
+}
+
 // FUNCTION: CARMA2_HW 0x004b8e10
 void C2_HOOK_FASTCALL CreateJointTorque(tPhysics_object* pObject, tPhysics_object* pPartner, tPhysics_joint_force* pForce, const br_vector3* pDirection) {
     br_vector3 direction;
@@ -451,7 +535,17 @@ void C2_HOOK_FASTCALL CreateJointTorque(tPhysics_object* pObject, tPhysics_objec
 
 // LimitOmega
 
-// CapOmega
+// FUNCTION: CARMA2_HW 0x004c1840
+// FUNCTION: CARMA2_SW 0x004bdf70
+void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
+    br_scalar ts = BrVector3LengthSquared(&pObject->omega) * REC2_SQR(0.04f);
+    if (ts > (br_scalar)REC2_SQR(1.57)) {
+        ts = (br_scalar)sqrt(ts) * (2.0f / 3.14f);
+        pObject->omega.v[0] = pObject->omega.v[0] / (2.f * ts);
+        pObject->omega.v[1] = pObject->omega.v[1] / (2.f * ts);
+        pObject->omega.v[2] = pObject->omega.v[2] / (2.f * ts);
+    }
+}
 
 // ListLimitOmega
 
@@ -480,6 +574,49 @@ void C2_HOOK_FASTCALL PositionWorldJointedObject(tPhysics_object* pObject, br_sc
         BrMatrix34ApplyP(&tv, &pObject->physics_joint2->field_0x08, &pObject->actor->t.t.mat);
         BrVector3Sub(&tv, &pObject->field_0x17c, &tv);
         BrVector3Accumulate(&pObject->actor->t.t.translate.t, &tv);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004b9ce0
+void C2_HOOK_FASTCALL MergeBoundsIntoParent(tPhysics_object* pObject, br_bounds3* pBox) {
+    br_bounds3 local_box;
+    float* pSrc;
+    tPhysics_object* child;
+    int i;
+
+    GetNewBoundingBox(&pObject->field_0xf4, &pObject->bb1, &pObject->transform_matrix);
+    GetNewBoundingBox(&local_box, &pObject->bb1, &pObject->actor->t.t.mat);
+    for (i = 0; i < 3; i++) {
+        if (pObject->field_0xf4.min.v[i] > local_box.min.v[i]) {
+            pObject->field_0xf4.min.v[i] = local_box.min.v[i];
+        }
+        if (pObject->field_0xf4.max.v[i] < local_box.max.v[i]) {
+            pObject->field_0xf4.max.v[i] = local_box.max.v[i];
+        }
+        pObject->field_0xf4.min.v[i] = pObject->field_0xf4.min.v[i] - 0.0025;
+        pObject->field_0xf4.max.v[i] = pObject->field_0xf4.max.v[i] - -0.0025;
+    }
+    pObject->field_0x10c = pObject->field_0xf4;
+    for (child = pObject->child; child != NULL; child = child->next) {
+        MergeBoundsIntoParent(child, &pObject->field_0x10c);
+    }
+    if (pBox != NULL) {
+        pSrc = &pObject->field_0x10c.min.v[0];
+        for (i = 0; i < 3; i++) {
+            if (pSrc[i] < pBox->min.v[i]) {
+                pBox->min.v[i] = pSrc[i];
+            }
+            if (pSrc[i + 3] > pBox->max.v[i]) {
+                pBox->max.v[i] = pSrc[i + 3];
+            }
+        }
+    } else {
+        if (gFLOAT_00692dd0 <= pObject->field_0x10c.max.v[0] - pObject->transform_matrix.m[3][0]) {
+            gFLOAT_00692dd0 = pObject->field_0x10c.max.v[0] - pObject->transform_matrix.m[3][0];
+        }
+        if (gFLOAT_00692dd4 >= pObject->field_0x10c.min.v[0] - pObject->transform_matrix.m[3][0]) {
+            gFLOAT_00692dd4 = pObject->field_0x10c.min.v[0] - pObject->transform_matrix.m[3][0];
+        }
     }
 }
 
@@ -1604,3 +1741,159 @@ void C2_HOOK_FASTCALL FUN_004b73a0(tPhysics_object* pObject, const br_matrix34* 
 
 // GetCollObjFromID
 
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x00422030
+int C2_HOOK_FASTCALL FUN_00422030(br_model* pModel, int pCount_vertices, int* pVertex_indices) {
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x00422400
+tPhysicsError C2_HOOK_FASTCALL FUN_00422400(tCollision_shape_polyhedron_data* pPolyhedron, int* pVertex_indices, br_model* pModel, int pCount_vertices) {
+    int i;
+    int result;
+
+    if (pModel->nvertices > pCount_vertices) {
+        result = FUN_00422030(pModel, pCount_vertices, pVertex_indices);
+        if (result != ePhysicsError_Ok) {
+            return result;
+        }
+        pPolyhedron->count_points = pCount_vertices;
+        if (pCount_vertices > 0) {
+            for (i = 0; i < pCount_vertices; i++) {
+                pPolyhedron->points[i].v[0] = pModel->vertices[pVertex_indices[i]].p.v[0];
+                pPolyhedron->points[i].v[1] = pModel->vertices[pVertex_indices[i]].p.v[1];
+                pPolyhedron->points[i].v[2] = pModel->vertices[pVertex_indices[i]].p.v[2];
+            }
+            return ConvexHull3D(pPolyhedron);
+        }
+    } else {
+        pPolyhedron->count_points = pModel->nvertices;
+        for (i = 0; i < pModel->nvertices; i++) {
+            pVertex_indices[i] = i;
+            pPolyhedron->points[i].v[0] = pModel->vertices[i].p.v[0];
+            pPolyhedron->points[i].v[1] = pModel->vertices[i].p.v[1];
+            pPolyhedron->points[i].v[2] = pModel->vertices[i].p.v[2];
+        }
+    }
+    return ConvexHull3D(pPolyhedron);
+}
+
+// FUNCTION: CARMA2_HW 0x00422500
+int C2_HOOK_FASTCALL FUN_00422500(tCollision_shape_polyhedron_data* pPolyhedron, br_model* pModel, int pMin_point_count, int pMax_point_count, int* pVertex_indices) {
+    int result;
+    int count_points;
+    int point_count;
+
+    if (pModel == NULL) {
+        return 5;
+    }
+    if (pMax_point_count < 3) {
+        return 6;
+    }
+    if (pMax_point_count > (int)pModel->nvertices) {
+        pMax_point_count = pModel->nvertices;
+    }
+    if (pMin_point_count < 3) {
+        pMin_point_count = 3;
+    } else if (pMin_point_count > pMax_point_count) {
+        pMin_point_count = pMax_point_count;
+    }
+    point_count = pMax_point_count;
+    result = FUN_00422400(pPolyhedron, pVertex_indices, pModel, point_count);
+    count_points = pPolyhedron->count_points;
+    while (count_points != 0
+            && ((result == 0 || result == 2)
+                && (point_count = point_count * pMin_point_count / count_points, count_points != pMin_point_count))
+            && point_count < pMax_point_count) {
+        result = FUN_00422400(pPolyhedron, pVertex_indices, pModel, point_count);
+        count_points = pPolyhedron->count_points;
+    }
+    return result;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004b77b0
+void C2_HOOK_FASTCALL FUN_004b77b0(br_scalar* pVelocity, tPhysics_joint_force** pRecords, int pCount) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004b7960
+void C2_HOOK_FASTCALL FUN_004b7960(tPhysics_joint_force* pForce, br_scalar pImpulse) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004bca10
+int C2_HOOK_FASTCALL CollectJointLimitsIntoBuffer(tPhysics_object* pObject, tPhysics_joint_force* pContacts, int pCount, int pMax_count) {
+    NOT_IMPLEMENTED();
+}
+
+// FUNCTION: CARMA2_HW 0x004bd6d0
+int C2_HOOK_FASTCALL CollectJointLimitsOfTree(tPhysics_object* pObject, tPhysics_joint_force* pContacts, int pCount, int pMax_count) {
+    if (pObject != NULL) {
+        do {
+            pCount = CollectJointLimitsIntoBuffer(pObject, pContacts, pCount, pMax_count);
+            if (pObject->child != NULL) {
+                pCount = CollectJointLimitsOfTree(pObject->child, pContacts, pCount, pMax_count);
+            }
+            pObject = pObject->next;
+        } while (pObject != NULL);
+    }
+    return pCount;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004be350
+void C2_HOOK_FASTCALL FUN_004be350(float* pDestination, const float* pSource) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004bf490
+void C2_HOOK_FASTCALL FUN_004bf490(br_scalar* pMatrix, int pStride, tPhysics_joint_force** pRecords, int pCount) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
