@@ -161,6 +161,12 @@ int gInstant_handbrake;
 // GLOBAL: CARMA2_SW 0x0069aaac
 tPowerup* gPowerup_array;
 
+// GLOBAL: CARMA2_HW 0x0058ac00
+const float gConst_0p5 = 0.5f;
+
+// GLOBAL: CARMA2_HW 0x0058ac70
+const double gConst_minus_0p15 = -0.15;
+
 // FUNCTION: CARMA2_HW 0x004d8d10
 // FUNCTION: CARMA2_SW 0x004d5240
 char* C2_HOOK_FASTCALL GetPowerupMessage(int pPowerup_index) {
