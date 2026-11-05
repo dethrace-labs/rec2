@@ -559,8 +559,8 @@ extern intptr_t C2_HOOK_CDECL FUN_004f5a70(br_actor* pActor, void* pContext);
 
 extern void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec);
 
-extern tToggled_door gToggled_doors[16];
-
 extern void C2_HOOK_FASTCALL FUN_0043bca0(undefined4* pArg1, void* pArg2, br_model* pModel, const br_vector3* pSrc, const float* pScalars);
+
+extern tToggled_door gToggled_doors[16];
 
 #endif // GUARD_13_CRUSH1_H
