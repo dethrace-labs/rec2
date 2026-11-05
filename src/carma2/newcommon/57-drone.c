@@ -443,7 +443,13 @@ void C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec* pDrone) {
 
 // MyDroneHathHalteth
 
-// MoveMyDroneBaby
+// FUNCTION: CARMA2_HW 0x00452410
+void C2_HOOK_FASTCALL MoveMyDroneBaby(tPhysics_object* pObject, undefined4 pArg2) {
+    tDrone_spec* pDrone;
+
+    pDrone = (tDrone_spec*)pObject->owner;
+    DoNotDprintf_drone("MoveMyDroneBaby(): Drone %d, State %d", pDrone->id, pDrone->current_state);
+}
 
 // FUNCTION: CARMA2_HW 0x004525c0
 // FUNCTION: CARMA2_SW 0x00452350
