@@ -13,10 +13,19 @@
 #include "72-interface.h"
 #include "globvars.h"
 #include "globvrpb.h"
+#include "18-graphics2.h"
+#include "38-flicplay.h"
+#include "platform.h"
 
 // QuitVerifyStart
 
 // QuitVerifyDone
+
+// GLOBAL: CARMA2_HW 0x0068c850
+int gMouse_was_started__mainmenu = 0;
+
+// GLOBAL: CARMA2_HW 0x0068c854
+int gReplace_background = 0;
 
 // STUB: CARMA2_HW 0x00494450
 int C2_HOOK_FASTCALL DoVerifyQuit(int pReplace_background) {
