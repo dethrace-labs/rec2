@@ -19,6 +19,8 @@
 #include "c2_stdio.h"
 #include "platform.h"
 #include "rec2_macros.h"
+#include "23-piping.h"
+#include "56-aiworld.h"
 #include <string.h>
 
 // GLOBAL: CARMA2_HW 0x0065a3bc
@@ -96,6 +98,9 @@ tCar_spec* gActive_car_list[139];
 // GLOBAL: CARMA2_HW 0x0074c9ec
 // GLOBAL: CARMA2_SW 0x007430ac
 int gNum_active_cars;
+
+// GLOBAL: CARMA2_HW 0x0058a478
+float gOppo_render_zero = 0.0f;
 
 // FUNCTION: CARMA2_HW 0x004a8160
 // FUNCTION: CARMA2_SW 0x004a42d0
