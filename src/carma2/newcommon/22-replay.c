@@ -11,6 +11,8 @@
 #include "18-graphics2.h"
 #include "30-opponent.h"
 #include "globvars.h"
+#include "51-smash.h"
+#include "41-utility.h"
 
 // GLOBAL: CARMA2_HW 0x006768fc
 // GLOBAL: CARMA2_SW 0x0067106c
@@ -121,4 +123,17 @@ void C2_HOOK_FASTCALL ApplyTime(tU32 pTime) {
 void C2_HOOK_FASTCALL ARSetPause(int pPause) {
     gPaused = pPause;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004eb8f0
+void C2_HOOK_FASTCALL WorkerShrapnelShower(tU32 pOwner, tU32 pShrapnel, tU32 pSeed, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, tU32 pActor, tU32 pTime, tU32 pArg9, br_vector3* pTransform, br_vector3* pFragment_owner, br_vector3* pPosition, tU32 pDistance, br_vector3* pArg14, tU32 pArg15) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
