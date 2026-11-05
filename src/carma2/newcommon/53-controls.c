@@ -25,6 +25,9 @@
 #include "rec2_macros.h"
 
 #include "c2_string.h"
+#include "04-netgame.h"
+#include "01-network.h"
+#include "13-crush1.h"
 
 #include <stdio.h>
 
@@ -91,6 +94,9 @@ int gEntering_message;
 // GLOBAL: CARMA2_HW 0x006b781c
 // GLOBAL: CARMA2_SW 0x006ae4fc
 tRace_over_reason gRace_over_reason;
+
+// GLOBAL: CARMA2_HW 0x0067c478
+tU32 gPalette_fade_time;
 
 void C2_HOOK_FASTCALL CompleteRace(void) {
     gRace_over_reason = eRace_over_0;
@@ -319,7 +325,18 @@ void C2_HOOK_FASTCALL AlignChildren(tPhysics_object* pCollision_info) {
     }
 }
 
-// FlipUpCar
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004429b0
+void C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x00442e80
 // FUNCTION: CARMA2_SW 0x00442f60

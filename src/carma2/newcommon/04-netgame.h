@@ -137,4 +137,6 @@ extern void C2_HOOK_FASTCALL AddPlayerToShapeStatusLists(int pPlayer_id, int pCo
 
 // RemovePlayerFromShapeStatusLists
 
+extern void C2_HOOK_FASTCALL DisableCar(tCar_spec* pCar);
+
 #endif // GUARD_04_NETGAME_H
