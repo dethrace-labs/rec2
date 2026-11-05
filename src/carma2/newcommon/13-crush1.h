@@ -545,4 +545,10 @@ extern void C2_HOOK_FASTCALL EncodeNetShapeData(tU8* pData, tCar_spec* pCar);
 
 extern void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes);
 
+extern void C2_HOOK_FASTCALL FUN_00435960(br_model* pModel, const br_vector3* pOffset, tCar_spec** ppCar, br_actor* pActor);
+
+extern br_scalar gCrushZero;
+
+extern void C2_HOOK_FASTCALL DeleteFarCrushes(tCar_spec* pCar);
+
 #endif // GUARD_13_CRUSH1_H
