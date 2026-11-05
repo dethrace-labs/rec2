@@ -245,4 +245,15 @@ extern int gMetal_crunch_sound_id[5];
 
 extern tFace_ref gFace_list__car[300];
 
+typedef struct {
+    tCar_spec* car;
+    float step;
+    float* total_displacement;
+    float displacement;
+} tCrush_displacement_context_local;
+
+
+#define PO_U16(o, off) (*(tU16*)((char*)(o) + (off)))
+
+
 #endif // GUARD_00_CAR_H
