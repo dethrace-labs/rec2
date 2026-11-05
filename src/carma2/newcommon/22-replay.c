@@ -11,6 +11,7 @@
 #include "18-graphics2.h"
 #include "30-opponent.h"
 #include "globvars.h"
+#include "32-spark.h"
 
 // GLOBAL: CARMA2_HW 0x006768fc
 // GLOBAL: CARMA2_SW 0x0067106c
