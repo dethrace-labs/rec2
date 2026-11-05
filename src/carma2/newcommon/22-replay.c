@@ -11,6 +11,9 @@
 #include "18-graphics2.h"
 #include "30-opponent.h"
 #include "globvars.h"
+#include "23-piping.h"
+#include "41-utility.h"
+#include "13-crush1.h"
 
 // GLOBAL: CARMA2_HW 0x006768fc
 // GLOBAL: CARMA2_SW 0x0067106c
