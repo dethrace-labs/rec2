@@ -203,7 +203,7 @@ extern void C2_HOOK_FASTCALL InitSmashing(void);
 
 // VerySimpleRotate
 
-// DoFragMovement
+extern void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32 pTime, float pDelta_time);
 
 extern void C2_HOOK_FASTCALL MungeGlassFragments2(int pEnd_race);
 
@@ -336,6 +336,10 @@ extern void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash);
 // ReceivedSmashShraps
 
 // MungeSmashEdgeTriggers
+
+extern tSmash_vertex gSmash_glass_fragments[200];
+
+extern int gINT_006a3334;
 
 extern void C2_HOOK_FASTCALL FUN_004f3740(const int* pIndices, const float* pTransform, const float* pPoint, float* pResult);
 

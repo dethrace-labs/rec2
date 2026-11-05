@@ -85,6 +85,9 @@ int gCount_queued_smashes;
 // GLOBAL: CARMA2_SW 0x006a5438
 br_vector3 gZero_vector__smash;
 
+// GLOBAL: CARMA2_HW 0x006a3334
+int gINT_006a3334 = 0;
+
 // GLOBAL: CARMA2_HW 0x006a3940
 tQueued_net_smash gQueued_net_smashes[50] = { 0 };
 
@@ -862,7 +865,18 @@ void C2_HOOK_FASTCALL InitSmashing(void) {
 
 // VerySimpleRotate
 
-// DoFragMovement
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004eff30
+void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32 pTime, float pDelta_time) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
