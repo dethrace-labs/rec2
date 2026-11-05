@@ -352,6 +352,13 @@ int C2_HOOK_FASTCALL ResetFoxLighting(br_material* pMaterial) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004f95e0
+int C2_HOOK_FASTCALL SetModelAFEUpdateCB(br_model* pModel) {
+    pModel->flags |= BR_MODF_CUSTOM;
+    pModel->custom = AFEModelUpdate;
+    return 1;
+}
+
 // CancelAlternateFoxEffect
 
 // SetFoxLighting
