@@ -200,4 +200,8 @@ extern void C2_HOOK_FASTCALL DisposeAbuseomatic(void);
 
 // ToggleHeadupLevel
 
+extern void C2_HOOK_FASTCALL FUN_0045acf0(void);
+
+extern void C2_HOOK_FASTCALL FUN_0045a670(void);
+
 #endif // GUARD_53_CONTROLS_H

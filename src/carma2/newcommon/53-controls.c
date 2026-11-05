@@ -559,6 +559,32 @@ void C2_HOOK_FASTCALL DisposeAbuseomatic(void) {
     }
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0045a670
+void C2_HOOK_FASTCALL FUN_0045a670(void) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0045acf0
+void C2_HOOK_FASTCALL FUN_0045acf0(void) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
 // ChangeCameraTypeInGame
 
 // SteelBollock
