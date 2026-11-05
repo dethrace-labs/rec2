@@ -11,8 +11,10 @@
 #include "18-graphics2.h"
 #include "30-opponent.h"
 #include "globvars.h"
-#include "51-smash.h"
+#include "23-piping.h"
 #include "41-utility.h"
+#include "13-crush1.h"
+#include "51-smash.h"
 
 // GLOBAL: CARMA2_HW 0x006768fc
 // GLOBAL: CARMA2_SW 0x0067106c
@@ -108,6 +110,38 @@ void C2_HOOK_FASTCALL AfterActionReplay(void) {
     ForceRebuildActiveCarList();
 }
 
+// FUNCTION: CARMA2_HW 0x004e7350
+void C2_HOOK_FASTCALL DrawStatusMessage(int pReplay_only) {
+    extern void C2_HOOK_FASTCALL DRPixelmapText(br_pixelmap* pPixelmap, int pX, int pY, const tDR_font* pFont, const char* pText, int pRight_edge);
+    extern void C2_HOOK_FASTCALL DRPixelmapCentredText(br_pixelmap* pPixelmap, int pX, int pY, const tDR_font* pFont, const char* pText);
+    extern const char* C2_HOOK_FASTCALL GetMiscString(int pIndex);
+    extern tGraf_data* gCurrent_graf_data;
+    extern tDR_font gFonts[28];
+    extern int gShow_status_message;
+    extern int gNext_replay_record_state;
+    extern int gStatus_message_1;
+    extern int gStatus_message_2;
+    int x;
+    int y;
+
+    if (gShow_status_message != 0) {
+        if (gNext_replay_record_state == 4) {
+            x = gCurrent_graf_data->field_0x350;
+            y = gCurrent_graf_data->field_0x354;
+            if (pReplay_only == 0) {
+                DRPixelmapText(gBack_screen, x, y, &gFonts[1], GetMiscString(gStatus_message_1), gBack_screen->width);
+            }
+        } else {
+            x = gCurrent_graf_data->width / 2;
+            y = gCurrent_graf_data->height / 2;
+            DRPixelmapCentredText(gBack_screen, x, y - 0x40, &gFonts[4], GetMiscString(gStatus_message_1));
+            if (gStatus_message_2 != 0) {
+                DRPixelmapCentredText(gBack_screen, x, y - 0x20, &gFonts[6], GetMiscString(gStatus_message_2));
+            }
+        }
+    }
+}
+
 // ToggleReplay
 
 // DisplayMovieStatusPanel
@@ -122,6 +156,246 @@ void C2_HOOK_FASTCALL ApplyTime(tU32 pTime) {
 // FUNCTION: CARMA2_SW 0x004022f0
 void C2_HOOK_FASTCALL ARSetPause(int pPause) {
     gPaused = pPause;
+}
+
+// FUNCTION: CARMA2_HW 0x00403020
+tU32 C2_HOOK_FASTCALL ARGetStartTime(void) {
+    extern void C2_HOOK_CDECL FatalError(int pStr_index, ...);
+    tU8* session;
+    tU32 i;
+    tU32 length;
+    tU32 total;
+
+    session = gPipe_buffer_oldest;
+    for (;;) {
+        total = 0;
+        for (i = 0; i < ((tPipe_session*)session)->count; i++) {
+            tU32 chunk_type;
+            tU8* the_chunk;
+
+            chunk_type = (tU32)((tPipe_session*)session)->type;
+            the_chunk = session + 8 + total;
+            if (gPipe_callbacks[chunk_type].calc_length != NULL) {
+                length = gPipe_callbacks[chunk_type].calc_length((tPipe_chunk*)the_chunk);
+                length = length + gPipe_callbacks[chunk_type].length + sizeof(void*);
+            } else {
+                length = gPipe_callbacks[chunk_type].length + sizeof(void*);
+            }
+            total += length;
+        }
+        total += 10;
+        if ((total & 1) != 0) {
+            FatalError(0x62);
+        }
+        session = session + total;
+        if ((uintptr_t)session >= (uintptr_t)gPipe_buffer_working_end && session != gPipe_record_ptr) {
+            session = gPipe_buffer_start;
+        }
+        if (session == gPipe_record_ptr) {
+            return 0;
+        }
+        if (((tPipe_session*)session)->type == 0) {
+            return *(tU32*)(session + 12);
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0040b500
+void C2_HOOK_FASTCALL FUN_0040b500(tPed_character_instance* pCharacter, int pBone_index, int pArg3, int pArg4) {
+    if (pCharacter->field_0x4 >= 0) {
+        pCharacter->field_0xa = (tS8)pArg4;
+        pCharacter->personality->form->actor_sets[(tS8)pCharacter->field_0x4].actors[pBone_index]->model = (br_model*)pArg3;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0040c660
+br_uint_8 C2_HOOK_CDECL ActorToActorMatrix34Local(br_matrix34* m, br_actor* a, br_actor* b) {
+    br_uint_8 transform_type_combine[7][7] = {
+        { 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 1, 1, 1, 1, 1, 1 },
+        { 0, 1, 1, 1, 1, 2, 2 },
+        { 0, 1, 1, 1, 1, 3, 3 },
+        { 0, 1, 1, 1, 1, 4, 4 },
+        { 0, 1, 2, 3, 4, 5, 5 },
+        { 0, 1, 2, 3, 4, 5, 6 },
+    };
+    br_matrix34 mat_a;
+    br_matrix34 mat_b;
+    br_matrix34 mat_c;
+    br_uint_8 a_type;
+    br_uint_8 b_type;
+
+    if (a == b) {
+        BrMatrix34Identity(m);
+        return BR_TRANSFORM_IDENTITY;
+    }
+    if (a->parent == b) {
+        BrTransformToMatrix34(m, &a->t);
+        return (br_uint_8)a->t.type;
+    }
+    if (b->parent == a) {
+        BrTransformToMatrix34(&mat_b, &b->t);
+        if (b->t.type != BR_TRANSFORM_MATRIX34) {
+            BrMatrix34LPInverse(m, &mat_b);
+        } else {
+            BrMatrix34Inverse(m, &mat_b);
+        }
+        return (br_uint_8)b->t.type;
+    }
+    a_type = BR_TRANSFORM_IDENTITY;
+    BrMatrix34Identity(&mat_a);
+    b_type = BR_TRANSFORM_IDENTITY;
+    BrMatrix34Identity(&mat_b);
+    while (a != NULL && b != NULL && a != b) {
+        if (a->depth > b->depth) {
+            if (a->t.type != BR_TRANSFORM_IDENTITY) {
+                BrMatrix34PostTransform(&mat_a, &a->t);
+                a_type = transform_type_combine[a_type][a->t.type];
+            }
+            a = a->parent;
+        } else if (b->depth > a->depth) {
+            if (b->t.type != BR_TRANSFORM_IDENTITY) {
+                BrMatrix34PostTransform(&mat_b, &b->t);
+                b_type = transform_type_combine[b_type][b->t.type];
+            }
+            b = b->parent;
+        } else {
+            if (a->t.type != BR_TRANSFORM_IDENTITY) {
+                BrMatrix34PostTransform(&mat_a, &a->t);
+                a_type = transform_type_combine[a_type][a->t.type];
+            }
+            if (b->t.type != BR_TRANSFORM_IDENTITY) {
+                BrMatrix34PostTransform(&mat_b, &b->t);
+                b_type = transform_type_combine[b_type][b->t.type];
+            }
+            b = b->parent;
+            a = a->parent;
+        }
+    }
+    if (b_type == BR_TRANSFORM_IDENTITY) {
+        BrMatrix34Copy(m, &mat_a);
+        return a_type;
+    }
+    if (a_type == BR_TRANSFORM_IDENTITY) {
+        if (b_type != BR_TRANSFORM_MATRIX34) {
+            BrMatrix34LPInverse(m, &mat_b);
+        } else {
+            BrMatrix34Inverse(m, &mat_b);
+        }
+        return b_type;
+    }
+    if (b_type != BR_TRANSFORM_MATRIX34) {
+        BrMatrix34LPInverse(&mat_c, &mat_b);
+    } else {
+        BrMatrix34Inverse(&mat_c, &mat_b);
+    }
+    BrMatrix34Mul(m, &mat_a, &mat_c);
+    return transform_type_combine[a_type][b_type];
+}
+
+// FUNCTION: CARMA2_HW 0x0043c0e0
+void C2_HOOK_FASTCALL WorkerFlap(int field_0x4, tU16 field_0x8) {
+    br_actor* actor;
+    tUser_crush_data* user;
+    tUser_crush_data* parent_user;
+    br_model* parent_model;
+    tCar_crush_flap_data* flap;
+    const br_vector3* hinge;
+    br_vector3 axis;
+    br_scalar nx, ny, nz;
+
+    actor = (br_actor*)field_0x4;
+    user = actor->user;
+    if (user == NULL || user->crush_data == NULL) {
+        return;
+    }
+    flap = user->crush_data->flap_data;
+    if (flap == NULL) {
+        return;
+    }
+    flap->field_0x4 = (tU16)(flap->field_0x4 + field_0x8);
+    hinge = &user->models[0]->vertices[flap->hinge0].p;
+    BrVector3Sub(&axis, &user->models[0]->vertices[flap->hinge1].p, hinge);
+    BrVector3Normalise(&axis, &axis);
+    nx = -hinge->v[0];
+    ny = -hinge->v[1];
+    nz = -hinge->v[2];
+    BrMatrix34Translate(&actor->t.t.mat, nx, ny, nz);
+    BrMatrix34PostRotate(&actor->t.t.mat, flap->field_0x4, &axis);
+    parent_user = (tUser_crush_data*)actor->parent->user;
+    parent_model = parent_user->models[0];
+    BrMatrix34PostTranslate(&actor->t.t.mat, parent_model->vertices[flap->field_0xc].p.v[0], parent_model->vertices[flap->field_0xc].p.v[1], parent_model->vertices[flap->field_0xc].p.v[2]);
+}
+
+// FUNCTION: CARMA2_HW 0x0043c3d0
+void C2_HOOK_FASTCALL WorkerSplitWeldUndo(void* roadMachine) {
+    tCar_spec* car;
+    tCar_crush_spec* spec;
+    tUser_crush_data* user;
+    int i;
+
+    car = roadMachine;
+    spec = car->car_crush_spec;
+    user = (tUser_crush_data*)car->car_model_actor->user;
+    for (i = 0; i < car->count_detail_levels; i++) {
+        if (user->models[i] != NULL) {
+            BrModelFree(BrModelRemove(user->models[i]));
+            user->models[i] = (br_model*)*(undefined4*)&spec->field_0x4c4[i * 4];
+        }
+    }
+    car->car_model_actor->model = user->models[0];
+    BrModelFree(BrModelRemove(spec->model_actor->model));
+    DRActorEnumRecurse(car->car_model_actor, MakeCarModelsMaterialsSingleSided, car);
+}
+
+// FUNCTION: CARMA2_HW 0x004b7220
+void C2_HOOK_FASTCALL WorkerPHILObject(int field_0x0, br_matrix34* pField_0x4) {
+    tPhysics_object* object;
+
+    object = (tPhysics_object*)field_0x0;
+    BrMatrix34Copy(&object->transform_matrix, pField_0x4);
+    BrMatrix34Copy(&object->actor->t.t.mat, pField_0x4);
+}
+
+// FUNCTION: CARMA2_HW 0x004ca500
+void C2_HOOK_FASTCALL WorkerPedMove(tPedestrian* pPed, int field_0x4, int field_0xc, int field_0x8_1, int field_0x14, int zero, br_vector3* pField_0x24, int field_0x34, br_vector3* pField_0x38) {
+    extern int gBOOL_00744804;
+    extern int C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pCharacter, int pMove_action, float pSpeed, int pArg4, int pArg5, int pArg6);
+    extern void C2_HOOK_FASTCALL SetCharacterPosition(tPed_character_instance* pCharacter, br_vector3* pPos, int pArg3);
+    extern void C2_HOOK_FASTCALL SetCharacterBonePositions(tPed_character_instance* pPed, undefined4 pArg2, undefined4 pArg3);
+    int current_move_id;
+
+    if (!gBOOL_00744804) {
+        if (field_0x4 != -1) {
+            current_move_id = pPed->character->personality->form->moves[pPed->character->field_0x7].id;
+            BrMatrix34Copy(&pPed->character->field_0x8c, (br_matrix34*)pField_0x38);
+            SetCharacterMove(pPed->character, field_0x4, *(float*)&field_0xc, field_0x14, field_0x8_1, GetTotalTime());
+            if (!(pPed->character->field_0x14 & 4)) {
+                SetCharacterPosition(pPed->character, pField_0x24, -1);
+            }
+            if (current_move_id != field_0x4) {
+                pPed->character->field_0x1c = (tU16)zero;
+                SetCharacterBonePositions(pPed->character, 0, 0);
+            }
+        }
+        if (field_0x34 != -1) {
+            pPed->action = (tPed_action)field_0x34;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004ca8d0
+void C2_HOOK_FASTCALL WorkerPedModelChange(int field_0x0, int field_0x4, int field_0x6, int field_0x8) {
+    extern void C2_HOOK_FASTCALL SetCharacterAllBonesModel(tPed_character_instance* pCharacter, undefined4 pArg2, int pArg3);
+    extern int C2_HOOK_FASTCALL SetCharacterBoneModel(tPed_character_instance* pCharacter, int pBone_index, int pArg3, int pArg4);
+    tPedestrian* ped;
+
+    ped = (tPedestrian*)field_0x0;
+    if (field_0x4 < 0) {
+        SetCharacterAllBonesModel(ped->character, field_0x6, field_0x8);
+    } else {
+        SetCharacterBoneModel(ped->character, field_0x4, field_0x6, field_0x8);
+    }
 }
 
 #ifdef REC2_MATCHING
