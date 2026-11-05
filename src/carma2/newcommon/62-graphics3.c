@@ -245,6 +245,9 @@ int gCount_smashable_race_targets;
 // GLOBAL: CARMA2_SW 0x006868f0
 tSmashable_race_target gSmashable_race_targets[300];
 
+// GLOBAL: CARMA2_HW 0x0068d8c0
+br_actor* gLit_op_stat_actor;
+
 // CarArrowColour
 
 // FUNCTION: CARMA2_HW 0x004945f0
