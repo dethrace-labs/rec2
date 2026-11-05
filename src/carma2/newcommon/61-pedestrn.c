@@ -1258,6 +1258,16 @@ void C2_HOOK_FASTCALL SetObjectV(tPhysics_object* pObject, const br_vector3* pV)
     }
 }
 
+// FUNCTION: CARMA2_HW 0x004093e0
+int C2_HOOK_FASTCALL FUN_004093e0(tPed_character_instance* pCharacter) {
+
+    if ((pCharacter->field_0x14 & 4) == 0) {
+        return 0x1f;
+    }
+    BonerActiveHalted2(pCharacter, 1);
+    return 0;
+}
+
 // SetObjectOmega
 
 // MakePartPhysicallyActive
