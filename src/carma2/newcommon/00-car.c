@@ -1106,6 +1106,16 @@ void C2_HOOK_FASTCALL FreezeMechanics(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0041f4a0
+void C2_HOOK_FASTCALL PutOpponentsInNeutral(void) {
+    gStop_opponents_moving = !gStop_opponents_moving;
+    if (gStop_opponents_moving) {
+        NewTextHeadupSlot(4, 0, 3000, -4, "Opponents in neutral");
+    } else {
+        NewTextHeadupSlot(4, 0, 3000, -4, "Back in gear");
+    }
+}
+
 // FlyCar
 
 // GetCarOverallBoundsMinY
