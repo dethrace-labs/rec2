@@ -649,6 +649,7 @@ void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont) {
 }
 
 // FUNCTION: CARMA2_HW 0x0044a950
+// FUNCTION: CARMA2_SW 0x0044aae0
 void C2_HOOK_FASTCALL ChangeHeadupImage(int pHeadup_index, int pImage_index) {
     tHeadup* headup;
     br_pixelmap* image;
@@ -840,6 +841,7 @@ void C2_HOOK_FASTCALL EarnCredits(int pAmount) {
 }
 
 // FUNCTION: CARMA2_HW 0x0044b450
+// FUNCTION: CARMA2_SW 0x0044b5e0
 void C2_HOOK_FASTCALL EarnCredits100(int pAmount) {
     EarnCredits(pAmount - (pAmount + 50) % 100 + 50);
 }
@@ -927,7 +929,8 @@ void C2_HOOK_FASTCALL AwardTime5(tU32 pTime) {
 }
 
 // FUNCTION: CARMA2_HW 0x0044ba10
-void C2_HOOK_FASTCALL DisplayTimedMessage(char* pText) {
+// FUNCTION: CARMA2_SW 0x0044b830
+void C2_HOOK_FASTCALL FullScreenTimedMessage(const char* pText) {
     LoadFont(1);
     ClearEntireScreen();
     DRPixelmapText(gBack_screen, 20, 50, &gFonts[1], pText, 600);

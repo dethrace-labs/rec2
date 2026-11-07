@@ -118,7 +118,7 @@ extern void C2_HOOK_FASTCALL AwardTime(tU32 pTime);
 
 extern void C2_HOOK_FASTCALL AwardTime5(tU32 pTime);
 
-extern void C2_HOOK_FASTCALL DisplayTimedMessage(char* pText);
+extern void C2_HOOK_FASTCALL FullScreenTimedMessage(const char* pText);
 
 #ifdef REC2_HW
 extern void C2_HOOK_FASTCALL DoTestHeadup(void);
