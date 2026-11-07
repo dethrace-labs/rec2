@@ -213,19 +213,19 @@ void C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
         BrPixelmapRectangle(pScreen,
             gTimers_draw_x - 2,
             gTimers_draw_y + longest_duration_timer * gTimers_draw_y_stride - 2,
-            (int)(gTimers[longest_duration_timer].total_duration * draw_factor - 5.0f),
+            (int)(gTimers[longest_duration_timer].total_duration * draw_factor + 5.0f),
             6,
             RGB565_TO_BACKSCREEN_COLOUR(0x1f, 0x3e, 0x1f));
     }
     BrPixelmapLine(pScreen,
-        (int)(gTimers_draw_x + draw_factor * 10000.0),
+        (int)(gTimers_draw_x + draw_factor * -10000.0),
         gTimers_draw_y - 1,
-        (int)(gTimers_draw_x + draw_factor * 10000.0),
+        (int)(gTimers_draw_x + draw_factor * -10000.0),
         gTimers_draw_y + (REC2_ASIZE(gTimers) - 1) * gTimers_draw_y_stride + 3,
         RGB565_TO_BACKSCREEN_COLOUR(0x1f, 0x00, 0x00));
     sprintf(tolerance_str, "8.38ms, tollerance = %i", gTimers_tolerance);
     DRPixelmapText(pScreen,
-        (int)(((double)gTimers_draw_x + draw_factor * 10000.0) - 13.0),
+        (int)(((double)gTimers_draw_x + draw_factor * -10000.0) - 13.0),
         gTimers_draw_y + 7 + gTimers_draw_y_stride * (REC2_ASIZE(gTimers) - 1),
         &gFonts[1],
         tolerance_str,
