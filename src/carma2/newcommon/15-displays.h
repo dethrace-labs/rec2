@@ -54,7 +54,7 @@ extern int gQueued_headup_count;
 
 // static void C2_HOOK_FASTCALL LoadHeadupMessageFile(void);
 
-extern void C2_HOOK_FASTCALL TimerStringGlobalTimer(char* pStr, undefined4 pArg3);
+extern void C2_HOOK_FASTCALL GetTimerString(char* pStr, undefined4 pArg3);
 
 extern void C2_HOOK_FASTCALL InitHeadups(void);
 
