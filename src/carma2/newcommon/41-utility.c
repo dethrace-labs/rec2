@@ -1267,6 +1267,14 @@ float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3
     return BrVector3Dot(pP, pN) - pF;
 }
 
+// FUNCTION: CARMA2_HW 0x005162d0
+void C2_HOOK_FASTCALL FUN_005162d0(br_vector4* pDst, const br_vector4* pSrc) {
+    pDst->v[0] = -pSrc->v[0];
+    pDst->v[1] = -pSrc->v[1];
+    pDst->v[2] = -pSrc->v[2];
+    pDst->v[3] = -pSrc->v[3];
+}
+
 // FUNCTION: CARMA2_HW 0x00516350
 int C2_HOOK_FASTCALL DRVector3NonZero(const br_vector3* pV) {
     if (pV->v[0] == 0.f && pV->v[1] == 0.f && pV->v[2] == 0.f) {
@@ -1926,9 +1934,76 @@ void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap) {
 #endif
 }
 
+// FUNCTION: CARMA2_HW 0x005192a0
+void C2_HOOK_FASTCALL FUN_005192a0(br_uint_16* pPixel) {
+
+    *pPixel = ((*pPixel >> 1) & 0x7fe0) + (*pPixel & 0x1f);
+}
+
 // FUNCTION: CARMA2_HW 0x005193f0
 // FUNCTION: CARMA2_SW 0x00512ed0
 void C2_HOOK_FASTCALL EnsurePixelmapAllowed(br_pixelmap* pMap, undefined4 pArg2) {
 
+}
+
+// FUNCTION: CARMA2_HW 0x00519400
+void C2_HOOK_FASTCALL FUN_00519400(br_pixelmap* pMap) {
+    void (C2_HOOK_FASTCALL *convert_pixel)(br_uint_16*);
+    br_uint_16* row;
+    br_uint_16* pixel;
+    int x;
+    int y;
+
+    switch (pMap->type) {
+    case 4:
+    case 0x1f:
+        break;
+    case 5:
+        convert_pixel = NULL;
+        if (pMap->type == 5) {
+            convert_pixel = FUN_005192a0;
+        }
+        if (convert_pixel != NULL) {
+            row = (br_uint_16*)pMap->pixels;
+            y = 0;
+            if (pMap->height > 0) {
+                do {
+                    x = 0;
+                    pixel = row;
+                    if (pMap->width > 0) {
+                        do {
+                            convert_pixel(pixel);
+                            x++;
+                            pixel++;
+                        } while (x < pMap->width);
+                    }
+                    y++;
+                    row += pMap->row_bytes / 2;
+                } while (y < pMap->height);
+            }
+            pMap->type = 4;
+        }
+        break;
+    default:
+        return;
+    }
+    row = (br_uint_16*)pMap->pixels;
+    y = 0;
+    if (pMap->height > 0) {
+        do {
+            x = 0;
+            pixel = row;
+            if (pMap->width > 0) {
+                do {
+                    *pixel = (br_uint_16)((((*pixel & 0x7fff) != 0) << 15) | (*pixel & 0x7fff));
+                    x++;
+                    pixel++;
+                } while (x < pMap->width);
+            }
+            y++;
+            row += pMap->row_bytes / 2;
+        } while (y < pMap->height);
+    }
+    pMap->type = 0x1f;
 }
 
