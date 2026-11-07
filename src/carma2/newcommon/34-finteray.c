@@ -345,6 +345,7 @@ int C2_HOOK_FASTCALL LineBoxColl(br_vector3* pStart, br_vector3* pEnd, br_bounds
 }
 
 // FUNCTION: CARMA2_HW 0x00460da0
+// FUNCTION: CARMA2_SW 0x00460810
 int C2_HOOK_FASTCALL SphereBoxIntersection(const br_bounds* pBounds, const br_vector3* pCenter, br_scalar pRadius_squared, br_vector3* pClosest) {
     int axis;
     br_scalar closest;
@@ -370,6 +371,7 @@ int C2_HOOK_FASTCALL SphereBoxIntersection(const br_bounds* pBounds, const br_ve
 #endif
 
 // STUB: CARMA2_HW 0x00460e10
+// STUB: CARMA2_SW 0x00460880
 int C2_HOOK_FASTCALL LineBoxCollWithSphere(br_vector3* pStart, br_vector3* pEnd, br_bounds* pBounds, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pT) {
     NOT_IMPLEMENTED();
 }
@@ -385,6 +387,7 @@ int C2_HOOK_FASTCALL LineBoxCollWithSphere(br_vector3* pStart, br_vector3* pEnd,
 #endif
 
 // STUB: CARMA2_HW 0x004611b0
+// STUB: CARMA2_SW 0x00460c40
 int C2_HOOK_FASTCALL LineSphereCollWithSphere(br_vector3* pStart, br_vector3* pEnd, tCollision_shape_sphere_data* pSphere, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pT) {
     NOT_IMPLEMENTED();
 }
@@ -406,6 +409,7 @@ int C2_HOOK_FASTCALL LinePolyColl(br_vector3* pStart, br_vector3* pEnd, tCollisi
 #endif
 
 // STUB: CARMA2_HW 0x00461520
+// STUB: CARMA2_SW 0x00460fc0
 int C2_HOOK_FASTCALL LinePolyCollWithSphere(br_vector3* pStart, br_vector3* pEnd, tCollision_shape_polyhedron* pShape, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pT) {
     NOT_IMPLEMENTED();
 }
