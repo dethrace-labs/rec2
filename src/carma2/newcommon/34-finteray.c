@@ -251,36 +251,26 @@ void C2_HOOK_FASTCALL DisablePlingMaterials(void) {
     gPling_materials = 0;
 }
 
-// StationarySphereSphereCollide
+// FUNCTION: CARMA2_HW 0x0045d860
+// FUNCTION: CARMA2_SW 0x0045d2a0
+void C2_HOOK_FASTCALL StationarySphereSphereCollide(const br_vector3* pPoint, const br_vector3* pSphere_center, br_scalar pRadius, br_vector3* pNormal, br_scalar* pCollision_t) {
+    br_vector3 dp;
+    br_scalar distance_squared;
+    br_scalar scale;
+
+    BrVector3Sub(&dp, pPoint, pSphere_center);
+    distance_squared = BrVector3LengthSquared(&dp);
+    if (distance_squared < REC2_SQR(pRadius + 0.002f)
+            && distance_squared > REC2_SQR(pRadius)) {
+        scale = (br_scalar)(1.0 / sqrt(distance_squared));
+        BrVector3Scale(pNormal, &dp, scale);
+        *pCollision_t = 1.0f;
+    }
+}
 
 // SphereSphereCollide
 
-// StationarySphereEdgeCollide
-
-// FUNCTION: CARMA2_HW 0x0045d860
-void C2_HOOK_FASTCALL PointSphereCollision(br_vector3* pPoint, br_vector3* pSphere_center, br_scalar pRadius, br_vector3* pNormal, br_scalar* pCollision_t) {
-    br_scalar dx;
-    br_scalar dy;
-    br_scalar dz;
-    volatile br_scalar distance_squared;
-    br_scalar radius_squared;
-    br_scalar scale;
-
-    dx = pPoint->v[0] - pSphere_center->v[0];
-    dy = pPoint->v[1] - pSphere_center->v[1];
-    dz = pPoint->v[2] - pSphere_center->v[2];
-    distance_squared = dx * dx + dy * dy + dz * dz;
-    if ((pRadius - -0.002f) * (pRadius - -0.002f) > distance_squared) {
-        radius_squared = pRadius * pRadius;
-        if (radius_squared < distance_squared) {
-            scale = (br_scalar)(1.0 / sqrt(distance_squared));
-            pNormal->v[0] = scale * dx;
-            pNormal->v[1] = scale * dy;
-            pNormal->v[2] = scale * dz;
-            *pCollision_t = 1.0f;
-        }
-    }
-}
+// PointSphereCollision
 
 // SphereEdgeCollide
 
@@ -392,6 +382,7 @@ int C2_HOOK_FASTCALL LinePolyColl(br_vector3* pStart, br_vector3* pEnd, tCollisi
 // ShapeRayCast
 
 // FUNCTION: CARMA2_HW 0x00461850
+// FUNCTION: CARMA2_SW 0x004612f0
 int C2_HOOK_FASTCALL ShapeRayCastWithSphere(br_vector3* pStart, br_vector3* pEnd, tPhysics_shape* pShape, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pT) {
     switch (pShape->common.type) {
     case kCollisionShapeType_Box:
