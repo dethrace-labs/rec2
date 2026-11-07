@@ -225,7 +225,7 @@ static void C2_HOOK_FASTCALL LoadHeadupMessageFile(void) {
 // FUNCTION: CARMA2_SW 0x00449490
 void C2_HOOK_FASTCALL GetTimerString(char* pStr, undefined4 pArg3) {
 
-    TimerString(gTimer, pStr, pArg3, 0, 0.0f);
+    TimerString(gTimer, pStr, pArg3, 0, 0);
 }
 
 // FUNCTION: CARMA2_HW 0x00449090
