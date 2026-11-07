@@ -120,7 +120,6 @@ extern void C2_HOOK_FASTCALL AwardTime5(tU32 pTime);
 
 extern void C2_HOOK_FASTCALL DisplayTimedMessage(char* pText);
 
-=======
 #ifdef REC2_HW
 extern void C2_HOOK_FASTCALL DoTestHeadup(void);
 #endif

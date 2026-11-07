@@ -540,25 +540,25 @@ int C2_HOOK_FASTCALL NewImageHeadupSlot(int pSlot_index, int pFlash_rate, int pL
         } else {
             the_headup->end_time = 0;
         }
-        strcpy(the_headup->data.image_info.text, gHud_messages[pImage_index].message);
-        the_headup->data.image_info.font_index = gHud_messages[pImage_index].font2;
-        the_headup->data.image_info.font = &gFonts[gHud_messages[pImage_index].font1];
+        strcpy(the_headup->data.fancy_info.text, gHud_messages[pImage_index].message);
+        the_headup->data.fancy_info.font_index = gHud_messages[pImage_index].font2;
+        the_headup->data.fancy_info.font = &gFonts[gHud_messages[pImage_index].font1];
         switch (the_headup->justification) {
         case eJust_left:
-            the_headup->data.image_info.field_0x104 = 0;
-            width = DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
-            the_headup->data.image_info.field_0x10c = -width;
+            the_headup->data.fancy_info.offset = 0;
+            width = DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text);
+            the_headup->data.fancy_info.end_offset = -width;
             break;
         case eJust_right:
-            width = DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
-            the_headup->data.image_info.field_0x104 = width;
-            the_headup->data.image_info.field_0x10c = 0;
+            width = DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text);
+            the_headup->data.fancy_info.offset = width;
+            the_headup->data.fancy_info.end_offset = 0;
             break;
         case eJust_centre:
-            width = DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
-            the_headup->data.image_info.field_0x104 = width / 2;
-            width = DRTextWidth(the_headup->data.image_info.font, the_headup->data.image_info.text);
-            the_headup->data.image_info.field_0x10c = -(width / 2);
+            width = DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text);
+            the_headup->data.fancy_info.offset = width / 2;
+            width = DRTextWidth(the_headup->data.fancy_info.font, the_headup->data.fancy_info.text);
+            the_headup->data.fancy_info.end_offset = -(width / 2);
             break;
         }
     }
@@ -644,7 +644,7 @@ void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pNew_text) {
 void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont) {
 
     if (pHeadup_index >= 0) {
-        gHeadups[pHeadup_index].data.image_info.font = &gFonts[-pFont];
+        gHeadups[pHeadup_index].data.fancy_info.font = &gFonts[-pFont];
     }
 }
 
@@ -652,14 +652,12 @@ void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont) {
 void C2_HOOK_FASTCALL ChangeHeadupImage(int pHeadup_index, int pImage_index) {
     tHeadup* headup;
     br_pixelmap* image;
-    int justification;
 
     if (pHeadup_index >= 0) {
         image = gHeadup_images[pImage_index];
         headup = &gHeadups[pHeadup_index];
-        justification = headup->justification;
-        *(br_pixelmap**)headup->data.image_info.text = image;
-        switch (justification) {
+        headup->data.image_info.image = image;
+        switch (headup->justification) {
         case eJust_left:
             headup->x = headup->original_x;
             break;
