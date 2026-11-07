@@ -214,6 +214,8 @@ extern int C2_HOOK_FASTCALL FindBestColourMatch(br_colour pColour);
 
 extern br_actor* C2_HOOK_FASTCALL CreateBoundsActor(br_actor* pParent, const br_bounds* pBounds);
 
+extern void C2_HOOK_FASTCALL DisposeActorAndModel(br_actor* pActor);
+
 extern void C2_HOOK_FASTCALL WhitenVertexRGB(br_model** pModels, int pCount);
 
 extern void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type);
