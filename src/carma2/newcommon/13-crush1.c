@@ -1701,4 +1701,3 @@ void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes)
         }
     }
 }
-
