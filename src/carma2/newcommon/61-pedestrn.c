@@ -1353,16 +1353,6 @@ void C2_HOOK_FASTCALL SetObjectV(tPhysics_object* pObject, const br_vector3* pV)
     }
 }
 
-// FUNCTION: CARMA2_HW 0x004093e0
-int C2_HOOK_FASTCALL FUN_004093e0(tPed_character_instance* pCharacter) {
-
-    if ((pCharacter->field_0x14 & 4) == 0) {
-        return 0x1f;
-    }
-    BonerActiveHalted2(pCharacter, 1);
-    return 0;
-}
-
 // SetObjectOmega
 
 // MakePartPhysicallyActive
@@ -1371,6 +1361,8 @@ int C2_HOOK_FASTCALL FUN_004093e0(tPed_character_instance* pCharacter) {
 
 // MakeCharacterPhysicworthy
 
+// FUNCTION: CARMA2_HW 0x00409340
+// FUNCTION: CARMA2_SW 0x00409340
 void C2_HOOK_FASTCALL RecalculateOrientationOfRoot(tPed_character_instance* pCharacter) {
     tPed_form* form;
     br_matrix34* character_matrix;
@@ -1388,6 +1380,7 @@ void C2_HOOK_FASTCALL RecalculateOrientationOfRoot(tPed_character_instance* pCha
 #endif
 
 // STUB: CARMA2_HW 0x00409400
+// STUB: CARMA2_SW 0x00409400
 int C2_HOOK_FASTCALL BonerActiveHalted2(tPed_character_instance* pCharacter, undefined4 pArg2) {
     NOT_IMPLEMENTED();
 }
@@ -1396,7 +1389,16 @@ int C2_HOOK_FASTCALL BonerActiveHalted2(tPed_character_instance* pCharacter, und
 #pragma auto_inline(on)
 #endif
 
-// CharacterNoLongerPhysicworthy
+// FUNCTION: CARMA2_HW 0x004093e0
+// FUNCTION: CARMA2_SW 0x004093e0
+int C2_HOOK_FASTCALL CharacterNoLongerPhysicworthy(tPed_character_instance* pCharacter) {
+
+    if ((pCharacter->field_0x14 & 4) == 0) {
+        return 0x1f;
+    }
+    BonerActiveHalted2(pCharacter, 1);
+    return 0;
+}
 
 // SetCharacterPhysicsLevel
 

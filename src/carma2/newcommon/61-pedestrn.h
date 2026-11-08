@@ -507,7 +507,7 @@ extern void C2_HOOK_FASTCALL RecalculateOrientationOfRoot(tPed_character_instanc
 
 extern int C2_HOOK_FASTCALL BonerActiveHalted2(tPed_character_instance* pCharacter, undefined4 pArg2);
 
-// CharacterNoLongerPhysicworthy
+extern int C2_HOOK_FASTCALL CharacterNoLongerPhysicworthy(tPed_character_instance* pCharacter);
 
 // SetCharacterPhysicsLevel
 
