@@ -1711,17 +1711,19 @@ void C2_HOOK_FASTCALL EncodeNetShapeData(tU8* pData, tCar_spec* pCar) {
 // Vector4Equal
 
 // FUNCTION: CARMA2_HW 0x0043deb0
-void C2_HOOK_FASTCALL CompressPlane(tU16* pDest, const br_vector4* pSrc) {
+// FUNCTION: CARMA2_SW 0x0043df00
+void C2_HOOK_FASTCALL CompressPlane(tCompressed_vector4* pDest, const br_vector4* pSrc) {
 
-    CompressVector3((tCompressed_vector3*)pDest, (const br_vector3*)pSrc, -1.f, 1.f);
-    pDest[3] = DRScalarToU16(pSrc->v[3], -2.5f, 2.5f);
+    CompressVector3((tCompressed_vector3*)pDest, (const br_vector3*)pSrc, -1.0f, 1.0f);
+    pDest->v[3] = DRScalarToU16(pSrc->v[3], -2.5f, 2.5f);
 }
 
 // FUNCTION: CARMA2_HW 0x0043dee0
-void C2_HOOK_FASTCALL ExpandPlane(br_vector4* pDest, const tU16* pSrc) {
+// FUNCTION: CARMA2_SW 0x0043df30
+void C2_HOOK_FASTCALL ExpandPlane(br_vector4* pDest, const tCompressed_vector4* pSrc) {
 
-    ExpandVector3((br_vector3*)pDest, (const tCompressed_vector3*)pSrc, -1.f, 1.f);
-    pDest->v[3] = DRU16ToScalar(pSrc[3], -2.5f, 2.5f);
+    ExpandVector3((br_vector3*)pDest, (const tCompressed_vector3*)pSrc, -1.0f, 1.0f);
+    pDest->v[3] = DRU16ToScalar(pSrc->v[3], -2.5f, 2.5f);
 }
 
 // CopySplitInMessage
