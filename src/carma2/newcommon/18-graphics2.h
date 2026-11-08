@@ -37,6 +37,9 @@ extern br_pixelmap* gCurrent_palette;
 extern br_pixelmap* gCurrent_splash;
 
 extern void C2_HOOK_FASTCALL RectangleFill_TopBottomLine(br_pixelmap* pMap, int pX, int pY, int pWidth, int pHeight, br_uint_32 pColour);
+
+extern void C2_HOOK_FASTCALL RectangleFill_LeftRightLine(br_pixelmap* pMap, int pX, int pY, int pWidth, int pHeight, br_colour pColour);
+
 extern br_pixelmap* gBlend75_table;
 
 extern void C2_HOOK_FASTCALL DRSetPaletteEntries(br_pixelmap* pThe_palette, int pFirst_colour, int pCount);
@@ -59,15 +62,15 @@ extern void C2_HOOK_FASTCALL MungePalette(void);
 
 extern void C2_HOOK_FASTCALL ResetPalette(void);
 
-// Darken
+extern void C2_HOOK_FASTCALL Darken(tU8 *pPtr, tU32 pDarken_amount);
 
-// SetFadedPalette
+extern void C2_HOOK_FASTCALL SetFadedPalette(tU32 pDegree);
 
 extern void C2_HOOK_FASTCALL FadePaletteDown(void);
 
 extern void C2_HOOK_FASTCALL FadePaletteUp(void);
 
-// EnsurePaletteUp
+extern void C2_HOOK_FASTCALL EnsurePaletteUp(void);
 
 extern void C2_HOOK_FASTCALL EnsureRenderPalette(void);
 
