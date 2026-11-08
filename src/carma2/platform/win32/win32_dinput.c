@@ -810,6 +810,7 @@ void C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00458610
+// FUNCTION: CARMA2_SW 0x004583a0
 int C2_HOOK_FASTCALL SetDinputEffectGain(int pIndex, int pGain) {
     IDirectInputEffect* effect;
 
