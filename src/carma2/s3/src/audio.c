@@ -172,7 +172,8 @@ void C2_HOOK_FASTCALL S3Disable(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00564d0a
-void C2_HOOK_FASTCALL S3ToggleEnabled(void) {
+// FUNCTION: CARMA2_SW 0x005603aa
+void C2_HOOK_FASTCALL S3Toggle(void) {
 
     if (gS3_enabled) {
         S3StopAllOutletSounds();
@@ -1166,7 +1167,7 @@ int C2_HOOK_FASTCALL S3IRandomBetween(int pMin, int pMax, int pDefault) {
 }
 
 // FUNCTION: CARMA2_HW 0x0056432c
-double C2_HOOK_STDCALL S3FRandomBetween2(double pMin, double pMax) {
+double C2_HOOK_FASTCALL S3FRandomBetween2(double pMin, double pMax) {
 
     return (pMax - pMin) * (double)rand() / 32767.0 + pMin;
 }
@@ -1260,7 +1261,7 @@ int C2_HOOK_FASTCALL S3SetVolume(int pVolume) {
 }
 
 // FUNCTION: CARMA2_HW 0x00564a56
-tS3_error_codes C2_HOOK_FASTCALL FUN_00564a56(tS3_sound_tag pChannel_tag, int pPitch) {
+tS3_error_codes C2_HOOK_FASTCALL S3UpdateFrequencySampleChannel(tS3_sound_tag pChannel_tag, int pPitch) {
     tS3_channel* channel;
 
     if (gS3_enabled) {
