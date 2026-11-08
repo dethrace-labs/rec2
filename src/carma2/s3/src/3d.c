@@ -229,7 +229,9 @@ int C2_HOOK_STDCALL S3Set3DSoundEnvironment(float a1, float a2, float a3) {
 // FUNCTION: CARMA2_SW 0x00561567
 void C2_HOOK_FASTCALL S3CopyBrVector3(br_vector3* pDest, const br_vector3* pSrc) {
 
-    BrVector3Copy(pDest, pSrc);
+    pDest->v[0] = pSrc->v[0];
+    pDest->v[1] = pSrc->v[1];
+    pDest->v[2] = pSrc->v[2];
 }
 
 // FUNCTION: CARMA2_HW 0x00565ef9
