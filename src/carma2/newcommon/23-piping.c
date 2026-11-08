@@ -809,6 +809,7 @@ void C2_HOOK_FASTCALL PipeSingleSmashTextureChange(tCar_spec* pCar_spec, br_mate
 }
 
 // FUNCTION: CARMA2_HW 0x004c8a40
+// FUNCTION: CARMA2_SW 0x004c5170
 void C2_HOOK_FASTCALL PipeSingleRepulseRay(int pIndex, br_vector3* pOrigin, br_vector3* pVictim, tU32 pTime) {
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_repulse_ray, origin, 0x0);
@@ -929,7 +930,7 @@ void C2_HOOK_FASTCALL PipeSingleVanishedDismembered(const tPedestrian* pPed, tU3
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_single_vanished_dismembered, field_0x4, 0x4);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_single_vanished_dismembered, field_0x4, 0x4);
 
-    ARDoSingleVariedSession(ePipe_chunk_single_vanished_dismembered, (uintptr_t)pPed, 2,
+    ARDoSingleVariedSession(ePipe_chunk_vanished_dismembered, (uintptr_t)pPed, 2,
         SIZE_OFFSET_PIPING(tPipe_single_vanished_dismembered, field_0x0), pOld_value,
         SIZE_OFFSET_PIPING(tPipe_single_vanished_dismembered, field_0x4), pNew_value);
 }
@@ -939,11 +940,12 @@ void C2_HOOK_FASTCALL PipeSingleVanishedDismembered(const tPedestrian* pPed, tU3
 void C2_HOOK_FASTCALL PipeSingleDSModel(int pDouble_sided, void* pThing) {
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_single_ds_model, field_0x0, 0x2);
 
-    ARDoSingleVariedSession(ePipe_single_ds_model, (uintptr_t)pThing, 1,
+    ARDoSingleVariedSession(ePipe_chunk_ds_model, (uintptr_t)pThing, 1,
         SIZE_OFFSET_PIPING(tPipe_single_ds_model, field_0x0), pDouble_sided);
 }
 
 // FUNCTION: CARMA2_HW 0x004c8e50
+// FUNCTION: CARMA2_SW 0x004c5580
 void C2_HOOK_FASTCALL PipeSinglePedDiagnostic(tPedestrian* pPed) {
 
     ARDoSingleVariedSession(ePipe_ped_diagnostic, (uintptr_t)pPed, 3,
@@ -957,7 +959,7 @@ void C2_HOOK_FASTCALL PipeSinglePedDiagnostic(tPedestrian* pPed) {
 void C2_HOOK_FASTCALL PipeSingleVector3(br_vector3* pDest, br_vector3* pValue) {
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_single_vector, vector, 0xc);
 
-    ARDoSingleVariedSession(ePipe_single_vector3, (uintptr_t)pDest, 1,
+    ARDoSingleVariedSession(ePipe_chunk_vector3, (uintptr_t)pDest, 1,
         SIZE_OFFSET_PIPING(tPipe_single_vector, vector), pValue);
 }
 
@@ -1021,7 +1023,7 @@ void C2_HOOK_FASTCALL PipeSingleTransformType(br_actor* pActor, tS16 pTransform_
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_single_transform_type, type_to, 0x1);
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_single_transform_type, type_to, 0x1);
 
-    ARDoSingleVariedSession(ePipe_single_transform_type, (uintptr_t)pActor, 2,
+    ARDoSingleVariedSession(ePipe_chunk_transform_type, (uintptr_t)pActor, 2,
         SIZE_OFFSET_PIPING(tPipe_single_transform_type, type_from), type_from,
         SIZE_OFFSET_PIPING(tPipe_single_transform_type, type_to), (tU16)pTransform_type);
 }

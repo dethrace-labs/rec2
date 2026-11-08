@@ -251,6 +251,8 @@ extern void C2_HOOK_FASTCALL PipeSingleSmashDecal(int pIndex);
 
 extern void C2_HOOK_FASTCALL PipeSingleSmashTextureChange(tCar_spec* pCar_spec, br_material* pMaterial, br_pixelmap* pTexture);
 
+extern void C2_HOOK_FASTCALL PipeSingleRepulseRay(int pIndex, br_vector3* pOrigin, br_vector3* pVictim, tU32 pTime);
+
 // PipeSinglePedStatus
 
 extern void C2_HOOK_FASTCALL PipeSinglePedDir(int pId, const br_vector3* pDir);
