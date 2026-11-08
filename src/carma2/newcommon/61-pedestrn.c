@@ -669,9 +669,13 @@ void C2_HOOK_FASTCALL SetThisPedPhysicing(tPedestrian* pPed) {
     SetCharacterPhysicsLevelAR(pPed->character, 5);
 }
 
+#ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x004d3600
+// FUNCTION: CARMA2_SW 0x004cfcf0
 void C2_HOOK_FASTCALL FUN_004d3600(void) {
+    /* Unused */
 }
+#endif
 
 // InitProcessData
 
@@ -941,15 +945,19 @@ void C2_HOOK_FASTCALL UnmakeMaterialBlendy(br_material* pMaterial) {
   BrMaterialUpdate(pMaterial, BR_MATU_ALL);
 }
 
-// FUNCTION: CARMA2_HW 0x004d6c00
-void C2_HOOK_FASTCALL DeetherealiseCharacter1(void* pCharacter) {
+// FUNCTION: CARMA2_HW 0x004d6b90
+// FUNCTION: CARMA2_SW 0x004d3190
+void C2_HOOK_FASTCALL TurnOffCollisions(tPhysics_object* pObject) {
 
-    *(tU32*)((char*)pCharacter + 0x19c) &= ~4;
+    pObject->flags |= 0x4;
 }
 
-// TurnOffCollisions
+// FUNCTION: CARMA2_HW 0x004d6c00
+// FUNCTION: CARMA2_SW 0x004d3200
+void C2_HOOK_FASTCALL TurnOnCollisions(tPhysics_object* pObject) {
 
-// TurnOnCollisions
+    pObject->flags &= ~0x4;
+}
 
 // FUNCTION: CARMA2_HW 0x004d6b70
 // FUNCTION: CARMA2_SW 0x004d3170

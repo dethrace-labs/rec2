@@ -283,6 +283,10 @@ extern void C2_HOOK_FASTCALL MakeFlagWavingBastardWaveHisFlagWhichIsTheProbablyT
 
 extern void C2_HOOK_FASTCALL SetThisPedPhysicing(tPedestrian* pPed);
 
+#ifdef REC2_MATCHING
+extern void C2_HOOK_FASTCALL FUN_004d3600(void);
+#endif
+
 // InitProcessData
 
 // PedFallingForever
@@ -343,9 +347,9 @@ extern int C2_HOOK_FASTCALL ChangePedScaling(br_vector3* pScale);
 
 extern void C2_HOOK_FASTCALL UnmakeMaterialBlendy(br_material* pMaterial);
 
-// TurnOffCollisions
+extern void C2_HOOK_FASTCALL TurnOffCollisions(tPhysics_object* pObject);
 
-// TurnOnCollisions
+extern void C2_HOOK_FASTCALL TurnOnCollisions(tPhysics_object* pObject);
 
 extern void C2_HOOK_FASTCALL BlendifyMaterial25(br_material* pMaterial);
 
