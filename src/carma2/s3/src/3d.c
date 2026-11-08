@@ -236,7 +236,7 @@ void C2_HOOK_FASTCALL S3CopyBrVector3(br_vector3* pDest, const br_vector3* pSrc)
 
 // FUNCTION: CARMA2_HW 0x00565ef9
 // FUNCTION: CARMA2_SW 0x00561599
-void C2_HOOK_FASTCALL S3SetListenerPositionNow(br_vector3* pPos) {
+void C2_HOOK_FASTCALL S3SetListenerPositionNow(const br_vector3* pPos) {
 
     gS3_listener_position_now.v[0] = pPos->v[0];
     gS3_listener_position_now.v[1] = pPos->v[1];
@@ -254,7 +254,7 @@ void C2_HOOK_FASTCALL S3SetListenerVelocityNow(const br_vector3* pSrc) {
 
 // FUNCTION: CARMA2_HW 0x00565f53
 // FUNCTION: CARMA2_SW 0x005615f3
-void C2_HOOK_FASTCALL S3SetListenerLeftNow(br_vector3* pLeft) {
+void C2_HOOK_FASTCALL S3SetListenerLeftNow(const br_vector3* pLeft) {
 
     gS3_listener_left_now.v[0] = pLeft->v[0];
     gS3_listener_left_now.v[1] = pLeft->v[1];
@@ -281,11 +281,11 @@ void C2_HOOK_FASTCALL S3CopyS3Vector3(tS3_vector3* pDest, tS3_vector3* pSrc) {
 
 // FUNCTION: CARMA2_HW 0x00565faa
 // FUNCTION: CARMA2_SW 0x0056164a
-void C2_HOOK_FASTCALL S3BindListenerPositionBRender(br_vector3* pos) {
+void C2_HOOK_FASTCALL S3BindListenerPositionBRender(br_vector3* pPos) {
 
-    gS3_listener_pos_ptr = pos;
+    gS3_listener_pos_ptr = pPos;
     gS3_listener_pos_is_brender = 1;
-    S3CopyBrVector3(&gS3_listener_position_old, pos);
+    S3CopyBrVector3(&gS3_listener_position_old, pPos);
 }
 
 // FUNCTION: CARMA2_HW 0x00565ff1
