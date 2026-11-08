@@ -631,26 +631,6 @@ int C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_effect_des
     return effect_id;
 }
 
-// FUNCTION: CARMA2_HW 0x00457eb0
-void C2_HOOK_FASTCALL StartDinputEffect(int pIndex) {
-    IDirectInputEffect* effect;
-
-    effect = gDirectInputEffects[pIndex];
-    if (effect != NULL) {
-        IDirectInputEffect_Start(effect, 1, 0);
-    }
-}
-
-// FUNCTION: CARMA2_HW 0x00457ed0
-void C2_HOOK_FASTCALL StopDinputEffect(int pIndex) {
-    IDirectInputEffect* effect;
-
-    effect = gDirectInputEffects[pIndex];
-    if (effect != NULL) {
-        IDirectInputEffect_Stop(effect);
-    }
-}
-
 // FUNCTION: CARMA2_HW 0x0045a390
 int C2_HOOK_FASTCALL ReadIforceEffectsNames(const char *path, char **names, size_t capacity) {
     /* Implementation differs */
@@ -1520,12 +1500,25 @@ void C2_HOOK_FASTCALL PDInitJoysticks(void) {
     ResetForceFeedback();
 }
 
-void C2_HOOK_FASTCALL PDPlayFFBEffectIndex(int index) {
+// FUNCTION: CARMA2_HW 0x00457eb0
+// FUNCTION: CARMA2_SW 0x00457c40
+void C2_HOOK_FASTCALL StartDinputEffect(int pIndex) {
     IDirectInputEffect* effect;
 
-    effect = gDirectInputEffects[index];
+    effect = gDirectInputEffects[pIndex];
     if (effect != NULL) {
         IDirectInputEffect_Start(effect, 1, DIES_NODOWNLOAD);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00457ed0
+// FUNCTION: CARMA2_SW 0x00457c60
+void C2_HOOK_FASTCALL StopDinputEffect(int pIndex) {
+    IDirectInputEffect* effect;
+
+    effect = gDirectInputEffects[pIndex];
+    if (effect != NULL) {
+        IDirectInputEffect_Stop(effect);
     }
 }
 
@@ -1575,7 +1568,7 @@ void C2_HOOK_FASTCALL PDPlayFFBEffect(const char* effectName) {
     if (gForceFeedbackAvailable) {
         int index = PDFindJoystickEffect(effectName);
         if (index != -1) {
-            PDPlayFFBEffectIndex(index);
+            StartDinputEffect(index);
         }
     }
 }
