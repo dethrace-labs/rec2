@@ -26,7 +26,7 @@ int C2_HOOK_STDCALL FUN_00565e39(float a1, float a2, float a3);
 
 int C2_HOOK_STDCALL S3Set3DSoundEnvironment(float a1, float a2, float a3);
 
-void C2_HOOK_FASTCALL S3CopyBrVector3(br_vector3* pDest, br_vector3* pSrc);
+void C2_HOOK_FASTCALL S3CopyBrVector3(br_vector3* pDest, const br_vector3* pSrc);
 
 void C2_HOOK_FASTCALL S3CopyS3Vector3(tS3_vector3* pDest, tS3_vector3* pSrc);
 
