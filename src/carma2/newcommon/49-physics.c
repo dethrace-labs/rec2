@@ -450,7 +450,17 @@ void C2_HOOK_FASTCALL CreateJointTorque(tPhysics_object* pObject, tPhysics_objec
 
 // LimitOmega
 
-// CapOmega
+// FUNCTION: CARMA2_HW 0x004c1840
+// FUNCTION: CARMA2_SW 0x004bdf70
+void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
+    br_scalar ts = BrVector3LengthSquared(&pObject->omega) * REC2_SQR(0.04f);
+    if (ts > (br_scalar)REC2_SQR(1.57)) {
+        ts = (br_scalar)sqrt(ts) * (2.0f / 3.14f);
+        pObject->omega.v[0] = pObject->omega.v[0] / (2.f * ts);
+        pObject->omega.v[1] = pObject->omega.v[1] / (2.f * ts);
+        pObject->omega.v[2] = pObject->omega.v[2] / (2.f * ts);
+    }
+}
 
 // ListLimitOmega
 
@@ -845,11 +855,21 @@ void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects) {
 
 // ApplyGravity
 
-// SetGravityDeltaV
+// FUNCTION: CARMA2_HW 0x004c29d0
+// FUNCTION: CARMA2_SW 0x004bf100
+void C2_HOOK_FASTCALL SetGravityDeltaV(tPhysics_object* pObject, br_vector3* pImpulse) {
+    tPhysics_object* pChild;
+
+    pObject->field_0x54 = *pImpulse;
+    for (pChild = pObject->child; pChild != NULL; pChild = pChild->next) {
+        SetGravityDeltaV(pChild, pImpulse);
+    }
+}
 
 // TrialPositionChildren
 
 // FUNCTION: CARMA2_HW 0x004c2b20
+// FUNCTION: CARMA2_SW 0x004bf250
 void C2_HOOK_FASTCALL InternalPositionChildren(tPhysics_object* pParent, tPhysics_object* pRoot) {
     tPhysics_object* child;
     br_vector3 parent_point;
@@ -875,6 +895,7 @@ void C2_HOOK_FASTCALL InternalPositionChildren(tPhysics_object* pParent, tPhysic
 }
 
 // FUNCTION: CARMA2_HW 0x004c2b10
+// FUNCTION: CARMA2_SW 0x004bf240
 void C2_HOOK_FASTCALL PositionChildren(tPhysics_object* pCollision_info) {
 
     InternalPositionChildren(pCollision_info, pCollision_info);
