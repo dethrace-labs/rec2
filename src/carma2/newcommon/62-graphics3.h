@@ -35,6 +35,9 @@ extern int gBack_original_base_x;
 extern int gBack_original_base_y;
 extern int gBack_original_origin_x;
 extern int gBack_original_origin_y;
+#ifdef REC2_HW
+extern br_actor* gLit_op_stat_actor;
+#endif
 
 // CarArrowColour
 
@@ -88,7 +91,9 @@ extern void C2_HOOK_FASTCALL CheckpointLine(br_pixelmap* pMap, int pCheckpoint, 
 
 // DoOpponentStatusHeadup
 
-// AllocateOppoBarActor
+#ifdef REC2_HW
+extern void C2_HOOK_FASTCALL AllocateOppoBarActor(int pX, int pY);
+#endif
 
 // DoNearestOpponentRelativeHeightMarkerStuff
 

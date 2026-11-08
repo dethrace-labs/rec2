@@ -261,8 +261,10 @@ int gCount_smashable_race_targets;
 // GLOBAL: CARMA2_SW 0x006868f0
 tSmashable_race_target gSmashable_race_targets[300];
 
+#ifdef REC2_HW
 // GLOBAL: CARMA2_HW 0x0068d8c0
 br_actor* gLit_op_stat_actor;
+#endif
 
 // CarArrowColour
 
@@ -610,6 +612,7 @@ void C2_HOOK_FASTCALL CheckpointLine(br_pixelmap* pMap, int pCheckpoint, tU32 pT
 
 // DoOpponentStatusHeadup
 
+#ifdef REC2_HW
 // FUNCTION: CARMA2_HW 0x00494f40
 void C2_HOOK_FASTCALL AllocateOppoBarActor(int pX, int pY) {
     br_material* material;
@@ -661,6 +664,7 @@ void C2_HOOK_FASTCALL AllocateOppoBarActor(int pX, int pY) {
         gLit_op_stat_actor->model = model;
     }
 }
+#endif
 
 // DoNearestOpponentRelativeHeightMarkerStuff
 
