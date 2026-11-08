@@ -1345,7 +1345,8 @@ int C2_HOOK_FASTCALL GetPolyFontIndexToReplaceDRfontWith(const tDR_font* pFont) 
 }
 
 // FUNCTION: CARMA2_HW 0x00466220
-br_model* C2_HOOK_FASTCALL CloneModel(br_model* pModel) {
+// FUNCTION: CARMA2_SW 0x00465fb0
+br_model* C2_HOOK_FASTCALL CloneModel(const br_model* pModel) {
     br_model* new_model;
     br_face* face;
     int i;
@@ -1353,14 +1354,8 @@ br_model* C2_HOOK_FASTCALL CloneModel(br_model* pModel) {
     new_model = BrModelAllocate(pModel->identifier, pModel->nvertices, pModel->nfaces);
     memcpy(new_model->vertices, pModel->vertices, pModel->nvertices * sizeof(br_vertex));
     memcpy(new_model->faces, pModel->faces, pModel->nfaces * sizeof(br_face));
-    i = 0;
-    face = new_model->faces;
-    if (i < new_model->nfaces) {
-        do {
-            face->material = NULL;
-            i++;
-            face++;
-        } while (i < new_model->nfaces);
+    for (i = 0, face = new_model->faces; i < new_model->nfaces; i++, face++) {
+        face->material = NULL;
     }
     new_model->flags = pModel->flags;
     BrModelAdd(new_model);
