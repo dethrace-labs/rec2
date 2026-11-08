@@ -385,13 +385,12 @@ BOOL CALLBACK Win32DInputJoystickEnum(const DIDEVICEINSTANCEA* pDeviceInstance, 
 }
 
 // FUNCTION: CARMA2_HW 0x00459ed0
-tButtonJoystickInfo* C2_HOOK_FASTCALL AllocateCurrentJoystickButtonInfos(size_t pSize) {
-    tButtonJoystickInfo* data;
+// FUNCTION: CARMA2_SW 0x00459c60
+tButtonJoystickInfo* C2_HOOK_FASTCALL AllocateCurrentJoystickData(size_t pSize) {
 
     if (pSize != 0 && gJoystick_index != -1 && gDirectInputJoystickInfos[gJoystick_index].data == NULL) {
-        data = malloc(pSize);
-        gDirectInputJoystickInfos[gJoystick_index].data = data;
-        if (data != NULL) {
+        gDirectInputJoystickInfos[gJoystick_index].data = malloc(pSize);
+        if (gDirectInputJoystickInfos[gJoystick_index].data != NULL) {
             gDirectInputJoystickInfos[gJoystick_index].sizeData = pSize;
             return gDirectInputJoystickInfos[gJoystick_index].data;
         }
@@ -400,7 +399,8 @@ tButtonJoystickInfo* C2_HOOK_FASTCALL AllocateCurrentJoystickButtonInfos(size_t 
 }
 
 // FUNCTION: CARMA2_HW 0x00459f30
-void C2_HOOK_FASTCALL FreeCurrentJoystickButtonInfos(void) {
+// FUNCTION: CARMA2_SW 0x00459cc0
+void C2_HOOK_FASTCALL DisposeCurrentJoystickData(void) {
 
     if (gJoystick_index != -1 && gDirectInputJoystickInfos[gJoystick_index].data != NULL) {
         BrMemFree(gDirectInputJoystickInfos[gJoystick_index].data);
