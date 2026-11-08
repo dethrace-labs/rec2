@@ -979,12 +979,6 @@ void C2_HOOK_FASTCALL ModelUpdatePrimitiveMaterials(br_model* pModel) {
 
 // TurnOffGhostPeds
 
-// FUNCTION: CARMA2_HW 0x004d6b90
-// FUNCTION: CARMA2_SW 0x004d3190
-void C2_HOOK_FASTCALL DisableCollisionsForEthereal(tPhysics_object* pCollision_info) {
-    pCollision_info->flags |= 0x4;
-}
-
 // FUNCTION: CARMA2_HW 0x004d6c10
 // FUNCTION: CARMA2_SW 0x004d3210
 void C2_HOOK_FASTCALL MutatePed(tPed_character_instance* pCharacter, void* pUnused, tU8* pAngle_x, tU8* pAngle_y, tU8* pAngle_z) {
