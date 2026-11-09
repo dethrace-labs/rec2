@@ -157,6 +157,10 @@ extern void C2_HOOK_FASTCALL ReadShrapnelSpec(FILE* pF, tShrapnel_spec* pShrapne
 
 extern void C2_HOOK_FASTCALL LoadMinMax(FILE* pF, br_bounds3* pBounds);
 
+#ifdef REC2_MATCHING
+extern void C2_HOOK_FASTCALL FUN_004ef830(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, undefined4 pArg3, int pLevel);
+#endif
+
 // FreeExplosion
 
 // ReadSpecialEffectsSpec
@@ -291,7 +295,7 @@ extern void C2_HOOK_FASTCALL MungeMaterial(br_actor* pActor, int pRecursive, br_
 
 // ReinitSmashing
 
-// LinkSmashies
+extern void C2_HOOK_FASTCALL LinkSmashies(br_actor* pActor, tCar_crush_buffer_entry* pCrush_data, tModel_detail_vertex_data* pVertex_data);
 
 extern intptr_t C2_HOOK_CDECL RepairModels(br_actor* pActor, void* pUser);
 

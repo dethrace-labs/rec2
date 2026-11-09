@@ -890,7 +890,16 @@ void C2_HOOK_FASTCALL ApplyGravity(tPhysics_object* pObject) {
     }
 }
 
-// SetGravityDeltaV
+// FUNCTION: CARMA2_HW 0x004c29d0
+// FUNCTION: CARMA2_SW 0x004bf100
+void C2_HOOK_FASTCALL SetGravityDeltaV(tPhysics_object* pObject, br_vector3* pImpulse) {
+    tPhysics_object* pChild;
+
+    pObject->field_0x54 = *pImpulse;
+    for (pChild = pObject->child; pChild != NULL; pChild = pChild->next) {
+        SetGravityDeltaV(pChild, pImpulse);
+    }
+}
 
 // TrialPositionChildren
 
