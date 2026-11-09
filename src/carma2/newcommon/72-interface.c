@@ -687,7 +687,7 @@ int C2_HOOK_FASTCALL FUN_0046ad00(tFrontend_spec* pFrontend) {
 }
 
 // FUNCTION: CARMA2_HW 0x0046ada0
-// FUNCTION: CARMA2_SW 0x0046b140
+// FUNCTION: CARMA2_SW 0x0046aae0
 int C2_HOOK_FASTCALL FUN_0046ada0(tFrontend_spec* pFrontend) {
     return 1;
 }
