@@ -43,6 +43,8 @@ enum tSSDXFlags {
 
 extern int C2_HOOK_FASTCALL PDS3Init(void);
 
+extern int C2_HOOK_FASTCALL FUN_005699a3(void);
+
 extern int C2_HOOK_FASTCALL PDS3DDXInit(void);
 
 extern int C2_HOOK_FASTCALL PDS3InitCDA(void);
