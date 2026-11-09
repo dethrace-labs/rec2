@@ -805,56 +805,44 @@ void C2_HOOK_FASTCALL PDEnterDebugger(const char *pStr) {
 }
 
 #ifdef REC2_HW
+#define MISSING_CALL C2_HOOK_CDECL
+#elif defined(REC2_SW)
+#define MISSING_CALL C2_HOOK_FASTCALL
+#endif
+
 // FUNCTION: CARMA2_HW 0x0051a7d0
-int C2_HOOK_CDECL PDMissingMaterial(const char* pName) {
-#endif
-#ifdef REC2_SW
 // FUNCTION: CARMA2_SW 0x00514500
-int C2_HOOK_FASTCALL PDMissingMaterial(const char* pName) {
-#endif
+int MISSING_CALL PDMissingMaterial(const char* pName) {
 
     dr_dprintf("SOMETHING MISSING WARNING - Can't find material '%s'", pName);
     return 0;
 }
 
-#ifdef REC2_HW
 // FUNCTION: CARMA2_HW 0x0051a7f0
-int C2_HOOK_CDECL PDMissingTable(const char* pName) {
-#endif
-#ifdef REC2_SW
 // FUNCTION: CARMA2_SW 0x00514520
-int C2_HOOK_FASTCALL PDMissingTable(const char* pName) {
-#endif
+int MISSING_CALL PDMissingTable(const char* pName) {
 
     dr_dprintf("SOMETHING MISSING WARNING - Can't find shade table '%s'", pName);
     return 0;
 }
 
-#ifdef REC2_HW
 // FUNCTION: CARMA2_HW 0x0051a810
-int C2_HOOK_CDECL PDMissingModel(const char* pName) {
-#endif
-#ifdef REC2_SW
 // FUNCTION: CARMA2_SW 0x00514540
-int C2_HOOK_FASTCALL PDMissingModel(const char* pName) {
-#endif
+int MISSING_CALL PDMissingModel(const char* pName) {
 
     dr_dprintf("SOMETHING MISSING WARNING - Can't find model '%s'", pName);
     return 0;
 }
 
-#ifdef REC2_HW
 // FUNCTION: CARMA2_HW 0x0051a830
-int C2_HOOK_CDECL PDMissingMap(const char* pName) {
-#endif
-#ifdef REC2_SW
 // FUNCTION: CARMA2_SW 0x00514560
-int C2_HOOK_FASTCALL PDMissingMap(const char* pName) {
-#endif
+int MISSING_CALL PDMissingMap(const char* pName) {
 
     dr_dprintf("SOMETHING MISSING WARNING - Can't find pixelmap '%s'", pName);
     return 0;
 }
+
+#undef MISSING_CALL
 
 // FUNCTION: CARMA2_HW 0x0051d4b0
 // FUNCTION: CARMA2_SW 0x00518cd0
