@@ -658,7 +658,8 @@ br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmapPleaseMrTwatter(const char* 
 }
 
 // FUNCTION: CARMA2_HW 0x0046ad00
-int C2_HOOK_FASTCALL InterfaceMenuInfunc(tFrontend_spec* pFrontend) {
+// FUNCTION: CARMA2_SW 0x0046aa40
+int C2_HOOK_FASTCALL FUN_0046ad00(tFrontend_spec* pFrontend) {
     if (!pFrontend->loaded) {
         LoadMenuSettings(pFrontend);
         FuckWithWidths(pFrontend);
@@ -678,15 +679,16 @@ int C2_HOOK_FASTCALL InterfaceMenuInfunc(tFrontend_spec* pFrontend) {
         } else {
             pFrontend->items[5].enabled = kFrontendItemEnabled_enabled;
         }
-        return 1;
+    } else {
+        pFrontend->items[0].enabled = kFrontendItemEnabled_disabled;
+        pFrontend->items[1].enabled = kFrontendItemEnabled_disabled;
     }
-    pFrontend->items[0].enabled = kFrontendItemEnabled_disabled;
-    pFrontend->items[1].enabled = kFrontendItemEnabled_disabled;
     return 1;
 }
 
 // FUNCTION: CARMA2_HW 0x0046ada0
-int C2_HOOK_FASTCALL InterfaceReturnTrue(void) {
+// FUNCTION: CARMA2_SW 0x0046b140
+int C2_HOOK_FASTCALL FUN_0046ada0(tFrontend_spec* pFrontend) {
     return 1;
 }
 
