@@ -100,7 +100,7 @@ extern void C2_HOOK_FASTCALL PDUnlockAttachedSurface(void);
 extern void C2_HOOK_FASTCALL PDScreenBufferSwap(int pRendering_area_only);
 
 #ifdef REC2_SW
-extern void C2_HOOK_FASTCALL PDPixelmapToScreenRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_uint_16 w, br_uint_16 h;
+extern void C2_HOOK_FASTCALL PDPixelmapToScreenRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_uint_16 w, br_uint_16 h);
 
 extern void C2_HOOK_FASTCALL PDPixelmapLine(br_pixelmap* pDst, int pX1, int pY1, int pX2, int pY2, br_colour pColour);
 
