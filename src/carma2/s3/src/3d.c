@@ -289,6 +289,7 @@ void C2_HOOK_FASTCALL S3BindListenerPositionBRender(br_vector3* pPos) {
 }
 
 // FUNCTION: CARMA2_HW 0x00565fd4
+// FUNCTION: CARMA2_SW 0x00561674
 void C2_HOOK_FASTCALL S3BindListenerVelocity(br_vector3* vel) {
 
     gS3_listener_vel_ptr = vel;
@@ -304,6 +305,7 @@ void C2_HOOK_FASTCALL S3BindListenerVelocityBRender(br_vector3* vel) {
 }
 
 // FUNCTION: CARMA2_HW 0x0056600e
+// FUNCTION: CARMA2_SW 0x005616ae
 void C2_HOOK_FASTCALL S3BindListenerLeft(br_vector3* left) {
 
     gS3_listener_left_ptr = left;
