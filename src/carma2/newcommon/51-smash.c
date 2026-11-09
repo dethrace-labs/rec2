@@ -772,6 +772,7 @@ void C2_HOOK_FASTCALL ReadSmashableData(FILE* pF, tCar_crush_buffer_entry* pCar_
 #endif
 
 // STUB: CARMA2_HW 0x004ef840
+// STUB: CARMA2_SW 0x004eb4a0
 void C2_HOOK_FASTCALL ActuallyRepairSmash(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, int pLevel) {
     NOT_IMPLEMENTED();
 }
