@@ -9,6 +9,7 @@
 #include "49-physics.h"
 
 #include "00-car.h"
+#include "09-funks.h"
 #include "16-graphics1.h"
 #include "22-replay.h"
 #include "28-world3.h"
@@ -88,6 +89,19 @@ void* gPhysics_scratch_ptr;
 // GLOBAL: CARMA2_HW 0x006940b0
 // GLOBAL: CARMA2_SW 0x0068e108
 int gFace_count;
+
+// GLOBAL: CARMA2_HW 0x0065cf78
+// GLOBAL: CARMA2_SW 0x006578b0
+tWorld_callbacks gWorld_callbacks = {
+    ProcessForcesCallback,
+    ProcessJointForcesCallBack,
+    NewFaceListCallBack,
+    FindFacesInBox,
+    PullActorFromWorld,
+    StopGroovidelic,
+    GetFrictionFromFace,
+    NULL,
+};
 
 // count
 
@@ -450,7 +464,17 @@ void C2_HOOK_FASTCALL CreateJointTorque(tPhysics_object* pObject, tPhysics_objec
 
 // LimitOmega
 
-// CapOmega
+// FUNCTION: CARMA2_HW 0x004c1840
+// FUNCTION: CARMA2_SW 0x004bdf70
+void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
+    br_scalar ts = BrVector3LengthSquared(&pObject->omega) * REC2_SQR(0.04f);
+    if (ts > (br_scalar)REC2_SQR(1.57)) {
+        ts = (br_scalar)sqrt(ts) * (2.0f / 3.14f);
+        pObject->omega.v[0] = pObject->omega.v[0] / (2.f * ts);
+        pObject->omega.v[1] = pObject->omega.v[1] / (2.f * ts);
+        pObject->omega.v[2] = pObject->omega.v[2] / (2.f * ts);
+    }
+}
 
 // ListLimitOmega
 
@@ -803,7 +827,11 @@ void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject, br_scalar pDelta
     BrVector3Accumulate(&pObject->actor->t.t.translate.t, &tv);
 }
 
-// GetFacesNearObject
+// STUB: CARMA2_HW 0x004c2060
+// STUB: CARMA2_SW 0x004be790
+void C2_HOOK_FASTCALL GetFacesNearObject(tPhysics_object *pObject, tWorld_callbacks *pCallbacks) {
+    NOT_IMPLEMENTED();
+}
 
 // FUNCTION: CARMA2_HW 0x004c25a0
 // FUNCTION: CARMA2_SW 0x004becd0
@@ -841,15 +869,42 @@ void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects) {
 
 // InterpolateObjects
 
-// ApplyGravitySingleObject
+// FUNCTION: CARMA2_HW 0x004c2910
+// FUNCTION: CARMA2_SW 0x004bf040
+void C2_HOOK_FASTCALL ApplyGravitySingleObject(tPhysics_object* pObject) {
 
-// ApplyGravity
+    if (!pObject->disable_move_rotate) {
+        BrVector3Accumulate(&pObject->v, &pObject->field_0x54);
+    }
+    if (pObject->child != NULL) {
+        ApplyGravity(pObject->child);
+    }
+}
 
-// SetGravityDeltaV
+// FUNCTION: CARMA2_HW 0x004c2970
+// FUNCTION: CARMA2_SW 0x004bf0a0
+void C2_HOOK_FASTCALL ApplyGravity(tPhysics_object* pObject) {
+
+    for (; pObject != NULL; pObject = pObject->next) {
+        ApplyGravitySingleObject(pObject);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004c29d0
+// FUNCTION: CARMA2_SW 0x004bf100
+void C2_HOOK_FASTCALL SetGravityDeltaV(tPhysics_object* pObject, br_vector3* pImpulse) {
+    tPhysics_object* pChild;
+
+    pObject->field_0x54 = *pImpulse;
+    for (pChild = pObject->child; pChild != NULL; pChild = pChild->next) {
+        SetGravityDeltaV(pChild, pImpulse);
+    }
+}
 
 // TrialPositionChildren
 
 // FUNCTION: CARMA2_HW 0x004c2b20
+// FUNCTION: CARMA2_SW 0x004bf250
 void C2_HOOK_FASTCALL InternalPositionChildren(tPhysics_object* pParent, tPhysics_object* pRoot) {
     tPhysics_object* child;
     br_vector3 parent_point;
@@ -875,6 +930,7 @@ void C2_HOOK_FASTCALL InternalPositionChildren(tPhysics_object* pParent, tPhysic
 }
 
 // FUNCTION: CARMA2_HW 0x004c2b10
+// FUNCTION: CARMA2_SW 0x004bf240
 void C2_HOOK_FASTCALL PositionChildren(tPhysics_object* pCollision_info) {
 
     InternalPositionChildren(pCollision_info, pCollision_info);
@@ -893,7 +949,11 @@ void C2_HOOK_FASTCALL ApplyTorque(tPhysics_object* pObject, const br_vector3* pT
     pObject->omega.v[2] += torque.v[2] / inertia.v[2];
 }
 
-// ApplyDiminishingTorque
+// STUB: CARMA2_HW 0x004c2c90
+// STUB: CARMA2_SW 0x004bf3c0
+void C2_HOOK_FASTCALL ApplyDiminishingTorque(tPhysics_object* pObject, const br_vector3 *pTorque) {
+    NOT_IMPLEMENTED();
+}
 
 // OrderObjectListOnX
 
@@ -1541,4 +1601,3 @@ void C2_HOOK_FASTCALL InitPhysics(void) {
 // GetCarSpecFromCollObjID
 
 // GetCollObjFromID
-
