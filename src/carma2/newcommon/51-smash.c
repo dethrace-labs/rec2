@@ -707,12 +707,15 @@ void C2_HOOK_FASTCALL LoadMinMax(FILE* pF, br_bounds3* pBounds) {
     pBounds->max.v[2] = MAX(z1, z2);
 }
 
+#ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x004ef830
-void C2_HOOK_FASTCALL ActuallyRepairSmashThunk(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, int pUnused, int pLevel) {
-    extern void C2_HOOK_FASTCALL ActuallyRepairSmash(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, int pLevel);
+// FUNCTION: CARMA2_SW 0x004eb490
+void C2_HOOK_FASTCALL FUN_004ef830(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, undefined4 pArg3, int pLevel) {
 
+    /* Unused */
     ActuallyRepairSmash(pCar_spec, pSmashable, pLevel);
 }
+#endif
 
 // FreeExplosion
 
