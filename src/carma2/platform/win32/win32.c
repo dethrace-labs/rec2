@@ -1311,23 +1311,14 @@ void C2_HOOK_FASTCALL PDPixelmapToScreenRectangleCopy(br_pixelmap* dst, br_int_1
         BrPixelmapRectangleCopy(dst, dx, dy, src, sx, sy, w, h);
     }
 }
-#endif
-
-#ifdef REC2_SW
-// FUNCTION: CARMA2_SW 0x00517560
-void C2_HOOK_FASTCALL PDPixelmapRectangleCopy(br_pixelmap* pDest, int pDst_x, int pDst_y, br_pixelmap* pSrc, int pSrc_x, int pSrc_y, int width, int height) {
-    if (pSrc != pDest) {
-        BrPixelmapRectangleCopy(pDest, pDst_x, pDst_y, pSrc, pSrc_x, pSrc_y, width, height);
-    }
-}
 
 // FUNCTION: CARMA2_SW 0x005175b0
-void C2_HOOK_FASTCALL DPixelmapLine(br_pixelmap* pDst, int pX1, int pY1, int pX2, int pY2, br_colour pColour) {
+void C2_HOOK_FASTCALL PDPixelmapLine(br_pixelmap* pDst, int pX1, int pY1, int pX2, int pY2, br_colour pColour) {
     BrPixelmapLine(pDst, pX1, pY1, pX2, pY2, pColour);
 }
 
 // FUNCTION: CARMA2_SW 0x005175e0
-void C2_HOOK_FASTCALL DPixelmapLine2(br_pixelmap* pDst, int pX1, int pY1, int pX2, int pY2, br_colour pColour) {
+void C2_HOOK_FASTCALL PDPixelmapLine2(br_pixelmap* pDst, int pX1, int pY1, int pX2, int pY2, br_colour pColour) {
     BrPixelmapLine(pDst, pX1, pY1, pX2, pY2, pColour);
 }
 #endif
