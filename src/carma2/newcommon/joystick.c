@@ -433,6 +433,7 @@ int C2_HOOK_FASTCALL ToggleJoystickThrottle(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0045c490
+// FUNCTION: CARMA2_SW 0x0045bed0
 void C2_HOOK_FASTCALL SetJoystickXAxis(float pValue) {
 
     tButtonJoystickInfo* joystick;
@@ -451,6 +452,7 @@ void C2_HOOK_FASTCALL SetJoystickXAxis(float pValue) {
 }
 
 // FUNCTION: CARMA2_HW 0x0045c4f0
+// FUNCTION: CARMA2_SW 0x0045bf30
 void C2_HOOK_FASTCALL SetJoystickYAxis(float pValue) {
 
     tButtonJoystickInfo* joystick;
