@@ -64,6 +64,7 @@ int gPDS3_cda_paused;
 int gPDS3_cda_track;
 
 // GLOBAL: CARMA2_HW 0x007a0520
+// GLOBAL: CARMA2_SW 0x00796ac0
 MCI_STATUS_PARMS gPDS3_cda_status_parms;
 
 // GLOBAL: CARMA2_HW 0x007a00ac
