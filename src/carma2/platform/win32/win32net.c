@@ -527,6 +527,7 @@ tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* pDetails, 
 }
 
 // FUNCTION: CARMA2_HW 0x0051a620
+// FUNCTION: CARMA2_SW 0x00514100
 void C2_HOOK_FASTCALL PDNetDisposePlayer(void) {
 
     dr_dprintf("PDNetDisposePlayer()");
@@ -548,6 +549,7 @@ int C2_HOOK_FASTCALL PDNetSendMessageToAddress(tNet_game_details* pDetails, tNet
 }
 
 // FUNCTION: CARMA2_HW 0x0051a690
+// FUNCTION: CARMA2_SW 0x00514170
 int C2_HOOK_FASTCALL PDNetInitClient(void) {
 
     dr_dprintf("PDNetInitClient()");
