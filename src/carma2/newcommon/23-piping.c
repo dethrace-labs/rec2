@@ -590,6 +590,7 @@ void C2_HOOK_FASTCALL AddSmokeColumnToPipingSession(int pIndex, const tSmoke_col
 // AddFlameToPipingSession
 
 // STUB: CARMA2_HW 0x004c7130
+// STUB: CARMA2_SW 0x004c3860
 void C2_HOOK_FASTCALL AddSplashToPipingSession(tPhysics_object* pObject) {
     NOT_IMPLEMENTED();
 }
