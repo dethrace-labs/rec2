@@ -81,7 +81,7 @@ extern void C2_HOOK_FASTCALL SetShrapnelFragment(tSmash_vertex* pFragment, tMove
 
 // Random34Matrix
 
-// SetInitPosition
+extern br_scalar C2_HOOK_FASTCALL SetInitPosition(br_actor* pActor, tSmashable_initial_position_spec* pInitial_position, br_actor* pSource_actor, br_vector3* pPosition, br_vector3* pAlternate_position, br_actor* pReference_actor, br_bounds3* pBounds, br_matrix34* pMatrix);
 
 // DoGhostPartShrapnel
 
@@ -156,6 +156,10 @@ extern void C2_HOOK_FASTCALL FreeExplosionAnimation(tExplosion_animation* pAnima
 extern void C2_HOOK_FASTCALL ReadShrapnelSpec(FILE* pF, tShrapnel_spec* pShrapnel_specs, int* pShrapnel_count);
 
 extern void C2_HOOK_FASTCALL LoadMinMax(FILE* pF, br_bounds3* pBounds);
+
+#ifdef REC2_MATCHING
+extern void C2_HOOK_FASTCALL FUN_004ef830(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, undefined4 pArg3, int pLevel);
+#endif
 
 // FreeExplosion
 
@@ -291,7 +295,7 @@ extern void C2_HOOK_FASTCALL MungeMaterial(br_actor* pActor, int pRecursive, br_
 
 // ReinitSmashing
 
-// LinkSmashies
+extern void C2_HOOK_FASTCALL LinkSmashies(br_actor* pActor, tCar_crush_buffer_entry* pCrush_data, tModel_detail_vertex_data* pVertex_data);
 
 extern intptr_t C2_HOOK_CDECL RepairModels(br_actor* pActor, void* pUser);
 

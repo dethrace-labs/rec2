@@ -21,9 +21,21 @@ extern int gFrontend_netsummary_first_iteration;
 extern tNet_game_options gFrontend_net_options;
 extern int gPicked_wreck;
 extern tWreck_gallery_car_info gWreck_gallery_car_infos[30];
+extern tNet_game_type gFrontend_game_type;
+extern tStruct_00686508 gUNK_006883b0;
+extern tStruct_00686508 gUNK_006886e8;
+extern br_actor* gFrontend_wrecks_actor;
+extern br_actor* gFrontend_wrecks_camera;
+extern int gFrontend_wrecks_hscroll;
+extern br_pixelmap* gFrontend_wrecks_pixelmap;
+extern tU32 gFrontend_wrecks_previous_update;
+extern br_actor* gFrontend_wrecks_light;
 
 extern tU32 gFrontend_last_scroll;
 extern tU32 gNet_synch_start;
+
+extern int gFrontend_wrecks_current;
+extern tWreck_gallery_sell_info gWreck_gallery_sell_infos[32];
 
 extern tFrontend_brender_item gFrontend_brender_items[100];
 extern tFrontend_spec* gCurrent_frontend_spec;
@@ -34,6 +46,15 @@ extern float gFrontend_wreck_bought_car_dz;
 extern int gFrontend_wrecks_pending_hscroll;
 extern int gFrontend_wrecks_rotate_prev_x;
 extern int gFrontend_wrecks_rotate_prev_y;
+
+extern int gFrontend_controls_count_keys;
+extern int gINT_00688748;
+extern br_material* gFrontend_backdrop_materials[3];
+extern br_token_value gFrontend_backdrop1_material_prims[3];
+extern br_token_value gFrontend_backdrop2_material_prims[3];
+extern br_token_value gFrontend_backdrop0_material_prims[3];
+extern br_actor* gFrontend_camera;
+extern br_actor* gFrontend_backdrop_actors[3];
 
 // SetGameTarget
 
@@ -189,7 +210,7 @@ extern int C2_HOOK_FASTCALL MainMenuOutfunc(tFrontend_spec* pFrontend);
 
 // MainMenuSelectRace
 
-// testUp
+extern int C2_HOOK_FASTCALL testUp(tFrontend_spec* pFrontend);
 
 extern int C2_HOOK_FASTCALL testDn(tFrontend_spec* pFrontend);
 
@@ -231,7 +252,7 @@ extern void C2_HOOK_FASTCALL FRONTEND_PingPongFlash(void);
 
 // FRONTEND_DrawMenu
 
-// FRONTEND_Setup2D
+extern void C2_HOOK_FASTCALL FRONTEND_Setup2D(void);
 
 // FRONTEND_Setup
 
@@ -249,15 +270,15 @@ extern int C2_HOOK_FASTCALL StopGettingInputString(void);
 
 extern int C2_HOOK_FASTCALL StartGettingInputString(char* pBuffer, int pBuffer_size);
 
-// DisposeWrecksGallery
+extern void C2_HOOK_FASTCALL DisposeWrecksGallery(void);
 
 extern int C2_HOOK_FASTCALL ScrollToNextCar(tFrontend_spec* pFrontend);
 
 extern int C2_HOOK_FASTCALL ScrollToPrevCar(tFrontend_spec* pFrontend);
 
-// BuyCurrentCar
+extern int C2_HOOK_FASTCALL BuyCurrentCar(tFrontend_spec* pFrontend);
 
-// WrecksInFunc
+extern int C2_HOOK_FASTCALL WrecksInFunc(tFrontend_spec* pFrontend);
 
 extern int C2_HOOK_FASTCALL KeepInRange(int pIndex, int pRange);
 
@@ -343,9 +364,9 @@ extern void C2_HOOK_FASTCALL Generic_LinkOutEffect(void);
 
 extern tConnected_items* C2_HOOK_FASTCALL GetScrollSet(int pItem);
 
-// ScrollSet_DisplayEntry
+extern void C2_HOOK_FASTCALL ScrollSet_DisplayEntry(tConnected_items* pScroll_set, int pIndex);
 
-// ScrollSet_GetItem
+extern int C2_HOOK_FASTCALL ScrollSet_GetItem(tConnected_items* pScroll_set, int pIndex);
 
 // GetUpdown
 
@@ -387,7 +408,7 @@ extern void C2_HOOK_FASTCALL Slider_ForceProc(tFrontend_slider* pSlider);
 
 extern void C2_HOOK_FASTCALL DisplayJoystickSettings(tFrontend_spec* pFrontend);
 
-// SaveAllJoystickData
+extern void C2_HOOK_FASTCALL SaveAllJoystickData(void);
 
 // Controls_SwitchKeymapSet
 
@@ -399,17 +420,17 @@ extern int C2_HOOK_FASTCALL Controls_KeyDown(tFrontend_spec* pFrontend);
 
 // Controls_Outfunc
 
-// Controls_SlotActivated
+extern int C2_HOOK_FASTCALL Controls_SlotActivated(tFrontend_spec* pFrontend);
 
-// Controls_Ok
+extern int C2_HOOK_FASTCALL Controls_Ok(tFrontend_spec* pFrontend);
 
-// DisplayNetworkOptions
+extern void C2_HOOK_FASTCALL DisplayNetworkOptions(tFrontend_spec* pFrontend);
 
-// BackupNetworkOptions
+extern void C2_HOOK_FASTCALL BackupNetworkOptions(void);
 
 // RestoreNetworkOptions
 
-// NetOptions_Infunc
+extern int C2_HOOK_FASTCALL NetOptions_Infunc(tFrontend_spec* pFrontend);
 
 extern int C2_HOOK_FASTCALL NetOptions_Outfunc(tFrontend_spec* pFrontend);
 
