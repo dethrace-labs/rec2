@@ -226,7 +226,20 @@ void C2_HOOK_FASTCALL GetOilSpillDetails(int pIndex, br_actor** pActor, br_scala
     }
 }
 
-// PointInSpill
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004a77d0
+// STUB: CARMA2_SW 0x004a3940
+int C2_HOOK_FASTCALL PointInSpill(const br_vector3* pPoint, int pIndex) {
+
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004a7530
 // FUNCTION: CARMA2_SW 0x004a36a0
