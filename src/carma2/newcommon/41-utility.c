@@ -2053,9 +2053,26 @@ void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap) {
 }
 
 // FUNCTION: CARMA2_HW 0x005192a0
-void C2_HOOK_FASTCALL FUN_005192a0(br_uint_16* pPixel) {
+// FUNCTION: CARMA2_SW 0x00512d80
+void C2_HOOK_FASTCALL ConvertRGB565ToARGB1555(br_uint_16* pPixel) {
 
     *pPixel = ((*pPixel >> 1) & 0x7fe0) + (*pPixel & 0x1f);
+}
+
+// FUNCTION: CARMA2_HW 0x005192c0
+// FUNCTION: CARMA2_SW 0x00512da0
+void C2_HOOK_FASTCALL ConvertARGB4444ToARGB1555(br_uint_16* pPixel) {
+    br_uint_16 v;
+    br_uint_16 r, g, b;
+
+    v = *pPixel;
+    r = v & 0xf00;
+    g = v & 0x0f0;
+    b = v & 0x00f;
+    *pPixel = (r << 3) + (g << 2) + (b << 1);
+    if (v & 0xf000) {
+        *pPixel += 0x8000;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x005193f0
