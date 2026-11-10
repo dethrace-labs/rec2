@@ -552,7 +552,7 @@ void C2_HOOK_FASTCALL SetInitialPositions(tRace_info* pThe_race) {
 
 // FUNCTION: CARMA2_HW 0x00414910
 // FUNCTION: CARMA2_SW 0x00414940
-void C2_HOOK_FASTCALL NewFaceListCallback(tPhysics_object* pObject, tFace_ref* pFace) {
+void C2_HOOK_FASTCALL NewFaceListCallBack(tPhysics_object* pObject, tFace_ref* pFace) {
     br_bounds3 current_bounds;
     br_scalar old_d;
     float prop7;

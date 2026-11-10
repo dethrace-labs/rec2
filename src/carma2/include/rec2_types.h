@@ -700,8 +700,8 @@ typedef enum {
     ePipe_single_groove_on_off = 51,
     ePipe_chunk_powerup_lose = 53,
     ePipe_funk_enable = 54,
-    ePipe_chunk_single_vanished_dismembered = 55,
-    ePipe_single_ds_model = 56,
+    ePipe_chunk_vanished_dismembered = 55,
+    ePipe_chunk_ds_model = 56,
     ePipe_ped_diagnostic = 57,
     ePipe_chunk_vector3 = 58,
     ePipe_extended_splash = 59,
@@ -5372,7 +5372,7 @@ typedef struct {
 typedef struct tWorld_callbacks {
     int (C2_HOOK_FASTCALL * process_forces)(void*, float*, int arg3);
     int (C2_HOOK_FASTCALL * process_joint_forces)(void*, void*, void*);
-    void (C2_HOOK_FASTCALL * new_face_list)(tPhysics_object*, undefined4 *);
+    void (C2_HOOK_FASTCALL * new_face_list)(tPhysics_object*, tFace_ref *);
     int (C2_HOOK_FASTCALL * find_faces_in_box)(tBounds*, tFace_ref*, int, struct tWorld_callbacks*);
     tNon_car_spec* (C2_HOOK_FASTCALL * pull_actor_from_world)(br_actor*);
     void (C2_HOOK_FASTCALL * stop_groovidelic)(br_actor*);

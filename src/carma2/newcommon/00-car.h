@@ -67,7 +67,7 @@ extern void C2_HOOK_FASTCALL SetInitialPositions(tRace_info* pThe_race);
 
 // InitialiseNonCar
 
-extern void C2_HOOK_FASTCALL NewFaceListCallback(tPhysics_object* pObject, tFace_ref* pFace);
+extern void C2_HOOK_FASTCALL NewFaceListCallBack(tPhysics_object* pObject, tFace_ref* pFace);
 
 extern int C2_HOOK_FASTCALL IsCarInTheSea(void);
 
