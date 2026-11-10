@@ -913,7 +913,9 @@ void C2_HOOK_FASTCALL LoadRaceInfo(int pRace_index, tRace_info* pRace_info) {
 }
 
 // FUNCTION: CARMA2_HW 0x0048c920
-void C2_HOOK_FASTCALL LoadingNoOp2(void) {
+// FUNCTION: CARMA2_SW 0x00489b60
+void C2_HOOK_FASTCALL FUN_0048c920(void) {
+    /* Unused */
 }
 
 // FUNCTION: CARMA2_HW 0x0048c930
