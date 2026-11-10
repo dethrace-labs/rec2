@@ -681,32 +681,6 @@ void C2_HOOK_FASTCALL GetNetPos(tCar_spec* pCar) {
 #pragma auto_inline(on)
 #endif
 
-// FUNCTION: CARMA2_HW 0x00415ef0
-// FUNCTION: CARMA2_SW 0x00415f20
-void C2_HOOK_FASTCALL AddDrag(const tCar_spec* pCar, tPhysics_object* pObject, br_scalar pDelta_time) {
-    br_scalar drag;
-    br_scalar k;
-    br_vector3 v;
-
-    drag = pDelta_time * 0.0005f;
-    if (pObject->last_special_volume != NULL) {
-        k = pObject->last_special_volume->viscosity_multiplier;
-        if (pCar->underwater_ability) {
-            k = (br_scalar)(k * 0.6);
-        }
-        drag *= k;
-        drag *= pObject->water_depth_factor;
-    }
-
-    k = (br_scalar)(BrVector3Length(&pObject->v) * drag * WORLD_SCALE_D / pObject->M);
-    BrVector3Scale(&v, &pObject->v, k);
-    DRVector3Diminish(&pObject->v, &v);
-
-    k = BrVector3Length(&pObject->omega) * drag;
-    BrVector3Scale(&v, &pObject->omega, k);
-    ApplyDiminishingTorque(pObject, &v);
-}
-
 void C2_HOOK_FASTCALL MungeCarsMass(tCar_spec* pCar, br_scalar pFactor) {
 
     pCar->collision_info->M *= pFactor;
@@ -715,7 +689,7 @@ void C2_HOOK_FASTCALL MungeCarsMass(tCar_spec* pCar, br_scalar pFactor) {
 
 // FUNCTION: CARMA2_HW 0x00415ef0
 // FUNCTION: CARMA2_SW 0x00415f20
-void C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject, float pDelta_time) {
+void C2_HOOK_FASTCALL AddDrag(const tCar_spec* pCar, tPhysics_object* pObject, br_scalar pDelta_time) {
     br_scalar drag_factor;
     br_scalar ts;
     br_vector3 drag;
