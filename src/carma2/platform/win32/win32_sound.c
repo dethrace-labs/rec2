@@ -270,7 +270,8 @@ void C2_HOOK_FASTCALL PDS3CheckCDAMedia(tS3_channel* pChannel) {
 }
 
 // FUNCTION: CARMA2_HW 0x0056a1af
-int C2_HOOK_FASTCALL PDS3PauseCDA(volatile undefined4 pUnused_arg) {
+// FUNCTION: CARMA2_SW 0x0056584f
+int C2_HOOK_FASTCALL PDS3PauseCDA(tS3_channel* pChannel) {
 
     if (gPDS3_cda_media_present != 0 && gPDS3_cda_paused == 0) {
         gPDS3_cda_status_parms.dwItem = MCI_STATUS_MODE;
@@ -284,6 +285,7 @@ int C2_HOOK_FASTCALL PDS3PauseCDA(volatile undefined4 pUnused_arg) {
 }
 
 // FUNCTION: CARMA2_HW 0x0056a21f
+// FUNCTION: CARMA2_SW 0x005658bf
 int C2_HOOK_FASTCALL PDS3ResumeCDA(tS3_channel* pChannel) {
 
     if (gPDS3_cda_media_present != 0 && gPDS3_cda_paused != 0) {
