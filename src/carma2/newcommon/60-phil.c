@@ -256,19 +256,27 @@ tPhysics_object* C2_HOOK_FASTCALL PHILGetNextObject(tPhysics_object* pObject) {
 }
 
 // FUNCTION: CARMA2_HW 0x004b6010
+// FUNCTION: CARMA2_SW 0x004b2730
 tU32 C2_HOOK_FASTCALL PHILReturnObjectStatus(tPhysics_object* pObject) {
-    tCollision_info_owner* owner;
+    tPHIL_queued_header* info;
 
-    if (!gPHIL_disabled) {
-        if (pObject->field_0x239 == 2) {
-            return ((tCollision_info_owner*)pObject->field_0x240)->field_0x08;
-        }
-        owner = pObject->field_0x240;
-        if (owner != NULL) {
-            return owner->field_0x08;
-        }
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x239, 0x239);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x240, 0x240);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPHIL_queued_header, field_0x8, 0x8);
+
+    if (gPHIL_disabled) {
+        return 0;
     }
-    return 0;
+    if (pObject->field_0x239 == 2) {
+        info = pObject->field_0x240;
+        return info->field_0x8;
+    }
+    info = pObject->field_0x240;
+    if (info != NULL) {
+        return info->field_0x8;
+    } else {
+        return 0;
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004b6040
@@ -417,5 +425,16 @@ void C2_HOOK_FASTCALL MarkObjectAndChildrenAsPassive(tPhysics_object* pObject) {
 
 // PHILDoPhysics
 
-// PHILApplyPHILObject
+// FUNCTION: CARMA2_HW 0x004b7220
+// FUNCTION: CARMA2_SW 0x004b3940
+void C2_HOOK_FASTCALL PHILApplyPHILObject(tPhysics_object* pObject, const br_matrix34* pMatrix) {
+
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, actor, 0x0);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, transform_matrix, 0x8c);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_actor, t, 0x28);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(br_transform, t, 0x4);
+
+    BrMatrix34Copy(&pObject->transform_matrix, pMatrix);
+    BrMatrix34Copy(&pObject->actor->t.t.mat, pMatrix);
+}
 
