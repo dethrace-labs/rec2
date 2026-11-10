@@ -138,7 +138,17 @@ tS16 C2_HOOK_FASTCALL ReadS16(FILE* pF) {
     return raw_short;
 }
 
+// FUNCTION: CARMA2_HW 0x0048f8f0
+// FUNCTION: CARMA2_SW 0x0048cb60
+tS8 C2_HOOK_FASTCALL ReadS8(FILE* pF) {
+    tS8 raw_byte;
+
+    PFfread(&raw_byte, sizeof(raw_byte), 1, pF);
+    return raw_byte;
+}
+
 // FUNCTION: CARMA2_HW 0x0048f910
+// FUNCTION: CARMA2_SW 0x0048cb80
 void C2_HOOK_FASTCALL WriteU32L(FILE* pF, tU32 pNumber) {
     tU32 raw_long;
 
@@ -148,6 +158,7 @@ void C2_HOOK_FASTCALL WriteU32L(FILE* pF, tU32 pNumber) {
 }
 
 // FUNCTION: CARMA2_HW 0x0048f930
+// FUNCTION: CARMA2_SW 0x0048cba0
 void C2_HOOK_FASTCALL WriteU16L(FILE* pF, tU16 pNumber) {
     tU16 raw_short;
 
@@ -157,6 +168,7 @@ void C2_HOOK_FASTCALL WriteU16L(FILE* pF, tU16 pNumber) {
 }
 
 // FUNCTION: CARMA2_HW 0x0048f960
+// FUNCTION: CARMA2_SW 0x0048cbd0
 void C2_HOOK_FASTCALL WriteU8L(FILE* pF, tU8 pNumber) {
     tU8 raw_byte;
 
@@ -265,13 +277,13 @@ int C2_HOOK_FASTCALL GetAnInt(FILE* pF) {
 }
 
 // FUNCTION: CARMA2_HW 0x0048fb50
-tU32 C2_HOOK_FASTCALL DecimalDigitsToBitmask(tU32 pValue) {
-    tU32 result;
-    tU32 v;
+// FUNCTION: CARMA2_SW 0x0048cdc0
+unsigned int C2_HOOK_FASTCALL BinIntegerToInteger(unsigned int pValue) {
+    unsigned int result;
 
     result = 0;
-    for (v = pValue; v != 0; v /= 10) {
-        result = (v % 10) | (result + result);
+    for (; pValue != 0; pValue /= 10) {
+        result = (result << 1) | (pValue % 10);
     }
     return result;
 }
@@ -726,6 +738,7 @@ void C2_HOOK_FASTCALL EncodeFile(char* pThe_path) {
 }
 
 // FUNCTION: CARMA2_HW 0x00490bc0
+// FUNCTION: CARMA2_SW 0x0048de30
 void C2_HOOK_FASTCALL EncodeFileWrapper(char* pThe_path) {
     int len;
 
@@ -733,21 +746,21 @@ void C2_HOOK_FASTCALL EncodeFileWrapper(char* pThe_path) {
     if (strcmp(&pThe_path[len - 4], ".TXT") != 0) {
         return;
     }
-    if (strcmp(&pThe_path[len - 12], "DKEYMAP0.TXT") == 0
-            || strcmp(&pThe_path[len - 12], "DKEYMAP1.TXT") == 0
-            || strcmp(&pThe_path[len - 12], "DKEYMAP2.TXT") == 0
-            || strcmp(&pThe_path[len - 12], "DKEYMAP3.TXT") == 0
-            || strcmp(&pThe_path[len - 12], "KEYMAP_0.TXT") == 0
-            || strcmp(&pThe_path[len - 12], "KEYMAP_1.TXT") == 0
-            || strcmp(&pThe_path[len - 12], "KEYMAP_2.TXT") == 0
-            || strcmp(&pThe_path[len - 12], "KEYMAP_3.TXT") == 0
-            || strcmp(&pThe_path[len - 11], "OPTIONS.TXT") == 0
-            || strcmp(&pThe_path[len - 12], "KEYNAMES.TXT") == 0
-            || strcmp(&pThe_path[len - 10], "KEYMAP.TXT") == 0
-            || strcmp(&pThe_path[len - 9], "PATHS.TXT") == 0) {
-        return;
+    if (strcmp(pThe_path + len - 4, ".TXT") == 0
+            && strcmp(pThe_path + len - 12, "DKEYMAP0.TXT") != 0
+            && strcmp(pThe_path + len - 12, "DKEYMAP1.TXT") != 0
+            && strcmp(pThe_path + len - 12, "DKEYMAP2.TXT") != 0
+            && strcmp(pThe_path + len - 12, "DKEYMAP3.TXT") != 0
+            && strcmp(pThe_path + len - 12, "KEYMAP_0.TXT") != 0
+            && strcmp(pThe_path + len - 12, "KEYMAP_1.TXT") != 0
+            && strcmp(pThe_path + len - 12, "KEYMAP_2.TXT") != 0
+            && strcmp(pThe_path + len - 12, "KEYMAP_3.TXT") != 0
+            && strcmp(pThe_path + len - 11, "OPTIONS.TXT") != 0
+            && strcmp(pThe_path + len - 12, "KEYNAMES.TXT") != 0
+            && strcmp(pThe_path + len - 10, "KEYMAP.TXT") != 0
+            && strcmp(pThe_path + len - 9, "PATHS.TXT") != 0) {
+        EncodeFile(pThe_path);
     }
-    EncodeFile(pThe_path);
 }
 
 // FUNCTION: CARMA2_HW 0x00490ec0
@@ -1146,9 +1159,20 @@ void C2_HOOK_FASTCALL DisposeRaceInfo(tRace_info* pRace_info) {
     // empty
 }
 
+#ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x0044bf80
-void C2_HOOK_FASTCALL LoadingNoOp(void) {
+// FUNCTION: CARMA2_SW 0x0044bd30
+void C2_HOOK_FASTCALL FUN_0044bf80(void) {
+    /* Unused */
 }
+
+// FUNCTION: CARMA2_HW 0x0044bf90
+// FUNCTION: CARMA2_SW 0x0044bd40
+void C2_HOOK_FASTCALL FUN_0044bf90(br_pixelmap* pMap) {
+    /* Unused */
+    BrPixelmapFree(pMap);
+}
+#endif
 
 // FUNCTION: CARMA2_HW 0x0044bfa0
 // FUNCTION: CARMA2_SW 0x0044bd50

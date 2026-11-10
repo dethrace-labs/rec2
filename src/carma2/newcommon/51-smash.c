@@ -325,7 +325,11 @@ void C2_HOOK_FASTCALL SetShrapnelFragment(tSmash_vertex* pFragment, tMovement_sp
 
 // Random34Matrix
 
-// SetInitPosition
+// STUB: CARMA2_HW 0x004eb4a0
+// STUB: CARMA2_SW 0x004e7170
+br_scalar C2_HOOK_FASTCALL SetInitPosition(br_actor* pActor, tSmashable_initial_position_spec* pInitial_position, br_actor* pSource_actor, br_vector3* pPosition, br_vector3* pAlternate_position, br_actor* pReference_actor, br_bounds3* pBounds, br_matrix34* pMatrix) {
+    NOT_IMPLEMENTED();
+}
 
 // DoGhostPartShrapnel
 
@@ -707,6 +711,16 @@ void C2_HOOK_FASTCALL LoadMinMax(FILE* pF, br_bounds3* pBounds) {
     pBounds->max.v[2] = MAX(z1, z2);
 }
 
+#ifdef REC2_MATCHING
+// FUNCTION: CARMA2_HW 0x004ef830
+// FUNCTION: CARMA2_SW 0x004eb490
+void C2_HOOK_FASTCALL FUN_004ef830(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, undefined4 pArg3, int pLevel) {
+
+    /* Unused */
+    ActuallyRepairSmash(pCar_spec, pSmashable, pLevel);
+}
+#endif
+
 // FreeExplosion
 
 // ReadSpecialEffectsSpec
@@ -762,6 +776,7 @@ void C2_HOOK_FASTCALL ReadSmashableData(FILE* pF, tCar_crush_buffer_entry* pCar_
 #endif
 
 // STUB: CARMA2_HW 0x004ef840
+// STUB: CARMA2_SW 0x004eb4a0
 void C2_HOOK_FASTCALL ActuallyRepairSmash(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, int pLevel) {
     NOT_IMPLEMENTED();
 }
@@ -1203,7 +1218,11 @@ void C2_HOOK_FASTCALL MungeMaterial(br_actor* pActor, int pRecursive, br_materia
 
 // ReinitSmashing
 
-// LinkSmashies
+// STUB: CARMA2_HW 0x004f57c0
+// STUB: CARMA2_SW 0x004f1420
+void C2_HOOK_FASTCALL LinkSmashies(br_actor* pActor, tCar_crush_buffer_entry* pCrush_data, tModel_detail_vertex_data* pVertex_data) {
+    NOT_IMPLEMENTED();
+}
 
 // FUNCTION: CARMA2_HW 0x004f5a00
 // FUNCTION: CARMA2_SW 0x004f1660
