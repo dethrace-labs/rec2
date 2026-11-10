@@ -130,7 +130,27 @@ void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004e1c30
-void C2_HOOK_FASTCALL NoOp_004e1c30(void) {
+// FUNCTION: CARMA2_SW 0x004ddf30
+void C2_HOOK_FASTCALL FUN_004e1c30(void) {
+    /* Unused */
+}
+
+// FUNCTION: CARMA2_HW 0x004e1c40
+// FUNCTION: CARMA2_SW 0x004ddf40
+void C2_HOOK_FASTCALL FUN_004e1c40(void) {
+    /* Unused */
+}
+
+// FUNCTION: CARMA2_HW 0x004e1c50
+// FUNCTION: CARMA2_SW 0x004ddf50
+void C2_HOOK_FASTCALL FUN_004e1c50(void) {
+    /* Unused */
+}
+
+// FUNCTION: CARMA2_HW 0x004e1c60
+// FUNCTION: CARMA2_SW 0x004ddf60
+void C2_HOOK_FASTCALL FUN_004e1c60(undefined4 pArg1, undefined4 pArg2, undefined4 pArg3) {
+    /* Unused */
 }
 
 // GenerateOneMovieFrame
