@@ -2566,7 +2566,7 @@ typedef enum tDriver {
     eDriver_detached_bit = 2,
     eDriver_split_car = 3,
     eDriver_4 = 4,
-    eDriver_5 = 5,
+    eDriver_5 = 5, /* eDriver_non_car? */
     eDriver_oppo = 6,
     eDriver_net_human = 7,
     eDriver_local_human = 8
@@ -2882,7 +2882,7 @@ typedef struct tCar_spec {
     br_vector3 nor[4];
     br_vector3 prev_nor[4];
     float oil_remaining[4];
-    float maybe_blood_remaining[4];
+    float oil_wheel_friction[4];
     float total_length[4];
     br_material* field_0x16fc[4];
     float proxy_ray_distance;
