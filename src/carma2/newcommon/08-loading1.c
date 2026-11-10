@@ -743,9 +743,6 @@ void C2_HOOK_FASTCALL EncodeFileWrapper(char* pThe_path) {
     int len;
 
     len = strlen(pThe_path);
-    if (strcmp(&pThe_path[len - 4], ".TXT") != 0) {
-        return;
-    }
     if (strcmp(pThe_path + len - 4, ".TXT") == 0
             && strcmp(pThe_path + len - 12, "DKEYMAP0.TXT") != 0
             && strcmp(pThe_path + len - 12, "DKEYMAP1.TXT") != 0
