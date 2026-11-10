@@ -8,10 +8,13 @@
 
 #include "18-graphics2.h"
 
+#include "08-loading1.h"
 #include "16-graphics1.h"
 #include "25-grafdata.h"
 #include "33-depth.h"
+#include "35-intrface.h"
 #include "41-utility.h"
+#include "42-input.h"
 #include "52-errors.h"
 #include "63-loading3.h"
 #include "66-tintedpoly.h"
@@ -138,6 +141,22 @@ br_pixelmap* gBlend_palettes[4];
 // GLOBAL: CARMA2_SW 0x00685e64
 br_pixelmap* gCurrent_splash;
 
+// GLOBAL: CARMA2_HW 0x0067be90
+// GLOBAL: CARMA2_SW 0x00676600
+int gCurrent_cursor_index;
+
+// GLOBAL: CARMA2_HW 0x0079ecb0
+// GLOBAL: CARMA2_SW 0x00795210
+int gMouse_last_x_coord;
+
+// GLOBAL: CARMA2_HW 0x0079ecb4
+// GLOBAL: CARMA2_SW 0x00795240
+int gMouse_last_y_coord;
+
+// GLOBAL: CARMA2_HW 0x0067be94
+// GLOBAL: CARMA2_SW 0x00676604
+int gCursor_transient_index;
+
 // FUNCTION: CARMA2_HW 0x0047d470
 // FUNCTION: CARMA2_SW 0x0047d7a0
 void C2_HOOK_FASTCALL RectangleFill_TopBottomLine(br_pixelmap* pMap, int pX, int pY, int pWidth, int pHeight, br_uint_32 pColour) {
@@ -150,6 +169,20 @@ void C2_HOOK_FASTCALL RectangleFill_TopBottomLine(br_pixelmap* pMap, int pX, int
     BrPixelmapRectangleFill(pMap, pX, pY + 1, pWidth, pHeight - 2, pColour);
     BrPixelmapLine(pMap, pX, pY, pX + pWidth - 1, pY, pColour + 2);
     BrPixelmapLine(pMap, pX, pY + pHeight - 1, pX + pWidth - 1, pY + pHeight - 1, pColour - 2);
+}
+
+// FUNCTION: CARMA2_HW 0x0047d510
+// FUNCTION: CARMA2_SW 0x0047d810
+void C2_HOOK_FASTCALL RectangleFill_LeftRightLine(br_pixelmap* pMap, int pX, int pY, int pWidth, int pHeight, br_colour pColour) {
+
+#ifdef REC2_HW
+    if (gBack_screen->type != BR_PMT_INDEX_8) {
+        pColour = PaletteEntry16Bit(gRender_palette, pColour);
+    }
+#endif
+    BrPixelmapRectangleFill(pMap, pX + 1, pY, pWidth - 2, pHeight, pColour);
+    BrPixelmapLine(pMap, pX, pY, pX, pY + pHeight - 1, pColour + 2);
+    BrPixelmapLine(pMap, pX + pWidth - 1, pY, pX + pWidth - 1, pY + pHeight - 1, pColour - 2);
 }
 
 // FUNCTION: CARMA2_HW 0x004b4fd0
@@ -289,7 +322,7 @@ void C2_HOOK_FASTCALL InitializePalettes(void) {
         PDSetPalette(render_palette);
     }
     gPalette_munged |= render_palette != gRender_palette;
-    gScratch_pixels = BrMemAllocate(256 * sizeof(br_uint_32), kMem_misc);
+    gScratch_pixels = BrMemAllocate(256 * sizeof(br_colour), kMem_misc);
     gScratch_palette = DRPixelmapAllocate(BR_PMT_RGBX_888, 1, 256, gScratch_pixels, 0);
 #ifdef REC2_SW
     gBlend25_table = BrTableFind("BLEND25.TAB");
@@ -366,30 +399,59 @@ void C2_HOOK_FASTCALL ResetPalette(void) {
     DRSetPalette(gRender_palette);
 }
 
-// Darken
+void C2_HOOK_FASTCALL Darken(tU8 *pPtr, tU32 pDarken_amount) {
+    unsigned int value;
 
-// SetFadedPalette
+    value = *pPtr;
+    *pPtr = (value * pDarken_amount) / 256;
+}
+
+// FUNCTION: CARMA2_HW 0x004b5390
+// FUNCTION: CARMA2_SW 0x004b1ae0
+void C2_HOOK_FASTCALL SetFadedPalette(tU32 pDegree) {
+    int i;
+
+    memcpy(gScratch_pixels, gCurrent_palette->pixels, 256 * sizeof(br_colour));
+    for (i = 0; i < 256; i++) {
+        Darken(&((tU8*)gScratch_pixels)[4 * i + 0], pDegree);
+        Darken(&((tU8*)gScratch_pixels)[4 * i + 1], pDegree);
+        Darken(&((tU8*)gScratch_pixels)[4 * i + 2], pDegree);
+        Darken(&((tU8*)gScratch_pixels)[4 * i + 3], pDegree);
+    }
+    DRSetPalette2(gScratch_palette, 0);
+}
 
 // FUNCTION: CARMA2_HW 0x004b5460
 // FUNCTION: CARMA2_SW 0x004b1ba0
 void C2_HOOK_FASTCALL FadePaletteDown(void) {
 }
 
-#if defined(REC2_MATCHING) && defined(_MSC_VER)
-#pragma auto_inline(off)
-#endif
-
-// STUB: CARMA2_HW 0x004b5470
-// STUB: CARMA2_SW 0x004b1bb0
+// FUNCTION: CARMA2_HW 0x004b5470
+// FUNCTION: CARMA2_SW 0x004b1bb0
 void C2_HOOK_FASTCALL FadePaletteUp(void) {
-    NOT_IMPLEMENTED();
+    int start_time;
+    int the_time;
+
+    if (!gFaded_palette) {
+        return;
+    }
+
+    gFaded_palette = 0;
+    start_time = PDGetTotalTime();
+    while ((the_time = PDGetTotalTime() - start_time) < 500) {
+        SetFadedPalette((the_time * 256) / 500);
+    }
+    DRSetPalette(gCurrent_palette);
 }
 
-#if defined(REC2_MATCHING) && defined(_MSC_VER)
-#pragma auto_inline(on)
-#endif
+// FUNCTION: CARMA2_HW 0x004b55f0
+// FUNCTION: CARMA2_SW 0x004b1d20
+void C2_HOOK_FASTCALL EnsurePaletteUp(void) {
 
-// EnsurePaletteUp
+    if (gFaded_palette) {
+        FadePaletteUp();
+    }
+}
 
 #if defined(REC2_MATCHING) && defined(_MSC_VER)
 #pragma auto_inline(off)
@@ -419,6 +481,23 @@ void C2_HOOK_FASTCALL InitTransientBitmaps(void) {
         gTransient_bitmaps[i].in_use = 0;
     }
 }
+
+#ifdef REC2_SW
+int C2_HOOK_FASTCALL AllocateTransientBitmap(int pWidth, int pHeight, int pUser_data) {
+    int bm_index;
+
+    for (bm_index = 0; bm_index < (int)REC2_ASIZE(gTransient_bitmaps); bm_index++) {
+        if (gTransient_bitmaps[bm_index].pixmap == NULL) {
+            gTransient_bitmaps[bm_index].pixmap = DRPixelmapAllocate(gBack_screen->type, pWidth + 8, pHeight, NULL, 0);
+            gTransient_bitmaps[bm_index].in_use = 0;
+            gTransient_bitmaps[bm_index].user_data = pUser_data;
+            return bm_index;
+        }
+    }
+    FatalError(kFatalError_CouldNotFindASpareTransientBitmap);
+    return -1;
+}
+#endif
 
 void C2_HOOK_FASTCALL DeallocateTransientBitmap(int pIndex) {
 
@@ -479,8 +558,31 @@ int C2_HOOK_FASTCALL DoMouseCursor(void) {
     NOT_IMPLEMENTED();
 }
 
+int C2_HOOK_FASTCALL AllocateCursorTransient(void) {
+#ifdef REC2_HW
+    return 0;
+#endif
+#ifdef REC2_SW
+    int i;
+    int largest_width;
+    int largest_height;
+
+    largest_width = 0;
+    largest_height = 0;
+    for (i = 0; i < (int)REC2_ASIZE(gCursors); i++) {
+        if (gCursors[i]->width > largest_width) {
+            largest_width = gCursors[i]->width;
+        }
+        if (gCursors[i]->height > largest_height) {
+            largest_height = gCursors[i]->height;
+        }
+    }
+    return AllocateTransientBitmap(largest_width, largest_height, 0);
+#endif
+}
+
 // FUNCTION: CARMA2_HW 0x0043e3f0
-void C2_HOOK_FASTCALL AllocateCursorTransient(void) {
+void C2_HOOK_FASTCALL InitMouseTargetLines(void) {
     br_pixelmap* cross;
     br_pixelmap* line;
 
@@ -511,11 +613,20 @@ void C2_HOOK_FASTCALL AllocateCursorTransient(void) {
     }
 }
 
-// InitMouseTargetLines
-
-// STUB: CARMA2_HW 0x0043e6c0
+// FUNCTION: CARMA2_HW 0x0043e6c0
+// FUNCTION: CARMA2_SW 0x0043e750
 void C2_HOOK_FASTCALL StartMouseCursor(void) {
-    NOT_IMPLEMENTED();
+#ifdef REC2_HW
+    if (gCursor_tinted_top == -1) {
+        InitMouseTargetLines();
+    }
+#endif
+    gNext_transient = 0;
+    gCursor_transient_index = AllocateCursorTransient();
+    GetMousePosition(&gMouse_last_x_coord, &gMouse_last_y_coord);
+    gMouse_in_use = 0;
+    gCurrent_cursor_index = 2;
+    gMouse_started = 1;
 }
 
 // FUNCTION: CARMA2_HW 0x0043e710
