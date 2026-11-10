@@ -28,12 +28,14 @@
 // CreateNBPAddress
 
 // FUNCTION: CARMA2_HW 0x0051a070
+// FUNCTION: CARMA2_SW 0x00513b50
 void C2_HOOK_FASTCALL PDNetDisposeGameDetails(void) {
 
     dr_dprintf("PDNetDisposeGameDetails()");
 }
 
 // FUNCTION: CARMA2_HW 0x0051a080
+// FUNCTION: CARMA2_SW 0x00513b60
 int C2_HOOK_FASTCALL PDNetHostGame(tNet_game_details* pDetails, char* pHost_name, void** pHost_address) {
     dr_dprintf("PDNetHostGame()");
     *pHost_address = &gLocal_address;
@@ -47,17 +49,14 @@ int C2_HOOK_FASTCALL PDNetHostGame(tNet_game_details* pDetails, char* pHost_name
 // PDNetHostFinishGame
 
 // FUNCTION: CARMA2_HW 0x0051a0d0
-tU32 C2_HOOK_FASTCALL PDNetExtractGameID(tNet_game_details* pDetails) {
+// FUNCTION: CARMA2_SW 0x00513bb0
+tU32 C2_HOOK_FASTCALL PDNetExtractGameID(const tNet_game_details* pDetails) {
+    tU8 *addr = (tU8*)pDetails->pd_net_info.addr;
+
     dr_dprintf("PDNetExtractGameID()");
     dr_dprintf("...returning %8.8x",
-        ((((tU8*)pDetails->pd_net_info.addr)[8] << 8
-          | ((tU8*)pDetails->pd_net_info.addr)[9]) << 8
-         | ((tU8*)pDetails->pd_net_info.addr)[10]) << 8
-        | ((tU8*)pDetails->pd_net_info.addr)[11]);
-    return ((((tU8*)pDetails->pd_net_info.addr)[8] << 8
-             | ((tU8*)pDetails->pd_net_info.addr)[9]) << 8
-            | ((tU8*)pDetails->pd_net_info.addr)[10]) << 8
-           | ((tU8*)pDetails->pd_net_info.addr)[11];
+        addr[8] << 24 | addr[9] << 16 | addr[10] << 8 | addr[11]);
+    return addr[8] << 24 | addr[9] << 16 | addr[10] << 8 | addr[11];
 }
 
 // PDNetExtractPlayerID
