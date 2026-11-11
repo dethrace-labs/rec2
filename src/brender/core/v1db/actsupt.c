@@ -280,7 +280,7 @@ void C2_HOOK_STDCALL Matrix4PerspectiveNew(br_matrix4* mat, br_angle field_of_vi
     mat->m[2][3] = -1.f;
     mat->m[3][0] = 0.f;
     mat->m[3][1] = 0.f;
-    mat->m[3][2] = -2.f * (yon * hither) / (yon - hither);
+    mat->m[3][2] = ((yon * hither) / (yon - hither)) * -2.f;
     mat->m[3][3] = 0.f;
 }
 
@@ -291,6 +291,24 @@ br_token C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_actor* camera
 
     camera_type = camera->type_data;
 	switch (camera_type->type) {
+    case BR_CAMERA_PERSPECTIVE_FOV:
+        Matrix4PerspectiveNew(mat,
+            camera_type->field_of_view,
+            camera_type->aspect,
+            -camera_type->hither_z,
+            -camera_type->yon_z,
+            v1db.origin.v[0],
+            v1db.origin.v[1]);
+        return BRT_PERSPECTIVE;
+    case BR_CAMERA_PERSPECTIVE_FOV_OLD:
+        BrMatrix4Perspective(mat,
+            camera_type->field_of_view,
+            camera_type->aspect,
+            -camera_type->hither_z,
+            -camera_type->yon_z);
+        return BRT_PERSPECTIVE;
+    case BR_CAMERA_PERSPECTIVE_WHD:
+        return BRT_PERSPECTIVE;
 	case BR_CAMERA_PARALLEL:
 		if (camera_type->width == 0.f) {
 			BrFailure("Parallel camera has zero width");
@@ -316,17 +334,6 @@ br_token C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_actor* camera
             0.f);
 		BrMatrix4Copy34(mat, &mat34);
 		return BRT_PARALLEL;
-	case BR_CAMERA_PERSPECTIVE_FOV:
-		Matrix4PerspectiveNew(mat,
-			camera_type->field_of_view,
-            camera_type->aspect,
-			-camera_type->hither_z,
-            -camera_type->yon_z,
-			v1db.origin.v[0],
-            v1db.origin.v[1]);
-		return BRT_PERSPECTIVE;
-    case BR_CAMERA_PERSPECTIVE_WHD:
-        return BRT_PERSPECTIVE;
 	case BR_CAMERA_PARALLEL_OLD:
 		if (camera_type->width == 0.f) {
             BrFailure("Parallel camera has zero width");
