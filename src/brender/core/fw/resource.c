@@ -292,6 +292,7 @@ void C2_HOOK_CDECL InternalResourceDump(resource_header* res, br_putline_cbfn* p
 }
 
 // FUNCTION: CARMA2_HW 0x00527c50
+// FUNCTION: CARMA2_SW 0x005232f0
 void C2_HOOK_CDECL BrResDump(void* vres, br_putline_cbfn* putline, void* arg) {
     resource_header* res;
 
