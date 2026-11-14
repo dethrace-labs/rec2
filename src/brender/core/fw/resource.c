@@ -233,20 +233,20 @@ br_uint_32 C2_HOOK_CDECL BrResSizeTotal(void* vres) {
 }
 
 // FUNCTION: CARMA2_HW 0x00527b60
+// FUNCTION: CARMA2_SW 0x00523200
 br_uint_32 C2_HOOK_CDECL BrResChildEnum(void* vres, br_resenum_cbfn* callback, void* arg) {
     resource_header* res;
     resource_header* rp;
     br_uint_32 r;
 
     res = UserToRes(vres);
-    r = 0;
     for (rp = (resource_header*)res->children.head; rp != NULL; rp = (resource_header*)rp->node.next) {
         r = callback(ResToUser(rp), arg);
         if (r != 0) {
-            break;
+            return r;
         }
     }
-    return r;
+    return 0;
 }
 
 // FUNCTION: CARMA2_HW 0x00527bd0
