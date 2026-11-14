@@ -178,6 +178,7 @@ void* C2_HOOK_CDECL BrResRemove(void* vres) {
 }
 
 // FUNCTION: CARMA2_HW 0x00527970
+// FUNCTION: CARMA2_SW 0x00523010
 br_uint_8 C2_HOOK_CDECL BrResClass(void* vres) {
     resource_header* res;
 
