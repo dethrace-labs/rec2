@@ -51,7 +51,10 @@ int gPHIL_count_queued_objects;
 
 // ScalarToFraction
 
-// FractionToScalar
+br_scalar C2_HOOK_FASTCALL FractionToScalar(br_scalar pMin, br_scalar pMax, tU16 pFixed) {
+
+    return ((pMax - pMin) * ((br_scalar)pFixed / 65534.0f)) + pMin;
+}
 
 // FUNCTION: CARMA2_HW 0x0049be90
 // FUNCTION: CARMA2_SW 0x00498010
@@ -102,7 +105,18 @@ void C2_HOOK_FASTCALL GetOrientationFromMatrix(tFixed_quat* pOrientation, const 
     pOrientation->v[3] = (tU16)(value + .5f);
 }
 
-// GetMatrixFromOrientation
+// FUNCTION: CARMA2_HW 0x0049c000
+// FUNCTION: CARMA2_SW 0x00498180
+void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tFixed_quat* pOrientation) {
+    br_quat quaternion;
+
+    quaternion.x = FractionToScalar(-1.0f, 1.0f, pOrientation->v[0]);
+    quaternion.y = FractionToScalar(-1.0f, 1.0f, pOrientation->v[1]);
+    quaternion.z = FractionToScalar(-1.0f, 1.0f, pOrientation->v[2]);
+    quaternion.w = FractionToScalar(-1.0f, 1.0f, pOrientation->v[3]);
+    BrQuatNormalise(&quaternion, &quaternion);
+    BrQuatToMatrix34(pMatrix, &quaternion);
+}
 
 // OmegaCompScalarTo16
 
