@@ -1105,11 +1105,12 @@ br_uint_32 C2_HOOK_STDCALL DfStructReadArray(br_datafile* df, br_file_struct* st
     int i;
 
     cp = (char*)base;
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n;) {
         if (BrFileEof(df->h) != 0) {
             break;
         }
         df->prims->struct_read(df, str, cp);
+        i++;
         cp += str->mem_size;
     }
     return i;
