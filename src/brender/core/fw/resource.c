@@ -250,6 +250,7 @@ br_uint_32 C2_HOOK_CDECL BrResChildEnum(void* vres, br_resenum_cbfn* callback, v
 }
 
 // FUNCTION: CARMA2_HW 0x00527bd0
+// FUNCTION: CARMA2_SW 0x00523270
 br_uint_32 C2_HOOK_CDECL BrResCheck(void* vres, int no_tag) {
     resource_header* res;
 
