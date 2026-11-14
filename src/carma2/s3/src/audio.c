@@ -890,6 +890,7 @@ void C2_HOOK_FASTCALL S3SoundBankReaderSkipToNewline(tS3_soundbank_read_ctx* pCo
 }
 
 // FUNCTION: CARMA2_HW 0x00568260
+// FUNCTION: CARMA2_SW 0x00563900
 void C2_HOOK_FASTCALL S3SoundBankReaderAdvance(tS3_soundbank_read_ctx* pContext, int pAmount) {
 
     pContext->data += pAmount;
