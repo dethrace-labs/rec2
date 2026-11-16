@@ -15,33 +15,28 @@
 
 #include "c2_string.h"
 
-// GLOBAL: CARMA2_HW 0x006b7818
-// GLOBAL: CARMA2_SW 0x006ae4f8
-int gTimers_stack_size;
-
-// GLOBAL: CARMA2_HW 0x006b7600
-tTimer gTimers[19];
-
-// GLOBAL: CARMA2_HW 0x006b7814
-// GLOBAL: CARMA2_SW 0x006ae4f4
-int gTimers_max_index;
-
 // GLOBAL: CARMA2_HW 0x006aaa40
+// GLOBAL: CARMA2_SW 0x006a4490
 int gTimers_draw_x;
 
 // GLOBAL: CARMA2_HW 0x006aaa44
+// GLOBAL: CARMA2_SW 0x006a4494
 int gTimers_draw_y_stride;
 
 // GLOBAL: CARMA2_HW 0x006aaa48
+// GLOBAL: CARMA2_SW 0x006a4498
 int gTimers_enough_samples;
 
 // GLOBAL: CARMA2_HW 0x006aaa4c
+// GLOBAL: CARMA2_SW 0x006a449c
 int gTimers_frame_count;
 
 // GLOBAL: CARMA2_HW 0x006aaa50
+// GLOBAL: CARMA2_SW 0x006a44a0
 tU32 gTimers_frame_end_time;
 
 // GLOBAL: CARMA2_HW 0x006aaa54
+// GLOBAL: CARMA2_SW 0x006a44a4
 int gTimers_draw_y;
 
 // GLOBAL: CARMA2_HW 0x006aaa58
@@ -49,7 +44,20 @@ int gTimers_draw_y;
 tU32 gTimers_frame_start_time;
 
 // GLOBAL: CARMA2_HW 0x006aaa5c
+// GLOBAL: CARMA2_SW 0x006a44ac
 tU32 gTimers_tolerance;
+
+// GLOBAL: CARMA2_HW 0x006b7600
+// GLOBAL: CARMA2_SW 0x006ae2e0
+tTimer gTimers[19];
+
+// GLOBAL: CARMA2_HW 0x006b7814
+// GLOBAL: CARMA2_SW 0x006ae4f4
+int gTimers_max_index;
+
+// GLOBAL: CARMA2_HW 0x006b7818
+// GLOBAL: CARMA2_SW 0x006ae4f8
+int gTimers_stack_size;
 
 // FUNCTION: CARMA2_HW 0x00504300
 // FUNCTION: CARMA2_SW 0x004ffc50

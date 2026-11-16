@@ -160,7 +160,7 @@ float C2_HOOK_STDCALL FRandomBetween(float pA, float pB) {
 #if RAND_MAX == 0x7fff
     return (float)rand() * (pB - pA) / (float)(RAND_MAX + 1) + pA;
 #else
-    return (float)(rand() % 0x10000) * (pB - pA) / (float)(0x7fff + 1) + pA;
+    return (float)(rand() % 0x8000) * (pB - pA) / (float)(0x7fff + 1) + pA;
 #endif
 }
 
