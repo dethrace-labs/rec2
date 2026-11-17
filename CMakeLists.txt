@@ -58,7 +58,7 @@ if(REC2_MATCHING)
     add_compile_options(-Gr) # __fastcall calling convention
 endif()
 
-set(REC2_EDITIONS _hw _sw)
+set(REC2_EDITIONS _hw _sw _cheat)
 
 set(REC2_PLATFORM_CHOICES)
 if(WIN32)
@@ -161,11 +161,13 @@ if(NOT REC2_MATCHING)
 endif()
 
 function(register_hw_sw_target TARGET)
-    target_compile_definitions(${TARGET}_hw PUBLIC REC2_HW)
-    target_compile_definitions(${TARGET}_sw PUBLIC REC2_SW)
+    target_compile_definitions(${TARGET}_hw PUBLIC REC2_HW REC2_V102A)
+    target_compile_definitions(${TARGET}_sw PUBLIC REC2_SW REC2_V102A)
+    target_compile_definitions(${TARGET}_cheat PUBLIC REC2_HW REC2_CHEAT REC2_V101A)
     set_property(TARGET ${TARGET}_hw ${TARGET}_sw APPEND PROPERTY COMPATIBLE_INTERFACE_STRING REC2_EDITION)
     set_property(TARGET ${TARGET}_hw PROPERTY INTERFACE_REC2_EDITION HW)
     set_property(TARGET ${TARGET}_sw PROPERTY INTERFACE_REC2_EDITION SW)
+    set_property(TARGET ${TARGET}_cheat PROPERTY INTERFACE_REC2_EDITION CHEAT)
 endfunction()
 
 add_subdirectory(src/brender)
