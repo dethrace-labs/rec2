@@ -189,6 +189,7 @@ if(REC2_MATCHING)
 
     reccmp_add_target(rec2_hw ID CARMA2_HW)
     reccmp_add_target(rec2_sw ID CARMA2_SW)
+    reccmp_add_target(rec2_cheat ID CARMA2_CHEAT)
     reccmp_add_target(brender_driver_d3d ID D3D)
     reccmp_add_target(carma2 ID LAUNCHER)
 

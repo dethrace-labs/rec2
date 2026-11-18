@@ -18,14 +18,17 @@
 
 // GLOBAL: CARMA2_HW 0x00591374
 // GLOBAL: CARMA2_SW 0x0058c354
+// GLOBAL: CARMA2_CHEAT 0x00597ccc
 tCar_texturing_level gCar_texturing_level = eCTL_full;
 
 // GLOBAL: CARMA2_HW 0x0059136c
 // GLOBAL: CARMA2_SW 0x0058c34c
+// GLOBAL: CARMA2_CHEAT 0x00597cc4
 tRoad_texturing_level gRoad_texturing_level = eRTL_full;
 
 // GLOBAL: CARMA2_HW 0x00591370
 // GLOBAL: CARMA2_SW 0x0058c350
+// GLOBAL: CARMA2_CHEAT 0x00597cc8
 tWall_texturing_level gWall_texturing_level = eWTL_full;
 
 // GLOBAL: CARMA2_HW 0x006793a8
@@ -50,22 +53,27 @@ tU32 gWoz_upside_down_at_all;
 
 // GLOBAL: CARMA2_HW 0x006793d8
 // GLOBAL: CARMA2_SW 0x00673b48
+// GLOBAL: CARMA2_CHEAT 0x00680c88
 int gCar_simplification_level;
 
 // GLOBAL: CARMA2_HW 0x00591368
 // GLOBAL: CARMA2_SW 0x0058c348
+// GLOBAL: CARMA2_CHEAT 0x00597cc0
 int gRendering_accessories = 1;
 
 // GLOBAL: CARMA2_HW 0x006a22c0
 // GLOBAL: CARMA2_SW 0x0069c318
+// GLOBAL: CARMA2_CHEAT 0x006a9e38
 int gCount_extra_renders;
 
 // GLOBAL: CARMA2_HW 0x006a22c8
 // GLOBAL: CARMA2_SW 0x0069c320
+// GLOBAL: CARMA2_CHEAT 0x006a9e40
 tExtra_render gExtra_renders[6];
 
 // GLOBAL: CARMA2_HW 0x00704e40
 // GLOBAL: CARMA2_SW 0x006fbb20
+// GLOBAL: CARMA2_CHEAT 0x0070c4e0
 int gMirror_on__graphics;
 
 // GLOBAL: CARMA2_HW 0x0065cf30
@@ -82,6 +90,7 @@ br_colour gColours[9];
 
 // FUNCTION: CARMA2_HW 0x004e5cb0
 // FUNCTION: CARMA2_SW 0x004e1cd0
+// FUNCTION: CARMA2_CHEAT 0x004eb9c0
 void C2_HOOK_FASTCALL InitialiseExtraRenders(void) {
 
     gCount_extra_renders = 0;
@@ -98,6 +107,7 @@ void C2_HOOK_FASTCALL AddExtraRender(br_actor* pActor, br_material* pMaterial) {
 
 // FUNCTION: CARMA2_HW 0x004e5ce0
 // FUNCTION: CARMA2_SW 0x004e1d00
+// FUNCTION: CARMA2_CHEAT 0x004eb9f0
 int C2_HOOK_FASTCALL PointOutOfSight(const br_vector3* pPoint, br_scalar pMax_distance) {
     br_vector3 distance_vector;
     int i;
@@ -137,6 +147,7 @@ int C2_HOOK_FASTCALL PointOutOfSight(const br_vector3* pPoint, br_scalar pMax_di
 
 // FUNCTION: CARMA2_HW 0x004e5ef0
 // FUNCTION: CARMA2_SW 0x004e1f10
+// FUNCTION: CARMA2_CHEAT 0x004ebc00
 void C2_HOOK_FASTCALL CancelificateClipulatingPlaneyThings(void) {
 
     // empty
@@ -144,6 +155,7 @@ void C2_HOOK_FASTCALL CancelificateClipulatingPlaneyThings(void) {
 
 // FUNCTION: CARMA2_HW 0x004e5f00
 // FUNCTION: CARMA2_SW 0x004e1f20
+// FUNCTION: CARMA2_CHEAT 0x004ebc10
 void C2_HOOK_FASTCALL FixificateClipulatingPlaneyThings(void) {
 
     // empty
@@ -173,6 +185,7 @@ void C2_HOOK_FASTCALL ProcessModelFaceMaterials(br_model* pModel, tPMFMCB* pCall
 
 // FUNCTION: CARMA2_HW 0x00448fd0
 // FUNCTION: CARMA2_SW 0x004493f0
+// FUNCTION: CARMA2_CHEAT 0x004494e0
 void C2_HOOK_FASTCALL ProcessModelFaceMaterials2(br_model* pModel, material_cbfn* pCallback) {
     tU32 i;
     tU32 j;
@@ -199,6 +212,7 @@ void C2_HOOK_FASTCALL ProcessModelFaceMaterials2(br_model* pModel, material_cbfn
 }
 
 // FUNCTION: CARMA2_HW 0x00448850
+// FUNCTION: CARMA2_CHEAT 0x00448d60
 intptr_t C2_HOOK_CDECL ProcessFaceMaterials(br_actor* pActor, void* pData) {
     tPMFMCB* callback = pData;
 
@@ -213,6 +227,7 @@ intptr_t C2_HOOK_CDECL ProcessFaceMaterials(br_actor* pActor, void* pData) {
 
 // FUNCTION: CARMA2_HW 0x004475c0
 // FUNCTION: CARMA2_SW 0x004479e0
+// FUNCTION: CARMA2_CHEAT 0x00447ae0
 int C2_HOOK_FASTCALL DRPixelmapHasZeros(br_pixelmap* pm) {
     int x;
     int y;
@@ -237,6 +252,7 @@ int C2_HOOK_FASTCALL DRPixelmapHasZeros(br_pixelmap* pm) {
 
 // FUNCTION: CARMA2_HW 0x004479c0
 // FUNCTION: CARMA2_SW 0x00447de0
+// FUNCTION: CARMA2_CHEAT 0x00447ee0
 int C2_HOOK_FASTCALL StorageContainsPixelmap(tBrender_storage* pStorage, br_pixelmap* pMap) {
     int i;
 
@@ -269,6 +285,7 @@ void C2_HOOK_FASTCALL HideStoredOpaqueTextures(tBrender_storage* pStorage) {
 
 // FUNCTION: CARMA2_HW 0x00447b00
 // FUNCTION: CARMA2_SW 0x00447f20
+// FUNCTION: CARMA2_CHEAT 0x00448020
 void C2_HOOK_FASTCALL RevealStoredTransparentTextures(tBrender_storage* pStorage) {
     int i;
 
@@ -319,6 +336,7 @@ void C2_HOOK_FASTCALL RevealStoredTextures(tBrender_storage* pStorage) {
 
 // FUNCTION: CARMA2_HW 0x00447350
 // FUNCTION: CARMA2_SW 0x00447770
+// FUNCTION: CARMA2_CHEAT 0x00447870
 void C2_HOOK_FASTCALL SetCarStorageTexturingLevel(tBrender_storage* pStorage, tCar_texturing_level pNew, tCar_texturing_level pOld) {
 
     switch (pNew) {
@@ -347,6 +365,7 @@ void C2_HOOK_FASTCALL SetCarStorageTexturingLevel(tBrender_storage* pStorage, tC
 
 // FUNCTION: CARMA2_HW 0x00447640
 // FUNCTION: CARMA2_SW 0x00447a60
+// FUNCTION: CARMA2_CHEAT 0x00447b60
 tCar_texturing_level C2_HOOK_FASTCALL GetCarTexturingLevel(void) {
 
     return gCar_texturing_level;
@@ -354,6 +373,7 @@ tCar_texturing_level C2_HOOK_FASTCALL GetCarTexturingLevel(void) {
 
 // FUNCTION: CARMA2_HW 0x00447650
 // FUNCTION: CARMA2_SW 0x00447a70
+// FUNCTION: CARMA2_CHEAT 0x00447b70
     void C2_HOOK_FASTCALL SetCarTexturingLevel(tCar_texturing_level pLevel) {
 
     if (gCar_texturing_level != pLevel) {
@@ -373,6 +393,7 @@ tCar_texturing_level C2_HOOK_FASTCALL GetCarTexturingLevel(void) {
 
 // FUNCTION: CARMA2_HW 0x00448ce0
 // FUNCTION: CARMA2_SW 0x00449100
+// FUNCTION: CARMA2_CHEAT 0x004491f0
 int C2_HOOK_FASTCALL HasThisSuffix(const char* pIdent, const char* pSuffix) {
     size_t len_ident;
     size_t len_suffix;
@@ -390,6 +411,7 @@ int C2_HOOK_FASTCALL HasThisSuffix(const char* pIdent, const char* pSuffix) {
 
 // FUNCTION: CARMA2_HW 0x00448d70
 // FUNCTION: CARMA2_SW 0x00449190
+// FUNCTION: CARMA2_CHEAT 0x00449280
 br_material* C2_HOOK_FASTCALL UnsuffixedMaterial(const char* pOld_ident, const char* pSuffix) {
     br_material* result;
     int unsuffixed_len;
@@ -404,6 +426,7 @@ br_material* C2_HOOK_FASTCALL UnsuffixedMaterial(const char* pOld_ident, const c
 }
 
 // FUNCTION: CARMA2_HW 0x00447c60
+// FUNCTION: CARMA2_CHEAT 0x00448180
 br_material* C2_HOOK_FASTCALL RoadUntexToPersp(br_model* pModel, tU16 pFace) {
     br_material* old_mat;
     br_material* new_mat;
@@ -418,6 +441,7 @@ br_material* C2_HOOK_FASTCALL RoadUntexToPersp(br_model* pModel, tU16 pFace) {
 }
 
 // FUNCTION: CARMA2_HW 0x004481d0
+// FUNCTION: CARMA2_CHEAT 0x004486e0
 br_material* C2_HOOK_FASTCALL WallUntexToPersp(br_model* pModel, tU16 pFace) {
     br_material* old_mat;
     br_material* new_mat;
@@ -434,6 +458,7 @@ br_material* C2_HOOK_FASTCALL WallUntexToPersp(br_model* pModel, tU16 pFace) {
 }
 
 // FUNCTION: CARMA2_HW 0x00448390
+// FUNCTION: CARMA2_CHEAT 0x004488a0
 br_material* C2_HOOK_FASTCALL WallLinearToPersp(br_model* pModel, tU16 pFace) {
     br_material* old_mat;
     br_material* new_mat;
@@ -449,6 +474,7 @@ br_material* C2_HOOK_FASTCALL WallLinearToPersp(br_model* pModel, tU16 pFace) {
 
 // FUNCTION: CARMA2_HW 0x00448770
 // FUNCTION: CARMA2_SW 0x00448b90
+// FUNCTION: CARMA2_CHEAT 0x00448c80
 tRoad_texturing_level C2_HOOK_FASTCALL GetRoadTexturingLevel(void) {
 
     return gRoad_texturing_level;
@@ -456,6 +482,7 @@ tRoad_texturing_level C2_HOOK_FASTCALL GetRoadTexturingLevel(void) {
 
 // FUNCTION: CARMA2_HW 0x00448780
 // FUNCTION: CARMA2_SW 0x00448ba0
+// FUNCTION: CARMA2_CHEAT 0x00448c90
 void C2_HOOK_FASTCALL SetRoadTexturingLevel(tRoad_texturing_level pLevel) {
 
     gRoad_texturing_level = pLevel;
@@ -463,6 +490,7 @@ void C2_HOOK_FASTCALL SetRoadTexturingLevel(tRoad_texturing_level pLevel) {
 
 // FUNCTION: CARMA2_HW 0x004488f0
 // FUNCTION: CARMA2_SW 0x00448d10
+// FUNCTION: CARMA2_CHEAT 0x00448e00
 tWall_texturing_level C2_HOOK_FASTCALL GetWallTexturingLevel(void) {
 
     return gWall_texturing_level;
@@ -470,6 +498,7 @@ tWall_texturing_level C2_HOOK_FASTCALL GetWallTexturingLevel(void) {
 
 // FUNCTION: CARMA2_HW 0x00448900
 // FUNCTION: CARMA2_SW 0x00448d20
+// FUNCTION: CARMA2_CHEAT 0x00448e10
 void C2_HOOK_FASTCALL SetWallTexturingLevel(tWall_texturing_level pLevel) {
 
     gWall_texturing_level = pLevel;
@@ -477,6 +506,7 @@ void C2_HOOK_FASTCALL SetWallTexturingLevel(tWall_texturing_level pLevel) {
 
 // FUNCTION: CARMA2_HW 0x00448dd0
 // FUNCTION: CARMA2_SW 0x004491f0
+// FUNCTION: CARMA2_CHEAT 0x004492e0
 br_material* C2_HOOK_FASTCALL DisposeSuffixedMaterials(br_model* pModel, tU16 pFace) {
     size_t max_suffix_len;
     br_material* mat;
@@ -519,6 +549,7 @@ br_material* C2_HOOK_FASTCALL DisposeSuffixedMaterials(br_model* pModel, tU16 pF
 
 // FUNCTION: CARMA2_HW 0x00448ea0
 // FUNCTION: CARMA2_SW 0x004492c0
+// FUNCTION: CARMA2_CHEAT 0x004493b0
 intptr_t C2_HOOK_CDECL SetAccessoryRenderingCB(br_actor* pActor, void* pFlag) {
 
     if (pActor->identifier != NULL && pActor->identifier[0] == '&') {
@@ -529,6 +560,7 @@ intptr_t C2_HOOK_CDECL SetAccessoryRenderingCB(br_actor* pActor, void* pFlag) {
 
 // FUNCTION: CARMA2_HW 0x00448ec0
 // FUNCTION: CARMA2_SW 0x004492e0
+// FUNCTION: CARMA2_CHEAT 0x004493d0
 void C2_HOOK_FASTCALL SetAccessoryRendering(int pOn) {
     int style;
 
@@ -545,6 +577,7 @@ void C2_HOOK_FASTCALL SetAccessoryRendering(int pOn) {
 
 // FUNCTION: CARMA2_HW 0x00448f00
 // FUNCTION: CARMA2_SW 0x00449320
+// FUNCTION: CARMA2_CHEAT 0x00449410
 int C2_HOOK_FASTCALL GetAccessoryRendering(void) {
 
     return gRendering_accessories;
@@ -552,6 +585,7 @@ int C2_HOOK_FASTCALL GetAccessoryRendering(void) {
 
 // FUNCTION: CARMA2_HW 0x00448f10
 // FUNCTION: CARMA2_SW 0x00449330
+// FUNCTION: CARMA2_CHEAT 0x00449420
 void C2_HOOK_FASTCALL SetCarSimplificationLevel(int pLevel) {
 
     gCar_simplification_level = pLevel;
@@ -559,6 +593,7 @@ void C2_HOOK_FASTCALL SetCarSimplificationLevel(int pLevel) {
 
 // FUNCTION: CARMA2_HW 0x00448f20
 // FUNCTION: CARMA2_SW 0x00449340
+// FUNCTION: CARMA2_CHEAT 0x00449430
 int C2_HOOK_FASTCALL GetCarSimplificationLevel(void) {
 
     return gCar_simplification_level;
@@ -566,6 +601,7 @@ int C2_HOOK_FASTCALL GetCarSimplificationLevel(void) {
 
 // FUNCTION: CARMA2_HW 0x00448f30
 // FUNCTION: CARMA2_SW 0x00449350
+// FUNCTION: CARMA2_CHEAT 0x00449440
 void C2_HOOK_FASTCALL ToggleEdges(void) {
     br_actor* track;
 
@@ -582,6 +618,7 @@ void C2_HOOK_FASTCALL ToggleEdges(void) {
 
 // FUNCTION: CARMA2_HW 0x00448f70
 // FUNCTION: CARMA2_SW 0x00449390
+// FUNCTION: CARMA2_CHEAT 0x00449480
 intptr_t C2_HOOK_CDECL ToggleEdgesCB(br_actor* pActor, void* pData) {
 
     if (pActor->render_style == BR_RSTYLE_FACES) {
@@ -594,6 +631,7 @@ intptr_t C2_HOOK_CDECL ToggleEdgesCB(br_actor* pActor, void* pData) {
 
 // FUNCTION: CARMA2_HW 0x00448f90
 // FUNCTION: CARMA2_SW 0x004493b0
+// FUNCTION: CARMA2_CHEAT 0x004494a0
 intptr_t C2_HOOK_CDECL ProcessMaterials(br_actor* pActor, void* pContext) {
     material_cbfn* callback = pContext;
 

@@ -23,6 +23,7 @@
 
 // GLOBAL: CARMA2_HW 0x0079f950
 // GLOBAL: CARMA2_SW 0x00795ef0
+// GLOBAL: CARMA2_CHEAT 0x007a6ff0
 br_pixelmap_state _pixelmap;
 
 // GLOBAL: CARMA2_HW 0x0058b968
@@ -34,6 +35,7 @@ br_resource_class pm_resourceClasses[] = {
 
 // GLOBAL: CARMA2_HW 0x0066dd30
 // GLOBAL: CARMA2_SW 0x006684c0
+// GLOBAL: CARMA2_CHEAT 0x006755e0
 void* functionPointers_BRPMAP1[] = {
     PixelmapCopyBitsClip,
     PixelmapLineClip,
@@ -116,6 +118,7 @@ void* functionPointers_BRPMAP1[] = {
 
 // GLOBAL: CARMA2_HW 0x0066db58
 // GLOBAL: CARMA2_SW 0x006682e8
+// GLOBAL: CARMA2_CHEAT 0x00675408
 const char* namePointers_BRPMAP1[] = {
     "_PixelmapCopyBitsClip",
     "_PixelmapLineClip",
@@ -300,6 +303,7 @@ br_image Image_BRMAP1 = {
 
 // FUNCTION: CARMA2_HW 0x005395a0
 // FUNCTION: CARMA2_SW 0x00534c40
+// FUNCTION: CARMA2_CHEAT 0x0053f190
 void C2_HOOK_CDECL BrPixelmapBegin(void) {
     int i;
 

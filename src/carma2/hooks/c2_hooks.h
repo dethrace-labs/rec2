@@ -77,4 +77,22 @@ typedef unsigned int undefined4;
 #define REC2_SW_RUN(X)
 #endif
 
+#ifdef REC2_CHEAT
+#define REC2_CHEAT_RUN(X) X
+#else
+#define REC2_CHEAT_RUN(X)
+#endif
+
+#ifdef REC2_V101A
+#define REC2_V101A_RUN(X) X
+#else
+#define REC2_V101A_RUN(X)
+#endif
+
+#ifdef REC2_V102A
+#define REC2_V102A_RUN(X) X
+#else
+#define REC2_V102A_RUN(X)
+#endif
+
 #endif // C2_HOOKS_H

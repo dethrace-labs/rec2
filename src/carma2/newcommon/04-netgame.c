@@ -128,6 +128,7 @@ int C2_HOOK_FASTCALL TimeToSendData(void) {
 
 // FUNCTION: CARMA2_HW 0x00498bb0
 // FUNCTION: CARMA2_SW 0x004957e0
+// FUNCTION: CARMA2_CHEAT 0x00498f60
 void C2_HOOK_FASTCALL ReceivedCopInfo(void) {
 }
 
@@ -139,6 +140,7 @@ void C2_HOOK_FASTCALL ReceivedCopInfo(void) {
 
 // FUNCTION: CARMA2_HW 0x00498e70
 // FUNCTION: CARMA2_SW 0x00495aa0
+// FUNCTION: CARMA2_CHEAT 0x00499220
 void C2_HOOK_FASTCALL SignalToStartRace(void) {
     tNet_message* the_message;
     int inactive;
@@ -197,6 +199,7 @@ void C2_HOOK_FASTCALL SignalToStartRace(void) {
 
 // FUNCTION: CARMA2_HW 0x00499000
 // FUNCTION: CARMA2_SW 0x00495c30
+// FUNCTION: CARMA2_CHEAT 0x004993b0
 void C2_HOOK_FASTCALL SetUpNetCarPositions(void) {
     int i;
     int j;
@@ -267,6 +270,7 @@ void C2_HOOK_FASTCALL SetUpNetCarPositions(void) {
 
 // FUNCTION: CARMA2_HW 0x00499220
 // FUNCTION: CARMA2_SW 0x00495e50
+// FUNCTION: CARMA2_CHEAT 0x004995d0
 void C2_HOOK_FASTCALL ReinitialiseCar(tCar_spec* pCar) {
 
     StopCarSmokingInstantly(pCar);
@@ -283,6 +287,7 @@ void C2_HOOK_FASTCALL ReinitialiseCar(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x00499260
 // FUNCTION: CARMA2_SW 0x00495e90
+// FUNCTION: CARMA2_CHEAT 0x00499610
 void C2_HOOK_FASTCALL DisableCar(tCar_spec* pCar) {
 
     if (pCar->driver_name[0] != '\0') {
@@ -299,6 +304,7 @@ void C2_HOOK_FASTCALL DisableCar(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x004992e0
 // FUNCTION: CARMA2_SW 0x00495f10
+// FUNCTION: CARMA2_CHEAT 0x00499690
 void C2_HOOK_FASTCALL EnableCar(tCar_spec* pCar) {
 
     if (pCar->driver_name[0] != '\0') {
@@ -405,6 +411,7 @@ void C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
 
 // FUNCTION: CARMA2_HW 0x004999f0
 // FUNCTION: CARMA2_SW 0x00496290
+// FUNCTION: CARMA2_CHEAT 0x00499da0
 void C2_HOOK_FASTCALL DoNetScores(void) {
 
     DoNetScores2(0);
@@ -594,6 +601,7 @@ inline void C2_HOOK_FASTCALL SendPlayerScores(void) {
 
 // FUNCTION: CARMA2_HW 0x0049ab00
 // FUNCTION: CARMA2_SW 0x00496c80
+// FUNCTION: CARMA2_CHEAT 0x0049aeb0
 void C2_HOOK_FASTCALL DoNetGameManagement(void) {
     // GLOBAL: CARMA2_HW 0x00659c34
     // GLOBAL: CARMA2_SW 0x006545cc
@@ -610,6 +618,7 @@ void C2_HOOK_FASTCALL DoNetGameManagement(void) {
 
 // FUNCTION: CARMA2_HW 0x0049b690
 // FUNCTION: CARMA2_SW 0x00497810
+// FUNCTION: CARMA2_CHEAT 0x0049ba40
 void C2_HOOK_FASTCALL InitialisePlayerScore(tNet_game_player_info* pPlayer) {
 
     PossibleService();
@@ -640,6 +649,7 @@ void C2_HOOK_FASTCALL InitialisePlayerScore(tNet_game_player_info* pPlayer) {
 
 // FUNCTION: CARMA2_HW 0x0049b7e0
 // FUNCTION: CARMA2_SW 0x00497960
+// FUNCTION: CARMA2_CHEAT 0x0049bb90
 void C2_HOOK_FASTCALL UseGeneralScore(int pScore) {
     int i;
 
@@ -682,6 +692,7 @@ void C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
 
 // FUNCTION: CARMA2_HW 0x0049bad0
 // FUNCTION: CARMA2_SW 0x00497c50
+// FUNCTION: CARMA2_CHEAT 0x0049be80
 void C2_HOOK_FASTCALL ReceivedGameplay(tNet_message_chunk* pContents, tNet_message* pMessage, tU32 pReceive_time) {
     int must_revert_reentrancy;
 
@@ -758,6 +769,7 @@ void C2_HOOK_FASTCALL SendGameplay(tPlayer_ID pPlayer, tNet_gameplay_mess pMess,
 
 // FUNCTION: CARMA2_HW 0x0049bc70
 // FUNCTION: CARMA2_SW 0x00497df0
+// FUNCTION: CARMA2_CHEAT 0x0049c020
 void C2_HOOK_FASTCALL SendGameplayToAllPlayers(tNet_gameplay_mess pMess, int pParam_1, int pParam_2, int pParam_3, int pParam_4) {
     tNet_message* the_message;
 
@@ -778,6 +790,7 @@ void C2_HOOK_FASTCALL SendGameplayToAllPlayers(tNet_gameplay_mess pMess, int pPa
 
 // FUNCTION: CARMA2_HW 0x0049bcb0
 // FUNCTION: CARMA2_SW 0x00497e30
+// FUNCTION: CARMA2_CHEAT 0x0049c060
 void C2_HOOK_FASTCALL SendGameplayToHost(tNet_gameplay_mess pMess, int pParam_1, int pParam_2, int pParam_3, int pParam_4) {
     tNet_message* the_message;
 
@@ -794,12 +807,14 @@ void C2_HOOK_FASTCALL SendGameplayToHost(tNet_gameplay_mess pMess, int pParam_1,
 
 // FUNCTION: CARMA2_HW 0x0049bd00
 // FUNCTION: CARMA2_SW 0x00497e80
+// FUNCTION: CARMA2_CHEAT 0x0049c0b0
 void C2_HOOK_FASTCALL InitNetGameplayStuff(void) {
 
 }
 
 // FUNCTION: CARMA2_HW 0x0049bd10
 // FUNCTION: CARMA2_SW 0x00497e90
+// FUNCTION: CARMA2_CHEAT 0x0049c0c0
 void C2_HOOK_FASTCALL DefaultNetName(void) {
 
     NetObtainSystemUserName(gProgram_state.player_name, 32);
@@ -807,6 +822,7 @@ void C2_HOOK_FASTCALL DefaultNetName(void) {
 
 // FUNCTION: CARMA2_HW 0x0049bde0
 // FUNCTION: CARMA2_SW 0x00497f60
+// FUNCTION: CARMA2_CHEAT 0x0049c190
 void C2_HOOK_FASTCALL AddPlayerToShapeStatusLists(int pPlayer_id, int pCount, tNet_game_player_info* pPlayers) {
     tCar_crush_network_shapes* shapes;
     int j;

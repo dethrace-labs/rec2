@@ -13,18 +13,22 @@
 
 // GLOBAL: CARMA2_HW 0x006a20d0
 // GLOBAL: CARMA2_SW 0x0069c128
+// GLOBAL: CARMA2_CHEAT 0x006a9c48
 br_actor* gY_picking_camera;
 
 // GLOBAL: CARMA2_HW 0x006a20d4
 // GLOBAL: CARMA2_SW 0x0069c12c
+// GLOBAL: CARMA2_CHEAT 0x006a9c4c
 br_model* gBelow_model;
 
 // GLOBAL: CARMA2_HW 0x006a20d8
 // GLOBAL: CARMA2_SW 0x0069c130
+// GLOBAL: CARMA2_CHEAT 0x006a9c50
 int gBelow_face_index;
 
 // GLOBAL: CARMA2_HW 0x006a20dc
 // GLOBAL: CARMA2_SW 0x0069c134
+// GLOBAL: CARMA2_CHEAT 0x006a9c54
 float gLowest_y_above;
 
 // GLOBAL: CARMA2_HW 0x006a20e0
@@ -33,24 +37,29 @@ float gCurrent_y;
 
 // GLOBAL: CARMA2_HW 0x006a20e4
 // GLOBAL: CARMA2_SW 0x0069c13c
+// GLOBAL: CARMA2_CHEAT 0x006a9c5c
 br_model* gAbove_model;
 
 // GLOBAL: CARMA2_HW 0x006a20e8
 // GLOBAL: CARMA2_SW 0x0069c140
+// GLOBAL: CARMA2_CHEAT 0x006a9c60
 int gAbove_face_index;
 
 // GLOBAL: CARMA2_HW 0x006a20f0
 // GLOBAL: CARMA2_SW 0x0069c148
+// GLOBAL: CARMA2_CHEAT 0x006a9c68
 br_matrix34 gPick_model_to_view__raycast;
 
 // GLOBAL: CARMA2_HW 0x006a2120
 // GLOBAL: CARMA2_SW 0x0069c178
+// GLOBAL: CARMA2_CHEAT 0x006a9c98
 float gHighest_y_below;
 
 // DRActorToRoot
 
 // FUNCTION: CARMA2_HW 0x004e3660
 // FUNCTION: CARMA2_SW 0x004df9f0
+// FUNCTION: CARMA2_CHEAT 0x004e91e0
 void C2_HOOK_FASTCALL InitRayCasting(void) {
     br_camera* camera_ptr;
 
@@ -92,6 +101,7 @@ int C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector3* rp, br
 
 // FUNCTION: CARMA2_HW 0x004e3840
 // FUNCTION: CARMA2_SW 0x004dfbd0
+// FUNCTION: CARMA2_CHEAT 0x004e93c0
 int C2_HOOK_FASTCALL ActorPick2D(br_actor* pActor, br_model* pModel, br_material* pMaterial, dr_pick2d_cbfn* pCallback, void* pArg) {
     br_actor* a;
     br_model* this_model;
@@ -180,6 +190,7 @@ int C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* pModel, br_material* pMater
 
 // FUNCTION: CARMA2_HW 0x004e4300
 // FUNCTION: CARMA2_SW 0x004e0690
+// FUNCTION: CARMA2_CHEAT 0x004e9e80
 int C2_HOOK_CDECL FindHighestPolyCallBack__raycast(br_model* pModel, br_material* pMaterial, br_vector3* pRay_pos, br_vector3* pRay_dir, br_scalar pT, int pF, int pE, int pV, br_vector3* pPoint, br_vector2* pMap, void* pArg) {
     br_scalar the_y;
 
@@ -202,6 +213,7 @@ int C2_HOOK_CDECL FindHighestPolyCallBack__raycast(br_model* pModel, br_material
 
 // FUNCTION: CARMA2_HW 0x004e3d50
 // FUNCTION: CARMA2_SW 0x004e00e0
+// FUNCTION: CARMA2_CHEAT 0x004e98d0
 int C2_HOOK_CDECL FindHighestCallBack__raycast(br_actor* pActor, br_model* pModel, br_material* pMaterial, br_vector3* pRay_pos, br_vector3* pRay_dir, br_scalar pT_near, br_scalar pT_far, void* pArg) {
 
     if (gProgram_state.current_car.car_actor != pActor) {
@@ -218,6 +230,7 @@ void C2_HOOK_FASTCALL FindBestY(br_vector3* pPosition, br_actor* pWorld, br_scal
 
 // FUNCTION: CARMA2_HW 0x004e45b0
 // FUNCTION: CARMA2_SW 0x004e0940
+// FUNCTION: CARMA2_CHEAT 0x004ea130
 int C2_HOOK_CDECL FindYVerticallyBelowPolyCallBack(br_model* pModel, br_material* pMaterial, br_vector3* pRay_pos, br_vector3* pRay_dir, float pT, int pF, int pE, int pV, br_vector3* pPoint, br_vector2* pMap, void* pContext) {
     br_scalar the_y;
 
@@ -235,6 +248,7 @@ int C2_HOOK_CDECL FindYVerticallyBelowPolyCallBack(br_model* pModel, br_material
 
 // FUNCTION: CARMA2_HW 0x004e4570
 // FUNCTION: CARMA2_SW 0x004e0900
+// FUNCTION: CARMA2_CHEAT 0x004ea0f0
 int C2_HOOK_CDECL FindYVerticallyBelowCallBack(br_actor* pActor, br_model* pModel, br_material* pMaterial, br_vector3* pRay_pos, br_vector3* pRay_dir, float pT_near, float pT_far, void* pArg) {
 
     if (gProgram_state.current_car.car_actor != pActor) {
@@ -259,6 +273,7 @@ br_scalar C2_HOOK_FASTCALL FindYVerticallyBelow(br_vector3* pPosition) {
 
 // FUNCTION: CARMA2_HW 0x004e4600
 // FUNCTION: CARMA2_SW 0x004e0990
+// FUNCTION: CARMA2_CHEAT 0x004ea180
 br_scalar C2_HOOK_FASTCALL FindYVerticallyBelow2(br_vector3* pCast_point) {
     br_scalar result;
     int number_of_attempts;

@@ -186,6 +186,7 @@ void* C2_HOOK_FASTCALL PDS3CreateSoundBuffer(tS3_wav_info* pWav_info, void* pWav
 }
 
 // FUNCTION: CARMA2_HW 0x005693d9
+// FUNCTION: CARMA2_CHEAT 0x0056efc4
 void C2_HOOK_FASTCALL PDS3ReleaseSound(tS3_descriptor* pSound_descriptor) {
 
     LPDIRECTSOUNDBUFFER buffer = pSound_descriptor->pd_handle;
@@ -250,6 +251,7 @@ const char* C2_HOOK_FASTCALL PDS3GetWorkingDirectory(void) {
 
 // FUNCTION: CARMA2_HW 0x00569cb1
 // FUNCTION: CARMA2_SW 0x00565351
+// FUNCTION: CARMA2_CHEAT 0x0056f8a2
 int C2_HOOK_FASTCALL PDS3StopMidiChannel(tS3_channel* pChannel) {
     MCIDEVICEID device;
 
@@ -325,6 +327,7 @@ int C2_HOOK_FASTCALL PDS3StopCDAChannel(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x005697ef
 // FUNCTION: CARMA2_SW 0x00564e8f
+// FUNCTION: CARMA2_CHEAT 0x0056f3c5
 int C2_HOOK_FASTCALL PDS3StopSampleChannel(tS3_channel* pChannel) {
     LPDIRECTSOUNDBUFFER buffer;
 
@@ -345,6 +348,7 @@ int C2_HOOK_FASTCALL PDS3StopSampleChannel(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x00569507
 // FUNCTION: CARMA2_SW 0x00564ba7
+// FUNCTION: CARMA2_CHEAT 0x0056f0dd
 int C2_HOOK_FASTCALL PDS3UpdateChannelVolume(tS3_channel* pChannel) {
 
     if (pChannel->type == 0) {
@@ -383,12 +387,14 @@ int C2_HOOK_FASTCALL PDS3UpdateChannelVolume(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x00568ed0
 // FUNCTION: CARMA2_SW 0x00564570
+// FUNCTION: CARMA2_CHEAT 0x0056eac0
 void C2_HOOK_FASTCALL PDS3UpdateCDAVolume(tS3_channel* pChannel, int pVolume) {
 
 }
 
 // FUNCTION: CARMA2_HW 0x00569ae2
 // FUNCTION: CARMA2_SW 0x00565182
+// FUNCTION: CARMA2_CHEAT 0x0056f6d3
 void C2_HOOK_FASTCALL PDS3Stop(void) {
 
     if (gPD_S3_config.free_direct_sound) {
@@ -466,6 +472,7 @@ int C2_HOOK_FASTCALL PDS3IsSamplePlaying(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x0056967e
 // FUNCTION: CARMA2_SW 0x00564d1e
+// FUNCTION: CARMA2_CHEAT 0x0056f254
 int C2_HOOK_FASTCALL PDS3UpdateChannelFrequency(tS3_channel* pChannel) {
 
     if (pChannel->type == 0 && pChannel->descriptor != NULL && pChannel->descriptor->type == pChannel->type) {
@@ -496,6 +503,7 @@ int C2_HOOK_FASTCALL PDS3PlaySample(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x00569b93
 // FUNCTION: CARMA2_SW 0x00565233
+// FUNCTION: CARMA2_CHEAT 0x0056f784
 tS3_error_codes C2_HOOK_FASTCALL PDS3StartMidiChannel(tS3_channel* pChannel) {
     char path[256];
     MCIERROR err;
@@ -557,6 +565,7 @@ tS3_error_codes C2_HOOK_FASTCALL PDS3PlayCDAChannel(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x0056a28d
 // FUNCTION: CARMA2_SW 0x0056592d
+// FUNCTION: CARMA2_CHEAT 0x0056fe75
 void C2_HOOK_FASTCALL PDS3ServiceCDA(tS32 pDelta_time) {
     tU32 now;
     tS3_outlet* o;

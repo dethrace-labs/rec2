@@ -31,6 +31,7 @@ br_vector3 gRender_bounds_centre;
 
 // GLOBAL: CARMA2_HW 0x006820d0
 // GLOBAL: CARMA2_SW 0x0067c810
+// GLOBAL: CARMA2_CHEAT 0x00689978
 int gCount_drones;
 
 // GLOBAL: CARMA2_HW 0x00682178
@@ -43,6 +44,7 @@ int gCount_drone_forms;
 
 // GLOBAL: CARMA2_HW 0x00684510
 // GLOBAL: CARMA2_SW 0x0067ec50
+// GLOBAL: CARMA2_CHEAT 0x0068bdb8
 int gCount_drone_path_nodes;
 
 // GLOBAL: CARMA2_HW 0x006844f8
@@ -55,6 +57,7 @@ tDrone_spec* gDrone_specs;
 
 // GLOBAL: CARMA2_HW 0x00684508
 // GLOBAL: CARMA2_SW 0x0067ec48
+// GLOBAL: CARMA2_CHEAT 0x0068bdb0
 tDrone_path_node* gDrone_path_nodes;
 
 // GLOBAL: CARMA2_HW 0x00684518
@@ -67,6 +70,7 @@ int gINT_00681fb0;
 
 // GLOBAL: CARMA2_HW 0x00684514
 // GLOBAL: CARMA2_SW 0x0067ec54
+// GLOBAL: CARMA2_CHEAT 0x0068bdbc
 int gFrame;
 
 // DoNotDprintf
@@ -109,6 +113,7 @@ void C2_HOOK_FASTCALL RemoveDroneFromPHIL(tDrone_spec* pDrone) {
 
 // FUNCTION: CARMA2_HW 0x00451650
 // FUNCTION: CARMA2_SW 0x004513e0
+// FUNCTION: CARMA2_CHEAT 0x00451ba0
 int C2_HOOK_FASTCALL ReallyAddDroneToPHIL(tDrone_spec* pDrone) {
 
     if (PHILAddObject(&pDrone->collision_info)) {
@@ -193,6 +198,7 @@ br_actor* C2_HOOK_CDECL MrFindy(br_actor* pActor, const char* pName) {
 
 // FUNCTION: CARMA2_HW 0x0044ca90
 // FUNCTION: CARMA2_SW 0x0044c840
+// FUNCTION: CARMA2_CHEAT 0x0044cfe0
 int C2_HOOK_FASTCALL DroneCarWithinRenderingDistance(const br_vector3* pPos) {
 
     if ((float)fabs(gRender_bounds_centre.v[0] - pPos->v[0]) < 15.f
@@ -206,6 +212,7 @@ int C2_HOOK_FASTCALL DroneCarWithinRenderingDistance(const br_vector3* pPos) {
 
 // FUNCTION: CARMA2_HW 0x0044cae0
 // FUNCTION: CARMA2_SW 0x0044c890
+// FUNCTION: CARMA2_CHEAT 0x0044d030
 int C2_HOOK_FASTCALL DronePlaneWithinRenderingDistance(const br_vector3* pPos) {
 
     if ((float)fabs(gRender_bounds_centre.v[0] - pPos->v[0]) < 40.f
@@ -219,6 +226,7 @@ int C2_HOOK_FASTCALL DronePlaneWithinRenderingDistance(const br_vector3* pPos) {
 
 // FUNCTION: CARMA2_HW 0x0044cb30
 // FUNCTION: CARMA2_SW 0x0044c8e0
+// FUNCTION: CARMA2_CHEAT 0x0044d080
 int C2_HOOK_FASTCALL DroneTrainWithinRenderingDistance(const br_vector3* pPos) {
 
     if ((float)fabs(gRender_bounds_centre.v[0] - pPos->v[0]) < 50.f
@@ -252,6 +260,7 @@ int C2_HOOK_FASTCALL DroneTrainWithinRenderingDistance(const br_vector3* pPos) {
 
 // FUNCTION: CARMA2_HW 0x0044cb80
 // FUNCTION: CARMA2_SW 0x0044c930
+// FUNCTION: CARMA2_CHEAT 0x0044d0d0
 int C2_HOOK_FASTCALL DroneCarWithinProcessingDistance(const br_vector3* pPos) {
 
     if ((float)fabs(gRender_bounds_centre.v[0] - pPos->v[0]) < 18.f
@@ -265,6 +274,7 @@ int C2_HOOK_FASTCALL DroneCarWithinProcessingDistance(const br_vector3* pPos) {
 
 // FUNCTION: CARMA2_HW 0x0044cbd0
 // FUNCTION: CARMA2_SW 0x0044c980
+// FUNCTION: CARMA2_CHEAT 0x0044d120
 int C2_HOOK_FASTCALL DronePlaneWithinProcessingDistance(const br_vector3* pPos) {
 
     if ((float)fabs(gRender_bounds_centre.v[0] - pPos->v[0]) < 43.f
@@ -278,6 +288,7 @@ int C2_HOOK_FASTCALL DronePlaneWithinProcessingDistance(const br_vector3* pPos) 
 
 // FUNCTION: CARMA2_HW 0x0044cc20
 // FUNCTION: CARMA2_SW 0x0044c9d0
+// FUNCTION: CARMA2_CHEAT 0x0044d170
 int C2_HOOK_FASTCALL DroneTrainWithinProcessingDistance(const br_vector3* pPos) {
 
     if ((float)fabs(gRender_bounds_centre.v[0] - pPos->v[0]) < 43.f
@@ -307,6 +318,7 @@ int C2_HOOK_FASTCALL DroneTrainWithinProcessingDistance(const br_vector3* pPos) 
 
 // FUNCTION: CARMA2_HW 0x0044cfd0
 // FUNCTION: CARMA2_SW 0x0044cd80
+// FUNCTION: CARMA2_CHEAT 0x0044d520
 void C2_HOOK_FASTCALL PipeDroneMatrix(tDrone_spec* pDrone) {
     tCompressed_matrix34 compressed_mat;
     br_scalar radius;
@@ -348,6 +360,7 @@ void C2_HOOK_FASTCALL PipeDroneMatrix(tDrone_spec* pDrone) {
 
 // FUNCTION: CARMA2_HW 0x0044ecf0
 // FUNCTION: CARMA2_SW 0x0044ea90
+// FUNCTION: CARMA2_CHEAT 0x0044f240
 void C2_HOOK_FASTCALL SetTrafficOn(int pTraffic_on) {
 
     gTraffic_disabled = !pTraffic_on;
@@ -355,6 +368,7 @@ void C2_HOOK_FASTCALL SetTrafficOn(int pTraffic_on) {
 
 // FUNCTION: CARMA2_HW 0x0044ed00
 // FUNCTION: CARMA2_SW 0x0044eaa0
+// FUNCTION: CARMA2_CHEAT 0x0044f250
 int C2_HOOK_FASTCALL OtherPerambulatoryInstasificationIsEnablificated(void) {
     return !gTraffic_disabled;
 }
@@ -502,6 +516,7 @@ void C2_HOOK_FASTCALL SelectPreviousDrone(void) {
 
 // FUNCTION: CARMA2_HW 0x00452680
 // FUNCTION: CARMA2_SW 0x00452410
+// FUNCTION: CARMA2_CHEAT 0x00452bd0
 int C2_HOOK_FASTCALL OKToViewDrones(void) {
     return 0;
 }
@@ -518,6 +533,7 @@ br_matrix34* C2_HOOK_FASTCALL GetCurrentViewDroneMat(void) {
 
 // FUNCTION: CARMA2_HW 0x00452880
 // FUNCTION: CARMA2_SW 0x00452610
+// FUNCTION: CARMA2_CHEAT 0x00452de0
 void C2_HOOK_FASTCALL ApplyDroneStraightPos2(int pDrone_id, tDrone_path_node_section* pSection, tU16 pSpeed, tU16 pDistance) {
     br_vector3 direction;
     tDrone_spec* drone;
@@ -538,6 +554,7 @@ void C2_HOOK_FASTCALL ApplyDroneStraightPos2(int pDrone_id, tDrone_path_node_sec
 
 // FUNCTION: CARMA2_HW 0x004529d0
 // FUNCTION: CARMA2_SW 0x00452760
+// FUNCTION: CARMA2_CHEAT 0x00452f30
 void C2_HOOK_FASTCALL ApplyDroneCornerPos2(int pDrone_id, tU16 pSpeed, tU16 pField_0x74, tU16 pRadius, const tCompressed_matrix34* pMatrix) {
     tDrone_spec* drone;
 

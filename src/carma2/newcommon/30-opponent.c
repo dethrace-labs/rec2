@@ -54,6 +54,7 @@ int gMaxTimeOpponentRepair;
 
 // GLOBAL: CARMA2_HW 0x0069173c
 // GLOBAL: CARMA2_SW 0x0068b794
+// GLOBAL: CARMA2_CHEAT 0x006990e8
 int gActive_car_list_rebuild_required;
 
 // GLOBAL: CARMA2_HW 0x00691744
@@ -82,6 +83,7 @@ float gIn_view_distance;
 
 // GLOBAL: CARMA2_HW 0x0069176c
 // GLOBAL: CARMA2_SW 0x0068b7c4
+// GLOBAL: CARMA2_CHEAT 0x0069911c
 int gRoute_search_calls;
 
 // GLOBAL: CARMA2_HW 0x0069174c
@@ -98,30 +100,37 @@ float gShortest_route_length;
 
 // GLOBAL: CARMA2_HW 0x00691720
 // GLOBAL: CARMA2_SW 0x0068b778
+// GLOBAL: CARMA2_CHEAT 0x00698fc8
 int gStart_jumped;
 
 // GLOBAL: CARMA2_HW 0x00691750
 // GLOBAL: CARMA2_SW 0x0068b7a8
+// GLOBAL: CARMA2_CHEAT 0x006990fc
 int gAcknowledged_start;
 
 // GLOBAL: CARMA2_HW 0x0074c7c0
 // GLOBAL: CARMA2_SW 0x00742e80
+// GLOBAL: CARMA2_CHEAT 0x00753e60
 tCar_spec* gActive_car_list[139];
 
 // GLOBAL: CARMA2_HW 0x0074c9ec
 // GLOBAL: CARMA2_SW 0x007430ac
+// GLOBAL: CARMA2_CHEAT 0x0075408c
 int gNum_active_cars;
 
 // GLOBAL: CARMA2_HW 0x00691770
 // GLOBAL: CARMA2_SW 0x0068b7c8
+// GLOBAL: CARMA2_CHEAT 0x00699150
 int gRoute_search_attempts;
 
 // GLOBAL: CARMA2_HW 0x00691778
 // GLOBAL: CARMA2_SW 0x0068b7d0
+// GLOBAL: CARMA2_CHEAT 0x00699158
 int gRoute_search_max_calls;
 
 // GLOBAL: CARMA2_HW 0x00691774
 // GLOBAL: CARMA2_SW 0x0068b7cc
+// GLOBAL: CARMA2_CHEAT 0x00699154
 int gRoute_search_total_calls;
 
 // GLOBAL: CARMA2_HW 0x00691734
@@ -130,6 +139,7 @@ float gDefinite_no_cop_pursuit_speed;
 
 // GLOBAL: CARMA2_HW 0x00691738
 // GLOBAL: CARMA2_SW 0x0068b790
+// GLOBAL: CARMA2_CHEAT 0x006990e4
 int gFirst_frame;
 
 // GLOBAL: CARMA2_HW 0x00691748
@@ -142,6 +152,7 @@ float gHead_on_cos_value;
 
 // FUNCTION: CARMA2_HW 0x004a8160
 // FUNCTION: CARMA2_SW 0x004a42d0
+// FUNCTION: CARMA2_CHEAT 0x004a9470
 void C2_HOOK_CDECL DoNotDprintf(const char* pMessage, ...) {
 
 }
@@ -166,6 +177,7 @@ void C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent_spec, tP
 
 // FUNCTION: CARMA2_HW 0x004aa400
 // FUNCTION: CARMA2_SW 0x004a6570
+// FUNCTION: CARMA2_CHEAT 0x004ab8f0
 int C2_HOOK_FASTCALL PointVisibleFromHere(br_vector3* pFrom, br_vector3* pTo) {
     br_vector3 from;
     br_vector3 dir;
@@ -216,6 +228,7 @@ tS16 C2_HOOK_FASTCALL FindNearestPathSection(const br_vector3* pActor_coords, br
 
 // FUNCTION: CARMA2_HW 0x004aad70
 // FUNCTION: CARMA2_SW 0x004a6ee0
+// FUNCTION: CARMA2_CHEAT 0x004ac260
 void C2_HOOK_CDECL NewObjective(tOpponent_spec* pOpponent_spec, tOpponent_objective_type pObjective_type, ...) {
     va_list marker;
 
@@ -333,6 +346,7 @@ void C2_HOOK_FASTCALL TopUpRandomRoute(tOpponent_spec* pOpponent_spec, int pSect
 
 // FUNCTION: CARMA2_HW 0x004a9550
 // FUNCTION: CARMA2_SW 0x004a56c0
+// FUNCTION: CARMA2_CHEAT 0x004aa870
 void C2_HOOK_FASTCALL CalcOpponentConspicuousnessWithAViewToCheatingLikeFuck(tOpponent_spec* pOpponent_spec) {
 
     BrVector3Sub(&pOpponent_spec->player_to_oppo_v, &pOpponent_spec->car_spec->car_master_actor->t.t.translate.t, &gProgram_state.current_car.car_master_actor->t.t.translate.t);
@@ -423,6 +437,7 @@ int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pRoute, tRoute_section* pB
 
 // FUNCTION: CARMA2_HW 0x004ab100
 // FUNCTION: CARMA2_SW 0x004a7270
+// FUNCTION: CARMA2_CHEAT 0x004ac5f0
 int C2_HOOK_FASTCALL ShiftOpponentsProjectedRoute(tOpponent_spec* pOpponent_spec, int pPlaces) {
     int i;
 
@@ -456,6 +471,7 @@ void C2_HOOK_FASTCALL NewCalcGetNearPlayerRoute(tOpponent_spec* pOpponent_spec, 
 
 // FUNCTION: CARMA2_HW 0x004abf60
 // FUNCTION: CARMA2_SW 0x004a80d0
+// FUNCTION: CARMA2_CHEAT 0x004ad450
 void C2_HOOK_FASTCALL CalcReturnToStartPointRoute(tOpponent_spec* pOpponent_spec) {
     br_vector3 direction;
     br_vector3 intersect;
@@ -507,6 +523,7 @@ void C2_HOOK_FASTCALL ClearOpponentsProjectedRoute(tOpponent_spec* pOpponent_spe
 
 // FUNCTION: CARMA2_HW 0x004ab150
 // FUNCTION: CARMA2_SW 0x004a72c0
+// FUNCTION: CARMA2_CHEAT 0x004ac640
 int C2_HOOK_FASTCALL AddToOpponentsProjectedRoute(tOpponent_spec* pOpponent_spec, tS16 pSection_no, int pDirection) {
 
     C2_HOOK_BUG_ON(REC2_ASIZE(pOpponent_spec->next_sections) != 12);
@@ -538,6 +555,7 @@ void C2_HOOK_FASTCALL UnStunTheBugger(tOpponent_spec* pOpponent) {
 
 // FUNCTION: CARMA2_HW 0x004aa490
 // FUNCTION: CARMA2_SW 0x004a6600
+// FUNCTION: CARMA2_CHEAT 0x004ab980
 void C2_HOOK_FASTCALL StartRecordingTrail(tCar_spec* pPursuee) {
 
     if (pPursuee->no_of_processes_recording_my_trail == 0) {
@@ -569,6 +587,7 @@ void C2_HOOK_FASTCALL StartRecordingTrail(tCar_spec* pPursuee) {
 
 // FUNCTION: CARMA2_HW 0x004abc00
 // FUNCTION: CARMA2_SW 0x004a7d70
+// FUNCTION: CARMA2_CHEAT 0x004ad0f0
 void C2_HOOK_FASTCALL ProcessWaitForSomeHaplessSod(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand) {
 
     switch (pCommand) {
@@ -589,6 +608,7 @@ void C2_HOOK_FASTCALL ProcessWaitForSomeHaplessSod(tOpponent_spec* pOpponent_spe
 
 // FUNCTION: CARMA2_HW 0x004ac890
 // FUNCTION: CARMA2_SW 0x004a8a00
+// FUNCTION: CARMA2_CHEAT 0x004add80
 void C2_HOOK_FASTCALL ProcessGetNearPlayer(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand) {
     int res;
 
@@ -929,6 +949,7 @@ void C2_HOOK_FASTCALL RebuildActiveCarList(void) {
 
 // FUNCTION: CARMA2_HW 0x004a7a60
 // FUNCTION: CARMA2_SW 0x004a3bd0
+// FUNCTION: CARMA2_CHEAT 0x004a8d70
 void C2_HOOK_FASTCALL ForceRebuildActiveCarList(void) {
     gActive_car_list_rebuild_required = 1;
     if (gProgram_state.racing) {
@@ -950,6 +971,7 @@ int C2_HOOK_FASTCALL OpponentRepairNecessary(tOpponent_spec* pOpponent_spec) {
 
 // FUNCTION: CARMA2_HW 0x004ad910
 // FUNCTION: CARMA2_SW 0x004a9a80
+// FUNCTION: CARMA2_CHEAT 0x004aee20
 void C2_HOOK_FASTCALL PossiblyRepairOpponent(tOpponent_spec* pOpponent_spec) {
     char message[256];
     char headup[256];
@@ -985,6 +1007,7 @@ void C2_HOOK_FASTCALL PossiblyRepairOpponent(tOpponent_spec* pOpponent_spec) {
 
 // FUNCTION: CARMA2_HW 0x004ada90
 // FUNCTION: CARMA2_SW 0x004a9c00
+// FUNCTION: CARMA2_CHEAT 0x004aefa0
 void C2_HOOK_FASTCALL CalcDistanceFromHome(tOpponent_spec* pOpponent_spec) {
     br_vector3 wank;
 
@@ -998,6 +1021,7 @@ void C2_HOOK_FASTCALL CalcDistanceFromHome(tOpponent_spec* pOpponent_spec) {
 
 // FUNCTION: CARMA2_HW 0x004a8170
 // FUNCTION: CARMA2_SW 0x004a42e0
+// FUNCTION: CARMA2_CHEAT 0x004a9480
 int C2_HOOK_FASTCALL RematerialiseOpponentOnNearestSection(tOpponent_spec* pOpponent_spec, br_scalar pSpeed) {
     br_vector3 intersect;
     br_vector3 direction_v;
@@ -1054,6 +1078,7 @@ int C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_spec, br_sc
 
 // FUNCTION: CARMA2_HW 0x004a9600
 // FUNCTION: CARMA2_SW 0x004a5770
+// FUNCTION: CARMA2_CHEAT 0x004aa920
 void C2_HOOK_FASTCALL LoadCopCars(tRace_info* pRace_info) {
     (void)pRace_info;
 
@@ -1068,6 +1093,7 @@ void C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
 
 // FUNCTION: CARMA2_HW 0x004a9c50
 // FUNCTION: CARMA2_SW 0x004a5dc0
+// FUNCTION: CARMA2_CHEAT 0x004ab130
 void C2_HOOK_FASTCALL DisposeOpponentPaths(void) {
 
     if (gProgram_state.AI_vehicles.path_nodes != NULL) {
@@ -1106,6 +1132,7 @@ void C2_HOOK_FASTCALL DisposeOpponents(void) {
 
 // FUNCTION: CARMA2_HW 0x004ae620
 // FUNCTION: CARMA2_SW 0x004aa790
+// FUNCTION: CARMA2_CHEAT 0x004afb30
 void C2_HOOK_FASTCALL WakeUpOpponentsToTheFactThatTheStartHasBeenJumped(int pWhat_the_countdown_was) {
     int i;
     tOpponent_spec* opponent;
@@ -1138,6 +1165,7 @@ void C2_HOOK_FASTCALL ReportMurderToPoliceDepartment(tCar_spec* pCar_spec) {
 
 // FUNCTION: CARMA2_HW 0x004ae790
 // FUNCTION: CARMA2_SW 0x004aa900
+// FUNCTION: CARMA2_CHEAT 0x004afca0
 int C2_HOOK_FASTCALL GetCarCount(tVehicle_type pCategory) {
     switch (pCategory) {
     case eVehicle_self:
@@ -1162,6 +1190,7 @@ int C2_HOOK_FASTCALL GetCarCount(tVehicle_type pCategory) {
 
 // FUNCTION: CARMA2_HW 0x004ae7e0
 // FUNCTION: CARMA2_SW 0x004aa950
+// FUNCTION: CARMA2_CHEAT 0x004afcf0
 tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex) {
     int net_player_index;
 
@@ -1220,6 +1249,7 @@ const char* C2_HOOK_FASTCALL GetDriverName(tVehicle_type pCategory, int pIndex) 
 
 // FUNCTION: CARMA2_HW 0x004ae8e0
 // FUNCTION: CARMA2_SW 0x004aaa50
+// FUNCTION: CARMA2_CHEAT 0x004afdf0
 tOpponent_spec* C2_HOOK_FASTCALL GetOpponentSpecFromCarSpec(tCar_spec* pCar_spec) {
     int i;
     tU16 car_ID;
@@ -1258,6 +1288,7 @@ tCar_spec* C2_HOOK_FASTCALL GetCarSpecFromGlobalOppoIndex(int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x004ae9e0
 // FUNCTION: CARMA2_SW 0x004aab50
+// FUNCTION: CARMA2_CHEAT 0x004afef0
 int C2_HOOK_FASTCALL GetOpponentsRealSection(tOpponent_spec* pOpponent_spec, int pSection_no) {
 
     if (pSection_no >= 20000) {
@@ -1345,6 +1376,7 @@ int C2_HOOK_FASTCALL GetOpponentsSectionMaxSpeed(tOpponent_spec* pOpponent_spec,
 
 // FUNCTION: CARMA2_HW 0x004aee90
 // FUNCTION: CARMA2_SW 0x004ab000
+// FUNCTION: CARMA2_CHEAT 0x004b03a0
 void C2_HOOK_FASTCALL InitOpponentPsyche(int pOpponent_index) {
 
     gOpponents[pOpponent_index].psyche.grudge_against_player = 0;

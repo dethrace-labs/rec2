@@ -160,6 +160,7 @@ float C2_HOOK_FASTCALL FastFloatCos(int pAngle_degrees) {
 
 // FUNCTION: CARMA2_HW 0x005115b0
 // FUNCTION: CARMA2_SW 0x0050ca00
+// FUNCTION: CARMA2_CHEAT 0x00516fa0
 br_scalar C2_HOOK_FASTCALL FastScalarSin(int pAngle_degrees) {
 
     return FastFloatSin(pAngle_degrees);
@@ -167,6 +168,7 @@ br_scalar C2_HOOK_FASTCALL FastScalarSin(int pAngle_degrees) {
 
 // FUNCTION: CARMA2_HW 0x00511620
 // FUNCTION: CARMA2_SW 0x0050ca70
+// FUNCTION: CARMA2_CHEAT 0x00517010
 br_scalar C2_HOOK_FASTCALL FastScalarCos(int pAngle_degrees) {
 
     return FastFloatCos(pAngle_degrees);
@@ -279,6 +281,7 @@ float C2_HOOK_STDCALL FastFloatArcTan2(float pY, float pX) {
 
 // FUNCTION: CARMA2_HW 0x00511e50
 // FUNCTION: CARMA2_SW 0x0050d2a0
+// FUNCTION: CARMA2_CHEAT 0x00517840
 br_scalar C2_HOOK_STDCALL FastScalarArcTan2(br_scalar pY, br_scalar pX) {
     return FastFloatArcTan2(pY, pX);
 }

@@ -14,14 +14,17 @@
 
 // GLOBAL: CARMA2_HW 0x006ab7a8
 // GLOBAL: CARMA2_SW 0x006a51f8
+// GLOBAL: CARMA2_CHEAT 0x006b2e38
 int gDelete_count;
 
 // GLOBAL: CARMA2_HW 0x006aafc8
 // GLOBAL: CARMA2_SW 0x006a4a18
+// GLOBAL: CARMA2_CHEAT 0x006b2658
 br_actor* gDelete_list[500];
 
 // FUNCTION: CARMA2_HW 0x00507210
 // FUNCTION: CARMA2_SW 0x00502660
+// FUNCTION: CARMA2_CHEAT 0x0050cc00
 br_uint_32 C2_HOOK_FASTCALL DeleteBastards(br_actor* pActor, br_matrix34* pMatrix, void* pArg) {
     int i;
     int parent_already_doomed;
@@ -49,6 +52,7 @@ br_uint_32 C2_HOOK_FASTCALL DeleteBastards(br_actor* pActor, br_matrix34* pMatri
 
 // FUNCTION: CARMA2_HW 0x005072b0
 // FUNCTION: CARMA2_SW 0x00502700
+// FUNCTION: CARMA2_CHEAT 0x0050cca0
 br_uint_32 C2_HOOK_FASTCALL ApplyTransToModels(br_actor* pActor, br_matrix34* pMatrix, void* pArg) {
     int i;
     br_vector3 temp_point;
@@ -70,9 +74,10 @@ br_uint_32 C2_HOOK_FASTCALL ApplyTransToModels(br_actor* pActor, br_matrix34* pM
 
 // FUNCTION: CARMA2_HW 0x005074d0
 // FUNCTION: CARMA2_SW 0x00502920
+// FUNCTION: CARMA2_CHEAT 0x0050cec0
 void C2_HOOK_FASTCALL MungeMaterialSV(br_matrix34* pMat, br_material* pMat_1, br_material* pMat_2, int pAxis_0, int pAxis_1) {
-    pMat_1->map_transform.m[0][0] = 6.f * BrVector3Length((br_vector3*)pMat->m[pAxis_0]);
-    pMat_1->map_transform.m[1][1] = 6.f * BrVector3Length((br_vector3*)pMat->m[pAxis_1]);
+    pMat_1->map_transform.m[0][0] = 6.0f * BrVector3Length((br_vector3*)pMat->m[pAxis_0]);
+    pMat_1->map_transform.m[1][1] = 6.0f * BrVector3Length((br_vector3*)pMat->m[pAxis_1]);
     BrMatrix23Copy(&pMat_2->map_transform, &pMat_1->map_transform);
 }
 

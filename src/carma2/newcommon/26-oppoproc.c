@@ -26,6 +26,7 @@
 
 // FUNCTION: CARMA2_HW 0x004af8d0
 // FUNCTION: CARMA2_SW 0x004aba40
+// FUNCTION: CARMA2_CHEAT 0x004b51a0
 int C2_HOOK_FASTCALL TimeToStopStruggling(tOpponent_spec* pOpponent_spec) {
 
     if (gTime_stamp_for_this_munging >

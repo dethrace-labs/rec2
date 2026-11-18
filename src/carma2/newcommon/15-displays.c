@@ -35,80 +35,102 @@
 
 // GLOBAL: CARMA2_HW 0x0067c500
 // GLOBAL: CARMA2_SW 0x00676c70
+// GLOBAL: CARMA2_CHEAT 0x00683da8
 tHeadup gHeadups[37];
 
 // GLOBAL: CARMA2_HW 0x0067fcd8
 // GLOBAL: CARMA2_SW 0x0067a438
+// GLOBAL: CARMA2_CHEAT 0x00687580
 br_font* gBR_fonts[4];
 
 // GLOBAL: CARMA2_HW 0x0067fd00
 // GLOBAL: CARMA2_SW 0x0067a450
+// GLOBAL: CARMA2_CHEAT 0x006875a8
 br_pixelmap* gRevs[13];
 
 // GLOBAL: CARMA2_HW 0x0074cf84
+// GLOBAL: CARMA2_CHEAT 0x00754624
 br_pixelmap* gArmour_colour_map;
 
 // GLOBAL: CARMA2_HW 0x0067fcd0
 br_pixelmap* gPowerbar;
 
 // GLOBAL: CARMA2_HW 0x0074cab4
+// GLOBAL: CARMA2_CHEAT 0x00754154
 br_pixelmap* gPower_colour_map;
 
 // GLOBAL: CARMA2_HW 0x0074cf5c
+// GLOBAL: CARMA2_CHEAT 0x007545fc
 br_pixelmap* gOffensive_colour_map;
 
 // GLOBAL: CARMA2_HW 0x006815bc
+// GLOBAL: CARMA2_CHEAT 0x00688e64
 br_pixelmap* gIcon_test;
 
 // GLOBAL: CARMA2_HW 0x006815c0
+// GLOBAL: CARMA2_CHEAT 0x00688e68
 int do_headup_material;
 
 // GLOBAL: CARMA2_HW 0x0074ca1c
+// GLOBAL: CARMA2_CHEAT 0x007540bc
 br_pixelmap* gCurrent_rev;
 
 // GLOBAL: CARMA2_HW 0x0067c4f8
+// GLOBAL: CARMA2_CHEAT 0x00683da0
 br_pixelmap* gHud_curve1;
 
 // GLOBAL: CARMA2_HW 0x0067fcfc
+// GLOBAL: CARMA2_CHEAT 0x006875a4
 br_pixelmap* gHud_curve2;
 
 // GLOBAL: CARMA2_HW 0x0067f87c
+// GLOBAL: CARMA2_CHEAT 0x00687124
 br_pixelmap* gHud_curve3;
 
 // GLOBAL: CARMA2_HW 0x0067fcf4
+// GLOBAL: CARMA2_CHEAT 0x0068759c
 br_pixelmap* gGrey_top5;
 
 // GLOBAL: CARMA2_HW 0x0074cf00
+// GLOBAL: CARMA2_CHEAT 0x007545a0
 br_pixelmap* gDamage_hud;
 
 // GLOBAL: CARMA2_HW 0x0074ca80
+// GLOBAL: CARMA2_CHEAT 0x00754120
 br_pixelmap* gTimer_lhs;
 
 // GLOBAL: CARMA2_HW 0x0074ca44
+// GLOBAL: CARMA2_CHEAT 0x007540e4
 br_pixelmap* gHud_timer_rhs;
 
 // GLOBAL: CARMA2_HW 0x006815b8
 // GLOBAL: CARMA2_SW 0x0067bcfc
+// GLOBAL: CARMA2_CHEAT 0x00688e60
 br_pixelmap* gIcon_armour;
 
 // GLOBAL: CARMA2_HW 0x006815b4
 // GLOBAL: CARMA2_SW 0x0067bcf8
+// GLOBAL: CARMA2_CHEAT 0x00688e5c
 br_pixelmap* gIcon_power;
 
 // GLOBAL: CARMA2_HW 0x0067c4f0
 // GLOBAL: CARMA2_SW 0x00676c68
+// GLOBAL: CARMA2_CHEAT 0x00683d98
 br_pixelmap* gIcon_offense;
 
 // GLOBAL: CARMA2_HW 0x0067c4f4
 // GLOBAL: CARMA2_SW 0x00676c6c
+// GLOBAL: CARMA2_CHEAT 0x00683d9c
 br_pixelmap* gIcon_greyBloc1;
 
 // GLOBAL: CARMA2_HW 0x0067fce8
 // GLOBAL: CARMA2_SW 0x0067a448
+// GLOBAL: CARMA2_CHEAT 0x00687590
 br_pixelmap* gIcon_litBloc1;
 
 // GLOBAL: CARMA2_HW 0x0067fcd4
 // GLOBAL: CARMA2_SW 0x0067a430
+// GLOBAL: CARMA2_CHEAT 0x0068757c
 br_pixelmap* gIcon_grnBlock1;
 
 // GLOBAL: CARMA2_SW 0x00679ff0
@@ -120,46 +142,57 @@ tHud_message gHud_messages[46];
 
 // GLOBAL: CARMA2_HW 0x00655e54
 // GLOBAL: CARMA2_SW 0x00650d3c
+// GLOBAL: CARMA2_CHEAT 0x0065c6dc
 int gHeadup_detail_level = 5;
 
 // GLOBAL: CARMA2_HW 0x0067fcc0
 // GLOBAL: CARMA2_SW 0x0067a428
+// GLOBAL: CARMA2_CHEAT 0x00687568
 tU32 gLast_fancy_headup;
 
 // GLOBAL: CARMA2_HW 0x005913d4
 // GLOBAL: CARMA2_SW 0x0058c3b4
+// GLOBAL: CARMA2_CHEAT 0x00597d2c
 int gLast_fancy_index = -1;
 
 // GLOBAL: CARMA2_HW 0x0067fd34
 // GLOBAL: CARMA2_SW 0x0067a484
+// GLOBAL: CARMA2_CHEAT 0x006875dc
 tU32 gLast_fancy_time;
 
 // GLOBAL: CARMA2_HW 0x0067fcf8
 // GLOBAL: CARMA2_SW 0x0067a44c
+// GLOBAL: CARMA2_CHEAT 0x006875a0
 tU32 gLast_centre_headup;
 
 // GLOBAL: CARMA2_HW 0x005913d8
 // GLOBAL: CARMA2_SW 0x0058c3b8
+// GLOBAL: CARMA2_CHEAT 0x00597d30
 int gLast_credit_headup__displays = -1;
 
 // GLOBAL: CARMA2_HW 0x0067f874
 // GLOBAL: CARMA2_SW 0x00679fe4
+// GLOBAL: CARMA2_CHEAT 0x0068711c
 tU32 gLast_earn_time;
 
 // GLOBAL: CARMA2_HW 0x005913dc
 // GLOBAL: CARMA2_SW 0x0058c3bc
+// GLOBAL: CARMA2_CHEAT 0x00597d34
 int gLast_time_credit_headup = -1;
 
 // GLOBAL: CARMA2_HW 0x0067fcc4
 // GLOBAL: CARMA2_SW 0x0067a42c
+// GLOBAL: CARMA2_CHEAT 0x0068756c
 tU32 gLast_time_earn_time;
 
 // GLOBAL: CARMA2_HW 0x0067f880
 // GLOBAL: CARMA2_SW 0x00679fec
+// GLOBAL: CARMA2_CHEAT 0x00687128
 tU32 gLast_time_credit_amount;
 
 // GLOBAL: CARMA2_HW 0x0079eac0
 // GLOBAL: CARMA2_SW 0x00795020
+// GLOBAL: CARMA2_CHEAT 0x007a6160
 int gOld_times[10];
 
 // GLOBAL: CARMA2_HW 0x0079eb00
@@ -167,6 +200,7 @@ char gHeadup_oppo_ped_text[64];
 
 // GLOBAL: CARMA2_HW 0x0067f888
 // GLOBAL: CARMA2_SW 0x00679ff4
+// GLOBAL: CARMA2_CHEAT 0x00687130
 int gQueued_headup_count;
 
 
@@ -225,6 +259,7 @@ static void C2_HOOK_FASTCALL LoadHeadupMessageFile(void) {
 
 // FUNCTION: CARMA2_HW 0x00449070
 // FUNCTION: CARMA2_SW 0x00449490
+// FUNCTION: CARMA2_CHEAT 0x00449580
 void C2_HOOK_FASTCALL GetTimerString(char* pStr, undefined4 pArg3) {
 
     TimerString(gTimer, pStr, pArg3, 0, 0);
@@ -232,6 +267,7 @@ void C2_HOOK_FASTCALL GetTimerString(char* pStr, undefined4 pArg3) {
 
 // FUNCTION: CARMA2_HW 0x00449090
 // FUNCTION: CARMA2_SW 0x004494b0
+// FUNCTION: CARMA2_CHEAT 0x004495a0
 void C2_HOOK_FASTCALL InitHeadups(void) {
     int i;
 
@@ -343,12 +379,14 @@ void C2_HOOK_FASTCALL InitHeadups(void) {
 
 // FUNCTION: CARMA2_HW 0x00449630
 // FUNCTION: CARMA2_SW 0x00449780
+// FUNCTION: CARMA2_CHEAT 0x00449b40
 void C2_HOOK_FASTCALL ClearHeadup(int pIndex) {
     gHeadups[pIndex].type = eHeadup_unused;
 }
 
 // FUNCTION: CARMA2_HW 0x00449650
 // FUNCTION: CARMA2_SW 0x004497a0
+// FUNCTION: CARMA2_CHEAT 0x00449b60
 void C2_HOOK_FASTCALL ClearHeadupSlot(int pSlot_index) {
     int i;
     tHeadup* the_headup;
@@ -366,6 +404,7 @@ void C2_HOOK_FASTCALL ClearHeadupSlot(int pSlot_index) {
 
 // FUNCTION: CARMA2_HW 0x00449690
 // FUNCTION: CARMA2_SW 0x004497e0
+// FUNCTION: CARMA2_CHEAT 0x00449ba0
 void C2_HOOK_FASTCALL ClearHeadups(void) {
     int i;
 
@@ -392,6 +431,7 @@ void C2_HOOK_FASTCALL ClearHeadups(void) {
 
 // FUNCTION: CARMA2_HW 0x004496f0
 // FUNCTION: CARMA2_SW 0x00449840
+// FUNCTION: CARMA2_CHEAT 0x00449c00
 void C2_HOOK_FASTCALL DimAFewBits(void) {
     int i;
 
@@ -426,6 +466,7 @@ void C2_HOOK_FASTCALL DoTestPowerHeadup(int pLevel, const char* pAPO_str) {
 
 // FUNCTION: CARMA2_HW 0x00449800
 // FUNCTION: CARMA2_SW 0x00449950
+// FUNCTION: CARMA2_CHEAT 0x00449d10
 void C2_HOOK_FASTCALL DoPSPowerupHeadups(void) {
     DoTestPowerHeadup(gProgram_state.current_car.power_up_levels[0], "A");
     DoTestPowerHeadup(gProgram_state.current_car.power_up_levels[1], "P");
@@ -436,6 +477,7 @@ void C2_HOOK_FASTCALL DoPSPowerupHeadups(void) {
 
 // FUNCTION: CARMA2_HW 0x00449fa0
 // FUNCTION: CARMA2_SW 0x0044a130
+// FUNCTION: CARMA2_CHEAT 0x0044a4c0
 int C2_HOOK_FASTCALL FindAHeadupHoleWoofBarkSoundsABitRude(int pSlot_index) {
     int i;
     int empty_one;
@@ -475,6 +517,7 @@ int C2_HOOK_FASTCALL MungeHeadupWidth(tHeadup* pHeadup) {
 
 // STUB: CARMA2_HW 0x00449fd0
 // STUB: CARMA2_SW 0x0044a160
+// STUB: CARMA2_CHEAT 0x0044a4f0
 int C2_HOOK_FASTCALL NewTextHeadupSlot2(int pSlot_index, int pFlash_rate, int pLifetime, int pFont_index, const char* pText, int pQueue_it) {
     NOT_IMPLEMENTED();
 }
@@ -485,12 +528,14 @@ int C2_HOOK_FASTCALL NewTextHeadupSlot2(int pSlot_index, int pFlash_rate, int pL
 
 // FUNCTION: CARMA2_HW 0x0044a380
 // FUNCTION: CARMA2_SW 0x0044a510
+// FUNCTION: CARMA2_CHEAT 0x0044a8a0
 int C2_HOOK_FASTCALL NewTextHeadupSlot(int pSlot_index, int pFlash_rate, int pLifetime, int pFont_index, const char* pText) {
     return NewTextHeadupSlot2(pSlot_index, pFlash_rate, pLifetime, pFont_index, pText, 1);
 }
 
 // FUNCTION: CARMA2_HW 0x0044a3a0
 // FUNCTION: CARMA2_SW 0x0044a530
+// FUNCTION: CARMA2_CHEAT 0x0044a8c0
 int C2_HOOK_FASTCALL NewImageHeadupSlot(int pSlot_index, int pFlash_rate, int pLifetime, int pImage_index) {
     int index;
     int width;
@@ -569,6 +614,7 @@ int C2_HOOK_FASTCALL NewImageHeadupSlot(int pSlot_index, int pFlash_rate, int pL
 
 // FUNCTION: CARMA2_HW 0x0044a600
 // FUNCTION: CARMA2_SW 0x0044a790
+// FUNCTION: CARMA2_CHEAT 0x0044ab20
 void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex) {
     tU32 the_time;
     int temp_ref;
@@ -630,6 +676,7 @@ void C2_HOOK_FASTCALL MoveHeadupTo(int pHeadup_index, int pNew_x, int pNew_y) {
 
 // FUNCTION: CARMA2_HW 0x0044a8d0
 // FUNCTION: CARMA2_SW 0x0044aa60
+// FUNCTION: CARMA2_CHEAT 0x0044adf0
 void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pNew_text) {
     tHeadup* the_headup;
 
@@ -643,6 +690,7 @@ void C2_HOOK_FASTCALL ChangeHeadupText(int pHeadup_index, char* pNew_text) {
 
 // FUNCTION: CARMA2_HW 0x0044a920
 // FUNCTION: CARMA2_SW 0x0044aab0
+// FUNCTION: CARMA2_CHEAT 0x0044ae40
 void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont) {
 
     if (pHeadup_index >= 0) {
@@ -652,6 +700,7 @@ void C2_HOOK_FASTCALL ChangeHeadupFont(int pHeadup_index, int pFont) {
 
 // FUNCTION: CARMA2_HW 0x0044a950
 // FUNCTION: CARMA2_SW 0x0044aae0
+// FUNCTION: CARMA2_CHEAT 0x0044ae70
 void C2_HOOK_FASTCALL ChangeHeadupImage(int pHeadup_index, int pImage_index) {
     tHeadup* headup;
     br_pixelmap* image;
@@ -678,6 +727,7 @@ void C2_HOOK_FASTCALL ChangeHeadupImage(int pHeadup_index, int pImage_index) {
 
 // FUNCTION: CARMA2_HW 0x0044a9b0
 // FUNCTION: CARMA2_SW 0x0044ab40
+// FUNCTION: CARMA2_CHEAT 0x0044aed0
 void C2_HOOK_FASTCALL ChangeHeadupColour(int pHeadup_index, int pNew_colour) {
 
     if (pHeadup_index < 0) {
@@ -688,6 +738,7 @@ void C2_HOOK_FASTCALL ChangeHeadupColour(int pHeadup_index, int pNew_colour) {
 
 // FUNCTION: CARMA2_HW 0x0044a9d0
 // FUNCTION: CARMA2_SW 0x0044ab60
+// FUNCTION: CARMA2_CHEAT 0x0044aef0
 void C2_HOOK_FASTCALL DoDamageScreen(tU32 pThe_time) {
     int i;
     int y_pitch;
@@ -765,6 +816,7 @@ void C2_HOOK_FASTCALL DoDamageScreen(tU32 pThe_time) {
 
 // FUNCTION: CARMA2_HW 0x0044b050
 // FUNCTION: CARMA2_SW 0x0044b1e0
+// FUNCTION: CARMA2_CHEAT 0x0044b5a0
 void C2_HOOK_FASTCALL DoSteeringWheel(tU32 pThe_time) {
     br_pixelmap* hands_image;
     int hands_index;
@@ -800,6 +852,7 @@ void C2_HOOK_FASTCALL DoSteeringWheel(tU32 pThe_time) {
 
 // FUNCTION: CARMA2_HW 0x0044b170
 // FUNCTION: CARMA2_SW 0x0044b300
+// FUNCTION: CARMA2_CHEAT 0x0044b6c0
 void C2_HOOK_FASTCALL ChangingView(void) {
     tU32 the_time;
 
@@ -873,6 +926,7 @@ void C2_HOOK_FASTCALL EarnCredits2(int pAmount, const char* pPrefix_text) {
 
 // FUNCTION: CARMA2_HW 0x0044b440
 // FUNCTION: CARMA2_SW 0x0044b5d0
+// FUNCTION: CARMA2_CHEAT 0x0044b990
 void C2_HOOK_FASTCALL EarnCredits(int pAmount) {
     EarnCredits2(pAmount, "");
 }
@@ -885,6 +939,7 @@ void C2_HOOK_FASTCALL EarnCredits100(int pAmount) {
 
 // FUNCTION: CARMA2_HW 0x0044b470
 // FUNCTION: CARMA2_SW 0x0044b600
+// FUNCTION: CARMA2_CHEAT 0x0044b9c0
 int C2_HOOK_FASTCALL SpendCredits(int pAmount) {
     int amount;
 
@@ -900,6 +955,7 @@ int C2_HOOK_FASTCALL SpendCredits(int pAmount) {
 
 // FUNCTION: CARMA2_HW 0x0044b490
 // FUNCTION: CARMA2_SW 0x0044b620
+// FUNCTION: CARMA2_CHEAT 0x0044b9e0
 void C2_HOOK_FASTCALL AwardTime(tU32 pTime) {
     char s[256];
     tU32 original_amount;
@@ -930,6 +986,7 @@ void C2_HOOK_FASTCALL AwardTime(tU32 pTime) {
 
 // FUNCTION: CARMA2_HW 0x0044b590
 // FUNCTION: CARMA2_SW 0x0044b720
+// FUNCTION: CARMA2_CHEAT 0x0044bae0
 void C2_HOOK_FASTCALL AwardTime5(tU32 pTime) {
     // FIXME: AwardTime should be inlined in matched build
 #ifdef REC2_MATCHING
@@ -978,6 +1035,7 @@ void C2_HOOK_FASTCALL FullScreenTimedMessage(const char* pText) {
 // DoTestHeadup
 #ifdef REC2_HW
 // FUNCTION: CARMA2_HW 0x0044b6a0
+// FUNCTION: CARMA2_CHEAT 0x0044bbf0
 void C2_HOOK_FASTCALL DoTestHeadup(void) {
 
     do_headup_material = !do_headup_material;
@@ -1039,6 +1097,7 @@ void C2_HOOK_FASTCALL DoTestHeadup(void) {
 #endif
 
 // FUNCTION: CARMA2_HW 0x0044ba60
+// FUNCTION: CARMA2_CHEAT 0x0044bfb0
 int C2_HOOK_FASTCALL HighResHeadupWidth(int pWidth) {
     int width;
 
@@ -1053,6 +1112,7 @@ int C2_HOOK_FASTCALL HighResHeadupWidth(int pWidth) {
 }
 
 // FUNCTION: CARMA2_HW 0x0044ba90
+// FUNCTION: CARMA2_CHEAT 0x0044bfe0
 int C2_HOOK_FASTCALL HighResHeadupHeight(int pHeight) {
     int height;
 
@@ -1068,6 +1128,7 @@ int C2_HOOK_FASTCALL HighResHeadupHeight(int pHeight) {
 
 // FUNCTION: CARMA2_HW 0x0044bac0
 // FUNCTION: CARMA2_SW 0x0044b8a0
+// FUNCTION: CARMA2_CHEAT 0x0044c010
 void C2_HOOK_FASTCALL DrawThisCarIconNow(int pCar_index, int pX, int pY) {
 #ifdef REC2_HW
     gCar_icons_model_actor->material->colour_map = gTexture_maps[gCar_icons[pCar_index].index];

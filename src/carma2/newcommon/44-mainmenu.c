@@ -25,6 +25,7 @@ int C2_HOOK_FASTCALL DoVerifyQuit(int pReplace_background) {
 
 // FUNCTION: CARMA2_HW 0x00494540
 // FUNCTION: CARMA2_SW 0x00491840
+// FUNCTION: CARMA2_CHEAT 0x00494770
 void C2_HOOK_FASTCALL DoMainScreen(void) {
 
     StartMusicTrack(9998);
@@ -40,6 +41,7 @@ void C2_HOOK_FASTCALL DoMainScreen(void) {
 
 // FUNCTION: CARMA2_HW 0x00494570
 // FUNCTION: CARMA2_SW 0x00491870
+// FUNCTION: CARMA2_CHEAT 0x004947a0
 void C2_HOOK_FASTCALL DoOptionsMenu(void) {
     tPlayer_status player_status;
 

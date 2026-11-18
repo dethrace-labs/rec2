@@ -60,24 +60,30 @@ br_vector3 y_unit_vector = { { 0.f, 1.f, 0.f } };
 
 // GLOBAL: CARMA2_HW 0x00655dfc
 // GLOBAL: CARMA2_SW 0x00650ce4
+// GLOBAL: CARMA2_CHEAT 0x0065c67c
 int gMini_map_visible = 2;
 
 // GLOBAL: CARMA2_HW 0x0074a780
+// GLOBAL: CARMA2_CHEAT 0x00751e20
 tCar_icon gCar_icons[128];
 
 // GLOBAL: CARMA2_HW 0x0074ab84
+// GLOBAL: CARMA2_CHEAT 0x00752224
 br_actor* gCar_icons_model_actor;
 
 // GLOBAL: CARMA2_HW 0x0068d8c4
 // GLOBAL: CARMA2_SW 0x0068791c
+// GLOBAL: CARMA2_CHEAT 0x00695164
 tCar_spec* gTarget_lock_car_1;
 
 // GLOBAL: CARMA2_HW 0x0068d6f0
 // GLOBAL: CARMA2_SW 0x00687748
+// GLOBAL: CARMA2_CHEAT 0x00694f90
 tCar_spec* gTarget_lock_car_2;
 
 // GLOBAL: CARMA2_HW 0x0068d8c8
 // GLOBAL: CARMA2_SW 0x00687920
+// GLOBAL: CARMA2_CHEAT 0x00695168
 int gTarget_lock_enabled;
 
 // GLOBAL: CARMA2_HW 0x0068d8cc
@@ -145,6 +151,7 @@ int gINT_0074abd0;
 
 // GLOBAL: CARMA2_HW 0x0068d8dc
 // GLOBAL: CARMA2_SW 0x00687934
+// GLOBAL: CARMA2_CHEAT 0x0069517c
 br_pixelmap* gMini_map;
 
 // GLOBAL: CARMA2_HW 0x00655f04
@@ -175,18 +182,22 @@ float gFLOAT_0074abb8;
 
 // GLOBAL: CARMA2_HW 0x0074abbc
 // GLOBAL: CARMA2_SW 0x00741268
+// GLOBAL: CARMA2_CHEAT 0x0075225c
 int gMap_render_y_i;
 
 // GLOBAL: CARMA2_HW 0x0074abc0
 // GLOBAL: CARMA2_SW 0x0074126c
+// GLOBAL: CARMA2_CHEAT 0x00752260
 int gMap_render_x_i;
 
 // GLOBAL: CARMA2_HW 0x0074abc8
 // GLOBAL: CARMA2_SW 0x00741274
+// GLOBAL: CARMA2_CHEAT 0x00752268
 int gMap_render_height_i;
 
 // GLOBAL: CARMA2_HW 0x0074abe8
 // GLOBAL: CARMA2_SW 0x00741294
+// GLOBAL: CARMA2_CHEAT 0x00752288
 int gMap_render_width_i;
 
 // GLOBAL: CARMA2_HW 0x0068d6e4
@@ -199,18 +210,22 @@ br_pixelmap* gSmashy_dot;
 
 // GLOBAL: CARMA2_HW 0x0068d88c
 // GLOBAL: CARMA2_SW 0x006878e4
+// GLOBAL: CARMA2_CHEAT 0x0069512c
 int gBack_original_base_x;
 
 // GLOBAL: CARMA2_HW 0x0068d888
 // GLOBAL: CARMA2_SW 0x006878e0
+// GLOBAL: CARMA2_CHEAT 0x00695128
 int gBack_original_base_y;
 
 // GLOBAL: CARMA2_HW 0x0068d6ec
 // GLOBAL: CARMA2_SW 0x00687744
+// GLOBAL: CARMA2_CHEAT 0x00694f8c
 int gBack_original_origin_x;
 
 // GLOBAL: CARMA2_HW 0x0068d6e8
 // GLOBAL: CARMA2_SW 0x00687740
+// GLOBAL: CARMA2_CHEAT 0x00694f88
 int gBack_original_origin_y;
 
 // GLOBAL: CARMA2_HW 0x0068c87c
@@ -223,10 +238,12 @@ br_matrix23 gMatrix23_0068c880;
 
 // GLOBAL: CARMA2_HW 0x0068c868
 // GLOBAL: CARMA2_SW 0x006868c0
+// GLOBAL: CARMA2_CHEAT 0x00694108
 br_vector3 gOrigin_map;
 
 // GLOBAL: CARMA2_HW 0x0068d898
 // GLOBAL: CARMA2_SW 0x006878f0
+// GLOBAL: CARMA2_CHEAT 0x00695138
 br_vector2 gOrigin_headup_map;
 
 // GLOBAL: CARMA2_HW 0x0068c860
@@ -270,6 +287,7 @@ br_actor* gLit_op_stat_actor;
 
 // FUNCTION: CARMA2_HW 0x004945f0
 // FUNCTION: CARMA2_SW 0x004918f0
+// FUNCTION: CARMA2_CHEAT 0x00494820
 void C2_HOOK_FASTCALL ToggleTargetLock(void) {
     char name[256];
     char s[256];
@@ -302,6 +320,7 @@ void C2_HOOK_FASTCALL ToggleTargetLock(void) {
 
 // FUNCTION: CARMA2_HW 0x00494700
 // FUNCTION: CARMA2_SW 0x00491a00
+// FUNCTION: CARMA2_CHEAT 0x00494930
 void C2_HOOK_FASTCALL CycleTargetLock(void) {
     tVehicle_type category;
     int i;
@@ -369,6 +388,7 @@ void C2_HOOK_FASTCALL CycleMapOptions(void) {
 
 // FUNCTION: CARMA2_HW 0x00494880
 // FUNCTION: CARMA2_SW 0x00491b80
+// FUNCTION: CARMA2_CHEAT 0x00494ab0
 void C2_HOOK_FASTCALL ToggleMapTransparency(void) {
 
     gMap_trans = !gMap_trans;
@@ -382,6 +402,7 @@ void C2_HOOK_FASTCALL InitTargetLock(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004948b0
+// FUNCTION: CARMA2_CHEAT 0x00494ae0
 void C2_HOOK_FASTCALL SetIntegerMapRenders(void) {
 
     gMap_render_width = 128.f;
@@ -395,6 +416,7 @@ void C2_HOOK_FASTCALL SetIntegerMapRenders(void) {
 // OppositeColour
 
 // FUNCTION: CARMA2_HW 0x00495a00
+// FUNCTION: CARMA2_CHEAT 0x00495c70
 // STUB: CARMA2_SW 0x00492400
 void C2_HOOK_FASTCALL DrawArrow(br_pixelmap* pScreen, br_uint_32 pArrow_index, const br_vector3* pPos, br_uint_32 pColour) {
     int colours[2];
@@ -469,6 +491,7 @@ void C2_HOOK_FASTCALL DrawArrow(br_pixelmap* pScreen, br_uint_32 pArrow_index, c
 // DrawCarArrow
 
 // FUNCTION: CARMA2_HW 0x00495ba0
+// FUNCTION: CARMA2_CHEAT 0x00495e10
 void C2_HOOK_FASTCALL DoSomeThingsToCheckpoints(br_pixelmap* pMap, tU32 pTime, tDoSomethingsToCheckpoints_cbfn* pCallback, int pDraw_prev) {
     int i;
     int checkpoint;
@@ -689,6 +712,7 @@ void C2_HOOK_FASTCALL MapOverlay(void) {
 
 // FUNCTION: CARMA2_HW 0x00496d80
 // FUNCTION: CARMA2_SW 0x00493bf0
+// FUNCTION: CARMA2_CHEAT 0x00497130
 void C2_HOOK_FASTCALL MapStuffAfterRender(void) {
     if (gCurrent_race.map_image == NULL) {
         return;
@@ -737,6 +761,7 @@ static void C2_HOOK_FASTCALL ReadMoodMessages(void) {
 
 // FUNCTION: CARMA2_HW 0x00496e30
 // FUNCTION: CARMA2_SW 0x00493ca0
+// FUNCTION: CARMA2_CHEAT 0x004971e0
 void C2_HOOK_FASTCALL InitMap(void) {
 
     if (!gInitMap_done) {
@@ -924,6 +949,7 @@ void C2_HOOK_FASTCALL ConvertCarIcons(br_pixelmap* pMap) {
 
 // FUNCTION: CARMA2_HW 0x00497610
 // FUNCTION: CARMA2_SW 0x00494240
+// FUNCTION: CARMA2_CHEAT 0x004979c0
 void C2_HOOK_FASTCALL MapChanged(void) {
 
     InitMap();
@@ -932,6 +958,7 @@ void C2_HOOK_FASTCALL MapChanged(void) {
 
 // FUNCTION: CARMA2_HW 0x00497620
 // FUNCTION: CARMA2_SW 0x00494250
+// FUNCTION: CARMA2_CHEAT 0x004979d0
 void C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0, int pKey1) {
 
     if (KeyIsDown(31) && pKey0) {
@@ -969,6 +996,7 @@ void C2_HOOK_FASTCALL InitSmashTargets(void) {
 
 // FUNCTION: CARMA2_HW 0x004977f0
 // FUNCTION: CARMA2_SW 0x00494420
+// FUNCTION: CARMA2_CHEAT 0x00497ba0
 void C2_HOOK_FASTCALL AddSmashTarget(br_model* pModel, br_actor* pActor, int pUnknown) {
     int index;
 

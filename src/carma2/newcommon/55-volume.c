@@ -103,6 +103,7 @@ void C2_HOOK_FASTCALL MungeSpecialVolume(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004ff530
 // FUNCTION: CARMA2_SW 0x004fae10
+// FUNCTION: CARMA2_CHEAT 0x005051d0
 void C2_HOOK_FASTCALL ResetCarSpecialVolume(tPhysics_object* pObject) {
     br_vector3 direction;
     br_vector3 normal;
@@ -136,6 +137,7 @@ void C2_HOOK_FASTCALL TestAutoSpecialVolume(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004ff8d0
 // FUNCTION: CARMA2_SW 0x004fb1b0
+// FUNCTION: CARMA2_CHEAT 0x00505580
 void C2_HOOK_FASTCALL ParseSpecialVolume(FILE* pF, tSpecial_volume* pSpec, char* pScreen_name_str, int soundfx) {
     char s[256];
 
@@ -183,6 +185,7 @@ void C2_HOOK_FASTCALL ParseSpecialVolume(FILE* pF, tSpecial_volume* pSpec, char*
 
 // FUNCTION: CARMA2_HW 0x004ffa20
 // FUNCTION: CARMA2_SW 0x004fb300
+// FUNCTION: CARMA2_CHEAT 0x005056d0
 void C2_HOOK_FASTCALL SaveSpecialVolumes(void) {
     tPath_name the_path;
     FILE* f;
@@ -245,6 +248,7 @@ void C2_HOOK_FASTCALL SaveSpecialVolumes(void) {
 
 // FUNCTION: CARMA2_HW 0x004ffd20
 // FUNCTION: CARMA2_SW 0x004fb600
+// FUNCTION: CARMA2_CHEAT 0x005059d0
 void C2_HOOK_FASTCALL FindInverseAndWorlBox(tSpecial_volume* pSpec) {
     br_bounds bnds;
 

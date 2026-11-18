@@ -50,6 +50,7 @@ br_pixelmap** gShade_table = &gShade_list[8];
 
 // GLOBAL: CARMA2_HW 0x006b78e0
 // GLOBAL: CARMA2_SW 0x006ae5c0
+// GLOBAL: CARMA2_CHEAT 0x006bef80
 tSmash_vertex gSmash_glass_fragments[200];
 
 // GLOBAL: CARMA2_HW 0x006a82b4
@@ -58,6 +59,7 @@ int gNum_dust_tables;
 
 // GLOBAL: CARMA2_HW 0x006aa57c
 // GLOBAL: CARMA2_SW 0x006a3fc8
+// GLOBAL: CARMA2_CHEAT 0x006b20f4
 int gSpark_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa5ac
@@ -66,6 +68,7 @@ br_pixelmap* gIt_shade_table;
 
 // GLOBAL: CARMA2_HW 0x006aa590
 // GLOBAL: CARMA2_SW 0x006a3fe0
+// GLOBAL: CARMA2_CHEAT 0x006b2108
 int gSmoke_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa594
@@ -88,16 +91,19 @@ int gN_BR_smoke_structs;
 
 // GLOBAL: CARMA2_HW 0x006a8638
 // GLOBAL: CARMA2_SW 0x006a2698
+// GLOBAL: CARMA2_CHEAT 0x006b01b0
 br_pixelmap* gFlame_map[20] = { 0 };
 
 #ifdef REC2_MATCHING
 // GLOBAL: CARMA2_HW 0x006a8688
 // GLOBAL: CARMA2_SW 0x006a26e8
+// GLOBAL: CARMA2_CHEAT 0x006b0200
 int gINT_006a8688 = 0;
 #endif
 
 // GLOBAL: CARMA2_HW 0x006a9180
 // GLOBAL: CARMA2_SW 0x006a2bd0
+// GLOBAL: CARMA2_CHEAT 0x006b0cf8
 tShrapnel gShrapnel[30] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006a96a8
@@ -110,10 +116,12 @@ tSpark gSparks[32] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006aa380
 // GLOBAL: CARMA2_SW 0x006a3dd0
+// GLOBAL: CARMA2_CHEAT 0x006b1ef8
 br_model* gLollipop_model = NULL;
 
 // GLOBAL: CARMA2_HW 0x006aa59c
 // GLOBAL: CARMA2_SW 0x006a3fec
+// GLOBAL: CARMA2_CHEAT 0x006b2114
 int gColumn_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa5a0
@@ -122,32 +130,39 @@ int gNext_column;
 
 // GLOBAL: CARMA2_HW 0x006aa584
 // GLOBAL: CARMA2_SW 0x006a3fd0
+// GLOBAL: CARMA2_CHEAT 0x006b20fc
 int gShrapnel_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa588
 // GLOBAL: CARMA2_SW 0x006a3fd8
+// GLOBAL: CARMA2_CHEAT 0x006b2100
 br_model* gShrapnel_model[2];
 
 // GLOBAL: CARMA2_HW 0x006b7880
 // GLOBAL: CARMA2_SW 0x006ae560
+// GLOBAL: CARMA2_CHEAT 0x006bef20
 br_material* gBlack_material;
 
 // GLOBAL: CARMA2_HW 0x006b7888
 // GLOBAL: CARMA2_SW 0x006ae568
+// GLOBAL: CARMA2_CHEAT 0x006bef28
 tSmashable_environment_name* gSmashable_noncars;
 
 // GLOBAL: CARMA2_HW 0x006b788c
 // GLOBAL: CARMA2_SW 0x006ae56c
+// GLOBAL: CARMA2_CHEAT 0x006bef2c
 int gCount_smashable_noncars;
 
 // GLOBAL: CARMA2_HW 0x006a8718
 br_matrix4 gCameraToScreen;
 
 // GLOBAL: CARMA2_HW 0x006a82b0
+// GLOBAL: CARMA2_CHEAT 0x006afe28
 br_camera* gSpark_cam;
 
 // GLOBAL: CARMA2_HW 0x006a82a8
 // GLOBAL: CARMA2_SW 0x006a2308
+// GLOBAL: CARMA2_CHEAT 0x006afe20
 tCar_spec* gCar_of_material;
 
 // GLOBAL: CARMA2_HW 0x00660118
@@ -161,6 +176,7 @@ static tU8 gFlame_frame_size[20][2] = {
 
 // GLOBAL: CARMA2_HW 0x006aa5a4
 // GLOBAL: CARMA2_SW 0x006a3ff4
+// GLOBAL: CARMA2_CHEAT 0x006b211c
 int gNum_splash_types;
 
 // GLOBAL: CARMA2_HW 0x006a82b8
@@ -169,6 +185,7 @@ tSplash gSplash[32] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006aa570
 // GLOBAL: CARMA2_SW 0x006a3fbc
+// GLOBAL: CARMA2_CHEAT 0x006b20e8
 int gSplash_flags;
 
 // GLOBAL: CARMA2_HW 0x006a9130
@@ -177,6 +194,7 @@ br_material* gSplash_material[20];
 
 // GLOBAL: CARMA2_HW 0x006a8758
 // GLOBAL: CARMA2_SW 0x006a2728
+// GLOBAL: CARMA2_CHEAT 0x006b02d0
 br_model* gSplash_model;
 
 // GLOBAL: CARMA2_SW 0x00795198
@@ -192,6 +210,7 @@ br_pixelmap* gAcid_shade_table;
 // DrawLine3DThroughBRender
 
 // FUNCTION: CARMA2_HW 0x004f6b80
+// FUNCTION: CARMA2_CHEAT 0x004fc820
 int C2_HOOK_FASTCALL DrawLine3D(const br_vector3* pStart, const br_vector3* pEnd, br_pixelmap* pScreen, br_pixelmap* pDepth, br_pixelmap* pShade) {
     br_vector3 start;
     br_vector3 end;
@@ -254,6 +273,7 @@ int C2_HOOK_FASTCALL DrawLine2D(br_vector3* pStart, br_vector3* pEnd, br_pixelma
 #endif
 
 // FUNCTION: CARMA2_HW 0x004f7cb0
+// FUNCTION: CARMA2_CHEAT 0x004fd950
 void C2_HOOK_FASTCALL SetLineModelCols(tU8 pCol) {
 
     if (pCol != 0) {
@@ -286,6 +306,7 @@ void C2_HOOK_FASTCALL SetLineModelCols(tU8 pCol) {
 
 // FUNCTION: CARMA2_HW 0x004f8630
 // FUNCTION: CARMA2_SW 0x004f3cb0
+// FUNCTION: CARMA2_CHEAT 0x004fe2d0
 void C2_HOOK_FASTCALL AdjustSpark(int pSpark_num, br_vector3* pPos, br_vector3* pLength) {
     br_vector3 tv;
     br_matrix34* mat;
@@ -306,6 +327,7 @@ void C2_HOOK_FASTCALL AdjustSpark(int pSpark_num, br_vector3* pPos, br_vector3* 
 
 // FUNCTION: CARMA2_HW 0x004f86f0
 // FUNCTION: CARMA2_SW 0x004f3d70
+// FUNCTION: CARMA2_CHEAT 0x004fe390
 void C2_HOOK_FASTCALL AdjustShrapnel(int pShrapnel_num, br_vector3* pPos, tU16 pAge, br_material* pMaterial) {
     int i;
 
@@ -323,12 +345,14 @@ void C2_HOOK_FASTCALL AdjustShrapnel(int pShrapnel_num, br_vector3* pPos, tU16 p
 
 // FUNCTION: CARMA2_HW 0x004f87a0
 // FUNCTION: CARMA2_SW 0x004f3e20
+// FUNCTION: CARMA2_CHEAT 0x004fe440
 void C2_HOOK_FASTCALL ResetSparks(void) {
     gSpark_flags = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004f87b0
 // FUNCTION: CARMA2_SW 0x004f3e30
+// FUNCTION: CARMA2_CHEAT 0x004fe450
 void C2_HOOK_FASTCALL ResetShrapnel(void) {
     int i;
 
@@ -359,6 +383,7 @@ void C2_HOOK_FASTCALL CreateShrapnelShower2(const br_vector3* pPosition, const b
 
 // FUNCTION: CARMA2_HW 0x004f8b50
 // FUNCTION: CARMA2_SW 0x004f41d0
+// FUNCTION: CARMA2_CHEAT 0x004fe7f0
 void C2_HOOK_FASTCALL CreateShrapnelShowerWorld(const br_vector3* pPosition, const br_vector3* pVelocity, const br_vector3* pDirection, br_scalar pStrength, int pMaterialCount, br_material** pMaterials) {
     CreateShrapnelShower2(pPosition, pVelocity, pDirection, pStrength, NULL, NULL, pMaterialCount, pMaterials);
 }
@@ -371,6 +396,7 @@ void C2_HOOK_FASTCALL CreateShrapnelShowerWorld(const br_vector3* pPosition, con
 
 // FUNCTION: CARMA2_HW 0x004f8b90
 // FUNCTION: CARMA2_SW 0x004f4210
+// FUNCTION: CARMA2_CHEAT 0x004fe830
 void C2_HOOK_FASTCALL LoadInShrapnel(void) {
     gShrapnel_model[0] = LoadModel("FRAG4.DAT");
     DRScaleModel(gShrapnel_model[0], 0.5f);
@@ -386,6 +412,7 @@ void C2_HOOK_FASTCALL LoadInShrapnel(void) {
 
 // FUNCTION: CARMA2_HW 0x004f8c10
 // FUNCTION: CARMA2_SW 0x004f4290
+// FUNCTION: CARMA2_CHEAT 0x004fe8b0
 void C2_HOOK_FASTCALL DisposeShrapnel(void) {
     int i;
 
@@ -410,6 +437,7 @@ void C2_HOOK_FASTCALL DisposeShrapnel(void) {
 
 // FUNCTION: CARMA2_HW 0x004f8dc0
 // FUNCTION: CARMA2_SW 0x004f4440
+// FUNCTION: CARMA2_CHEAT 0x004fea60
 intptr_t C2_HOOK_CDECL ActorFunks(br_actor* pActor, void* pContext) {
     tFunk_index_cbfn* funk_index_callback = pContext;
     tUser_crush_data* user_crush_data = pActor->user;
@@ -443,6 +471,7 @@ void C2_HOOK_FASTCALL MasterEnableCarFunks(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x004f8ff0
 // FUNCTION: CARMA2_SW 0x004f4670
+// FUNCTION: CARMA2_CHEAT 0x004fec90
 int C2_HOOK_FASTCALL SetPixelmap(br_material* pMaterial) {
     if (pMaterial->colour_map != gCar_of_material->field_0x1960) {
         pMaterial->colour_map = gCar_of_material->field_0x1960;
@@ -455,6 +484,7 @@ int C2_HOOK_FASTCALL SetPixelmap(br_material* pMaterial) {
 
 // FUNCTION: CARMA2_HW 0x004f8f30
 // FUNCTION: CARMA2_SW 0x004f45b0
+// FUNCTION: CARMA2_CHEAT 0x004febd0
 void C2_HOOK_FASTCALL DoCamouflageThing(tCar_spec* pCar) {
     br_vector3 direction;
     br_vector3 position;
@@ -488,6 +518,7 @@ void C2_HOOK_FASTCALL DoSolidGraniteThing(tCar_spec* pCar) {
 // SetFoxModelCallback
 
 // FUNCTION: CARMA2_HW 0x004f9390
+// FUNCTION: CARMA2_CHEAT 0x004ff030
 int C2_HOOK_FASTCALL ResetFoxModelCallback(br_model* pModel) {
     pModel->flags &= ~BR_MODF_CUSTOM;
     pModel->custom = NULL;
@@ -495,6 +526,7 @@ int C2_HOOK_FASTCALL ResetFoxModelCallback(br_model* pModel) {
 }
 
 // FUNCTION: CARMA2_HW 0x004f93b0
+// FUNCTION: CARMA2_CHEAT 0x004ff050
 int C2_HOOK_FASTCALL ResetFoxLighting(br_material* pMaterial) {
 
     if (pMaterial->flags & BR_MATF_PRELIT) {
@@ -552,6 +584,7 @@ int C2_HOOK_CDECL CmpSmokeZ(const void* p1, const void* p2) {
 }
 
 // STUB: CARMA2_HW 0x004f9fc0
+// STUB: CARMA2_CHEAT 0x004ffc60
 void C2_HOOK_FASTCALL InitSmokeStuff(void) {
     NOT_IMPLEMENTED();
 }
@@ -616,6 +649,7 @@ void C2_HOOK_FASTCALL RenderRecordedSmokeCircles(void) {
 
 // FUNCTION: CARMA2_HW 0x004fb330
 // FUNCTION: CARMA2_SW 0x004f6870
+// FUNCTION: CARMA2_CHEAT 0x00500fd0
 void C2_HOOK_FASTCALL CreatePuffOfSmoke(br_vector3* pPos, br_vector3* pV, float pStrength, float pDecay_factor, int pType) {
     br_vector3 tv;
 
@@ -661,12 +695,14 @@ void C2_HOOK_FASTCALL CreatePuffOfSmoke(br_vector3* pPos, br_vector3* pV, float 
 
 // FUNCTION: CARMA2_HW 0x004fb510
 // FUNCTION: CARMA2_SW 0x004f6a50
+// FUNCTION: CARMA2_CHEAT 0x005011b0
 void C2_HOOK_FASTCALL ResetSmoke(void) {
     gSmoke_flags = 0;
 }
 
 // FUNCTION: CARMA2_HW 0x004fb520
 // FUNCTION: CARMA2_SW 0x004f6a60
+// FUNCTION: CARMA2_CHEAT 0x005011c0
 void C2_HOOK_FASTCALL AdjustSmoke(int pIndex, tU8 pType, br_vector3* pPos, br_scalar pRadius, br_scalar pStrength) {
     gSmoke[pIndex].type = pType;
     gSmoke[pIndex].radius = pRadius;
@@ -679,6 +715,7 @@ void C2_HOOK_FASTCALL AdjustSmoke(int pIndex, tU8 pType, br_vector3* pPos, br_sc
 
 // FUNCTION: CARMA2_HW 0x004fb580
 // FUNCTION: CARMA2_SW 0x004f6ac0
+// FUNCTION: CARMA2_CHEAT 0x00501220
 void C2_HOOK_FASTCALL AdjustSmokeColumn(int pIndex, const tSmoke_column_core* pCore, int pVertex, int pColour) {
     tU32 bit;
 
@@ -701,6 +738,7 @@ void C2_HOOK_FASTCALL AdjustSmokeColumn(int pIndex, const tSmoke_column_core* pC
 
 // FUNCTION: CARMA2_HW 0x004fb630
 // FUNCTION: CARMA2_SW 0x004f6b70
+// FUNCTION: CARMA2_CHEAT 0x005012d0
 void C2_HOOK_FASTCALL CreateSmokeColumn2(int pType, br_actor* pActor, tCar_spec* pCar, tPhysics_object* pObject, int pColour, int pVertex_index, tU32 pLifetime) {
     int i;
     br_actor* actor;
@@ -776,6 +814,7 @@ void C2_HOOK_FASTCALL CreateSmokeColumn(tCar_spec *pCar, br_colour pColour, int 
 
 // FUNCTION: CARMA2_HW 0x004fb910
 // FUNCTION: CARMA2_SW 0x004f6e50
+// FUNCTION: CARMA2_CHEAT 0x005015b0
 void C2_HOOK_FASTCALL GenerateSmokeShades(void) {
     // GLOBAL: CARMA2_HW 0x006aa5b4
     // GLOBAL: CARMA2_SW 0x006a4004
@@ -861,6 +900,7 @@ void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void) {
 
 // FUNCTION: CARMA2_HW 0x004fba00
 // FUNCTION: CARMA2_SW 0x004f6f60
+// FUNCTION: CARMA2_CHEAT 0x005016a0
 void C2_HOOK_FASTCALL AdjustFlame(int pIndex, int pFrame_count, br_scalar pScale_x, br_scalar pScale_y, br_scalar pOffset_x, br_scalar pOffset_z) {
     int i;
     tSmoke_column* col;
@@ -961,6 +1001,7 @@ void C2_HOOK_FASTCALL FlameAnimate(int pColumn, const br_vector3* pPos, tU32 pTi
 
 // FUNCTION: CARMA2_HW 0x004fc2e0
 // FUNCTION: CARMA2_SW 0x004f7840
+// FUNCTION: CARMA2_CHEAT 0x00501f80
 void C2_HOOK_FASTCALL DisposeFlame(void) {
     int i;
     int j;
@@ -990,6 +1031,7 @@ void C2_HOOK_FASTCALL DisposeFlame(void) {
 
 // FUNCTION: CARMA2_HW 0x004fc3a0
 // FUNCTION: CARMA2_SW 0x004f7900
+// FUNCTION: CARMA2_CHEAT 0x00502040
 void C2_HOOK_FASTCALL InitFlame(void) {
     int i;
     int j;
@@ -1149,6 +1191,7 @@ void C2_HOOK_FASTCALL ResetSmokeColumns(void) {
 
 // FUNCTION: CARMA2_HW 0x004fc9d0
 // FUNCTION: CARMA2_SW 0x004f7f30
+// FUNCTION: CARMA2_CHEAT 0x00502670
 void C2_HOOK_FASTCALL SetSmokeOn(int pSmoke_on) {
 
     gSmoke_on = pSmoke_on;
@@ -1169,6 +1212,7 @@ void C2_HOOK_FASTCALL ReallySetSmokeOn(int pSmoke_on) {
 
 // FUNCTION: CARMA2_HW 0x004fca30
 // FUNCTION: CARMA2_SW 0x004f7f90
+// FUNCTION: CARMA2_CHEAT 0x005026d0
 int C2_HOOK_FASTCALL GetSmokeOn(void) {
 
     return gSmoke_on;
@@ -1176,6 +1220,7 @@ int C2_HOOK_FASTCALL GetSmokeOn(void) {
 
 // FUNCTION: CARMA2_HW 0x004fca40
 // FUNCTION: CARMA2_SW 0x004f7fa0
+// FUNCTION: CARMA2_CHEAT 0x005026e0
 void C2_HOOK_FASTCALL StopCarSmoking(tCar_spec* pCar) {
     int i;
 
@@ -1188,6 +1233,7 @@ void C2_HOOK_FASTCALL StopCarSmoking(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x004fca70
 // FUNCTION: CARMA2_SW 0x004f7fd0
+// FUNCTION: CARMA2_CHEAT 0x00502710
 void C2_HOOK_FASTCALL StopCarSmokingInstantly(tCar_spec* pCar_spec) {
     int i;
 
@@ -1200,6 +1246,7 @@ void C2_HOOK_FASTCALL StopCarSmokingInstantly(tCar_spec* pCar_spec) {
 
 // FUNCTION: CARMA2_HW 0x004fca90
 // FUNCTION: CARMA2_SW 0x004f7ff0
+// FUNCTION: CARMA2_CHEAT 0x00502730
 void C2_HOOK_FASTCALL StopObjectSmokingInstantly(tPhysics_object* pObject) {
     int i;
 
@@ -1271,6 +1318,7 @@ void C2_HOOK_FASTCALL GetSmokeShadeTables(FILE* pF) {
 
 // FUNCTION: CARMA2_HW 0x004fdc00
 // FUNCTION: CARMA2_SW 0x004f9170
+// FUNCTION: CARMA2_CHEAT 0x005038a0
 void C2_HOOK_FASTCALL FreeSmokeShadeTables(void) {
 #ifdef REC2_SW
     int i;
@@ -1289,6 +1337,7 @@ void C2_HOOK_FASTCALL FreeSmokeShadeTables(void) {
 
 // FUNCTION: CARMA2_HW 0x004fe2c0
 // FUNCTION: CARMA2_SW 0x004f9860
+// FUNCTION: CARMA2_CHEAT 0x00503f60
 void C2_HOOK_FASTCALL DisposeKevStuffCar(tCar_spec* pCar) {
     int i;
 
@@ -1457,6 +1506,7 @@ int C2_HOOK_FASTCALL BlendifyMaterialCB(br_material* pMaterial) {
 
 // FUNCTION: CARMA2_HW 0x004fecf0
 // FUNCTION: CARMA2_SW 0x004fa5d0
+// FUNCTION: CARMA2_CHEAT 0x00504990
 void C2_HOOK_FASTCALL BlendifyCar(tCar_spec* pCar) {
     ForEveryCarMaterial(pCar, BlendifyMaterialCB, 1);
 }
@@ -1469,12 +1519,14 @@ int C2_HOOK_FASTCALL UnBlendifyMaterialCB(br_material* pMaterial) {
 
 // FUNCTION: CARMA2_HW 0x004fed40
 // FUNCTION: CARMA2_SW 0x004fa620
+// FUNCTION: CARMA2_CHEAT 0x005049e0
 void C2_HOOK_FASTCALL UnBlendifyCar(tCar_spec* pCar_spec) {
     ForEveryCarMaterial(pCar_spec, UnBlendifyMaterialCB, 1);
 }
 
 // FUNCTION: CARMA2_HW 0x004fed90
 // FUNCTION: CARMA2_SW 0x004fa670
+// FUNCTION: CARMA2_CHEAT 0x00504a30
 int C2_HOOK_FASTCALL IsCarSmoking(tCar_spec* pCar) {
     int i;
 

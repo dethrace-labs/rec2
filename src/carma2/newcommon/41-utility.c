@@ -32,27 +32,34 @@
 
 
 // GLOBAL: CARMA2_HW 0x006abef8
+// GLOBAL: CARMA2_CHEAT 0x006b3588
 tU32 last_service;
 
 // GLOBAL: CARMA2_HW 0x006b5f40
 // GLOBAL: CARMA2_SW 0x006acc20
+// GLOBAL: CARMA2_CHEAT 0x006bd5e0
 char* gMisc_strings[300] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006b63f0
+// GLOBAL: CARMA2_CHEAT 0x006bda90
 br_pixelmap* gPalette_source = NULL;
 
 // GLOBAL: CARMA2_HW 0x0074ca04
+// GLOBAL: CARMA2_CHEAT 0x007540a4
 tMaterial_exception* gMaterial_exceptions;
 
 // GLOBAL: CARMA2_HW 0x006b63f4
+// GLOBAL: CARMA2_CHEAT 0x006bda94
 br_pixelmap* g16bit_palette;
 
 // GLOBAL: CARMA2_HW 0x006abef4
 // GLOBAL: CARMA2_SW 0x006a5444
+// GLOBAL: CARMA2_CHEAT 0x006b3584
 tU32 gLost_time;
 
 // GLOBAL: CARMA2_HW 0x0079efb0
 // GLOBAL: CARMA2_SW 0x00795550
+// GLOBAL: CARMA2_CHEAT 0x007a6650
 tU32 gLast_tick_count;
 
 // GLOBAL: CARMA2_HW 0x00762180
@@ -61,6 +68,7 @@ char gCurrent_load_directory[256];
 
 // FUNCTION: CARMA2_HW 0x00513400
 // FUNCTION: CARMA2_SW 0x0050e840
+// FUNCTION: CARMA2_CHEAT 0x00518df0
 br_error C2_HOOK_FASTCALL DRBrEnd(void) {
     br_device *dev;
 
@@ -80,6 +88,7 @@ br_error C2_HOOK_FASTCALL DRBrEnd(void) {
 
 // FUNCTION: CARMA2_HW 0x00513460
 // FUNCTION: CARMA2_SW 0x0050e8a0
+// FUNCTION: CARMA2_CHEAT 0x00518e50
 void C2_HOOK_FASTCALL Uppercaseificate(char* dest, const char* src) {
     int len;
     int i;
@@ -93,6 +102,7 @@ void C2_HOOK_FASTCALL Uppercaseificate(char* dest, const char* src) {
 
 // FUNCTION: CARMA2_HW 0x005134b0
 // FUNCTION: CARMA2_SW 0x0050e8f0
+// FUNCTION: CARMA2_CHEAT 0x00518ea0
 int C2_HOOK_FASTCALL CheckQuit(void) {
     int result;
 
@@ -124,6 +134,7 @@ double C2_HOOK_FASTCALL sqr(double pN) {
 
 // FUNCTION: CARMA2_HW 0x00513520
 // FUNCTION: CARMA2_SW 0x0050e960
+// FUNCTION: CARMA2_CHEAT 0x00518f10
 int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB) {
     int num;
 
@@ -138,6 +149,7 @@ int C2_HOOK_FASTCALL IRandomBetween(int pA, int pB) {
 
 // FUNCTION: CARMA2_HW 0x00513550
 // FUNCTION: CARMA2_SW 0x0050e990
+// FUNCTION: CARMA2_CHEAT 0x00518f40
 int C2_HOOK_FASTCALL PercentageChance(int pC) {
 
     if (pC == 0) {
@@ -148,6 +160,7 @@ int C2_HOOK_FASTCALL PercentageChance(int pC) {
 
 // FUNCTION: CARMA2_HW 0x00513580
 // FUNCTION: CARMA2_SW 0x0050e9c0
+// FUNCTION: CARMA2_CHEAT 0x00518f70
 int C2_HOOK_FASTCALL IRandomPosNeg(int pN) {
 
     return IRandomBetween(-pN, pN);
@@ -155,6 +168,7 @@ int C2_HOOK_FASTCALL IRandomPosNeg(int pN) {
 
 // FUNCTION: CARMA2_HW 0x005135b0
 // FUNCTION: CARMA2_SW 0x0050e9f0
+// FUNCTION: CARMA2_CHEAT 0x00518fa0
 float C2_HOOK_STDCALL FRandomBetween(float pA, float pB) {
 
 #if RAND_MAX == 0x7fff
@@ -166,6 +180,7 @@ float C2_HOOK_STDCALL FRandomBetween(float pA, float pB) {
 
 // FUNCTION: CARMA2_HW 0x005135e0
 // FUNCTION: CARMA2_SW 0x0050ea20
+// FUNCTION: CARMA2_CHEAT 0x00518fd0
 float C2_HOOK_STDCALL FRandomPosNeg(float pN) {
 
     return FRandomBetween(-pN, pN);
@@ -173,6 +188,7 @@ float C2_HOOK_STDCALL FRandomPosNeg(float pN) {
 
 // FUNCTION: CARMA2_HW 0x00513620
 // FUNCTION: CARMA2_SW 0x0050ea60
+// FUNCTION: CARMA2_CHEAT 0x00519010
 br_scalar C2_HOOK_STDCALL SRandomBetween(br_scalar pA, br_scalar pB) {
 
     return FRandomBetween(pA, pB);
@@ -180,6 +196,7 @@ br_scalar C2_HOOK_STDCALL SRandomBetween(br_scalar pA, br_scalar pB) {
 
 // FUNCTION: CARMA2_HW 0x00513650
 // FUNCTION: CARMA2_SW 0x0050ea90
+// FUNCTION: CARMA2_CHEAT 0x00519040
 br_scalar C2_HOOK_STDCALL SRandomPosNeg(br_scalar pN) {
 
     return SRandomBetween(-pN, pN);
@@ -187,6 +204,7 @@ br_scalar C2_HOOK_STDCALL SRandomPosNeg(br_scalar pN) {
 
 // FUNCTION: CARMA2_HW 0x00513690
 // FUNCTION: CARMA2_SW 0x0050ead0
+// FUNCTION: CARMA2_CHEAT 0x00519080
 void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* pStr_2) {
 
 #ifdef REC2_FIX_BUGS
@@ -224,6 +242,7 @@ tU32 C2_HOOK_FASTCALL GetFileLength(FILE* pF) {
 
 // FUNCTION: CARMA2_HW 0x005137d0
 // FUNCTION: CARMA2_SW 0x0050ec10
+// FUNCTION: CARMA2_CHEAT 0x005191c0
 br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocate(br_uint_8 pType, br_uint_16 pW, br_uint_16 pH, void* pPixels, int pFlags) {
     br_pixelmap* pm;
 
@@ -237,6 +256,7 @@ br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocate(br_uint_8 pType, br_uint_16 pW,
 
 // FUNCTION: CARMA2_HW 0x00513820
 // FUNCTION: CARMA2_SW 0x0050ec60
+// FUNCTION: CARMA2_CHEAT 0x00519210
 br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocateSub(br_pixelmap* pPm, br_uint_16 pX, br_uint_16 pY, br_uint_16 pW, br_uint_16 pH) {
     br_pixelmap* the_map;
 
@@ -250,6 +270,7 @@ br_pixelmap* C2_HOOK_FASTCALL DRPixelmapAllocateSub(br_pixelmap* pPm, br_uint_16
 
 // FUNCTION: CARMA2_HW 0x00513870
 // FUNCTION: CARMA2_SW 0x0050ecb0
+// FUNCTION: CARMA2_CHEAT 0x00519260
 br_pixelmap* C2_HOOK_FASTCALL DRImageLoad(const char* pPath) {
     tPath_name path_buffer;
     tPath_name directory;
@@ -298,6 +319,7 @@ br_pixelmap* C2_HOOK_FASTCALL DRPixelmapLoad(char* pFile_name) {
 
 // FUNCTION: CARMA2_HW 0x005139a0
 // FUNCTION: CARMA2_SW 0x0050ede0
+// FUNCTION: CARMA2_CHEAT 0x00519390
 void C2_HOOK_FASTCALL SepDirAndFilename(const char* path, char* dirPath, char* stemPath) {
     size_t pathLen;
     size_t dirLen;
@@ -327,6 +349,7 @@ void C2_HOOK_FASTCALL SepDirAndFilename(const char* path, char* dirPath, char* s
 
 // FUNCTION: CARMA2_HW 0x00513a30
 // FUNCTION: CARMA2_SW 0x0050ee70
+// FUNCTION: CARMA2_CHEAT 0x00519420
 int C2_HOOK_FASTCALL DRLoadMultiplePix(char* pName, br_pixelmap** pMaps, int pCapacity) {
     tPath_name path1;
     tPath_name path2;
@@ -393,6 +416,7 @@ int C2_HOOK_FASTCALL DRLoadMultiplePix(char* pName, br_pixelmap** pMaps, int pCa
 
 // FUNCTION: CARMA2_HW 0x00514570
 // FUNCTION: CARMA2_SW 0x0050f9b0
+// FUNCTION: CARMA2_CHEAT 0x00519f60
 int C2_HOOK_FASTCALL DRPixelmapLoadMany(const char* texturePathNoExt, br_pixelmap** pixelmaps, size_t capacity) {
     tPath_name texturePath;
     tPath_name texturePathDir;
@@ -411,6 +435,7 @@ int C2_HOOK_FASTCALL DRPixelmapLoadMany(const char* texturePathNoExt, br_pixelma
 
 // FUNCTION: CARMA2_HW 0x005146c0
 // FUNCTION: CARMA2_SW 0x0050fb00
+// FUNCTION: CARMA2_CHEAT 0x0051a0b0
 void C2_HOOK_FASTCALL WaitFor(tU32 pDelay) {
     tU32 start_time;
 
@@ -422,6 +447,7 @@ void C2_HOOK_FASTCALL WaitFor(tU32 pDelay) {
 
 // FUNCTION: CARMA2_HW 0x005146f0
 // FUNCTION: CARMA2_SW 0x0050fb30
+// FUNCTION: CARMA2_CHEAT 0x0051a0e0
 intptr_t C2_HOOK_FASTCALL DRActorEnumRecurse(br_actor* pActor, br_actor_enum_cbfn* callback, void* arg) {
     intptr_t result;
 
@@ -440,6 +466,7 @@ intptr_t C2_HOOK_FASTCALL DRActorEnumRecurse(br_actor* pActor, br_actor_enum_cbf
 
 // FUNCTION: CARMA2_HW 0x005147b0
 // FUNCTION: CARMA2_SW 0x0050fbf0
+// FUNCTION: CARMA2_CHEAT 0x0051a1a0
 intptr_t C2_HOOK_CDECL CompareActorID(br_actor* pActor, void* pArg) {
 
     if (pActor->identifier != NULL && strcmp(pActor->identifier, (const char*)pArg) == 0) {
@@ -451,6 +478,7 @@ intptr_t C2_HOOK_CDECL CompareActorID(br_actor* pActor, void* pArg) {
 
 // FUNCTION: CARMA2_HW 0x00514730
 // FUNCTION: CARMA2_SW 0x0050fb70
+// FUNCTION: CARMA2_CHEAT 0x0051a120
 br_actor* C2_HOOK_FASTCALL DRActorFindRecurse(br_actor* pSearch_root, const char* pName) {
 
     return (br_actor*)DRActorEnumRecurse(pSearch_root, CompareActorID, (void*)pName);
@@ -458,6 +486,7 @@ br_actor* C2_HOOK_FASTCALL DRActorFindRecurse(br_actor* pSearch_root, const char
 
 // FUNCTION: CARMA2_HW 0x00514800
 // FUNCTION: CARMA2_SW 0x0050fc40
+// FUNCTION: CARMA2_CHEAT 0x0051a1f0
 br_uint_32 C2_HOOK_FASTCALL DRActorEnumRecurseWithMat(br_actor* pActor, br_material* pMat, recurse_with_mat_cbfn* pCall_back, void* pArg) {
     br_uint_32 result;
 
@@ -479,6 +508,7 @@ br_uint_32 C2_HOOK_FASTCALL DRActorEnumRecurseWithMat(br_actor* pActor, br_mater
 
 // FUNCTION: CARMA2_HW 0x00514850
 // FUNCTION: CARMA2_SW 0x0050fc90
+// FUNCTION: CARMA2_CHEAT 0x0051a240
 br_uint_32 C2_HOOK_FASTCALL DRActorEnumRecurseWithTrans(br_actor* pActor, br_matrix34* pMatrix, recurse_with_trans_cbfn* pCall_back, void* pArg) {
     br_uint_32 result;
     br_matrix34 combined_transform;
@@ -507,6 +537,7 @@ br_uint_32 C2_HOOK_FASTCALL DRActorEnumRecurseWithTrans(br_actor* pActor, br_mat
 
 // FUNCTION: CARMA2_HW 0x00514930
 // FUNCTION: CARMA2_SW 0x0050fd70
+// FUNCTION: CARMA2_CHEAT 0x0051a320
 int C2_HOOK_FASTCALL sign(int pNumber) {
 
     if (pNumber > 0) {
@@ -520,6 +551,7 @@ int C2_HOOK_FASTCALL sign(int pNumber) {
 
 // FUNCTION: CARMA2_HW 0x00514950
 // FUNCTION: CARMA2_SW 0x0050fd90
+// FUNCTION: CARMA2_CHEAT 0x0051a340
 float C2_HOOK_FASTCALL fsign(float pValue) {
     int result;
 
@@ -535,6 +567,7 @@ float C2_HOOK_FASTCALL fsign(float pValue) {
 
 // FUNCTION: CARMA2_HW 0x005149a0
 // FUNCTION: CARMA2_SW 0x0050fde0
+// FUNCTION: CARMA2_CHEAT 0x0051a390
 FILE* C2_HOOK_FASTCALL OpenUniqueFileB(char* pPrefix, char* pExtension) {
     int index;
     FILE* f;
@@ -554,6 +587,7 @@ FILE* C2_HOOK_FASTCALL OpenUniqueFileB(char* pPrefix, char* pExtension) {
 
 // FUNCTION: CARMA2_HW 0x00514ab0
 // FUNCTION: CARMA2_SW 0x0050fef0
+// FUNCTION: CARMA2_CHEAT 0x0051a4a0
 void C2_HOOK_FASTCALL PrintScreenFile(FILE* pF) {
     int i;
     int j;
@@ -704,6 +738,7 @@ void C2_HOOK_FASTCALL PrintScreenFile16(FILE* pF) {
 
 // FUNCTION: CARMA2_HW 0x00514c30
 // FUNCTION: CARMA2_SW 0x00510070
+// FUNCTION: CARMA2_CHEAT 0x0051a620
 tU32 C2_HOOK_FASTCALL GetTotalTime(void) {
 
     if (gAction_replay_mode) {
@@ -719,6 +754,7 @@ tU32 C2_HOOK_FASTCALL GetTotalTime(void) {
 
 // FUNCTION: CARMA2_HW 0x00514c70
 // FUNCTION: CARMA2_SW 0x005100b0
+// FUNCTION: CARMA2_CHEAT 0x0051a660
 tU32 C2_HOOK_FASTCALL GetRaceTime(void) {
 
     return PDGetTotalTime() - gRace_start;
@@ -726,6 +762,7 @@ tU32 C2_HOOK_FASTCALL GetRaceTime(void) {
 
 // FUNCTION: CARMA2_HW 0x00514c80
 // FUNCTION: CARMA2_SW 0x005100c0
+// FUNCTION: CARMA2_CHEAT 0x0051a670
 void C2_HOOK_FASTCALL AddLostTime(tU32 pLost_time) {
 
     gLost_time += pLost_time;
@@ -733,6 +770,7 @@ void C2_HOOK_FASTCALL AddLostTime(tU32 pLost_time) {
 
 // FUNCTION: CARMA2_HW 0x00514c90
 // FUNCTION: CARMA2_SW 0x005100d0
+// FUNCTION: CARMA2_CHEAT 0x0051a680
 void C2_HOOK_FASTCALL AssertThisTimeAsCurrentTime(void) {
     tU32 now;
 
@@ -743,6 +781,7 @@ void C2_HOOK_FASTCALL AssertThisTimeAsCurrentTime(void) {
 
 // FUNCTION: CARMA2_HW 0x00514cb0
 // FUNCTION: CARMA2_SW 0x005100f0
+// FUNCTION: CARMA2_CHEAT 0x0051a6a0
 void C2_HOOK_FASTCALL TimerString(tU32 pTime, char* pStr, undefined4 pArg3, int pFudge_colon, int pFloat) {
     int seconds;
 
@@ -764,6 +803,7 @@ void C2_HOOK_FASTCALL TimerString(tU32 pTime, char* pStr, undefined4 pArg3, int 
 
 // FUNCTION: CARMA2_HW 0x00514d70
 // FUNCTION: CARMA2_SW 0x005101e0
+// FUNCTION: CARMA2_CHEAT 0x0051a760
 const char* C2_HOOK_FASTCALL GetMiscString(int pIndex) {
 
     return gMisc_strings[pIndex];
@@ -771,6 +811,7 @@ const char* C2_HOOK_FASTCALL GetMiscString(int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x00514d80
 // FUNCTION: CARMA2_SW 0x005101f0
+// FUNCTION: CARMA2_CHEAT 0x0051a770
 void C2_HOOK_FASTCALL CopyMiscString(int pIndex, char* pDestination) {
 
     strcpy(pDestination, gMisc_strings[pIndex]);
@@ -778,6 +819,7 @@ void C2_HOOK_FASTCALL CopyMiscString(int pIndex, char* pDestination) {
 
 // FUNCTION: CARMA2_HW 0x00514db0
 // FUNCTION: CARMA2_SW 0x00510220
+// FUNCTION: CARMA2_CHEAT 0x0051a7a0
 int C2_HOOK_FASTCALL Flash(tU32 pPeriod, tU32* pLast_change, int* pCurrent_state) {
     tU32 the_time;
 
@@ -791,6 +833,7 @@ int C2_HOOK_FASTCALL Flash(tU32 pPeriod, tU32* pLast_change, int* pCurrent_state
 
 // FUNCTION: CARMA2_HW 0x00514de0
 // FUNCTION: CARMA2_SW 0x00510250
+// FUNCTION: CARMA2_CHEAT 0x0051a7d0
 void C2_HOOK_FASTCALL MaterialCopy(br_material* pDestination, const br_material* pSource) {
     pDestination->flags = pSource->flags;
     pDestination->ka = pSource->ka;
@@ -870,6 +913,7 @@ void C2_HOOK_FASTCALL SaveGeneratedShadeTable(br_pixelmap* pThe_table, int pR, i
 
 // FUNCTION: CARMA2_HW 0x00514e40
 // FUNCTION: CARMA2_SW 0x005102b0
+// FUNCTION: CARMA2_CHEAT 0x0051a830
 br_pixelmap* C2_HOOK_FASTCALL GenerateShadeTable(int pHeight, br_pixelmap* pPalette, int pRed_mix, int pGreen_mix, int pBlue_mix, float pQuarter, float pHalf, float pThree_quarter) {
 
     PossibleService();
@@ -887,6 +931,7 @@ br_pixelmap* C2_HOOK_FASTCALL GenerateShadeTable(int pHeight, br_pixelmap* pPale
 
 // FUNCTION: CARMA2_HW 0x00514eb0
 // FUNCTION: CARMA2_SW 0x00510320
+// FUNCTION: CARMA2_CHEAT 0x0051a8a0
 br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, br_pixelmap* pPalette, int pRed_mix, int pGreen_mix, int pBlue_mix, float pQuarter, float pHalf, float pThree_quarter, br_scalar pDarken) {
     br_pixelmap* the_table;
     tRGB_colour the_RGB;
@@ -959,6 +1004,7 @@ br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, br_pixelma
 
 // FUNCTION: CARMA2_HW 0x005155d0
 // FUNCTION: CARMA2_SW 0x00510a40
+// FUNCTION: CARMA2_CHEAT 0x0051afc0
 void C2_HOOK_FASTCALL PossibleService(void) {
     tU32 time;
 
@@ -972,6 +1018,7 @@ void C2_HOOK_FASTCALL PossibleService(void) {
 
 // FUNCTION: CARMA2_HW 0x00515610
 // FUNCTION: CARMA2_SW 0x00510a80
+// FUNCTION: CARMA2_CHEAT 0x0051b000
 void C2_HOOK_FASTCALL DRMatrix34TApplyP(br_vector3* pA, const br_vector3* pB, const br_matrix34* pC) {
     br_scalar t1;
     br_scalar t2;
@@ -988,6 +1035,7 @@ void C2_HOOK_FASTCALL DRMatrix34TApplyP(br_vector3* pA, const br_vector3* pB, co
 
 // FUNCTION: CARMA2_HW 0x00515690
 // FUNCTION: CARMA2_SW 0x00510b00
+// FUNCTION: CARMA2_CHEAT 0x0051b080
 void C2_HOOK_FASTCALL DRPixelmapRectangleCopy(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_uint_16 w, br_uint_16 h) {
 
     BrPixelmapRectangleCopy(dst, dx, dy, src, sx, sy, w, h);
@@ -995,6 +1043,7 @@ void C2_HOOK_FASTCALL DRPixelmapRectangleCopy(br_pixelmap* dst, br_int_16 dx, br
 
 // FUNCTION: CARMA2_HW 0x005156d0
 // FUNCTION: CARMA2_SW 0x00510b40
+// FUNCTION: CARMA2_CHEAT 0x0051b0c0
 void C2_HOOK_FASTCALL DRPixelmapRectangleFill(br_pixelmap* dst, br_int_16 x, br_int_16 y, br_uint_16 w, br_uint_16 h, br_uint_32 colour) {
 
     BrPixelmapRectangleFill(dst, x, y, w, h, colour);
@@ -1002,12 +1051,14 @@ void C2_HOOK_FASTCALL DRPixelmapRectangleFill(br_pixelmap* dst, br_int_16 x, br_
 
 // FUNCTION: CARMA2_HW 0x00515700
 // FUNCTION: CARMA2_SW 0x00510b70
+// FUNCTION: CARMA2_CHEAT 0x0051b0f0
 int C2_HOOK_FASTCALL NormalSideOfPlane(br_vector3* pPoint, br_vector3* pNormal, br_scalar pD) {
 
     return (BrVector3Dot(pNormal, pPoint) - pD) * BrVector3Dot(pNormal, pNormal) >= 0.0f;
 }
 
 // FUNCTION: CARMA2_HW 0x00515780
+// FUNCTION: CARMA2_CHEAT 0x0051b170
 br_material* C2_HOOK_FASTCALL DRMaterialClone(br_material* pMaterial, int pSet_identifier) {
     br_material* the_material;
     char s[256];
@@ -1041,6 +1092,7 @@ br_material* C2_HOOK_FASTCALL DRMaterialClone(br_material* pMaterial, int pSet_i
 
 // FUNCTION: CARMA2_HW 0x00515870
 // FUNCTION: CARMA2_SW 0x00510ce0
+// FUNCTION: CARMA2_CHEAT 0x0051b260
 int C2_HOOK_FASTCALL DRStricmp(const char* p1, const char* p2) {
     int val;
 
@@ -1061,6 +1113,7 @@ int C2_HOOK_FASTCALL DRStricmp(const char* p1, const char* p2) {
 
 // FUNCTION: CARMA2_HW 0x005158d0
 // FUNCTION: CARMA2_SW 0x00510d40
+// FUNCTION: CARMA2_CHEAT 0x0051b2c0
 void C2_HOOK_FASTCALL DRstrupr(char* s) {
     int l = (int)strlen(s);
     int i;
@@ -1072,6 +1125,7 @@ void C2_HOOK_FASTCALL DRstrupr(char* s) {
 
 // FUNCTION: CARMA2_HW 0x00515910
 // FUNCTION: CARMA2_SW 0x00510d80
+// FUNCTION: CARMA2_CHEAT 0x0051b300
 void C2_HOOK_FASTCALL DRstrlwr(char* s) {
     int i;
     int length;
@@ -1084,6 +1138,7 @@ void C2_HOOK_FASTCALL DRstrlwr(char* s) {
 
 // FUNCTION: CARMA2_HW 0x00515950
 // FUNCTION: CARMA2_SW 0x00510dc0
+// FUNCTION: CARMA2_CHEAT 0x0051b340
 int C2_HOOK_FASTCALL PDCheckDriveExists(const char* pThe_path) {
 
     return PDCheckDriveExists2(pThe_path, NULL, 0);
@@ -1111,6 +1166,7 @@ br_actor* C2_HOOK_FASTCALL CloneActor(br_actor* pActor) {
 
 // FUNCTION: CARMA2_HW 0x00515b80
 // FUNCTION: CARMA2_SW 0x00510ff0
+// FUNCTION: CARMA2_CHEAT 0x0051b570
 void C2_HOOK_FASTCALL CalcActorGlobalPos(br_vector3* pResult, br_actor* pActor) {
     br_vector3 tv;
 
@@ -1127,6 +1183,7 @@ void C2_HOOK_FASTCALL CalcActorGlobalPos(br_vector3* pResult, br_actor* pActor) 
 
 // FUNCTION: CARMA2_HW 0x00515c20
 // FUNCTION: CARMA2_SW 0x00511090
+// FUNCTION: CARMA2_CHEAT 0x0051b610
 float C2_HOOK_STDCALL frac(float pN) {
 
     return pN - (float)(int)pN;
@@ -1134,6 +1191,7 @@ float C2_HOOK_STDCALL frac(float pN) {
 
 // FUNCTION: CARMA2_HW 0x00515d90
 // FUNCTION: CARMA2_SW 0x00511200
+// FUNCTION: CARMA2_CHEAT 0x0051b780
 intptr_t C2_HOOK_CDECL FindMaterialCB(br_actor* pActor, void* data) {
     const char* name = data;
     br_model* model = pActor->model;
@@ -1157,6 +1215,7 @@ intptr_t C2_HOOK_CDECL FindMaterialCB(br_actor* pActor, void* data) {
 
 // FUNCTION: CARMA2_HW 0x00515c40
 // FUNCTION: CARMA2_SW 0x005110b0
+// FUNCTION: CARMA2_CHEAT 0x0051b630
 br_material* C2_HOOK_FASTCALL FindMaterial(const char* pName, br_actor* pActor, int pRecursive) {
 
     if (pRecursive) {
@@ -1168,6 +1227,7 @@ br_material* C2_HOOK_FASTCALL FindMaterial(const char* pName, br_actor* pActor, 
 
 // FUNCTION: CARMA2_HW 0x00515e10
 // FUNCTION: CARMA2_SW 0x00511280
+// FUNCTION: CARMA2_CHEAT 0x0051b800
 void C2_HOOK_FASTCALL GetBlendTableName(int pPercent, char* pDest) {
 
     sprintf(pDest, "BLEND%d.TAB", 100 - pPercent);
@@ -1242,6 +1302,7 @@ void C2_HOOK_FASTCALL BlendifyMaterialPrimitively(br_material* pMaterial, int pP
 
 // FUNCTION: CARMA2_HW 0x00515e70
 // FUNCTION: CARMA2_SW 0x005112e0
+// FUNCTION: CARMA2_CHEAT 0x0051b860
 void C2_HOOK_FASTCALL BlendifyMaterial(br_material* pMaterial, int pPercent) {
     br_uint_8 pixel_format = gScreen->type;
 
@@ -1254,6 +1315,7 @@ void C2_HOOK_FASTCALL BlendifyMaterial(br_material* pMaterial, int pPercent) {
 
 // FUNCTION: CARMA2_HW 0x00515fa0
 // FUNCTION: CARMA2_SW 0x00511410
+// FUNCTION: CARMA2_CHEAT 0x0051b9c0
 void C2_HOOK_FASTCALL DRModelUpdateAndKevificateMaterials(br_model* pModel, br_uint_16 pFlags) {
     int i;
     v11group* v11g;
@@ -1272,6 +1334,7 @@ void C2_HOOK_FASTCALL DRModelUpdateAndKevificateMaterials(br_model* pModel, br_u
 }
 
 // FUNCTION: CARMA2_HW 0x00516010
+// FUNCTION: CARMA2_CHEAT 0x0051ba30
 int C2_HOOK_FASTCALL DRModelUpdateDeluxTurbo(br_actor* pActor, br_model* pModel, br_uint_16 pFlags) {
 
     if (pModel->nfaces == 0 || pModel->nvertices == 0) {
@@ -1288,12 +1351,14 @@ int C2_HOOK_FASTCALL DRModelUpdateDeluxTurbo(br_actor* pActor, br_model* pModel,
 
 // FUNCTION: CARMA2_HW 0x00516090
 // FUNCTION: CARMA2_SW 0x00511500
+// FUNCTION: CARMA2_CHEAT 0x0051bab0
 br_scalar C2_HOOK_FASTCALL DistanceFromFace(const br_vector3* pPoint, const tFace_ref* pFace) {
 
     return BrVector3Dot(pPoint, &pFace->normal) - pFace->d;
 }
 
 // FUNCTION: CARMA2_HW 0x005160c0
+// FUNCTION: CARMA2_CHEAT 0x0051bae0
 void C2_HOOK_FASTCALL DRBoundsCopy(br_bounds3* pDest, const br_bounds3* pSrc) {
 
     pDest->min.v[0] = pSrc->min.v[0];
@@ -1306,6 +1371,7 @@ void C2_HOOK_FASTCALL DRBoundsCopy(br_bounds3* pDest, const br_bounds3* pSrc) {
 
 // FUNCTION: CARMA2_HW 0x005160f0
 // FUNCTION: CARMA2_SW 0x00511560
+// FUNCTION: CARMA2_CHEAT 0x0051bb10
 int C2_HOOK_FASTCALL TestForNan(const float* f) {
 
     if (f != NULL) {
@@ -1317,6 +1383,7 @@ int C2_HOOK_FASTCALL TestForNan(const float* f) {
 
 // FUNCTION: CARMA2_HW 0x00516110
 // FUNCTION: CARMA2_SW 0x00511580
+// FUNCTION: CARMA2_CHEAT 0x0051bb30
 int C2_HOOK_FASTCALL DRVector2TestForNan(const br_vector2* pVector) {
 
     if (pVector != NULL) {
@@ -1327,6 +1394,7 @@ int C2_HOOK_FASTCALL DRVector2TestForNan(const br_vector2* pVector) {
 
 // FUNCTION: CARMA2_HW 0x00516160
 // FUNCTION: CARMA2_SW 0x005115d0
+// FUNCTION: CARMA2_CHEAT 0x0051bb80
 int C2_HOOK_FASTCALL DRVector3TestForNan(const br_vector3* pV) {
 
     if (pV != NULL) {
@@ -1338,6 +1406,7 @@ int C2_HOOK_FASTCALL DRVector3TestForNan(const br_vector3* pV) {
 
 // FUNCTION: CARMA2_HW 0x005161c0
 // FUNCTION: CARMA2_SW 0x00511630
+// FUNCTION: CARMA2_CHEAT 0x0051bbe0
 int C2_HOOK_FASTCALL DRVector4TestForNan(const float* pV) {
 
     if (pV != NULL) {
@@ -1349,6 +1418,7 @@ int C2_HOOK_FASTCALL DRVector4TestForNan(const float* pV) {
 
 // FUNCTION: CARMA2_HW 0x00516240
 // FUNCTION: CARMA2_SW 0x005116b0
+// FUNCTION: CARMA2_CHEAT 0x0051bc60
 void C2_HOOK_FASTCALL DRScaleModel(br_model* pModel, float pScale) {
     int i;
     br_vertex *vertex;
@@ -1365,6 +1435,7 @@ void C2_HOOK_FASTCALL DRScaleModel(br_model* pModel, float pScale) {
 
 // FUNCTION: CARMA2_HW 0x005162a0
 // FUNCTION: CARMA2_SW 0x00511710
+// FUNCTION: CARMA2_CHEAT 0x0051bcc0
 float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3* pN, br_scalar pF) {
 
     return BrVector3Dot(pP, pN) - pF;
@@ -1372,6 +1443,7 @@ float C2_HOOK_FASTCALL DistanceFromFaceND(const br_vector3* pP, const br_vector3
 
 // FUNCTION: CARMA2_HW 0x005162d0
 // FUNCTION: CARMA2_SW 0x00511740
+// FUNCTION: CARMA2_CHEAT 0x0051bcf0
 void C2_HOOK_FASTCALL DRVector4Negate(br_vector4* pDst, const br_vector4* pSrc) {
     pDst->v[0] = -pSrc->v[0];
     pDst->v[1] = -pSrc->v[1];
@@ -1381,6 +1453,7 @@ void C2_HOOK_FASTCALL DRVector4Negate(br_vector4* pDst, const br_vector4* pSrc) 
 
 // FUNCTION: CARMA2_HW 0x005162f0
 // FUNCTION: CARMA2_SW 0x00511760
+// FUNCTION: CARMA2_CHEAT 0x0051bd10
 void C2_HOOK_FASTCALL DRVector4Set(br_vector4* pDst, float pX, float pY, float pZ, float pU) {
     pDst->v[0] = pX;
     pDst->v[1] = pY;
@@ -1390,6 +1463,7 @@ void C2_HOOK_FASTCALL DRVector4Set(br_vector4* pDst, float pX, float pY, float p
 
 // FUNCTION: CARMA2_HW 0x00516310
 // FUNCTION: CARMA2_SW 0x00511780
+// FUNCTION: CARMA2_CHEAT 0x0051bd30
 void C2_HOOK_FASTCALL DRPlaneEquation(br_vector4* pDst, const br_vector3* pN, const br_vector3* pP) {
     pDst->v[0] = pN->v[0];
     pDst->v[1] = pN->v[1];
@@ -1400,6 +1474,7 @@ void C2_HOOK_FASTCALL DRPlaneEquation(br_vector4* pDst, const br_vector3* pN, co
 
 // FUNCTION: CARMA2_HW 0x00516350
 // FUNCTION: CARMA2_SW 0x005117c0
+// FUNCTION: CARMA2_CHEAT 0x0051bd70
 int C2_HOOK_FASTCALL DRVector3NonZero(const br_vector3* pV) {
     if (pV->v[0] == 0.f && pV->v[1] == 0.f && pV->v[2] == 0.f) {
         return 0;
@@ -1410,6 +1485,7 @@ int C2_HOOK_FASTCALL DRVector3NonZero(const br_vector3* pV) {
 
 // FUNCTION: CARMA2_HW 0x00516390
 // FUNCTION: CARMA2_SW 0x00511800
+// FUNCTION: CARMA2_CHEAT 0x0051bdb0
 void C2_HOOK_FASTCALL DRVector3Diminish(br_vector3* pV1, const br_vector3* pV2) {
     br_vector3 v1 = *pV1;
 
@@ -1427,6 +1503,7 @@ void C2_HOOK_FASTCALL DRVector3Diminish(br_vector3* pV1, const br_vector3* pV2) 
 
 // FUNCTION: CARMA2_HW 0x00516410
 // FUNCTION: CARMA2_SW 0x00511880
+// FUNCTION: CARMA2_CHEAT 0x0051be30
 tU16 C2_HOOK_FASTCALL DRScalarToU16(float pValue, float pMin, float pMax) {
     float scaled;
 
@@ -1441,6 +1518,7 @@ tU16 C2_HOOK_FASTCALL DRScalarToU16(float pValue, float pMin, float pMax) {
 
 // FUNCTION: CARMA2_HW 0x00516460
 // FUNCTION: CARMA2_SW 0x005118d0
+// FUNCTION: CARMA2_CHEAT 0x0051be80
 br_scalar C2_HOOK_FASTCALL DRU16ToScalar(tU16 pValue, float pMin, float pMax) {
 
     return ((float)pValue * (pMax - pMin) / 65535.0f) + pMin;
@@ -1448,6 +1526,7 @@ br_scalar C2_HOOK_FASTCALL DRU16ToScalar(tU16 pValue, float pMin, float pMax) {
 
 // FUNCTION: CARMA2_HW 0x00516490
 // FUNCTION: CARMA2_SW 0x00511900
+// FUNCTION: CARMA2_CHEAT 0x0051beb0
 void C2_HOOK_FASTCALL CompressVector3(tCompressed_vector3* pDest, const br_vector3* pSrc, float pMin, float pMax) {
 
     pDest->v[0] = DRScalarToU16(pSrc->v[0], pMin, pMax);
@@ -1457,6 +1536,7 @@ void C2_HOOK_FASTCALL CompressVector3(tCompressed_vector3* pDest, const br_vecto
 
 // FUNCTION: CARMA2_HW 0x00516570
 // FUNCTION: CARMA2_SW 0x005119e0
+// FUNCTION: CARMA2_CHEAT 0x0051bf90
 void C2_HOOK_FASTCALL ExpandVector3(br_vector3* pDest, const tCompressed_vector3 *pSrc, float pMin, float pMax) {
 
     pDest->v[0] = DRU16ToScalar(pSrc->v[0], pMin, pMax);
@@ -1466,6 +1546,7 @@ void C2_HOOK_FASTCALL ExpandVector3(br_vector3* pDest, const tCompressed_vector3
 
 // FUNCTION: CARMA2_HW 0x005165e0
 // FUNCTION: CARMA2_SW 0x00511a50
+// FUNCTION: CARMA2_CHEAT 0x0051c000
 void C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed_matrix3, int* pInactive, const br_matrix34* pMatrix) {
     br_vector3 pos;
 
@@ -1486,6 +1567,7 @@ void C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed_matrix3,
 
 // FUNCTION: CARMA2_HW 0x00516910
 // FUNCTION: CARMA2_SW 0x00511d80
+// FUNCTION: CARMA2_CHEAT 0x0051c330
 void C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompressed_matrix3* pCompressed, int pInactive) {
 
     ExpandVector3((br_vector3*)pMatrix->m[0], &pCompressed->m0, -1.1f, 1.1f);
@@ -1505,6 +1587,7 @@ void C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompressed_mat
 
 #ifdef REC2_HW
 // FUNCTION: CARMA2_HW 0x00516c10
+// FUNCTION: CARMA2_CHEAT 0x0051c630
 void C2_HOOK_FASTCALL PossibleLock(int pValue) {
 
     if (gBack_screen->pixels == NULL) {
@@ -1513,6 +1596,7 @@ void C2_HOOK_FASTCALL PossibleLock(int pValue) {
 }
 
 // FUNCTION: CARMA2_HW 0x00516c30
+// FUNCTION: CARMA2_CHEAT 0x0051c660
 int C2_HOOK_FASTCALL PossibleUnlock(int pValue) {
 
     if (gBack_screen->pixels != NULL) {
@@ -1524,6 +1608,7 @@ int C2_HOOK_FASTCALL PossibleUnlock(int pValue) {
 #endif
 
 // FUNCTION: CARMA2_HW 0x00516fd0
+// FUNCTION: CARMA2_CHEAT 0x0051ca00
 tU16 C2_HOOK_FASTCALL PaletteEntry16Bit(br_pixelmap* pPal, int pEntry) {
     tU32* src_entry;
     int red;
@@ -1549,6 +1634,7 @@ tU16 C2_HOOK_FASTCALL PaletteEntry16Bit(br_pixelmap* pPal, int pEntry) {
 }
 
 // FUNCTION: CARMA2_HW 0x00517050
+// FUNCTION: CARMA2_CHEAT 0x0051ca80
 tU16 C2_HOOK_FASTCALL Colour24BitTo16Bit(br_colour pColour) {
 
     switch (gBack_screen->type) {
@@ -1563,6 +1649,7 @@ tU16 C2_HOOK_FASTCALL Colour24BitTo16Bit(br_colour pColour) {
 }
 
 // FUNCTION: CARMA2_HW 0x005170c0
+// FUNCTION: CARMA2_CHEAT 0x0051caf0
 br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSrc) {
 #ifdef REC2_HW
     tU16* dst_entry;
@@ -1609,6 +1696,7 @@ void C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* pSrc, br_p
 }
 
 // FUNCTION: CARMA2_HW 0x00517d90
+// FUNCTION: CARMA2_CHEAT 0x0051d7c0
 void C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src) {
 
     if (dst->type == src->type) {
@@ -1629,6 +1717,7 @@ static tMaterial_exception* C2_HOOK_FASTCALL FindExceptionInList(const char* pId
 }
 
 // FUNCTION: CARMA2_HW 0x00517fa0
+// FUNCTION: CARMA2_CHEAT 0x0051d9d0
 void C2_HOOK_FASTCALL NobbleNonzeroBlacks(br_pixelmap* pPalette) {
     int modified;
     int i;
@@ -1661,6 +1750,7 @@ void C2_HOOK_FASTCALL NobbleNonzeroBlacks(br_pixelmap* pPalette) {
 
 // FUNCTION: CARMA2_HW 0x005182f0
 // FUNCTION: CARMA2_SW 0x00512080
+// FUNCTION: CARMA2_CHEAT 0x0051dd20
 void C2_HOOK_FASTCALL GlorifyMaterial(br_material** pMaterials, int pCount, tRendererShadingType pShading) {
     int i;
     tMaterial_exception *material_exception;
@@ -1727,6 +1817,7 @@ void C2_HOOK_FASTCALL GlorifyMaterial(br_material** pMaterials, int pCount, tRen
 
 // FUNCTION: CARMA2_HW 0x005184c0
 // FUNCTION: CARMA2_SW 0x005121a0
+// FUNCTION: CARMA2_CHEAT 0x0051def0
 int C2_HOOK_FASTCALL FindBestColourMatch(br_colour pColour) {
     tRGB_colour rgb;
 
@@ -1738,6 +1829,7 @@ int C2_HOOK_FASTCALL FindBestColourMatch(br_colour pColour) {
 
 // FUNCTION: CARMA2_HW 0x00518590
 // FUNCTION: CARMA2_SW 0x00512270
+// FUNCTION: CARMA2_CHEAT 0x0051dfc0
 br_actor* C2_HOOK_FASTCALL CreateBoundsActor(br_actor* pParent, const br_bounds* pBounds) {
     br_actor* actor;
 
@@ -1764,6 +1856,7 @@ br_actor* C2_HOOK_FASTCALL CreateBoundsActor(br_actor* pParent, const br_bounds*
 
 // FUNCTION: CARMA2_HW 0x00518660
 // FUNCTION: CARMA2_SW 0x00512340
+// FUNCTION: CARMA2_CHEAT 0x0051e090
 void C2_HOOK_FASTCALL DisposeActorAndModel(br_actor* pActor) {
 
     BrModelRemove(pActor->model);
@@ -1774,6 +1867,7 @@ void C2_HOOK_FASTCALL DisposeActorAndModel(br_actor* pActor) {
 
 // FUNCTION: CARMA2_HW 0x00518690
 // FUNCTION: CARMA2_SW 0x00512370
+// FUNCTION: CARMA2_CHEAT 0x0051e0c0
 void C2_HOOK_FASTCALL WhitenVertexRGB(br_model** pModels, int pCount) {
     int i;
     br_vertex* vertex;
@@ -1800,6 +1894,7 @@ void C2_HOOK_FASTCALL WhitenVertexRGB(br_model** pModels, int pCount) {
 #ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x00518700
 // FUNCTION: CARMA2_SW 0x005123e0
+// FUNCTION: CARMA2_CHEAT 0x0051e130
 void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type) {
     void* pixel;
     int row_bytes;
@@ -1873,6 +1968,7 @@ void C2_HOOK_FASTCALL BRPM_convert(br_pixelmap* pMap, int pPixel_type) {
 
 // FUNCTION: CARMA2_HW 0x00518780
 // FUNCTION: CARMA2_SW 0x00512460
+// FUNCTION: CARMA2_CHEAT 0x0051e1b0
 void C2_HOOK_FASTCALL PrintScreen(void) {
     FILE* f;
 
@@ -1894,6 +1990,7 @@ void C2_HOOK_FASTCALL PrintScreen(void) {
 
 // FUNCTION: CARMA2_HW 0x00518b00
 // FUNCTION: CARMA2_SW 0x005125c0
+// FUNCTION: CARMA2_CHEAT 0x0051e4f0
 intptr_t C2_HOOK_CDECL DumpVisibleActorsCB(br_actor* pActor, void* pData) {
 
     if (pActor->render_style != BR_RSTYLE_NONE) {
@@ -1953,39 +2050,45 @@ intptr_t C2_HOOK_CDECL DumpVisibleActorsCB(br_actor* pActor, void* pData) {
         } else {
             printf("\n");
         }
-        switch (pActor->render_style) {
-        case BR_RSTYLE_DEFAULT:
-            str = "BR_RSTYLE_DEFAULT";
-            break;
-        case BR_RSTYLE_NONE:
-            str = "BR_RSTYLE_NONE";
-            break;
-        case BR_RSTYLE_POINTS:
-            str = "BR_RSTYLE_POINTS";
-            break;
-        case BR_RSTYLE_EDGES:
-            str = "BR_RSTYLE_EDGES";
-            break;
-        case BR_RSTYLE_FACES:
-            str = "BR_RSTYLE_FACES";
-            break;
-        case BR_RSTYLE_BOUNDING_POINTS:
-            str = "BR_RSTYLE_BOUNDING_POINTS";
-            break;
-        case BR_RSTYLE_BOUNDING_EDGES:
-            str = "BR_RSTYLE_BOUNDING_EDGES";
-            break;
-        case BR_RSTYLE_BOUNDING_FACES:
-            str = "BR_RSTYLE_BOUNDING_FACES";
-            break;
-        default:
-            str = "******** UNKNOWN ********";
-            break;
-        }
-        printf("\tRenderStyle:\t%s\n", str);
+        printf("\tRenderStyle:\t%s\n", GetActorRenderStyleString(pActor));
         printf("\n");
     }
     return BrActorEnum(pActor, DumpVisibleActorsCB, pData);
+}
+
+// FUNCTION: CARMA2_HW 0x00518cf0
+// FUNCTION: CARMA2_CHEAT 0x0051e6e0
+const char* C2_HOOK_FASTCALL GetActorRenderStyleString(br_actor* pActor) {
+
+    switch (pActor->render_style) {
+    case BR_RSTYLE_DEFAULT:
+        return "BR_RSTYLE_DEFAULT";
+        break;
+    case BR_RSTYLE_NONE:
+        return "BR_RSTYLE_NONE";
+        break;
+    case BR_RSTYLE_POINTS:
+        return "BR_RSTYLE_POINTS";
+        break;
+    case BR_RSTYLE_EDGES:
+        return "BR_RSTYLE_EDGES";
+        break;
+    case BR_RSTYLE_FACES:
+        return "BR_RSTYLE_FACES";
+        break;
+    case BR_RSTYLE_BOUNDING_POINTS:
+        return "BR_RSTYLE_BOUNDING_POINTS";
+        break;
+    case BR_RSTYLE_BOUNDING_EDGES:
+        return "BR_RSTYLE_BOUNDING_EDGES";
+        break;
+    case BR_RSTYLE_BOUNDING_FACES:
+        return "BR_RSTYLE_BOUNDING_FACES";
+        break;
+    default:
+        return "******** UNKNOWN ********";
+        break;
+    }
 }
 
 // STUB: CARMA2_HW 0x00518d60
@@ -2000,6 +2103,7 @@ tU32 C2_HOOK_FASTCALL FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupp
 
 // FUNCTION: CARMA2_HW 0x00518e70
 // FUNCTION: CARMA2_SW 0x00512950
+// FUNCTION: CARMA2_CHEAT 0x0051e880
 int C2_HOOK_FASTCALL GetBlenficatiousnessOfMaterial(br_material* pMaterial) {
     br_token_value* prims;
 
@@ -2024,6 +2128,7 @@ int C2_HOOK_FASTCALL GetBlenficatiousnessOfMaterial(br_material* pMaterial) {
 
 // FUNCTION: CARMA2_HW 0x00518f20
 // FUNCTION: CARMA2_SW 0x00512a00
+// FUNCTION: CARMA2_CHEAT 0x0051e930
 char* C2_HOOK_FASTCALL MungeCommas(int pValue) {
     // GLOBAL: CARMA2_HW 0x006b5f20
     // GLOBAL: CARMA2_SW 0x006acc00
@@ -2049,6 +2154,7 @@ char* C2_HOOK_FASTCALL MungeCommas(int pValue) {
 }
 
 // FUNCTION: CARMA2_HW 0x00518fa0
+// FUNCTION: CARMA2_CHEAT 0x0051e9b0
 void C2_HOOK_FASTCALL MungeMetaCharacters(char* pText, char pMeta, const char* pRepl) {
     int len_text;
     int len_repl;
@@ -2069,6 +2175,7 @@ void C2_HOOK_FASTCALL MungeMetaCharacters(char* pText, char pMeta, const char* p
 
 // FUNCTION: CARMA2_HW 0x00519040
 // FUNCTION: CARMA2_SW 0x00512b20
+// FUNCTION: CARMA2_CHEAT 0x0051ea50
 void C2_HOOK_FASTCALL MungeMetaCharactersChar(char* pText, char pMeta, char pChar) {
     char repl[2];
 
@@ -2079,6 +2186,7 @@ void C2_HOOK_FASTCALL MungeMetaCharactersChar(char* pText, char pMeta, char pCha
 
 // FUNCTION: CARMA2_HW 0x005190f0
 // FUNCTION: CARMA2_SW 0x00512bd0
+// FUNCTION: CARMA2_CHEAT 0x0051eb00
 void C2_HOOK_FASTCALL MungeMetaCharactersNum(char* pText, char pMeta, int pNum) {
     char text[16];
 
@@ -2088,6 +2196,7 @@ void C2_HOOK_FASTCALL MungeMetaCharactersNum(char* pText, char pMeta, int pNum) 
 
 // FUNCTION: CARMA2_HW 0x005191b0
 // FUNCTION: CARMA2_SW 0x00512c90
+// FUNCTION: CARMA2_CHEAT 0x0051ebc0
 void C2_HOOK_FASTCALL DrPixelmapRectangleCopyPossibleLock(br_pixelmap* dst, br_int_16 dx, br_int_16 dy, br_pixelmap* src, br_int_16 sx, br_int_16 sy, br_int_16 w, br_int_16 h) {
 
     BrPixelmapRectangleCopy(dst, dx, dy, src, sx, sy, w, h);
@@ -2095,6 +2204,7 @@ void C2_HOOK_FASTCALL DrPixelmapRectangleCopyPossibleLock(br_pixelmap* dst, br_i
 
 // FUNCTION: CARMA2_HW 0x005191f0
 // FUNCTION: CARMA2_SW 0x00512cd0
+// FUNCTION: CARMA2_CHEAT 0x0051ec00
 void C2_HOOK_FASTCALL PixelmapSwapByteOrder(br_pixelmap* pMap) {
 
 #if 0 // FIXME: introduce endian.h-like rec2_endian.h header

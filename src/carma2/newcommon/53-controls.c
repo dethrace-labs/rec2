@@ -47,50 +47,62 @@ int gCheckpoint_finder_enabled = 1;
 
 // GLOBAL: CARMA2_HW 0x00659b2c
 // GLOBAL: CARMA2_SW 0x00654514
+// GLOBAL: CARMA2_CHEAT 0x00660444
 float gMap_render_x = 80.f;
 
 // GLOBAL: CARMA2_HW 0x00659b30
 // GLOBAL: CARMA2_SW 0x00654518
+// GLOBAL: CARMA2_CHEAT 0x00660448
 float gMap_render_y = 6.f;
 
 // GLOBAL: CARMA2_HW 0x00659b34
 // GLOBAL: CARMA2_SW 0x0065451c
+// GLOBAL: CARMA2_CHEAT 0x0066044c
 float gMap_render_width = 128.f;
 
 // GLOBAL: CARMA2_HW 0x00659b38
 // GLOBAL: CARMA2_SW 0x00654520
+// GLOBAL: CARMA2_CHEAT 0x00660450
 float gMap_render_height = 80.f;
 
 // GLOBAL: CARMA2_HW 0x0068d8d4
 // GLOBAL: CARMA2_SW 0x0068792c
+// GLOBAL: CARMA2_CHEAT 0x00695174
 int gMap_trans;
 
 // GLOBAL: CARMA2_HW 0x0074abac
 // GLOBAL: CARMA2_SW 0x00741258
+// GLOBAL: CARMA2_CHEAT 0x0075224c
 int gHeadup_map_x;
 
 // GLOBAL: CARMA2_HW 0x0074abb0
 // GLOBAL: CARMA2_SW 0x0074125c
+// GLOBAL: CARMA2_CHEAT 0x00752250
 int gHeadup_map_y;
 
 // GLOBAL: CARMA2_HW 0x0074aba8
 // GLOBAL: CARMA2_SW 0x00741254
+// GLOBAL: CARMA2_CHEAT 0x00752248
 int gHeadup_map_w;
 
 // GLOBAL: CARMA2_HW 0x0074abb4
 // GLOBAL: CARMA2_SW 0x00741260
+// GLOBAL: CARMA2_CHEAT 0x00752254
 int gHeadup_map_h;
 
 // GLOBAL: CARMA2_HW 0x0067c400
 // GLOBAL: CARMA2_SW 0x00676b78
+// GLOBAL: CARMA2_CHEAT 0x00683cb0
 char gString[84];
 
 // GLOBAL: CARMA2_HW 0x0067c498
 // GLOBAL: CARMA2_SW 0x00676c10
+// GLOBAL: CARMA2_CHEAT 0x00683d40
 int gInvulnerability;
 
 // GLOBAL: CARMA2_HW 0x0067c3c8
 // GLOBAL: CARMA2_SW 0x00676b40
+// GLOBAL: CARMA2_CHEAT 0x00683c78
 char* gAbuse_text[10] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x0067c3f0
@@ -99,34 +111,42 @@ int gINT_0067c3f0 = 0;
 
 // GLOBAL: CARMA2_HW 0x0067c3f8
 // GLOBAL: CARMA2_SW 0x00676b70
+// GLOBAL: CARMA2_CHEAT 0x00683ca8
 int gRecovery_voucher_count;
 
 // GLOBAL: CARMA2_HW 0x0067c46c
 // GLOBAL: CARMA2_SW 0x00676be4
+// GLOBAL: CARMA2_CHEAT 0x00597888
 int gAllow_car_flying;
 
 // GLOBAL: CARMA2_HW 0x0067c470
 // GLOBAL: CARMA2_SW 0x00676be8
+// GLOBAL: CARMA2_CHEAT 0x00683d18
 int gINT_0067c470;
 
 // GLOBAL: CARMA2_HW 0x0067c474
 // GLOBAL: CARMA2_SW 0x00676bec
+// GLOBAL: CARMA2_CHEAT 0x00683d1c
 int gEntering_message;
 
 // GLOBAL: CARMA2_HW 0x0067c47c
 // GLOBAL: CARMA2_SW 0x00676bf4
+// GLOBAL: CARMA2_CHEAT 0x00683d24
 tU32 gToo_poor_for_recovery_timeout;
 
 // GLOBAL: CARMA2_HW 0x0079efa4
 // GLOBAL: CARMA2_SW 0x00795544
+// GLOBAL: CARMA2_CHEAT 0x007a6644
 tCamera_key_flags gCamera_key_flags;
 
 // GLOBAL: CARMA2_HW 0x006b781c
 // GLOBAL: CARMA2_SW 0x006ae4fc
+// GLOBAL: CARMA2_CHEAT 0x006beebc
 tRace_over_reason gRace_over_reason;
 
 // GLOBAL: CARMA2_HW 0x0067c478
 // GLOBAL: CARMA2_SW 0x00676bf0
+// GLOBAL: CARMA2_CHEAT 0x00683d20
 tU32 gPalette_fade_time;
 
 void C2_HOOK_FASTCALL CompleteRace(void) {
@@ -136,6 +156,7 @@ void C2_HOOK_FASTCALL CompleteRace(void) {
 
 // FUNCTION: CARMA2_HW 0x00441490
 // FUNCTION: CARMA2_SW 0x00441570
+// FUNCTION: CARMA2_CHEAT 0x00441740
 int C2_HOOK_FASTCALL AbortRace(tFrontend_spec* pFrontend) {
 
     if (!gRace_finished) {
@@ -160,6 +181,7 @@ void C2_HOOK_FASTCALL F4Key(void) {
 
 // FUNCTION: CARMA2_HW 0x00441580
 // FUNCTION: CARMA2_SW 0x00441660
+// FUNCTION: CARMA2_CHEAT 0x00441850
 void C2_HOOK_FASTCALL SetFlag(tU32 pFlag) {
 
     if (gI_am_cheating == pFlag) {
@@ -173,6 +195,7 @@ void C2_HOOK_FASTCALL SetFlag(tU32 pFlag) {
 
 // FUNCTION: CARMA2_HW 0x004415c0
 // FUNCTION: CARMA2_SW 0x004416a0
+// FUNCTION: CARMA2_CHEAT 0x00441890
 void C2_HOOK_FASTCALL FinishRace(int pArg) {
     (void)pArg;
     CompleteRace();
@@ -180,12 +203,14 @@ void C2_HOOK_FASTCALL FinishRace(int pArg) {
 
 // FUNCTION: CARMA2_HW 0x004415e0
 // FUNCTION: CARMA2_SW 0x004416c0
+// FUNCTION: CARMA2_CHEAT 0x004418b0
 void C2_HOOK_FASTCALL EnsureSpecialVolumesHidden(void) {
 
 }
 
 // FUNCTION: CARMA2_HW 0x004415f0
 // FUNCTION: CARMA2_SW 0x004416d0
+// FUNCTION: CARMA2_CHEAT 0x004418c0
 void C2_HOOK_FASTCALL ShowSpecialVolumesIfRequ(void) {
 
 }
@@ -206,6 +231,7 @@ void C2_HOOK_FASTCALL ShowSpecialVolumesIfRequ(void) {
 
 // FUNCTION: CARMA2_HW 0x00441900
 // FUNCTION: CARMA2_SW 0x004419e0
+// FUNCTION: CARMA2_CHEAT 0x00441b10
 void C2_HOOK_FASTCALL F12Key(void) {
 }
 
@@ -231,6 +257,7 @@ void C2_HOOK_FASTCALL F12Key(void) {
 
 // FUNCTION: CARMA2_HW 0x00441e10
 // FUNCTION: CARMA2_SW 0x00441ef0
+// FUNCTION: CARMA2_CHEAT 0x00441f30
 void C2_HOOK_FASTCALL LookLeft(void) {
 
     PratcamEvent(27);
@@ -250,6 +277,7 @@ void C2_HOOK_FASTCALL LookLeft(void) {
 
 // FUNCTION: CARMA2_HW 0x00441ec0
 // FUNCTION: CARMA2_SW 0x00441fa0
+// FUNCTION: CARMA2_CHEAT 0x00441fe0
 void C2_HOOK_FASTCALL LookForward(void) {
 
     if (gProgram_state.which_view == eView_right) {
@@ -268,6 +296,7 @@ void C2_HOOK_FASTCALL LookForward(void) {
 
 // FUNCTION: CARMA2_HW 0x00441f20
 // FUNCTION: CARMA2_SW 0x00442000
+// FUNCTION: CARMA2_CHEAT 0x00442040
 void C2_HOOK_FASTCALL LookRight(void) {
 
     PratcamEvent(28);
@@ -287,18 +316,21 @@ void C2_HOOK_FASTCALL LookRight(void) {
 
 // FUNCTION: CARMA2_HW 0x00441fd0
 // FUNCTION: CARMA2_SW 0x004420b0
+// FUNCTION: CARMA2_CHEAT 0x004420f0
 void C2_HOOK_FASTCALL DamageTest(void) {
 
 }
 
 // FUNCTION: CARMA2_HW 0x00441fe0
 // FUNCTION: CARMA2_SW 0x004420c0
+// FUNCTION: CARMA2_CHEAT 0x00442100
 void C2_HOOK_FASTCALL TDamageEngine(void) {
     DamageEngine(21);
 }
 
 // FUNCTION: CARMA2_HW 0x00441ff0
 // FUNCTION: CARMA2_SW 0x004420d0
+// FUNCTION: CARMA2_CHEAT 0x00442110
 void C2_HOOK_FASTCALL TDamageDriver(void) {
     if (gProgram_state.current_car.damage_units[eDamage_driver].damage_level < 80) {
         DamageUnit(&gProgram_state.current_car, eDamage_driver, 80 - gProgram_state.current_car.damage_units[eDamage_driver].damage_level);
@@ -309,12 +341,14 @@ void C2_HOOK_FASTCALL TDamageDriver(void) {
 
 // FUNCTION: CARMA2_HW 0x00442030
 // FUNCTION: CARMA2_SW 0x00442110
+// FUNCTION: CARMA2_CHEAT 0x00442150
 void C2_HOOK_FASTCALL TDamageTrans(void) {
     DamageTrans(21);
 }
 
 // FUNCTION: CARMA2_HW 0x00442040
 // FUNCTION: CARMA2_SW 0x00442120
+// FUNCTION: CARMA2_CHEAT 0x00442160
 void C2_HOOK_FASTCALL TDamageSteering(void) {
 
     DamageSteering(21);
@@ -322,6 +356,7 @@ void C2_HOOK_FASTCALL TDamageSteering(void) {
 
 // FUNCTION: CARMA2_HW 0x00442050
 // FUNCTION: CARMA2_SW 0x00442130
+// FUNCTION: CARMA2_CHEAT 0x00442170
 void C2_HOOK_FASTCALL TDamageLFWheel(void) {
 
     DamageLFWheel(21);
@@ -329,6 +364,7 @@ void C2_HOOK_FASTCALL TDamageLFWheel(void) {
 
 // FUNCTION: CARMA2_HW 0x00442060
 // FUNCTION: CARMA2_SW 0x00442140
+// FUNCTION: CARMA2_CHEAT 0x00442180
 void C2_HOOK_FASTCALL TDamageLFBrake(void) {
 
     DamageLFBrake(21);
@@ -336,6 +372,7 @@ void C2_HOOK_FASTCALL TDamageLFBrake(void) {
 
 // FUNCTION: CARMA2_HW 0x00442070
 // FUNCTION: CARMA2_SW 0x00442150
+// FUNCTION: CARMA2_CHEAT 0x00442190
 void C2_HOOK_FASTCALL TDamageLRBrake(void) {
 
     DamageLRBrake(21);
@@ -343,6 +380,7 @@ void C2_HOOK_FASTCALL TDamageLRBrake(void) {
 
 // FUNCTION: CARMA2_HW 0x00442080
 // FUNCTION: CARMA2_SW 0x00442160
+// FUNCTION: CARMA2_CHEAT 0x004421a0
 void C2_HOOK_FASTCALL TDamageLRWheel(void) {
 
     DamageLRWheel(21);
@@ -350,6 +388,7 @@ void C2_HOOK_FASTCALL TDamageLRWheel(void) {
 
 // FUNCTION: CARMA2_HW 0x00442090
 // FUNCTION: CARMA2_SW 0x00442170
+// FUNCTION: CARMA2_CHEAT 0x004421b0
 void C2_HOOK_FASTCALL TDamageRFWheel(void) {
 
     DamageRFWheel(21);
@@ -357,6 +396,7 @@ void C2_HOOK_FASTCALL TDamageRFWheel(void) {
 
 // FUNCTION: CARMA2_HW 0x004420a0
 // FUNCTION: CARMA2_SW 0x00442180
+// FUNCTION: CARMA2_CHEAT 0x004421c0
 void C2_HOOK_FASTCALL TDamageRFBrake(void) {
 
     DamageRFBrake(21);
@@ -364,6 +404,7 @@ void C2_HOOK_FASTCALL TDamageRFBrake(void) {
 
 // FUNCTION: CARMA2_HW 0x004420b0
 // FUNCTION: CARMA2_SW 0x00442190
+// FUNCTION: CARMA2_CHEAT 0x004421d0
 void C2_HOOK_FASTCALL TDamageRRBrake(void) {
 
     DamageRRBrake(21);
@@ -371,6 +412,7 @@ void C2_HOOK_FASTCALL TDamageRRBrake(void) {
 
 // FUNCTION: CARMA2_HW 0x004420c0
 // FUNCTION: CARMA2_SW 0x004421a0
+// FUNCTION: CARMA2_CHEAT 0x004421e0
 void C2_HOOK_FASTCALL TDamageRRWheel(void) {
 
     DamageRRWheel(21);
@@ -378,6 +420,7 @@ void C2_HOOK_FASTCALL TDamageRRWheel(void) {
 
 // FUNCTION: CARMA2_HW 0x004420e0
 // FUNCTION: CARMA2_SW 0x004421c0
+// FUNCTION: CARMA2_CHEAT 0x00442200
 void C2_HOOK_FASTCALL ToggleMiniMap(void) {
 
     if (gMap_view != 2) {
@@ -395,6 +438,7 @@ void C2_HOOK_FASTCALL ToggleMiniMap(void) {
 
 // FUNCTION: CARMA2_HW 0x00442140
 // FUNCTION: CARMA2_SW 0x00442220
+// FUNCTION: CARMA2_CHEAT 0x00442260
 int C2_HOOK_FASTCALL CarWorldOffFallenCheckThingy(tCar_spec* pCar, int pCheck_around) {
     br_vector3 car_pos;
     br_vector3 offset_c;
@@ -448,6 +492,7 @@ int C2_HOOK_FASTCALL CarWorldOffFallenCheckThingy(tCar_spec* pCar, int pCheck_ar
 
 // FUNCTION: CARMA2_HW 0x00442130
 // FUNCTION: CARMA2_SW 0x00442210
+// FUNCTION: CARMA2_CHEAT 0x00442250
 int C2_HOOK_FASTCALL HasCarFallenOffWorld(tCar_spec* pCar) {
 
     return CarWorldOffFallenCheckThingy(pCar, 1);
@@ -459,6 +504,7 @@ int C2_HOOK_FASTCALL HasCarFallenOffWorld(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x00443ba0
 // FUNCTION: CARMA2_SW 0x00443c80
+// FUNCTION: CARMA2_CHEAT 0x00443cc0
 void C2_HOOK_FASTCALL CheckHorn3D(tCar_spec* pCar) {
 
     if (pCar->keys.horn && pCar->horn_sound_tag == 0) {
@@ -514,6 +560,7 @@ inline int C2_HOOK_FASTCALL TradeInAPO(int pCost) {
 
 // FUNCTION: CARMA2_HW 0x00442750
 // FUNCTION: CARMA2_SW 0x00442830
+// FUNCTION: CARMA2_CHEAT 0x00442870
 int C2_HOOK_FASTCALL CheckRecoverCost(void) {
 
     if (gNet_mode != eNet_mode_none) {
@@ -541,6 +588,7 @@ int C2_HOOK_FASTCALL CheckRecoverCost(void) {
 
 // FUNCTION: CARMA2_HW 0x00442970
 // FUNCTION: CARMA2_SW 0x00442a50
+// FUNCTION: CARMA2_CHEAT 0x00442a90
 void C2_HOOK_FASTCALL SetFlipUpCar(tCar_spec* pCar) {
     if (gNet_mode == eNet_mode_none || pCar == NULL || pCar->driver != eDriver_local_human) {
         FlipUpCar(pCar);
@@ -554,6 +602,7 @@ void C2_HOOK_FASTCALL SetFlipUpCar(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x00442e10
 // FUNCTION: CARMA2_SW 0x00442ef0
+// FUNCTION: CARMA2_CHEAT 0x00442f30
 void C2_HOOK_FASTCALL AlignChildren(tPhysics_object* pCollision_info) {
     tPhysics_object* child;
 
@@ -566,8 +615,8 @@ void C2_HOOK_FASTCALL AlignChildren(tPhysics_object* pCollision_info) {
                 child->transform_matrix.m[i][j] = pCollision_info->transform_matrix.m[i][j];
             }
         }
-        BrVector3SetFloat(&child->v, 0.f, 0.f, 0.f);
-        BrVector3SetFloat(&child->omega, 0.f, 0.f, 0.f);
+        BrVector3SetFloat(&child->v, 0.0f, 0.0f, 0.0f);
+        BrVector3SetFloat(&child->omega, 0.0f, 0.0f, 0.0f);
         AlignChildren(child);
     }
 }
@@ -588,6 +637,7 @@ void C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
 
 // FUNCTION: CARMA2_HW 0x00442e80
 // FUNCTION: CARMA2_SW 0x00442f60
+// FUNCTION: CARMA2_CHEAT 0x00442fa0
 void C2_HOOK_FASTCALL GetPowerup(int pNum) {
 
     GotPowerup(&gProgram_state.current_car, pNum);
@@ -597,6 +647,7 @@ void C2_HOOK_FASTCALL GetPowerup(int pNum) {
 
 // FUNCTION: CARMA2_HW 0x00443c50
 // FUNCTION: CARMA2_SW 0x00443d30
+// FUNCTION: CARMA2_CHEAT 0x00443d70
 void C2_HOOK_FASTCALL CheckForCheatingGits(void) {
     tU32* keys;
 
@@ -606,6 +657,12 @@ void C2_HOOK_FASTCALL CheckForCheatingGits(void) {
         gProgram_state.game_completed = 1;
         DRS3StartSound(gEffects_outlet, eSoundId_FlaskGone);
     }
+#ifdef REC2_CHEAT
+    if (PDKeyDown3(21) && PDKeyDown3(0)) {
+        gProgram_state.game_completed = 1;
+        DRS3StartSound(gEffects_outlet, eSoundId_FlaskGone);
+    }
+#endif
 }
 
 // CheckKevKeys
@@ -630,6 +687,7 @@ inline void C2_HOOK_FASTCALL BrakeInstantly(void) {
 
 // FUNCTION: CARMA2_HW 0x00443e80
 // FUNCTION: CARMA2_SW 0x00443f60
+// FUNCTION: CARMA2_CHEAT 0x00443fd0
 void C2_HOOK_FASTCALL PollCarControls(tU32 pTime_difference) {
     tCar_controls keys = { 0 };
     tJoystick joystick;
@@ -760,6 +818,7 @@ void C2_HOOK_FASTCALL PollCarControls(tU32 pTime_difference) {
 
 // FUNCTION: CARMA2_HW 0x00444270
 // FUNCTION: CARMA2_SW 0x00444350
+// FUNCTION: CARMA2_CHEAT 0x004443c0
 void C2_HOOK_FASTCALL PollCameraControls(tU32 pCamera_period) {
     int left;
     int right;
@@ -783,6 +842,7 @@ void C2_HOOK_FASTCALL PollCameraControls(tU32 pCamera_period) {
 
 // FUNCTION: CARMA2_HW 0x00444350
 // FUNCTION: CARMA2_SW 0x00444430
+// FUNCTION: CARMA2_CHEAT 0x004444a0
 void C2_HOOK_FASTCALL SetFlag2(int pArg) {
     (void)pArg;
     gAllow_car_flying = 1;
@@ -792,8 +852,13 @@ void C2_HOOK_FASTCALL SetFlag2(int pArg) {
 
 // FUNCTION: CARMA2_HW 0x004443c0
 // FUNCTION: CARMA2_SW 0x004444a0
+// FUNCTION: CARMA2_CHEAT 0x004444f0
 void C2_HOOK_FASTCALL ToggleFlying(void) {
+#ifdef REC2_CHEAT
+    if (gAllow_car_flying) {
+#else
     if (gAllow_car_flying && gNet_mode == eNet_mode_none) {
+#endif
         gCar_flying = !gCar_flying;
         if (gCar_flying) {
             NewTextHeadupSlot(4, 0, 500, -4, "We have lift off!!");
@@ -807,6 +872,7 @@ void C2_HOOK_FASTCALL ToggleFlying(void) {
 
 // FUNCTION: CARMA2_HW 0x00444420
 // FUNCTION: CARMA2_SW 0x00444500
+// FUNCTION: CARMA2_CHEAT 0x00444540
 void C2_HOOK_FASTCALL CycleInvulnerability(void) {
     char message[256];
 
@@ -831,6 +897,7 @@ void C2_HOOK_FASTCALL CycleInvulnerability(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00444590
+// FUNCTION: CARMA2_CHEAT 0x004446b0
 void C2_HOOK_FASTCALL ToggleTimerFreeze(void) {
 
     gFreeze_timer = !gFreeze_timer;
@@ -843,6 +910,7 @@ void C2_HOOK_FASTCALL ToggleTimerFreeze(void) {
 
 // FUNCTION: CARMA2_HW 0x004445e0
 // FUNCTION: CARMA2_SW 0x004446c0
+// FUNCTION: CARMA2_CHEAT 0x00444700
 void C2_HOOK_FASTCALL EarnDosh(void) {
 
     EarnCredits(5000);
@@ -850,11 +918,13 @@ void C2_HOOK_FASTCALL EarnDosh(void) {
 
 // FUNCTION: CARMA2_HW 0x004445f0
 // FUNCTION: CARMA2_SW 0x004446d0
+// FUNCTION: CARMA2_CHEAT 0x00444710
 void C2_HOOK_FASTCALL LoseDosh(void) {
     EarnCredits(-5000);
 }
 
 // FUNCTION: CARMA2_HW 0x00444600
+// FUNCTION: CARMA2_CHEAT 0x00444720
 void C2_HOOK_FASTCALL ToggleHeadupMap(int pArg) {
 
 }
@@ -868,9 +938,11 @@ inline void C2_HOOK_FASTCALL HackyMapFixForMac3dfx(void) {
 
 // FUNCTION: CARMA2_HW 0x00444610
 // FUNCTION: CARMA2_SW 0x004446f0
+// FUNCTION: CARMA2_CHEAT 0x00444730
 void C2_HOOK_FASTCALL ToggleMap(void) {
     // GLOBAL: CARMA2_HW 0x0067c458
     // GLOBAL: CARMA2_SW 0x00676bd0
+    // GLOBAL: CARMA2_CHEAT 0x00683d08
     static int old_indent;
 
     if (gMap_view == 2) {
@@ -893,6 +965,7 @@ void C2_HOOK_FASTCALL ToggleMap(void) {
 
 // FUNCTION: CARMA2_HW 0x004446f0
 // FUNCTION: CARMA2_SW 0x004447d0
+// FUNCTION: CARMA2_CHEAT 0x00444880
 int C2_HOOK_FASTCALL GetRecoverVoucherCount(void) {
 
     return gRecovery_voucher_count;
@@ -900,6 +973,7 @@ int C2_HOOK_FASTCALL GetRecoverVoucherCount(void) {
 
 // FUNCTION: CARMA2_HW 0x00444700
 // FUNCTION: CARMA2_SW 0x004447e0
+// FUNCTION: CARMA2_CHEAT 0x00444890
 void C2_HOOK_FASTCALL AddVouchers(int pCount) {
 
     gRecovery_voucher_count += pCount;
@@ -907,6 +981,7 @@ void C2_HOOK_FASTCALL AddVouchers(int pCount) {
 
 // FUNCTION: CARMA2_HW 0x00444710
 // FUNCTION: CARMA2_SW 0x004447f0
+// FUNCTION: CARMA2_CHEAT 0x004448a0
 void C2_HOOK_FASTCALL ResetRecoveryVouchers(void) {
 
     gRecovery_voucher_count = 0;
@@ -914,6 +989,7 @@ void C2_HOOK_FASTCALL ResetRecoveryVouchers(void) {
 
 // FUNCTION: CARMA2_HW 0x00444720
 // FUNCTION: CARMA2_SW 0x00444800
+// FUNCTION: CARMA2_CHEAT 0x004448b0
 void C2_HOOK_FASTCALL CycleYonFactor(void) {
     float factor;
 
@@ -935,6 +1011,7 @@ void C2_HOOK_FASTCALL CycleYonFactor(void) {
 
 // FUNCTION: CARMA2_HW 0x004447c0
 // FUNCTION: CARMA2_SW 0x004448a0
+// FUNCTION: CARMA2_CHEAT 0x00444950
 void C2_HOOK_FASTCALL CycleSoundDetailLevel(void) {
     int new_level;
 
@@ -956,6 +1033,7 @@ void C2_HOOK_FASTCALL CycleSoundDetailLevel(void) {
 
 // FUNCTION: CARMA2_HW 0x00444820
 // FUNCTION: CARMA2_SW 0x00444900
+// FUNCTION: CARMA2_CHEAT 0x004449b0
 void C2_HOOK_FASTCALL CycleCarSimplificationLevel(void) {
     const char* src;
     char* dst;
@@ -971,6 +1049,7 @@ void C2_HOOK_FASTCALL CycleCarSimplificationLevel(void) {
 
 // FUNCTION: CARMA2_HW 0x004448a0
 // FUNCTION: CARMA2_SW 0x00444980
+// FUNCTION: CARMA2_CHEAT 0x00444a30
 void C2_HOOK_FASTCALL ToggleAccessoryRendering(void) {
     int on;
 
@@ -989,6 +1068,7 @@ void C2_HOOK_FASTCALL ToggleAccessoryRendering(void) {
 
 // FUNCTION: CARMA2_HW 0x004448f0
 // FUNCTION: CARMA2_SW 0x004449d0
+// FUNCTION: CARMA2_CHEAT 0x00444a80
 void C2_HOOK_FASTCALL UserSendMessage(void) {
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_game_details, options, 0x44);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_game_options, enable_text_messages, 0x4);
@@ -1002,6 +1082,7 @@ void C2_HOOK_FASTCALL UserSendMessage(void) {
 
 // FUNCTION: CARMA2_HW 0x00444c00
 // FUNCTION: CARMA2_SW 0x00444ce0
+// FUNCTION: CARMA2_CHEAT 0x00444d90
 void C2_HOOK_FASTCALL DisplayUserMessage(void) {
     int len;
 
@@ -1038,6 +1119,7 @@ void C2_HOOK_FASTCALL DisplayUserMessage(void) {
 
 // FUNCTION: CARMA2_HW 0x00444d70
 // FUNCTION: CARMA2_SW 0x00444e50
+// FUNCTION: CARMA2_CHEAT 0x00444f00
 void C2_HOOK_FASTCALL InitAbuseomatic(void) {
     char path[256];
     char s[256];
@@ -1075,6 +1157,7 @@ void C2_HOOK_FASTCALL InitAbuseomatic(void) {
 
 // FUNCTION: CARMA2_HW 0x00444ea0
 // FUNCTION: CARMA2_SW 0x00444f80
+// FUNCTION: CARMA2_CHEAT 0x00445030
 void C2_HOOK_FASTCALL DisposeAbuseomatic(void) {
     int i;
 
@@ -1087,6 +1170,7 @@ void C2_HOOK_FASTCALL DisposeAbuseomatic(void) {
 
 // FUNCTION: CARMA2_HW 0x00444ed0
 // FUNCTION: CARMA2_SW 0x00444fb0
+// FUNCTION: CARMA2_CHEAT 0x004453c0
 void C2_HOOK_FASTCALL ChangeCameraTypeInGame(void) {
 
     if (!gAction_replay_mode) {
@@ -1103,6 +1187,7 @@ void C2_HOOK_FASTCALL SteelBollock(void) {
 
 // FUNCTION: CARMA2_HW 0x00444f10
 // FUNCTION: CARMA2_SW 0x00444ff0
+// FUNCTION: CARMA2_CHEAT 0x00445430
 void C2_HOOK_FASTCALL RichardsSphere(int pNum) {
 
     TotallyRepairACar(gCar_to_view);
@@ -1111,6 +1196,7 @@ void C2_HOOK_FASTCALL RichardsSphere(int pNum) {
 
 // FUNCTION: CARMA2_HW 0x00444f40
 // FUNCTION: CARMA2_SW 0x00445020
+// FUNCTION: CARMA2_CHEAT 0x00445460
 void C2_HOOK_FASTCALL ToggleHeadupLevel(void) {
 
     if (PDKeyDown(0)) {
