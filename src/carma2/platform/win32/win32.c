@@ -1642,9 +1642,11 @@ void C2_HOOK_FASTCALL CheckIfRunningOnServer(void) {
     }
 }
 
+#ifdef REC2_HW
 // FUNCTION: CARMA2_HW 0x0051aa50
 // FUNCTION: CARMA2_CHEAT 0x005201c0
 int C2_HOOK_FASTCALL RendererIsD3D(void) {
 
     return strcmp(gRenderer, "D3D") == 0;
 }
+#endif
