@@ -129,6 +129,26 @@ typedef union {
 } tFloat_u32_union;
 
 typedef enum {
+    eEdit_mode_options = 0,
+    eEdit_mode_cheat = 1,
+    eEdit_mode_acc = 2,
+    eEdit_mode_powerups = 3,
+    eEdit_mode_spec_vol = 4,
+    eEdit_mode_ped = 5,
+    eEdit_mode_drones = 6,
+    eEdit_mode_opp = 7,
+    eEdit_mode_pratcam = 8,
+    eEdit_mode_depth = 9,
+    eEdit_mode_damage = 10,
+    eEdit_mode_crush = 11,
+#ifdef REC2_CHEAT
+    eEdit_mode_count = 12,
+#else
+    eEdit_mode_count = 2,
+#endif
+} tEdit_mode;
+
+typedef enum {
     eFPR_OK = 0,
     eFPR_end_of_path = 1,
     eFPR_given_up = 2,

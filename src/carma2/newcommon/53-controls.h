@@ -31,10 +31,11 @@ extern int gHeadup_map_h;
 extern int gRecovery_voucher_count;
 extern tRace_over_reason gRace_over_reason;
 extern tU32 gPalette_fade_time;
+extern tEdit_func* gEdit_funcs[eEdit_mode_count][18][8];
 
 extern void C2_HOOK_FASTCALL CompleteRace(void);
 
-extern int C2_HOOK_FASTCALL AbortRace(tFrontend_spec* pFrontend);
+extern void C2_HOOK_FASTCALL AbortRace(tFrontend_spec* pFrontend);
 
 extern void C2_HOOK_FASTCALL F4Key(void);
 
@@ -46,7 +47,7 @@ extern void C2_HOOK_FASTCALL EnsureSpecialVolumesHidden(void);
 
 extern void C2_HOOK_FASTCALL ShowSpecialVolumesIfRequ(void);
 
-// DoEditModeKey
+extern void C2_HOOK_FASTCALL DoEditModeKey(int pIndex);
 
 // F5Key
 

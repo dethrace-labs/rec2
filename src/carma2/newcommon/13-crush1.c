@@ -204,6 +204,7 @@ br_scalar gMax_crush_dist_sq;
 
 // GLOBAL: CARMA2_HW 0x0067be84
 // GLOBAL: CARMA2_SW 0x006765f4
+// GLOBAL: CARMA2_CHEAT 0x00683734
 tU32 gUINT_0067be84;
 
 // GLOBAL: CARMA2_HW 0x0067bd5c
@@ -979,6 +980,7 @@ intptr_t C2_HOOK_CDECL InitModelCrushDataCB(br_actor* pActor, void* pData) {
 
 // STUB: CARMA2_HW 0x0042c0e0
 // STUB: CARMA2_SW 0x0042c170
+// STUB: CARMA2_CHEAT 0x0042c280
 void C2_HOOK_FASTCALL SetFlapCheckVertices(tCar_crush_flap_data* pFlap_data, const br_model* pModel, tModel_detail_vertex_data* pVertex_data) {
     NOT_IMPLEMENTED();
 }
@@ -1110,6 +1112,7 @@ void C2_HOOK_FASTCALL DisposeVertexData(tModel_detail_vertex_data* pVertex_data)
 #endif
 
 // STUB: CARMA2_HW 0x0042c8b0
+// STUB: CARMA2_CHEAT 0x0042ca50
 float C2_HOOK_FASTCALL DistSq(const br_vector3* pP, int pCount, const br_vector3* pVertices) {
     NOT_IMPLEMENTED();
 }
@@ -1524,7 +1527,14 @@ void C2_HOOK_FASTCALL AddNonCar(tNon_car_spec* pNon_car, const tDriver* pDriver)
     C2_HOOK_BUG_ON(REC2_ASIZE(gActive_non_car_list) != 99);
     // FIXME: pDriver should be passed by argument, not pointer
 
-    if (gNum_active_non_cars != REC2_ASIZE(gActive_non_car_list)) {
+    if (gNum_active_non_cars == REC2_ASIZE(gActive_non_car_list)) {
+#ifdef REC2_CHEAT
+        PDEnterDebugger("gActive_non_car_list full up");
+    }
+    {
+#else
+    } else {
+#endif
         pNon_car->driver = *pDriver;
         gActive_non_car_list[gNum_active_non_cars++] = pNon_car;
         PHILAddActiveObjectImmediately(pNon_car->collision_info, NULL, NULL, NULL);
@@ -1567,6 +1577,7 @@ void C2_HOOK_FASTCALL SendReAttachBit(tCar_spec* pCar, tPhysics_object* pObject)
 
 // STUB: CARMA2_HW 0x004387d0
 // STUB: CARMA2_SW 0x00438800
+// STUB: CARMA2_CHEAT 0x004389e0
 void C2_HOOK_FASTCALL StopFlapping(br_actor* pActor, tCar_spec* pCar_spec) {
     NOT_IMPLEMENTED();
 }
@@ -1796,6 +1807,7 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor, void*
 
 // STUB: CARMA2_HW 0x00434f60
 // STUB: CARMA2_SW 0x00434f90
+// STUB: CARMA2_CHEAT 0x00435150
 void C2_HOOK_FASTCALL BendPoint(br_vector3* pPoint, const tBend_point_context* pContext) {
     NOT_IMPLEMENTED();
 }
@@ -1998,6 +2010,7 @@ void C2_HOOK_FASTCALL TotallyRepairCarCollisionShapes(tCar_spec* pCar_spec) {
 
 // STUB: CARMA2_HW 0x00439a20
 // STUB: CARMA2_SW 0x00439a60
+// STUB: CARMA2_CHEAT 0x00439c40
 intptr_t C2_HOOK_CDECL TotallyRepairModels(br_actor* pActor, void* pUser) {
     NOT_IMPLEMENTED();
 }
@@ -2102,6 +2115,7 @@ br_scalar C2_HOOK_FASTCALL NormalizedAngle(br_angle pAngle) {
 
 // STUB: CARMA2_HW 0x00439c30
 // STUB: CARMA2_SW 0x00439c70
+// STUB: CARMA2_CHEAT 0x00439e50
 br_scalar C2_HOOK_FASTCALL UnBendCar(tCar_spec* pCar_spec, tU32 pDelta_time, br_scalar* pOriginal_amount) {
     NOT_IMPLEMENTED();
 }

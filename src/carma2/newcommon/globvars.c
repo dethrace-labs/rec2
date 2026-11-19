@@ -611,7 +611,7 @@ int gWasted_explosion_chance;
 
 // GLOBAL: CARMA2_HW 0x007620f8
 // GLOBAL: CARMA2_SW 0x00758658
-// GLOBAL: CARMA2_CHEAT 0x0076979c
+// GLOBAL: CARMA2_CHEAT 0x00769798
 tExplosion_animation gExplosion_pix_animation_groups;
 
 // GLOBAL: CARMA2_HW 0x00762124

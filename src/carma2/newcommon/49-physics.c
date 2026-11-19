@@ -587,6 +587,7 @@ void C2_HOOK_FASTCALL PositionWorldJointedObject(tPhysics_object* pObject, br_sc
 
 // STUB: CARMA2_HW 0x004b9750
 // STUB: CARMA2_SW 0x004b5e70
+// STUB: CARMA2_CHEAT 0x004bf280
 void C2_HOOK_FASTCALL TellPhysicsJointsHaveChanged(tPhysics_object* pCollision_info) {
     NOT_IMPLEMENTED();
 }

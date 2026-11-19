@@ -808,6 +808,7 @@ void C2_HOOK_FASTCALL CreateSmokeColumn2(int pType, br_actor* pActor, tCar_spec*
 
 // STUB: CARMA2_HW 0x004fb890
 // STUB: CARMA2_SW 0x004f6dd0
+// STUB: CARMA2_CHEAT 0x00501530
 void C2_HOOK_FASTCALL CreateSmokeColumn(tCar_spec *pCar, br_colour pColour, int pVertex_index, tU32 pLifetime) {
     NOT_IMPLEMENTED();
 }
@@ -1259,6 +1260,7 @@ void C2_HOOK_FASTCALL StopObjectSmokingInstantly(tPhysics_object* pObject) {
 
 // STUB: CARMA2_HW 0x004fcab0
 // STUB: CARMA2_SW 0x004f8010
+// STUB: CARMA2_CHEAT 0x00502750
 void C2_HOOK_FASTCALL ConditionalSmokeColumn(tCar_spec* pCar, int pFire_point, int pColour) {
     NOT_IMPLEMENTED();
 }

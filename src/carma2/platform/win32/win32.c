@@ -948,6 +948,7 @@ int C2_HOOK_FASTCALL PDFileUnlock(const char *pThe_path) {
 
 // FUNCTION: CARMA2_HW 0x00486c30
 // FUNCTION: CARMA2_SW 0x00483d70
+// FUNCTION: CARMA2_CHEAT 0x00486f50
 void C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCallback, void *data) {
     char originalCurrentDirectory[MAX_PATH];
     tPath_name filePath;

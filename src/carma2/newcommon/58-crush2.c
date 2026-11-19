@@ -58,14 +58,17 @@ int gTime_per_ped_kill[3];
 
 // GLOBAL: CARMA2_HW 0x00590020
 // GLOBAL: CARMA2_SW 0x0058b018
+// GLOBAL: CARMA2_CHEAT 0x005951a0
 float gWobble_spam_y[8] = { 0.0f, -0.15f, 0.4f, 0.15f, -0.4f, 0.25f, 0.0f, -0.25f };
 
 // GLOBAL: CARMA2_HW 0x00590040
 // GLOBAL: CARMA2_SW 0x0058b038
+// GLOBAL: CARMA2_CHEAT 0x005951c0
 float gWobble_spam_z[8] = { 0.4f, -0.25f, 0.0f, 0.25f, 0.0f, 0.15f, -0.4f, -0.15f };
 
 // GLOBAL: CARMA2_HW 0x00590060
 // GLOBAL: CARMA2_SW 0x0058b058
+// GLOBAL: CARMA2_CHEAT 0x005951e0
 float gWheel_circ_to_width = 0.16f;
 
 // GLOBAL: CARMA2_HW 0x00590068
@@ -478,6 +481,7 @@ void C2_HOOK_FASTCALL SortOutSmoke(tCar_spec* pCar) {
 
 // STUB: CARMA2_HW 0x00440660
 // STUB: CARMA2_SW 0x00440740
+// STUB: CARMA2_CHEAT 0x00440910
 int C2_HOOK_FASTCALL DoCrashEarnings(tCar_spec* pCar1, tCar_spec* pCar2) {
     NOT_IMPLEMENTED();
 }

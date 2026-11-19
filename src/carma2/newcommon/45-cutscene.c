@@ -33,6 +33,7 @@ void C2_HOOK_STDCALL DoStainlessLogo(void) {
 
 // STUB: CARMA2_HW 0x0043e770
 // STUB: CARMA2_SW 0x0043e880
+// STUB: CARMA2_CHEAT 0x0043ea20
 void C2_HOOK_FASTCALL PlaySmackerFile(char* pSmack_name) {
     NOT_IMPLEMENTED();
 }

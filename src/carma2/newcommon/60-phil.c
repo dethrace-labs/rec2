@@ -441,6 +441,7 @@ int C2_HOOK_FASTCALL PHILAddActiveObject(tPhysics_object* pInfo, const br_matrix
 
 // STUB: CARMA2_HW 0x004b62e0
 // STUB: CARMA2_SW 0x004b2a00
+// STUB: CARMA2_CHEAT 0x004bbd70
 int C2_HOOK_FASTCALL PHILAddActiveObjectImmediately(tPhysics_object* pObject, const br_matrix34* pMatrix, const br_vector3* pVelocity, const br_vector3* pOmega) {
     NOT_IMPLEMENTED();
 }

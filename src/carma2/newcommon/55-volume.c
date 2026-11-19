@@ -249,7 +249,7 @@ void C2_HOOK_FASTCALL SaveSpecialVolumes(void) {
 // FUNCTION: CARMA2_HW 0x004ffd20
 // FUNCTION: CARMA2_SW 0x004fb600
 // FUNCTION: CARMA2_CHEAT 0x005059d0
-void C2_HOOK_FASTCALL FindInverseAndWorlBox(tSpecial_volume* pSpec) {
+void C2_HOOK_FASTCALL FindInverseAndWorldBox(tSpecial_volume* pSpec) {
     br_bounds bnds;
 
     BrVector3Set(&bnds.min, -1.0f, -1.0f, -1.0f);
@@ -287,7 +287,7 @@ void C2_HOOK_FASTCALL ReadSpecialVolumes(FILE* pF) {
                 GetThreeScalars(pF, &spec->boundary.box.mat.m[1][0], &spec->boundary.box.mat.m[1][1], &spec->boundary.box.mat.m[1][2]);
                 GetThreeScalars(pF, &spec->boundary.box.mat.m[2][0], &spec->boundary.box.mat.m[2][1], &spec->boundary.box.mat.m[2][2]);
                 GetThreeScalars(pF, &spec->boundary.box.mat.m[3][0], &spec->boundary.box.mat.m[3][1], &spec->boundary.box.mat.m[3][2]);
-                FindInverseAndWorlBox(spec);
+                FindInverseAndWorldBox(spec);
                 spec->boundary.box.axis_length.v[0] = BrVector3Length((br_vector3*)spec->boundary.box.inv_mat.m[0]);
                 spec->boundary.box.axis_length.v[1] = BrVector3Length((br_vector3*)spec->boundary.box.inv_mat.m[1]);
                 spec->boundary.box.axis_length.v[2] = BrVector3Length((br_vector3*)spec->boundary.box.inv_mat.m[2]);

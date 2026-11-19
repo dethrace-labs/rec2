@@ -306,6 +306,7 @@ void C2_HOOK_FASTCALL CopyExplosionData(int pIndex, tExplosion* pExplosion) {
 
 // STUB: CARMA2_HW 0x004ead00
 // STUB: CARMA2_SW 0x004e69e0
+// STUB: CARMA2_CHEAT 0x004f09a0
 void C2_HOOK_FASTCALL Explode(tExplosion_animation *pExplosion_animation,br_actor *pActor, const br_bounds3* pBounds, const br_vector3* pPos) {
     NOT_IMPLEMENTED();
 }
@@ -1807,6 +1808,7 @@ void C2_HOOK_FASTCALL MungeMaterial(br_actor* pActor, int pRecursive, br_materia
 
 // STUB: CARMA2_HW 0x004f57c0
 // STUB: CARMA2_SW 0x004f1420
+// STUB: CARMA2_CHEAT 0x004fb460
 void C2_HOOK_FASTCALL LinkSmashies(br_actor* pActor, tCar_crush_buffer_entry* pCrush_data, tModel_detail_vertex_data* pVertex_data) {
     NOT_IMPLEMENTED();
 }

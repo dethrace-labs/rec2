@@ -12,6 +12,7 @@
 #include "01-network.h"
 #include "04-netgame.h"
 #include "07-structur.h"
+#include "11-world1.h"
 #include "13-crush1.h"
 #include "15-displays.h"
 #include "16-graphics1.h"
@@ -149,6 +150,18 @@ tRace_over_reason gRace_over_reason;
 // GLOBAL: CARMA2_CHEAT 0x00683d20
 tU32 gPalette_fade_time;
 
+// GLOBAL: CARMA2_HW 0x005904f0
+// GLOBAL: CARMA2_CHEAT 0x00595798
+tEdit_func* gEdit_funcs[eEdit_mode_count][18][8] = { 0 };
+
+#ifdef REC2_CHEAT
+// GLOBAL: CARMA2_HW 0x0067c468
+tEdit_mode gWhich_edit_mode;
+#else
+// GLOBAL: CARMA2_CHEAT 0x00595760
+tEdit_mode gWhich_edit_mode = eEdit_mode_options;
+#endif
+
 void C2_HOOK_FASTCALL CompleteRace(void) {
     gRace_over_reason = eRace_over_0;
     gAbandon_game = 2;
@@ -157,12 +170,18 @@ void C2_HOOK_FASTCALL CompleteRace(void) {
 // FUNCTION: CARMA2_HW 0x00441490
 // FUNCTION: CARMA2_SW 0x00441570
 // FUNCTION: CARMA2_CHEAT 0x00441740
-int C2_HOOK_FASTCALL AbortRace(tFrontend_spec* pFrontend) {
+void C2_HOOK_FASTCALL AbortRace(tFrontend_spec* pFrontend) {
 
     if (!gRace_finished) {
+#ifdef REC2_CHEAT
+        if (PDKeyDown(0)) {
+            gRace_over_reason = 0;
+            gAbandon_game = 2;
+            return;
+        }
+#endif
         gAbandon_game = 1;
     }
-    return gRace_finished;
 }
 
 #ifdef REC2_MATCHING
@@ -171,6 +190,7 @@ int C2_HOOK_FASTCALL AbortRace(tFrontend_spec* pFrontend) {
 
 // STUB: CARMA2_HW 0x004414b0
 // STUB: CARMA2_SW 0x00441590
+// STUB: CARMA2_CHEAT 0x00441780
 void C2_HOOK_FASTCALL F4Key(void) {
     NOT_IMPLEMENTED();
 }
@@ -206,6 +226,11 @@ void C2_HOOK_FASTCALL FinishRace(int pArg) {
 // FUNCTION: CARMA2_CHEAT 0x004418b0
 void C2_HOOK_FASTCALL EnsureSpecialVolumesHidden(void) {
 
+#ifdef REC2_CHEAT
+    if (gWhich_edit_mode == eEdit_mode_spec_vol) {
+        HideSpecialVolumes();
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004415f0
@@ -213,9 +238,31 @@ void C2_HOOK_FASTCALL EnsureSpecialVolumesHidden(void) {
 // FUNCTION: CARMA2_CHEAT 0x004418c0
 void C2_HOOK_FASTCALL ShowSpecialVolumesIfRequ(void) {
 
+#ifdef REC2_CHEAT
+    if (gWhich_edit_mode == eEdit_mode_spec_vol) {
+        ShowSpecialVolumes();
+    }
+#endif
 }
 
-// DoEditModeKey
+void C2_HOOK_FASTCALL DoEditModeKey(int pIndex) {
+    int modifiers;
+
+#ifndef REC2_CHEAT
+    if (!(gI_am_cheating == 0xa11ee75d || (gI_am_cheating == 0x564e78b9 && gNet_mode == eNet_mode_none))) {
+        gWhich_edit_mode = eEdit_mode_options;
+        return;
+    }
+#endif
+
+    modifiers = 0;
+    modifiers |= PDKeyDown(0) ? 0x4 : 0;
+    modifiers |= PDKeyDown(1) ? 0x2 : 0;
+    modifiers |= PDKeyDown(2) ? 0x1 : 0;
+    if (gEdit_funcs[gWhich_edit_mode][pIndex][modifiers] != NULL) {
+        (*gEdit_funcs[gWhich_edit_mode][pIndex][modifiers])();
+    }
+}
 
 // F5Key
 
@@ -227,12 +274,22 @@ void C2_HOOK_FASTCALL ShowSpecialVolumesIfRequ(void) {
 
 // F10Key
 
-// F11Key
+// FUNCTION: CARMA2_HW 0x00441880
+// FUNCTION: CARMA2_SW 0x00441960
+// FUNCTION: CARMA2_CHEAT 0x00441ab0
+void C2_HOOK_FASTCALL F11Key(void) {
+
+    DoEditModeKey(5);
+}
 
 // FUNCTION: CARMA2_HW 0x00441900
 // FUNCTION: CARMA2_SW 0x004419e0
 // FUNCTION: CARMA2_CHEAT 0x00441b10
 void C2_HOOK_FASTCALL F12Key(void) {
+
+#ifdef REC2_CHEAT
+    DoEditModeKey(6);
+#endif
 }
 
 // NumberKey0
