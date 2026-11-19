@@ -49,39 +49,39 @@ extern void C2_HOOK_FASTCALL ShowSpecialVolumesIfRequ(void);
 
 extern void C2_HOOK_FASTCALL DoEditModeKey(int pIndex);
 
-// F5Key
+extern void C2_HOOK_FASTCALL F5Key(void);
 
-// F6Key
+extern void C2_HOOK_FASTCALL F6Key(void);
 
-// F7Key
+extern void C2_HOOK_FASTCALL F7Key(void);
 
-// F8Key
+extern void C2_HOOK_FASTCALL F8Key(void);
 
-// F10Key
+extern void C2_HOOK_FASTCALL F10Key(void);
 
-// F11Key
+extern void C2_HOOK_FASTCALL F11Key(void);
 
 extern void C2_HOOK_FASTCALL F12Key(void);
 
-// NumberKey0
+extern void C2_HOOK_FASTCALL NumberKey0(void);
 
-// NumberKey1
+extern void C2_HOOK_FASTCALL NumberKey1(void);
 
-// NumberKey2
+extern void C2_HOOK_FASTCALL NumberKey2(void);
 
-// NumberKey3
+extern void C2_HOOK_FASTCALL NumberKey3(void);
 
-// NumberKey4
+extern void C2_HOOK_FASTCALL NumberKey4(void);
 
-// NumberKey5
+extern void C2_HOOK_FASTCALL NumberKey5(void);
 
-// NumberKey6
+extern void C2_HOOK_FASTCALL NumberKey6(void);
 
-// NumberKey7
+extern void C2_HOOK_FASTCALL NumberKey7(void);
 
-// NumberKey8
+extern void C2_HOOK_FASTCALL NumberKey8(void);
 
-// NumberKey9
+extern void C2_HOOK_FASTCALL NumberKey9(void);
 
 extern void C2_HOOK_FASTCALL LookLeft(void);
 

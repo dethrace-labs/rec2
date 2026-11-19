@@ -143,6 +143,8 @@ address,type,name
 0x00580fc0,library,__getdrive
 0x00581070,library,__mbctolower
 0x00581110,library,__mbspbrk
+0x005811b0,library,_asctime
+0x005812e0,library,_localtime
 0x005814d0,library,__XcptFilter
 0x00581760,library,__ismbblead
 0x00581810,library,__setenvp
@@ -188,6 +190,7 @@ address,type,name
 0x00585d90,library,__getcwd
 0x00585db0,library,__getdcwd
 0x00585ee0,library,__validdrive
+0x00585f20,library,_gmtime
 0x005862f0,library,___crtCompareStringA
 0x005865f0,library,___crtsetenv
 0x005868f0,library,___addl
@@ -207,6 +210,8 @@ address,type,name
 0x00587d00,library,__fstat
 0x00589250,library,_closesocket
 0x0058d878,global,__DEFAULT_CW_in_mem
+0x0058dc10,global,___dnames
+0x0058dc28,global,___mnames
 0x0058f000,global,___xc_a
 0x0058f004,global,___xc_z
 0x0058f008,global,___xi_a
