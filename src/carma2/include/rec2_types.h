@@ -5525,6 +5525,9 @@ typedef struct {
     undefined4 field_0x8;
     undefined4 field_0xc;
     undefined4 field_0x10;
+#ifdef REC2_V101A
+    undefined4 field_extra_v101a; /* FIXME: unknown location (<0x14) */
+#endif
     undefined2 field_0x14;
     undefined2 field_0x16;
 } tNet_message_header;

@@ -35,6 +35,7 @@ int gAction_replay_manual_camera_target_type;
 
 // GLOBAL: CARMA2_HW 0x006792b4
 // GLOBAL: CARMA2_SW 0x00673a24
+// GLOBAL: CARMA2_CHEAT 0x00680b64
 br_actor* gPed_actor;
 
 // GLOBAL: CARMA2_HW 0x006792b8
@@ -48,6 +49,7 @@ int gOpponent_viewing_mode;
 
 // GLOBAL: CARMA2_HW 0x006792c8
 // GLOBAL: CARMA2_SW 0x00673a38
+// GLOBAL: CARMA2_CHEAT 0x00680b78
 tSave_camera gSave_camera[2];
 
 // GLOBAL: CARMA2_HW 0x007634ac
@@ -351,6 +353,7 @@ void C2_HOOK_FASTCALL ToggleCockpit(void) {
 
 // STUB: CARMA2_HW 0x0040ea30
 // STUB: CARMA2_SW 0x0040ea10
+// STUB: CARMA2_CHEAT 0x0040eaf0
 void C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32 pTime) {
     NOT_IMPLEMENTED();
 }
@@ -382,6 +385,7 @@ void C2_HOOK_FASTCALL CameraBugFix(tCar_spec* pCar, tU32 pTime) {
 
 // STUB: CARMA2_HW 0x0040f790
 // STUB: CARMA2_SW 0x0040f770
+// STUB: CARMA2_CHEAT 0x0040f9e0
 int C2_HOOK_FASTCALL IncidentCam(tCar_spec* pCar, tU32 pTime) {
 
     NOT_IMPLEMENTED();

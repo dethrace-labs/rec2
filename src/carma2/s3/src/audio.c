@@ -1571,6 +1571,7 @@ tS3_error_codes C2_HOOK_FASTCALL S3MIDILoadSong(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x00564d4a
 // FUNCTION: CARMA2_SW 0x005603ea
+// FUNCTION: CARMA2_CHEAT 0x0056a93a
 void C2_HOOK_FASTCALL S3ReverseSample(tS3_effect_tag pEffect, tS3_sound_tag pTag) {
     tS3_channel* channel = S3GetChannelForTag(pTag);
     if (channel != NULL) {

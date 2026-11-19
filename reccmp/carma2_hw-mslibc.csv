@@ -66,6 +66,7 @@ address,type,name
 0x00578690,library,clearerr
 0x005786d0,library,_ceil
 0x005787d0,library,_strpbrk
+0x00578810,library,_ctime
 0x00578830,library,__aulldiv
 0x00578a40,library,__amsg_exit
 0x00578aa0,library,_abort

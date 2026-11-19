@@ -512,6 +512,7 @@ br_actor* gPlayer_car_master_actor;
 
 // GLOBAL: CARMA2_HW 0x00655de0
 // GLOBAL: CARMA2_SW 0x00650cc8
+// GLOBAL: CARMA2_CHEAT 0x0065c660
 br_vector3 gInitial_position = {{1000.f, 1000.f, 1000.f}};
 
 // GLOBAL: CARMA2_HW 0x0068b85c

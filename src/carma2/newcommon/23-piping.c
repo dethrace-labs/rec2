@@ -53,9 +53,12 @@ tU8* gPipe_buffer_working_end;
 // GLOBAL: CARMA2_SW 0x00671038
 tU8* gEnd_of_session = NULL;
 
+#ifdef REC2_MATCHING
 // GLOBAL: CARMA2_HW 0x006768cc
 // GLOBAL: CARMA2_SW 0x0067103c
+// GLOBAL: CARMA2_CHEAT 0x0067e17c
 int gINT_006768cc = 0;
+#endif
 
 // GLOBAL: CARMA2_HW 0x006768d0
 tPipe_chunk_type gReentrancy_array[5] = { 0 };
@@ -72,10 +75,12 @@ tU8* gPipe_buffer_phys_end;
 
 // GLOBAL: CARMA2_HW 0x006768f4
 // GLOBAL: CARMA2_SW 0x00671064
+// GLOBAL: CARMA2_CHEAT 0x0067e1a4
 tU32 gLocal_buffer_size;
 
 // GLOBAL: CARMA2_HW 0x006768a0
 // GLOBAL: CARMA2_SW 0x00671010
+// GLOBAL: CARMA2_CHEAT 0x0067e150
 tU8* gMr_chunky;
 
 // GLOBAL: CARMA2_HW 0x00676908
@@ -95,6 +100,7 @@ float gReplay_rate;
 
 // GLOBAL: CARMA2_HW 0x006768e8
 // GLOBAL: CARMA2_SW 0x00671058
+// GLOBAL: CARMA2_CHEAT 0x0067e198
 const tReplay_callback* gPipe_callbacks;
 
 // GLOBAL: CARMA2_HW 0x006768b8
@@ -122,6 +128,7 @@ tU32 gPipe_sound_time_window;
 
 // GLOBAL: CARMA2_HW 0x0067690c
 // GLOBAL: CARMA2_SW 0x0067107c
+// GLOBAL: CARMA2_CHEAT 0x0067e1bc
 int gDisable_advance;
 
 // GLOBAL: CARMA2_HW 0x00694104
@@ -141,8 +148,8 @@ int C2_HOOK_FASTCALL ARReplayForwards(void) {
     if (gPipe_play_ptr == gPipe_buffer_oldest) {
         return 1;
     }
-    if (gReplay_rate != 0.f) {
-        if (gReplay_rate > 0.f) {
+    if (gReplay_rate != 0.0f) {
+        if (gReplay_rate > 0.0f) {
             return 1;
         } else {
             return 0;
@@ -155,7 +162,7 @@ int C2_HOOK_FASTCALL ARReplayForwards(void) {
 // FUNCTION: CARMA2_HW 0x00402360
 // FUNCTION: CARMA2_SW 0x00402360
 int C2_HOOK_FASTCALL ARReplayIsReallyPaused(void) {
-    return gReplay_rate == 0.f;
+    return gReplay_rate == 0.0f;
 }
 
 // FUNCTION: CARMA2_HW 0x00402380
@@ -233,6 +240,7 @@ int C2_HOOK_FASTCALL LengthOfChunk(tPipe_chunk* pChunk, int pType) {
 
 // FUNCTION: CARMA2_HW 0x00403750
 // FUNCTION: CARMA2_SW 0x00403750
+// FUNCTION: CARMA2_CHEAT 0x00403750
 tU32 C2_HOOK_FASTCALL LengthOfSession(tPipe_session* pSession) {
     tU32 i;
     tU32 running_total;
@@ -329,6 +337,7 @@ void C2_HOOK_FASTCALL ARStartPipingSession(tPipe_chunk_type pType) {
 
 // STUB: CARMA2_HW 0x00402660
 // STUB: CARMA2_SW 0x00402660
+// STUB: CARMA2_CHEAT 0x00402660
 void C2_HOOK_FASTCALL EndPipingSession2(int pMunge_reentrancy) {
     NOT_IMPLEMENTED();
 }
@@ -532,6 +541,7 @@ int C2_HOOK_FASTCALL MoveSessionPointerForwardOne(tU8** pPtr) {
 
 // FUNCTION: CARMA2_HW 0x00403c50
 // FUNCTION: CARMA2_SW 0x00403c50
+// FUNCTION: CARMA2_CHEAT 0x00403c50
 int C2_HOOK_FASTCALL SoundTimeout(tU32 pTime) {
     return gPipe_sound_start_time < pTime
         || gPipe_sound_start_time - pTime < gPipe_sound_time_window;
@@ -588,6 +598,7 @@ void C2_HOOK_FASTCALL AREnableAdvance(void) {
 
 // STUB: CARMA2_HW 0x00403260
 // STUB: CARMA2_SW 0x00403260
+// STUB: CARMA2_CHEAT 0x00403260
 void C2_HOOK_FASTCALL MoveReplayBuffer(int pFrames, tReplay_session_callback* pBetween_sessions, tPreprocess_AR_callback* pBefore_frame, tPostProcess_AR_callback* pAfter_frame) {
     NOT_IMPLEMENTED();
 }
@@ -598,12 +609,13 @@ void C2_HOOK_FASTCALL MoveReplayBuffer(int pFrames, tReplay_session_callback* pB
 
 // FUNCTION: CARMA2_HW 0x00403210
 // FUNCTION: CARMA2_SW 0x00403210
+// FUNCTION: CARMA2_CHEAT 0x00403210
 void C2_HOOK_FASTCALL ARMoveToEndOfReplay(tReplay_session_callback* pBetween_sessions, tPreprocess_AR_callback* pBefore_frame, tPostProcess_AR_callback* pAfter_frame) {
     float old_rate;
 
     gDisable_piped_sounds = 1;
     old_rate = gReplay_rate;
-    gReplay_rate = 100.f;
+    gReplay_rate = 100.0f;
     MoveReplayBuffer(INT_MAX, pBetween_sessions, pBefore_frame, pAfter_frame);
     gDisable_piped_sounds = 0;
     gReplay_rate = old_rate;
@@ -611,13 +623,13 @@ void C2_HOOK_FASTCALL ARMoveToEndOfReplay(tReplay_session_callback* pBetween_ses
 
 // FUNCTION: CARMA2_HW 0x00403c70
 // FUNCTION: CARMA2_SW 0x00403c70
-// FUNCTION: CARMA2_CHEAT 0x00403210
+// FUNCTION: CARMA2_CHEAT 0x00403c70
 void C2_HOOK_FASTCALL ARMoveToStartOfReplay(tReplay_session_callback* pBetween_sessions, tPreprocess_AR_callback* pBefore_frame, tPostProcess_AR_callback* pAfter_frame) {
     float old_rate;
 
     gDisable_piped_sounds = 1;
     old_rate = gReplay_rate;
-    gReplay_rate = -100.f;
+    gReplay_rate = -100.0f;
     MoveReplayBuffer(-INT_MAX, pBetween_sessions, pBefore_frame, pAfter_frame);
     gDisable_piped_sounds = 0;
     gReplay_rate = old_rate;
@@ -627,6 +639,7 @@ void C2_HOOK_FASTCALL ARMoveToStartOfReplay(tReplay_session_callback* pBetween_s
 
 // FUNCTION: CARMA2_HW 0x00403d10
 // FUNCTION: CARMA2_SW 0x00403d10
+// FUNCTION: CARMA2_CHEAT 0x00403d10
 void C2_HOOK_FASTCALL ReverseSound(tS3_effect_tag pEffect, tS3_sound_tag pTag) {
     S3ReverseSample(pEffect, pTag);
 }
@@ -1035,6 +1048,7 @@ void C2_HOOK_FASTCALL PipeSingleFrameFinish(void) {
 
 // FUNCTION: CARMA2_HW 0x004c83f0
 // FUNCTION: CARMA2_SW 0x004c4b20
+// FUNCTION: CARMA2_CHEAT 0x004cdf10
 void C2_HOOK_FASTCALL PipeSingleGraphicalWheelStuff(tCar_spec* pCar) {
 
     ARDoSingleVariedSession(ePipe_chunk_single_graphical_wheel_stuff, (tU16)pCar->car_ID, 5,

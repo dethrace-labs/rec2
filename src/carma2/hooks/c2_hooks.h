@@ -41,11 +41,16 @@ extern C2_NORETURN void rec2_error(const char *reason, const char *function, con
 #define C2_HOOK_THISCALL __thiscall
 #define C2_MATCHING_NAKED C2_NAKED
 
+#ifdef REC2_V102A
 // FIXME: rewrite to C2_HOOK_STATIC_ASSERT
 #define C2_HOOK_BUG_ON(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
 #define C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(T, M, O) C2_HOOK_BUG_ON(((uintptr_t)&(((T*)0)->M)) != O)
 #define C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(T, M, S) C2_HOOK_BUG_ON(sizeof(((T*)0)->M) != (S))
-
+#else
+#define C2_HOOK_BUG_ON(condition)
+#define C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(T, M, O)
+#define C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(T, M, S)
+#endif
 #define C2_HOOK_ASSERT(condition)
 #else
 

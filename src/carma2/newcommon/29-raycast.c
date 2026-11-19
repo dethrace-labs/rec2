@@ -224,6 +224,7 @@ int C2_HOOK_CDECL FindHighestCallBack__raycast(br_actor* pActor, br_model* pMode
 
 // STUB: CARMA2_HW 0x004e3bc0
 // STUB: CARMA2_SW 0x004dff50
+// STUB: CARMA2_CHEAT 0x004e9740
 void C2_HOOK_FASTCALL FindBestY(br_vector3* pPosition, br_actor* pWorld, br_scalar pStarting_height, br_scalar* pNearest_y_above, br_scalar* pNearest_y_below, br_model** pNearest_above_model, br_model** pNearest_below_model, int* pNearest_above_face_index, int* pNearest_below_face_index) {
     NOT_IMPLEMENTED();
 }

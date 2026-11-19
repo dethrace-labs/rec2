@@ -263,6 +263,7 @@ tCrush_net_reattach_bit_list_item gNet_crush_reattach_bit_list[8];
 
 // GLOBAL: CARMA2_HW 0x00679440
 // GLOBAL: CARMA2_SW 0x00673bb0
+// GLOBAL: CARMA2_CHEAT 0x00680cf0
 undefined4 gDAT_00679440;
 
 // GLOBAL: CARMA2_HW 0x006796a0

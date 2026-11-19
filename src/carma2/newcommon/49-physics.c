@@ -129,6 +129,7 @@ void* gPhysics_scratch_ptr;
 
 // GLOBAL: CARMA2_HW 0x006940b0
 // GLOBAL: CARMA2_SW 0x0068e108
+// GLOBAL: CARMA2_CHEAT 0x0069bc28
 int gFace_count;
 
 // GLOBAL: CARMA2_HW 0x0065cf78
@@ -454,6 +455,7 @@ int C2_HOOK_FASTCALL TestShapeEdgeIntersection(tPhysics_object* pCollision_info_
 
 // STUB: CARMA2_HW 0x00429070
 // STUB: CARMA2_SW 0x00429100
+// STUB: CARMA2_CHEAT 0x00429200
 int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_info_1, tPhysics_object* pCollision_info_2, br_vector3* pVec3, tWorld_callbacks* pCar_callbacks) {
     NOT_IMPLEMENTED();
 }
@@ -1499,6 +1501,7 @@ void C2_HOOK_FASTCALL PhysicsAddObject(tPhysics_object* pParent, tPhysics_object
 
 // FUNCTION: CARMA2_HW 0x004c63d0
 // FUNCTION: CARMA2_SW 0x004c2b00
+// FUNCTION: CARMA2_CHEAT 0x004cbef0
 void C2_HOOK_FASTCALL PhysicsAddObjectList(tPhysics_object* pParent, tPhysics_object* pChild) {
     tPhysics_object* last;
 

@@ -103,6 +103,7 @@ int gEliminate_faces;
 
 // GLOBAL: CARMA2_HW 0x00679364
 // GLOBAL: CARMA2_SW 0x00673ad4
+// GLOBAL: CARMA2_CHEAT 0x00680c14
 int gIn_the_sea;
 
 // GLOBAL: CARMA2_HW 0x0065d010
@@ -112,14 +113,17 @@ int gFace_num__car = 1;
 
 // GLOBAL: CARMA2_HW 0x00744820
 // GLOBAL: CARMA2_SW 0x0073b2e0
+// GLOBAL: CARMA2_CHEAT 0x0074bec0
 tFace_ref gFace_list__car[300];
 
 // GLOBAL: CARMA2_HW 0x00679360
 // GLOBAL: CARMA2_SW 0x00673ad0
+// GLOBAL: CARMA2_CHEAT 0x00680c10
 br_scalar gMin_world_y;
 
 // GLOBAL: CARMA2_HW 0x006793e4
 // GLOBAL: CARMA2_SW 0x00673b54
+// GLOBAL: CARMA2_CHEAT 0x00680c94
 tPhysics_object* gUnknown_car_collision_info;
 
 // GLOBAL: CARMA2_HW 0x006793d4
@@ -269,6 +273,7 @@ void C2_HOOK_FASTCALL SwitchCarModels(tCar_spec* pCar, int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x00413f70
 // FUNCTION: CARMA2_SW 0x00413fa0
+// FUNCTION: CARMA2_CHEAT 0x004141d0
 void C2_HOOK_FASTCALL InitialiseCar2(tCar_spec* pCar, int pClear_disabled_flag) {
     int index;
     int j;
@@ -471,6 +476,7 @@ void C2_HOOK_FASTCALL InitialiseCarsEtc(tRace_info* pThe_race) {
 
 // FUNCTION: CARMA2_HW 0x00414510
 // FUNCTION: CARMA2_SW 0x00414540
+// FUNCTION: CARMA2_CHEAT 0x00414770
 void C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCar_index, tU32 pGrid_index) {
     int place_on_grid;
     int i;
@@ -1226,10 +1232,10 @@ void C2_HOOK_FASTCALL CancelPendingCunningStunt(void) {
 
 void C2_HOOK_FASTCALL SetTextureBits(tCar_spec* pCar) {
     pCar->field_0x18cc = 0;
-    if (pCar->keys.brake || (pCar->brake_force != 0.f && (float)fabs(pCar->collision_info->velocity_car_space.v[2]) > 1.0 / (1200.0 * WORLD_SCALE_D))) {
+    if (pCar->keys.brake || (pCar->brake_force != 0.f && (float)fabs(pCar->collision_info->velocity_car_space.v[2]) > 1.0 / (2000.0 * WORLD_SCALE_D))) {
         pCar->field_0x18cc |= 0x4;
     }
-    if (pCar->gear < 0 || (!(pCar != NULL && pCar->driver == eDriver_local_human) && pCar->collision_info->velocity_car_space.v[2] > 0.f)) {
+    if (pCar->gear < 0 || (!(pCar != NULL && pCar->driver == eDriver_local_human) && pCar->collision_info->velocity_car_space.v[2] > 0.0f)) {
         pCar->field_0x18cc |= 0x8;
     }
 }
@@ -1257,6 +1263,7 @@ void C2_HOOK_FASTCALL MungeSomeOtherCarGraphics(void) {
 
 // STUB: CARMA2_HW 0x0041e660
 // STUB: CARMA2_SW 0x0041e690
+// STUB: CARMA2_CHEAT 0x0041e8c0
 void C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
     NOT_IMPLEMENTED();
 }
@@ -1315,6 +1322,7 @@ void C2_HOOK_FASTCALL DoLODCarModels(void) {
 
 // FUNCTION: CARMA2_HW 0x0041f280
 // FUNCTION: CARMA2_SW 0x0041f300
+// FUNCTION: CARMA2_CHEAT 0x0041f4e0
 intptr_t C2_HOOK_CDECL TurnOffNonGroovers(br_actor* pActor, void* pData) {
     tUser_crush_data* crush_data = pActor->user;
 
@@ -1424,6 +1432,7 @@ void C2_HOOK_FASTCALL FreezeMechanics(void) {
 
 // STUB: CARMA2_HW 0x0041fc60
 // STUB: CARMA2_SW 0x0041fce0
+// STUB: CARMA2_CHEAT 0x0041fec0
 void C2_HOOK_FASTCALL SetCarSuspGiveAndHeight(tCar_spec* pCar, float pFront_give_factor, float pRear_give_factor, float pDamping_factor, float pExtra_front_height, float pExtra_rear_height) {
     NOT_IMPLEMENTED();
 }

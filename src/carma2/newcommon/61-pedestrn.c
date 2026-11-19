@@ -101,10 +101,12 @@ tPedForms_vtable* gPed_vtable = NULL;
 
 // GLOBAL: CARMA2_HW 0x00677234
 // GLOBAL: CARMA2_SW 0x006719a4
+// GLOBAL: CARMA2_CHEAT 0x0067eae4
 int gPed_retain_root_mode = 0;
 
 // GLOBAL: CARMA2_HW 0x00676d68
 // GLOBAL: CARMA2_SW 0x006714d8
+// GLOBAL: CARMA2_CHEAT 0x0067e618
 br_material* gPedestrian_character_cloned_materials[50];
 
 // GLOBAL: CARMA2_HW 0x0067772c
@@ -2223,6 +2225,7 @@ br_actor* C2_HOOK_FASTCALL GetCharacterActorPtr(const tPed_character_instance* p
 
 // STUB: CARMA2_HW 0x00407b30
 // STUB: CARMA2_SW 0x00407b20
+// STUB: CARMA2_CHEAT 0x00407b20
 void C2_HOOK_FASTCALL SetCharacterBonePositions(tPed_character_instance* pPed, int pArg2, int pArg3) {
     NOT_IMPLEMENTED();
 }
@@ -2237,6 +2240,7 @@ void C2_HOOK_FASTCALL SetCharacterBonePositions(tPed_character_instance* pPed, i
 
 // STUB: CARMA2_HW 0x00408200
 // STUB: CARMA2_SW 0x00408200
+// STUB: CARMA2_CHEAT 0x00408200
 int C2_HOOK_FASTCALL MakeCharacterRenderable2(tPed_character_instance* pCharacter, int pIndex) {
     NOT_IMPLEMENTED();
 }

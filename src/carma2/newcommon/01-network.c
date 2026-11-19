@@ -588,6 +588,7 @@ int C2_HOOK_FASTCALL NetSendMessageToAllPlayers(tNet_game_details* pDetails, tNe
 
 // STUB: CARMA2_HW 0x0049f440
 // STUB: CARMA2_SW 0x0049b5c0
+// STUB: CARMA2_CHEAT 0x0049fce0
 tU32 C2_HOOK_FASTCALL NetGetContentsSize(tU8 pType, tU32 pSize_decider) {
     NOT_IMPLEMENTED();
 }

@@ -297,6 +297,7 @@ void C2_HOOK_FASTCALL StationarySphereSphereCollide(const br_vector3* pPoint, co
 
 // STUB: CARMA2_HW 0x0045ecc0
 // STUB: CARMA2_SW 0x0045e730
+// STUB: CARMA2_CHEAT 0x0045f130
 void C2_HOOK_FASTCALL CheckSingleFace(tFace_ref* pFace, br_vector3* ray_pos, br_vector3* ray_dir, br_vector3* normal, br_scalar* rt, br_vector3* coll_pos) {
     NOT_IMPLEMENTED();
 }
@@ -358,6 +359,7 @@ int C2_HOOK_FASTCALL ActorBoxPick(tBounds* bnds, br_actor* ap, br_model* model, 
 
 // STUB: CARMA2_HW 0x00460bd0
 // STUB: CARMA2_SW 0x00460640
+// STUB: CARMA2_CHEAT 0x00461040
 int C2_HOOK_FASTCALL LineBoxColl(br_vector3* pStart, br_vector3* pEnd, br_bounds* pBounds, br_vector3* pPoint, br_scalar* pT) {
     NOT_IMPLEMENTED();
 }
@@ -436,6 +438,7 @@ int C2_HOOK_FASTCALL LineSphereCollWithSphere(br_vector3* pStart, br_vector3* pE
 
 // STUB: CARMA2_HW 0x00461310
 // STUB: CARMA2_SW 0x00460db0
+// STUB: CARMA2_CHEAT 0x00461780
 int C2_HOOK_FASTCALL LinePolyColl(br_vector3* pStart, br_vector3* pEnd, tCollision_shape_polyhedron_data* pPoly, br_vector3* pPoint, br_scalar pRadius, br_scalar* pT) {
     NOT_IMPLEMENTED();
 }

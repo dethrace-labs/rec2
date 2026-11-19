@@ -10,6 +10,7 @@
 
 #include "platform.h"
 #include "s3/internal/audio.h"
+#include "s3/internal/resource.h"
 #include "rec2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x006aaa1c
@@ -197,6 +198,7 @@ void C2_HOOK_FASTCALL PDS3ReleaseSound(tS3_descriptor* pSound_descriptor) {
 
 // FUNCTION: CARMA2_HW 0x00569401
 // FUNCTION: CARMA2_SW 0x00564aa1
+// FUNCTION: CARMA2_CHEAT 0x0056efec
 int C2_HOOK_FASTCALL PDReverseAudio(tS3_channel* pChannel) {
     tU8* buffer_data;
     DWORD buffer_data_size;
@@ -215,7 +217,7 @@ int C2_HOOK_FASTCALL PDReverseAudio(tS3_channel* pChannel) {
     if (FAILED(IDirectSoundBuffer_Lock(buffer, 0, sample_size, (void**)&buffer_data, &buffer_data_size, NULL, NULL, 0))) {
         return 0;
     }
-    tmp_buffer = BrMemAllocate(sample_size, kMem_S3_Windows_95_create_temp_buffer_space_to_reverse_sample);
+    tmp_buffer = S3MemAllocate(sample_size, kMem_S3_Windows_95_create_temp_buffer_space_to_reverse_sample);
     if (tmp_buffer == NULL) {
         IDirectSoundBuffer_Unlock(buffer, buffer_data, buffer_data_size, NULL, 0);
         return 1;
@@ -224,7 +226,7 @@ int C2_HOOK_FASTCALL PDReverseAudio(tS3_channel* pChannel) {
     for (i = 0; i < buffer_data_size; i++) {
         buffer_data[i] = tmp_buffer[sample_size - 1 - i];
     }
-    BrMemFree(tmp_buffer);
+    S3MemFree(tmp_buffer);
     IDirectSoundBuffer_Unlock(buffer, buffer_data, buffer_data_size, NULL, 0);
     return 0;
 }

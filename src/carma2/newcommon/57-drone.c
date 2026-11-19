@@ -132,6 +132,7 @@ int C2_HOOK_FASTCALL ReallyAddDroneToPHIL(tDrone_spec* pDrone) {
 
 // FUNCTION: CARMA2_HW 0x00450600
 // FUNCTION: CARMA2_SW 0x00450390
+// FUNCTION: CARMA2_CHEAT 0x00450b50
 int C2_HOOK_CDECL LinkyCallback(br_actor* pActor, void* pData) {
     tLinkyCallback_context* context;
     int i;
@@ -375,6 +376,7 @@ int C2_HOOK_FASTCALL OtherPerambulatoryInstasificationIsEnablificated(void) {
 
 // STUB: CARMA2_HW 0x0044ed10
 // STUB: CARMA2_SW 0x0044eab0
+// STUB: CARMA2_CHEAT 0x0044f260
 void C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
     NOT_IMPLEMENTED();
 }
@@ -438,6 +440,7 @@ void C2_HOOK_FASTCALL DisposeDronesRaceStuff(void) {
 
 // STUB: CARMA2_HW 0x0044fda0
 // STUB: CARMA2_SW 0x0044fb40
+// STUB: CARMA2_CHEAT 0x004502f0
 void C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
     NOT_IMPLEMENTED();
 }
@@ -448,6 +451,7 @@ void C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
 
 // STUB: CARMA2_HW 0x00450bf0
 // STUB: CARMA2_SW 0x00450980
+// STUB: CARMA2_CHEAT 0x00451140
 void C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
     NOT_IMPLEMENTED();
 }
