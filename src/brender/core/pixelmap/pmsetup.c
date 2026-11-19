@@ -28,6 +28,7 @@ br_pixelmap_state _pixelmap;
 
 // GLOBAL: CARMA2_HW 0x0058b968
 // GLOBAL: CARMA2_SW 0x00586930
+// GLOBAL: CARMA2_CHEAT 0x005909d0
 br_resource_class pm_resourceClasses[] = {
     { 0u, "PIXELMAP", BR_MEMORY_PIXELMAP, NULL, 0u },
     { 0u, "PIXELS",     BR_MEMORY_PIXELS, NULL, 32u }
@@ -201,6 +202,7 @@ const char* namePointers_BRPMAP1[] = {
 
 // GLOBAL: CARMA2_HW 0x0066dc90
 // GLOBAL: CARMA2_SW 0x00668420
+// GLOBAL: CARMA2_CHEAT 0x00675540
 br_uint_16 nameOrdinals_BRPMAP1[77] = {
     0,
     1,
@@ -283,6 +285,7 @@ br_uint_16 nameOrdinals_BRPMAP1[77] = {
 
 // GLOBAL: CARMA2_HW 0x0066de68
 // GLOBAL: CARMA2_SW 0x006685f8
+// GLOBAL: CARMA2_CHEAT 0x00675718
 br_image Image_BRMAP1 = {
     { 0 },
     "BRPMAP1",

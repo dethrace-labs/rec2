@@ -30,10 +30,12 @@
 
 // GLOBAL: CARMA2_HW 0x00703e24
 // GLOBAL: CARMA2_SW 0x006fab04
+// GLOBAL: CARMA2_CHEAT 0x0070b4c4
 int gWidth;
 
 // GLOBAL: CARMA2_HW 0x00703e20
 // GLOBAL: CARMA2_SW 0x006fab00
+// GLOBAL: CARMA2_CHEAT 0x0070b4c0
 int gHeight;
 
 // GLOBAL: CARMA2_HW 0x00705060
@@ -47,6 +49,7 @@ int gX_offset;
 int gY_offset;
 
 // GLOBAL: CARMA2_HW 0x0068be30
+// GLOBAL: CARMA2_CHEAT 0x006936d0
 int gBrZb_initialized;
 
 // GLOBAL: CARMA2_HW 0x006a22bc
@@ -106,6 +109,7 @@ int gRender_indent;
 
 // GLOBAL: CARMA2_HW 0x006baa40
 // GLOBAL: CARMA2_SW 0x006b1720
+// GLOBAL: CARMA2_CHEAT 0x006c20e0
 tU8 gTemporary_physics_render_buffer[300000];
 
 // GLOBAL: CARMA2_HW 0x006a2448

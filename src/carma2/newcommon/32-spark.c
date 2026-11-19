@@ -30,10 +30,12 @@
 
 // GLOBAL: CARMA2_HW 0x00660110
 // GLOBAL: CARMA2_SW 0x0065aa58
+// GLOBAL: CARMA2_CHEAT 0x00667958
 int gSmoke_on = 1;
 
 #ifdef REC2_HW
 // GLOBAL: CARMA2_HW 0x006b7840
+// GLOBAL: CARMA2_CHEAT 0x006beee0
 int gShade_list[16];
 
 // GLOBAL: CARMA2_HW 0x00660140
@@ -77,6 +79,7 @@ int gSmoke_num;
 
 // GLOBAL: CARMA2_HW 0x006a8ce0
 // GLOBAL: CARMA2_SW 0x006a2730
+// GLOBAL: CARMA2_CHEAT 0x006b0858
 tSmoke gSmoke[25];
 
 // GLOBAL: CARMA2_HW 0x006a8760
@@ -108,10 +111,12 @@ tShrapnel gShrapnel[30] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006a96a8
 // GLOBAL: CARMA2_SW 0x006a30f8
+// GLOBAL: CARMA2_CHEAT 0x006b1220
 tSmoke_column gSmoke_column[10] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006a9b80
 // GLOBAL: CARMA2_SW 0x006a35d0
+// GLOBAL: CARMA2_CHEAT 0x006b16f8
 tSpark gSparks[32] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006aa380
@@ -126,6 +131,7 @@ int gColumn_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa5a0
 // GLOBAL: CARMA2_SW 0x006a3ff0
+// GLOBAL: CARMA2_CHEAT 0x006b2118
 int gNext_column;
 
 // GLOBAL: CARMA2_HW 0x006aa584
@@ -459,12 +465,14 @@ intptr_t C2_HOOK_CDECL ActorFunks(br_actor* pActor, void* pContext) {
 }
 
 // STUB: CARMA2_HW 0x004f8ca0
+// STUB: CARMA2_CHEAT 0x004fe940
 void C2_HOOK_FASTCALL MasterDisableCarFunks(tCar_spec* pCar) {
     NOT_IMPLEMENTED();
 }
 
 // STUB: CARMA2_HW 0x004f8e10
 // STUB: CARMA2_SW 0x004f4490
+// STUB: CARMA2_CHEAT 0x004feab0
 void C2_HOOK_FASTCALL MasterEnableCarFunks(tCar_spec* pCar) {
     NOT_IMPLEMENTED();
 }
@@ -509,6 +517,7 @@ void C2_HOOK_FASTCALL DoCamouflageThing(tCar_spec* pCar) {
 
 // STUB: CARMA2_HW 0x004f9020
 // STUB: CARMA2_SW 0x004f46a0
+// STUB: CARMA2_CHEAT 0x004fecc0
 void C2_HOOK_FASTCALL DoSolidGraniteThing(tCar_spec* pCar) {
     NOT_IMPLEMENTED();
 }
@@ -559,6 +568,7 @@ int C2_HOOK_FASTCALL RestorePixelmap(br_material* pMaterial) {
 
 // STUB: CARMA2_HW 0x004f9620
 // STUB: CARMA2_SW 0x004f4ca0
+// STUB: CARMA2_CHEAT 0x004ff2c0
 void C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar_spec) {
     NOT_IMPLEMENTED();
 }
@@ -819,48 +829,63 @@ void C2_HOOK_FASTCALL CreateSmokeColumn(tCar_spec *pCar, br_colour pColour, int 
 void C2_HOOK_FASTCALL GenerateSmokeShades(void) {
     // GLOBAL: CARMA2_HW 0x006aa5b4
     // GLOBAL: CARMA2_SW 0x006a4004
+    // GLOBAL: CARMA2_CHEAT 0x006b212c
     static int rb = 0;
     // GLOBAL: CARMA2_HW 0x006aa5b8
     // GLOBAL: CARMA2_SW 0x006a4008
+    // GLOBAL: CARMA2_CHEAT 0x006b2130
     static int gb = 0;
     // GLOBAL: CARMA2_HW 0x006aa5bc
     // GLOBAL: CARMA2_SW 0x006a400c
+    // GLOBAL: CARMA2_CHEAT 0x006b2134
     static int bb = 0;
     // GLOBAL: CARMA2_HW 0x00660160
     // GLOBAL: CARMA2_SW 0x0065aa8c
+    // GLOBAL: CARMA2_CHEAT 0x006679a8
     static int rl = 0x40;
     // GLOBAL: CARMA2_HW 0x00660164
     // GLOBAL: CARMA2_SW 0x0065aa90
+    // GLOBAL: CARMA2_CHEAT 0x006679ac
     static int gl = 0x40;
     // GLOBAL: CARMA2_HW 0x00660168
     // GLOBAL: CARMA2_SW 0x0065aa94
+    // GLOBAL: CARMA2_CHEAT 0x006679b0
     static int bl = 0x40;
     // GLOBAL: CARMA2_HW 0x00660178
     // GLOBAL: CARMA2_SW 0x0065aaa4
+    // GLOBAL: CARMA2_CHEAT 0x006679b4
     static int rs = 0xc8;
     // GLOBAL: CARMA2_HW 0x0066017c
     // GLOBAL: CARMA2_SW 0x0065aaa8
+    // GLOBAL: CARMA2_CHEAT 0x006679b8
     static int gs = 0xc8;
     // GLOBAL: CARMA2_HW 0x00660180
     // GLOBAL: CARMA2_SW 0x0065aaac
+    // GLOBAL: CARMA2_CHEAT 0x006679bc
     static int bs = 0xc8;
     // GLOBAL: CARMA2_HW 0x0066016c
     // GLOBAL: CARMA2_SW 0x0065aa98
+    // GLOBAL: CARMA2_CHEAT 0x006679c0
     static int rg = 0x80;
     // GLOBAL: CARMA2_HW 0x00660170
     // GLOBAL: CARMA2_SW 0x0065aa9c
+    // GLOBAL: CARMA2_CHEAT 0x006679c4
     static int gg = 0x80;
     // GLOBAL: CARMA2_HW 0x00660174
     // GLOBAL: CARMA2_SW 0x0065aaa0
+    // GLOBAL: CARMA2_CHEAT 0x006679c8
     static int bg = 0x80;
     // GLOBAL: CARMA2_HW 0x00660184
     // GLOBAL: CARMA2_SW 0x0065aab0
+    // GLOBAL: CARMA2_CHEAT 0x006679cc
     static int ra = 0xfe;
     // GLOBAL: CARMA2_HW 0x00660188
     // GLOBAL: CARMA2_SW 0x0065aab4
+    // GLOBAL: CARMA2_CHEAT 0x006679d0
     static int ga = 0xdf;
     // GLOBAL: CARMA2_HW 0x0066018c
     // GLOBAL: CARMA2_SW 0x0065aab8
+    // GLOBAL: CARMA2_CHEAT 0x006679d4
     static int ba = 0x43;
 
 #ifdef REC2_HW
@@ -1465,6 +1490,7 @@ intptr_t C2_HOOK_CDECL ForEveryActorMaterialNoGrooves(br_actor* pActor, void* pC
 
 // STUB: CARMA2_HW 0x004fe640
 // STUB: CARMA2_SW 0x004f9f20
+// STUB: CARMA2_CHEAT 0x005042e0
 void C2_HOOK_FASTCALL ForEveryCarMaterial(tCar_spec* pCar_spec, tMaterialMaybeUpdate_cbfn* pCallback, int pGrooves) {
     NOT_IMPLEMENTED();
 }
@@ -1502,6 +1528,7 @@ int C2_HOOK_FASTCALL MightBlendifyMaterial(br_material* pMaterial, int pBlend_fa
 
 // FUNCTION: CARMA2_HW 0x004fed00
 // FUNCTION: CARMA2_SW 0x004fa5e0
+// FUNCTION: CARMA2_CHEAT 0x005049a0
 int C2_HOOK_FASTCALL BlendifyMaterialCB(br_material* pMaterial) {
     return MightBlendifyMaterial(pMaterial, 25);
 }
@@ -1515,6 +1542,7 @@ void C2_HOOK_FASTCALL BlendifyCar(tCar_spec* pCar) {
 
 // FUNCTION: CARMA2_HW 0x004fed50
 // FUNCTION: CARMA2_SW 0x004fa630
+// FUNCTION: CARMA2_CHEAT 0x005049f0
 int C2_HOOK_FASTCALL UnBlendifyMaterialCB(br_material* pMaterial) {
     return MightBlendifyMaterial(pMaterial, 100);
 }

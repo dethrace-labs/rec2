@@ -40,6 +40,7 @@ int gHud_tinted3 = -1;
 
 // GLOBAL: CARMA2_HW 0x00762140
 // GLOBAL: CARMA2_SW 0x007586a0
+// GLOBAL: CARMA2_CHEAT 0x007697e0
 int gCredits_checkpoint[3];
 
 // GLOBAL: CARMA2_HW 0x006aaa34

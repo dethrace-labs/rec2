@@ -29,6 +29,7 @@ br_actor* gAdditional_actors;
 
 // GLOBAL: CARMA2_HW 0x006b7820
 // GLOBAL: CARMA2_SW 0x006ae500
+// GLOBAL: CARMA2_CHEAT 0x006beec0
 tBrender_storage* gStorage_for_callbacks;
 
 // GLOBAL: CARMA2_HW 0x006aaa2c
@@ -45,6 +46,7 @@ br_pixelmap* gDuplicate_pixelmap;
 br_material* gDuplicate_material;
 
 // GLOBAL: CARMA2_HW 0x006aaa24
+// GLOBAL: CARMA2_CHEAT 0x006b259c
 br_model* gDuplicate_model;
 
 // GLOBAL: CARMA2_HW 0x00660cb8
@@ -619,6 +621,7 @@ void C2_HOOK_FASTCALL LoadSomeMaterials(tBrender_storage* pStorage, FILE* pFile,
 
 // FUNCTION: CARMA2_HW 0x00502060
 // FUNCTION: CARMA2_SW 0x004fd9b0
+// FUNCTION: CARMA2_CHEAT 0x00507d10
 int C2_HOOK_FASTCALL AddMaterials(tBrender_storage* pStorage_space, const char* pPath, tRendererShadingType pShading) {
     int i;
     int new_ones;
@@ -687,6 +690,7 @@ void C2_HOOK_FASTCALL LoadAllPixelmapsInDirectory(tBrender_storage* pStorage, co
 
 // FUNCTION: CARMA2_HW 0x005026b0
 // FUNCTION: CARMA2_SW 0x004fe000
+// FUNCTION: CARMA2_CHEAT 0x00508360
 int C2_HOOK_FASTCALL GetFileName(const char *pPath, void* pContext) {
     tPath_name path;
     tPath_name pathUpper;
@@ -711,6 +715,7 @@ int C2_HOOK_FASTCALL GetFileName(const char *pPath, void* pContext) {
 
 // FUNCTION: CARMA2_HW 0x00502780
 // FUNCTION: CARMA2_SW 0x004fe0d0
+// FUNCTION: CARMA2_CHEAT 0x00508430
 int C2_HOOK_FASTCALL GetAdditionalFileName(const char* pPath, void* pContext) {
     tPath_name path;
     tPath_name upperPath;
@@ -786,6 +791,7 @@ void C2_HOOK_FASTCALL LoadAllImagesInDirectory(tBrender_storage* pStorage_space,
 
 // FUNCTION: CARMA2_HW 0x00502a70
 // FUNCTION: CARMA2_SW 0x004fe3c0
+// FUNCTION: CARMA2_CHEAT 0x00508710
 void C2_HOOK_FASTCALL LoadIfItsAMaterial(const char* pPath) {
     char path[256];
     tRendererShadingType shading;

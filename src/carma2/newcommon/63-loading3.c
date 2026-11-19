@@ -174,6 +174,7 @@ int C2_HOOK_FASTCALL LoadInterfacePixelmaps(const char *pPath_name, br_pixelmap*
 
 // FUNCTION: CARMA2_HW 0x0048ef40
 // FUNCTION: CARMA2_SW 0x0048c1e0
+// FUNCTION: CARMA2_CHEAT 0x0048f2d0
 br_pixelmap* C2_HOOK_FASTCALL LoadShadeTable(const char* pName) {
     tPath_name the_path;
 

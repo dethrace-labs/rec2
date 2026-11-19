@@ -158,6 +158,7 @@ tPolyhedron_edge_indexes gDefault_box_collision_wireframe_edges[12] = {
 
 // STUB: CARMA2_HW 0x004e6280
 // STUB: CARMA2_SW 0x004e22a0
+// STUB: CARMA2_CHEAT 0x004ebf90
 void C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bastard) {
     NOT_IMPLEMENTED();
 }

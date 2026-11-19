@@ -32,6 +32,7 @@ br_tv_template_entry matchTemplateEntries[] = {
 
 // GLOBAL: CARMA2_HW 0x0058baf0
 // GLOBAL: CARMA2_SW 0x00586ab8
+// GLOBAL: CARMA2_CHEAT 0x00590b58
 br_device_pixelmap_dispatch devicePixelmapDispatch = {
     NULL,
     NULL,
@@ -101,6 +102,7 @@ br_tv_template_entry devicePixelmapTemplateEntries[] = {
 
 // GLOBAL: CARMA2_HW 0x0058b990
 // GLOBAL: CARMA2_SW 0x00586958
+// GLOBAL: CARMA2_CHEAT 0x005909f8
 pm_type_info pmTypeInfo[32] = {
     { 0x1,  0x1,  0x20, 0x1, },
     { 0x2,  0x1,  0x10, 0x1, },
@@ -138,6 +140,7 @@ pm_type_info pmTypeInfo[32] = {
 
 // FUNCTION: CARMA2_HW 0x00539620
 // FUNCTION: CARMA2_SW 0x00534cc0
+// FUNCTION: CARMA2_CHEAT 0x0053f210
 br_device_pixelmap* C2_HOOK_STDCALL DevicePixelmapMemAllocate(br_uint_8 type, br_uint_16 w, br_uint_16 h, void* pixels, int flags) {
     br_device_pixelmap* pm;
     pm_type_info* tip;

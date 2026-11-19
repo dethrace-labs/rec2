@@ -271,6 +271,7 @@ int C2_HOOK_FASTCALL PHILAddObject(tPhysics_object* pObject) {
 
 // STUB: CARMA2_HW 0x004b5ea0
 // STUB: CARMA2_SW 0x004b25c0
+// STUB: CARMA2_CHEAT 0x004bb890
 int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pObject) {
 
     NOT_IMPLEMENTED();

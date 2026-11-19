@@ -37,6 +37,7 @@
 #include "brender/brender.h"
 #include "globvars.h"
 #include "globvrkm.h"
+#include "platform.h"
 #include "rec2_macros.h"
 
 #include "c2_math.h"
@@ -61,14 +62,17 @@ br_actor* gLimbs_actor;
 
 // GLOBAL: CARMA2_HW 0x00694468
 // GLOBAL: CARMA2_SW 0x0068e4c0
+// GLOBAL: CARMA2_CHEAT 0x0069bfe0
 tSmashable_initial_position_spec gGiblet_initial_position;
 
 // GLOBAL: CARMA2_HW 0x0069bc38
 // GLOBAL: CARMA2_SW 0x00695c90
+// GLOBAL: CARMA2_CHEAT 0x006a37b0
 tMovement_spec gGiblet_initial_speed;
 
 // GLOBAL: CARMA2_HW 0x006a0408
 // GLOBAL: CARMA2_SW 0x0069a460
+// GLOBAL: CARMA2_CHEAT 0x006a7f80
 tShrapnel_time_info gGiblet_min_max_time;
 
 // GLOBAL: CARMA2_HW 0x0069bc18
@@ -166,6 +170,7 @@ float gAverage_ped_scale;
 
 // GLOBAL: CARMA2_HW 0x006a03f8
 // GLOBAL: CARMA2_SW 0x0069a450
+// GLOBAL: CARMA2_CHEAT 0x006a7f70
 tPed_face_cache_0x34* gPed_face_caches[4];
 
 // GLOBAL: CARMA2_HW 0x006a0410
@@ -200,6 +205,7 @@ br_material* gPed_slick_material = NULL;
 
 // GLOBAL: CARMA2_HW 0x0069fd88
 // GLOBAL: CARMA2_SW 0x00699de0
+// GLOBAL: CARMA2_CHEAT 0x006a7900
 br_material* gNapalm_bolt_materials[7] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x0069fda4
@@ -207,10 +213,12 @@ int gINT_0069fda4 = 0;
 
 // GLOBAL: CARMA2_HW 0x00694308
 // GLOBAL: CARMA2_SW 0x0068e360
+// GLOBAL: CARMA2_CHEAT 0x0069be80
 br_model* gNapalm_bolt_models[7];
 
 // GLOBAL: CARMA2_HW 0x0065e598
 // GLOBAL: CARMA2_SW 0x00658ed0
+// GLOBAL: CARMA2_CHEAT 0x00665c50
 const char* gNapalm_bolt_texture_names[7] = {
     "Ex00006",
     "Ex00006",
@@ -247,10 +255,12 @@ tTWTVFS gTwtPeds;
 
 // GLOBAL: CARMA2_HW 0x006944a0
 // GLOBAL: CARMA2_SW 0x0068e4f8
+// GLOBAL: CARMA2_CHEAT 0x0069c018
 tMovement_spec gPed_spurt_initial_speed;
 
 // GLOBAL: CARMA2_HW 0x0069fda8
 // GLOBAL: CARMA2_SW 0x00699e00
+// GLOBAL: CARMA2_CHEAT 0x006a7920
 tSmashable_initial_position_spec gPed_spurt_initial_position;
 
 // GLOBAL: CARMA2_HW 0x0069bc30
@@ -269,7 +279,8 @@ int gPed_points[3];
 
 // GLOBAL: CARMA2_HW 0x006a0418
 // GLOBAL: CARMA2_SW 0x0069a470
-tU32 DAT_006a0418;
+// GLOBAL: CARMA2_CHEAT 0x006a7f90
+tU32 gDAT_006a0418;
 
 // GLOBAL: CARMA2_HW 0x007447a4
 // GLOBAL: CARMA2_SW 0x0073b264
@@ -298,10 +309,12 @@ int gPed_cache_sizes_1[4] = { 40, 25, 15, 5 };
 
 // GLOBAL: CARMA2_HW 0x00694120
 // GLOBAL: CARMA2_SW 0x0068e178
-tPedestrian* PTR_00694120;
+// GLOBAL: CARMA2_CHEAT 0x0069bc98
+tPedestrian* gPTR_00694120;
 
 // GLOBAL: CARMA2_HW 0x0069bc58
 // GLOBAL: CARMA2_SW 0x00695cb0
+// GLOBAL: CARMA2_CHEAT 0x006a37d0
 tPed_face_cache_0x34* gPed_face_cache_heads[4];
 
 // GLOBAL: CARMA2_HW 0x00694134
@@ -424,6 +437,7 @@ void C2_HOOK_FASTCALL PedApplyPedFPChange(tPedestrian* pPed, float pSpeed) {
 
 // STUB: CARMA2_HW 0x004cc860
 // STUB: CARMA2_SW 0x004c8f60
+// STUB: CARMA2_CHEAT 0x004d23d0
 void C2_HOOK_CDECL SetCharacterPhysicsLevelAR(tPed_character_instance* pCharacter, tU32 pLevel) {
     NOT_IMPLEMENTED();
 }
@@ -797,6 +811,7 @@ int C2_HOOK_FASTCALL IsActorRenderworthy(br_actor* pActor) {
 
 // STUB: CARMA2_HW 0x004cbcd0
 // STUB: CARMA2_SW 0x004c83d0
+// STUB: CARMA2_CHEAT 0x004d1810
 void C2_HOOK_FASTCALL SetPedMove(tPedestrian* pPed, int pMove_action, int pWalk_speed_factor, int pArg4, int pArg5, tU32 pTime, tPed_action pAction) {
     NOT_IMPLEMENTED();
 }
@@ -1082,6 +1097,11 @@ void C2_HOOK_FASTCALL ScoreForKilledPedestrian(tPedestrian* pPed, float pHeight)
         PipeSinglePedMove(pPed, -1, -1, -1, 0.0f, 0.0f, 0, 0, NULL, NULL, pPed->action, ePed_action_dead, NULL);
         pPed->action = ePed_action_dead;
     }
+#ifdef REC2_CHEAT
+    if (pPed->action == ePed_action_walking || pPed->action == ePed_action_running) {
+        PDFatalError("*** PED SYNCH MISMATCH - TELL BATWICK NOW!!!! ***");
+    }
+#endif
     pPed->field_0x30 = the_time;
     if (pPed->field_0x0c == NULL) {
         return;
@@ -1090,7 +1110,7 @@ void C2_HOOK_FASTCALL ScoreForKilledPedestrian(tPedestrian* pPed, float pHeight)
     if (car == NULL || car->driver != eDriver_local_human) {
         return;
     }
-    if (the_time - DAT_006a0418 <= 1000) {
+    if (the_time - gDAT_006a0418 <= 1000) {
         if (gPed_score_multiplier < 10) {
             gPed_score_multiplier++;
         }
@@ -1098,7 +1118,7 @@ void C2_HOOK_FASTCALL ScoreForKilledPedestrian(tPedestrian* pPed, float pHeight)
         gPed_score_multiplier = 1;
     }
     amount = gPed_points[gProgram_state.skill_level] * gPed_score_multiplier;
-    DAT_006a0418 = the_time;
+    gDAT_006a0418 = the_time;
     ped_object = pPed->character->personality->form->simple_physicing[(tS8)pPed->character->field_0x5].collision_info;
     BrVector3Sub(&offset, &pPed->pos, &car->pos);
     BrMatrix34TApplyV(&local_offset, &offset, &car->collision_info->actor->t.t.mat);
@@ -1162,7 +1182,7 @@ void C2_HOOK_FASTCALL ScoreForKilledPedestrian(tPedestrian* pPed, float pHeight)
         }
     }
     EarnCredits(amount);
-    PTR_00694120 = pPed;
+    gPTR_00694120 = pPed;
     gPed_recent_points = amount;
     AwardTime(gPed_times[gProgram_state.skill_level]);
 }
@@ -1264,6 +1284,7 @@ void C2_HOOK_FASTCALL DamagePedestrian(tPedestrian* pPed, int pDamage, int pArg3
 
 // STUB: CARMA2_HW 0x004d1030
 // STUB: CARMA2_SW 0x004cd730
+// STUB: CARMA2_CHEAT 0x004d6bd0
 int C2_HOOK_FASTCALL ActiveHalted(tPed_character_instance* pCharacter, tPhysics_object* pObject, tFace_ref* pFace) {
     NOT_IMPLEMENTED();
 }
@@ -1762,12 +1783,14 @@ void C2_HOOK_FASTCALL ModelUpdatePrimitiveMaterials(br_model* pModel) {
 
 // STUB: CARMA2_HW 0x004d6b40
 // STUB: CARMA2_SW 0x004d3140
+// STUB: CARMA2_CHEAT 0x004dc700
 void C2_HOOK_FASTCALL TurnOnGhostPeds(void) {
     NOT_IMPLEMENTED();
 }
 
 // STUB: CARMA2_HW 0x004d6bb0
 // STUB: CARMA2_SW 0x004d31b0
+// STUB: CARMA2_CHEAT 0x004dc770
 void C2_HOOK_FASTCALL TurnOffGhostPeds(void) {
     NOT_IMPLEMENTED();
 }
@@ -2181,6 +2204,10 @@ tPed_personality* C2_HOOK_FASTCALL FindOrOpenPersonality(const char* pName) {
 
 // BuildCharacterInstance
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
 // FUNCTION: CARMA2_HW 0x00407aa0
 // FUNCTION: CARMA2_SW 0x00407a90
 // FUNCTION: CARMA2_CHEAT 0x00407a90
@@ -2194,6 +2221,10 @@ br_matrix34* C2_HOOK_FASTCALL GetCharacterMatrixPtr(tPed_character_instance* pCh
     }
     return &pCharacter->personality->form->actor_sets[pCharacter->field_0x4].actors[0]->t.t.mat;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x00407ad0
 // FUNCTION: CARMA2_SW 0x00407ac0
@@ -2415,6 +2446,7 @@ void C2_HOOK_FASTCALL StopCharacterMorphing(tPed_character_instance* pCharacter)
 
 // STUB: CARMA2_HW 0x0040a050
 // STUB: CARMA2_SW 0x0040a050
+// STUB: CARMA2_CHEAT 0x0040a0c0
 int C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pPed, int pMove_action, float pSpeed, int pArg4, int pArg5, tU32 pTime) {
     NOT_IMPLEMENTED();
 }
@@ -2433,6 +2465,7 @@ int C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pPed, int pMove_a
 
 // STUB: CARMA2_HW 0x0040a730
 // STUB: CARMA2_SW 0x0040a730
+// STUB: CARMA2_CHEAT 0x0040a7a0
 void C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pPed, const br_vector3* pDir, const br_vector3* pUp) {
     NOT_IMPLEMENTED();
 }
@@ -2544,6 +2577,7 @@ int C2_HOOK_FASTCALL BonerActiveHalted(tPed_character_instance* pCharacter) {
 
 // STUB: CARMA2_HW 0x0040b860
 // STUB: CARMA2_SW 0x0040b850
+// STUB: CARMA2_CHEAT 0x0040b8e0
 int C2_HOOK_FASTCALL DismemberCharacter(tPed_character_instance* pCharacter, int pBone_index, br_vector3* pVelocity, br_vector3* pAngular_velocity) {
     NOT_IMPLEMENTED();
 }

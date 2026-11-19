@@ -803,6 +803,7 @@ int gShow_opponents;
 
 // GLOBAL: CARMA2_HW 0x0075ba50
 // GLOBAL: CARMA2_SW 0x00751fb0
+// GLOBAL: CARMA2_CHEAT 0x007630f0
 int gTotal_laps;
 
 // GLOBAL: CARMA2_HW 0x0075b8f4

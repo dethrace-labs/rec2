@@ -120,6 +120,7 @@ tHeadup_icon gPickedup_powerups[20];
 
 // GLOBAL: CARMA2_HW 0x00763480
 // GLOBAL: CARMA2_SW 0x007599e0
+// GLOBAL: CARMA2_CHEAT 0x0076ab20
 tSlot_info gCost_APO;
 
 // GLOBAL: CARMA2_HW 0x0075b900
@@ -289,6 +290,7 @@ int C2_HOOK_FASTCALL GotPowerupX(tCar_spec* pCar, int pIndex, int pArg3, int pMe
 
 // STUB: CARMA2_HW 0x004d8d40
 // STUB: CARMA2_SW 0x004d5270
+// STUB: CARMA2_CHEAT 0x004de900
 void C2_HOOK_FASTCALL GotPowerupEarwig(tCar_spec* pCar, int pIndex, int pMessage, int pSelect_inventory) {
     NOT_IMPLEMENTED();
 }
@@ -1323,6 +1325,7 @@ int C2_HOOK_FASTCALL KangerooJump(tPowerup* pPowerup, tCar_spec* pCar) {
 
 // STUB: CARMA2_HW 0x004de1f0
 // STUB: CARMA2_SW 0x004da6f0
+// STUB: CARMA2_CHEAT 0x004e3db0
 int C2_HOOK_FASTCALL RepulseOpponents2(tPowerup* pPowerup, tCar_spec* pCar, int pSend_message) {
     NOT_IMPLEMENTED();
 }
@@ -1775,6 +1778,7 @@ void C2_HOOK_CDECL RenderChangingPowerup(br_actor* pActor, br_model* pModel, br_
 void C2_HOOK_FASTCALL SetSpinningPowerup(br_actor* pActor, int pOpacity) {
     // GLOBAL: CARMA2_HW 0x0065ebc0
     // GLOBAL: CARMA2_SW 0x00659520
+    // GLOBAL: CARMA2_CHEAT 0x00666328
     static br_token_value spinning_powerup_extra_prim[2] = {
         { BRT_BLEND_B, { 1 } },
         { BRT_OPACITY_X, { BrScalarToFixed(75) } },
@@ -1931,7 +1935,12 @@ void C2_HOOK_FASTCALL MayQueuePowerupRespawn(int pPowerup_index, br_actor* pActo
     C2_HOOK_BUG_ON(REC2_ASIZE(gRespawn_powerups) != 100);
     C2_HOOK_BUG_ON(sizeof(tRespawn_powerup) != 0xc);
 
-    if (pActor != NULL && gRace_powerup_respawn_bools[pPowerup_index] && (gNet_mode == eNet_mode_none || gCurrent_net_game->options.powerup_respawn)) {
+    if (pActor != NULL && gRace_powerup_respawn_bools[pPowerup_index]
+#ifdef REC2_V102A
+        && (gNet_mode == eNet_mode_none || gCurrent_net_game->options.powerup_respawn)) {
+#else
+        ) {
+#endif
         for (i = 0; i < (int)REC2_ASIZE(gRespawn_powerups); i++) {
             if (gRespawn_powerups[i].actor == NULL) {
                 gRespawn_powerups[i].actor = pActor;

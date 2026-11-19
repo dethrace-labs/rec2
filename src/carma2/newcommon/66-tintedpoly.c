@@ -23,6 +23,7 @@
 
 // GLOBAL: CARMA2_HW 0x0065e560
 // GLOBAL: CARMA2_SW 0x00658e98
+// GLOBAL: CARMA2_CHEAT 0x00665c18
 const char* gForm_non_humanoid_names[1] = {
     "NONHUMANOID",
 };
@@ -34,6 +35,7 @@ tTintedPoly gTintedPolys[10] = {0};
 
 // GLOBAL: CARMA2_HW 0x007447a0
 // GLOBAL: CARMA2_SW 0x0073b260
+// GLOBAL: CARMA2_CHEAT 0x0074be40
 int gGhost_pedestrians = 0;
 
 // GLOBAL: CARMA2_HW 0x006a0430

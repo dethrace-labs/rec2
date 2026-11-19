@@ -46,10 +46,12 @@ float gOpponent_nastyness_frigger = 1.0f;
 
 // GLOBAL: CARMA2_HW 0x0074a684
 // GLOBAL: CARMA2_SW 0x00741144
+// GLOBAL: CARMA2_CHEAT 0x00751d24
 int gMinTimeOpponentRepair;
 
 // GLOBAL: CARMA2_HW 0x0074a688
 // GLOBAL: CARMA2_SW 0x00741148
+// GLOBAL: CARMA2_CHEAT 0x00751d28
 int gMaxTimeOpponentRepair;
 
 // GLOBAL: CARMA2_HW 0x0069173c
@@ -59,6 +61,7 @@ int gActive_car_list_rebuild_required;
 
 // GLOBAL: CARMA2_HW 0x00691744
 // GLOBAL: CARMA2_SW 0x0068b79c
+// GLOBAL: CARMA2_CHEAT 0x006990f0
 int gNumber_of_cops_before_faffage;
 
 // GLOBAL: CARMA2_HW 0x00691758
@@ -75,6 +78,7 @@ int gNum_of_opponents_pursuing;
 
 // GLOBAL: CARMA2_HW 0x0069175c
 // GLOBAL: CARMA2_SW 0x0068b7b4
+// GLOBAL: CARMA2_CHEAT 0x0069910c
 tU8* gBit_per_node;
 
 // GLOBAL: CARMA2_HW 0x00691764
@@ -88,14 +92,17 @@ int gRoute_search_calls;
 
 // GLOBAL: CARMA2_HW 0x0069174c
 // GLOBAL: CARMA2_SW 0x0068b7a4
+// GLOBAL: CARMA2_CHEAT 0x006990f8
 int gRoute_search_last_target_count;
 
 // GLOBAL: CARMA2_HW 0x0069172c
 // GLOBAL: CARMA2_SW 0x0068b784
+// GLOBAL: CARMA2_CHEAT 0x006990d8
 int gRoute_search_target_count;
 
 // GLOBAL: CARMA2_HW 0x0069171c
 // GLOBAL: CARMA2_SW 0x0068b774
+// GLOBAL: CARMA2_CHEAT 0x00698fc4
 float gShortest_route_length;
 
 // GLOBAL: CARMA2_HW 0x00691720
@@ -205,6 +212,7 @@ int C2_HOOK_FASTCALL PointVisibleFromHere(br_vector3* pFrom, br_vector3* pTo) {
 
 // STUB: CARMA2_HW 0x004a82d0
 // STUB: CARMA2_SW 0x004a4440
+// STUB: CARMA2_CHEAT 0x004a95e0
 tS16 C2_HOOK_FASTCALL FindNearestGeneralSection(tCar_spec* pCar, const br_vector3* pActor_coords, br_vector3* pPath_direction, br_vector3* pIntersect, br_scalar* pDistance) {
     NOT_IMPLEMENTED();
 }
@@ -336,6 +344,7 @@ void C2_HOOK_FASTCALL CalcRaceRoute(tOpponent_spec* pOpponent_spec) {
 
 // STUB: CARMA2_HW 0x004a93c0
 // STUB: CARMA2_SW 0x004a5530
+// STUB: CARMA2_CHEAT 0x004aa6e0
 void C2_HOOK_FASTCALL TopUpRandomRoute(tOpponent_spec* pOpponent_spec, int pSections_to_add) {
     NOT_IMPLEMENTED();
 }
@@ -358,6 +367,7 @@ void C2_HOOK_FASTCALL CalcOpponentConspicuousnessWithAViewToCheatingLikeFuck(tOp
 
 // FUNCTION: CARMA2_HW 0x004ac180
 // FUNCTION: CARMA2_SW 0x004a82f0
+// FUNCTION: CARMA2_CHEAT 0x004ad670
 int C2_HOOK_FASTCALL SearchForSection(tRoute_section* pRoute, tRoute_section* pBest_route, int* pBest_count, tS16 pTarget, int pDepth, br_scalar pLength, tOpponent_spec* pOpponent_spec) {
     char prefix[32];
     const tPath_node* path_node;
@@ -461,6 +471,7 @@ int C2_HOOK_FASTCALL ShiftOpponentsProjectedRoute(tOpponent_spec* pOpponent_spec
 
 // STUB: CARMA2_HW 0x004ac9e0
 // STUB: CARMA2_SW 0x004a8b50
+// STUB: CARMA2_CHEAT 0x004aded0
 void C2_HOOK_FASTCALL NewCalcGetNearPlayerRoute(tOpponent_spec* pOpponent_spec, tCar_spec* pPursuee, int pForce) {
     NOT_IMPLEMENTED();
 }
@@ -939,6 +950,7 @@ void C2_HOOK_FASTCALL RemoveAnythingStillInList(tPhysics_object** pList, int pCo
 
 // STUB: CARMA2_HW 0x004a7a80
 // STUB: CARMA2_SW 0x004a3bf0
+// STUB: CARMA2_CHEAT 0x004a8d90
 void C2_HOOK_FASTCALL RebuildActiveCarList(void) {
     NOT_IMPLEMENTED();
 }
@@ -1060,6 +1072,7 @@ int C2_HOOK_FASTCALL RematerialiseOpponentOnNearestSection(tOpponent_spec* pOppo
 
 // STUB: CARMA2_HW 0x004a87a0
 // STUB: CARMA2_SW 0x004a4910
+// STUB: CARMA2_CHEAT 0x004a9ac0
 int C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_spec, br_scalar pSpeed) {
     NOT_IMPLEMENTED();
 }

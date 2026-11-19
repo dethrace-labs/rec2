@@ -137,6 +137,7 @@ tPipe_smudge_data* gCrush_space;
 
 // GLOBAL: CARMA2_HW 0x0069410c
 // GLOBAL: CARMA2_SW 0x0068e164
+// GLOBAL: CARMA2_CHEAT 0x0069bc84
 tFloat_u32_union gFloat_pipe_union;
 
 // FUNCTION: CARMA2_HW 0x00402300
@@ -380,6 +381,7 @@ void C2_HOOK_FASTCALL ARAddDataToSession(int pType, uintptr_t pOwner, void* pDat
 
 // FUNCTION: CARMA2_HW 0x00402930
 // FUNCTION: CARMA2_SW 0x00402930
+// FUNCTION: CARMA2_CHEAT 0x00402930
 void C2_HOOK_CDECL ARAddVariedDataToSession(int pType, uintptr_t pOwner, int pCount, ...) {
     va_list ap;
     int i;
@@ -429,6 +431,7 @@ void C2_HOOK_CDECL ARAddVariedDataToSession(int pType, uintptr_t pOwner, int pCo
 
 // FUNCTION: CARMA2_HW 0x00402ab0
 // FUNCTION: CARMA2_SW 0x00402ab0
+// FUNCTION: CARMA2_CHEAT 0x00402ab0
 void C2_HOOK_FASTCALL ARDoSingleSession(int pType, uintptr_t pOwner, void* pData, tU32 pSize) {
 
     if (gPipe_buffer_start != NULL && !gAction_replay_mode && gProgram_state.racing) {
@@ -849,6 +852,7 @@ void C2_HOOK_FASTCALL AddSmokeToPipingSession(int pIndex, tU8 pType, br_vector3*
 
 // FUNCTION: CARMA2_HW 0x004c70c0
 // FUNCTION: CARMA2_SW 0x004c37f0
+// FUNCTION: CARMA2_CHEAT 0x004ccbe0
 void C2_HOOK_FASTCALL AddSmokeColumnToPipingSession(int pIndex, const tSmoke_column_core* pCore, int pVertex, int pColour) {
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_smoke_column, core, 0x10);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_smoke_column, vertex, 0x10);
@@ -862,6 +866,7 @@ void C2_HOOK_FASTCALL AddSmokeColumnToPipingSession(int pIndex, const tSmoke_col
 
 // FUNCTION: CARMA2_HW 0x004c70f0
 // FUNCTION: CARMA2_SW 0x004c3820
+// FUNCTION: CARMA2_CHEAT 0x004ccc10
 void C2_HOOK_FASTCALL AddFlameToPipingSession(int pIndex, int pFrame, br_scalar pScale_x, br_scalar pScale_y, br_scalar pOffset_x, br_scalar pOffset_z) {
     C2_HOOK_STATIC_ASSERT_STRUCT_MEMBER_SIZE(tPipe_chunk_flame, frame_count, 0x2);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_flame, scale_x, 0x4);

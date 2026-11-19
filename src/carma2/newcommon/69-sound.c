@@ -161,6 +161,7 @@ tS3_outlet* gXXX_outlet;
 
 // GLOBAL: CARMA2_HW 0x0079e160
 // GLOBAL: CARMA2_SW 0x007946c0
+// GLOBAL: CARMA2_CHEAT 0x007a5800
 tS3_outlet* gIndexed_outlets[7] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x0079e17c
@@ -862,6 +863,7 @@ tS3_outlet* C2_HOOK_FASTCALL GetOutletFromIndex(int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x004566b0
 // FUNCTION: CARMA2_SW 0x00456440
+// FUNCTION: CARMA2_CHEAT 0x00456b70
 int C2_HOOK_FASTCALL GetIndexFromOutlet(tS3_outlet* pOutlet) {
     int i;
 

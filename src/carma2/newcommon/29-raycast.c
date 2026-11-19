@@ -33,6 +33,7 @@ float gLowest_y_above;
 
 // GLOBAL: CARMA2_HW 0x006a20e0
 // GLOBAL: CARMA2_SW 0x0069c138
+// GLOBAL: CARMA2_CHEAT 0x006a9c58
 float gCurrent_y;
 
 // GLOBAL: CARMA2_HW 0x006a20e4
@@ -91,6 +92,7 @@ void C2_HOOK_FASTCALL InitRayCasting(void) {
 
 // STUB: CARMA2_HW 0x004e3a30
 // STUB: CARMA2_SW 0x004dfdc0
+// STUB: CARMA2_CHEAT 0x004e95b0
 int C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector3* rp, br_vector3* rd, br_scalar t_near, br_scalar t_far, br_scalar* new_t_near, br_scalar* new_t_far) {
     NOT_IMPLEMENTED();
 }
@@ -179,6 +181,7 @@ int C2_HOOK_FASTCALL ActorPick2D(br_actor* pActor, br_model* pModel, br_material
 
 // STUB: CARMA2_HW 0x004e3d90
 // STUB: CARMA2_SW 0x004e0120
+// STUB: CARMA2_CHEAT 0x004e9910
 int C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* pModel, br_material* pMaterial, br_vector3* pRay_pos, br_vector3* pRay_dir, br_scalar pT_near, br_scalar pT_far, dr_modelpick2d_raycast_cbfn* pCallback, void* pArg) {
 
     NOT_IMPLEMENTED();
@@ -264,6 +267,7 @@ int C2_HOOK_CDECL FindYVerticallyBelowCallBack(br_actor* pActor, br_model* pMode
 
 // STUB: CARMA2_HW 0x004e4370
 // STUB: CARMA2_SW 0x004e0700
+// STUB: CARMA2_CHEAT 0x004e9ef0
 br_scalar C2_HOOK_FASTCALL FindYVerticallyBelow(br_vector3* pPosition) {
     NOT_IMPLEMENTED();
 }

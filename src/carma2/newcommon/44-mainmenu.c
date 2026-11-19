@@ -19,6 +19,7 @@
 // QuitVerifyDone
 
 // STUB: CARMA2_HW 0x00494450
+// STUB: CARMA2_CHEAT 0x00494680
 int C2_HOOK_FASTCALL DoVerifyQuit(int pReplace_background) {
     NOT_IMPLEMENTED();
 }

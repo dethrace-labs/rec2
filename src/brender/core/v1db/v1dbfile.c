@@ -455,6 +455,7 @@ br_file_struct br_camera_F = { "br_camera", BR_ASIZE(br_camera_FM), br_camera_FM
 
 // GLOBAL: CARMA2_HW 0x00663e50
 // GLOBAL: CARMA2_SW 0x0065e5e8
+// GLOBAL: CARMA2_CHEAT 0x0066b708
 br_chunks_table_entry ModelLoadEntries[] = {
     { CHUNKID_END, 0u, FopRead_END },
     { CHUNKID_OLD_MATERIAL_INDEX, 0u, FopRead_OLD_MATERIAL_INDEX },
@@ -475,6 +476,7 @@ br_chunks_table_entry ModelLoadEntries[] = {
 
 // GLOBAL: CARMA2_HW 0x00663f08
 // GLOBAL: CARMA2_SW 0x0065e6a0
+// GLOBAL: CARMA2_CHEAT 0x0066b7c0
 br_chunks_table ModelLoadTable = { BR_ASIZE(ModelLoadEntries), ModelLoadEntries };
 
 // GLOBAL: CARMA2_HW 0x00663f10
@@ -509,6 +511,7 @@ br_chunks_table ActorLoadTable = { BR_ASIZE(ActorLoadEntries), ActorLoadEntries 
 
 // GLOBAL: CARMA2_HW 0x00664018
 // GLOBAL: CARMA2_SW 0x0065e7b0
+// GLOBAL: CARMA2_CHEAT 0x0066b8d0
 br_chunks_table_entry MaterialLoadEntries[] = {
     { CHUNKID_END, 0u, FopRead_END },
     { CHUNKID_MATERIAL_OLD, 0u, FopRead_MATERIAL_OLD },
@@ -522,6 +525,7 @@ br_chunks_table_entry MaterialLoadEntries[] = {
 
 // GLOBAL: CARMA2_HW 0x00664078
 // GLOBAL: CARMA2_SW 0x0065e810
+// GLOBAL: CARMA2_CHEAT 0x0066b930
 br_chunks_table MaterialLoadTable = { BR_ASIZE(MaterialLoadEntries), MaterialLoadEntries };
 
 int C2_HOOK_STDCALL FopWrite_VERTICES(br_datafile* df, br_vertex* vertices, int nvertices) {
@@ -1359,14 +1363,14 @@ br_uint_32 C2_HOOK_CDECL BrModelSaveMany(char* filename, br_model** models, br_u
         return 0;
     }
     FopWrite_FILE_INFO(df, FILE_TYPE_MODEL);
-    if (models == NULL) {
-        BrModelEnum(NULL, (br_model_enum_cbfn*)&WriteModel, df);
-        m = BrModelCount(NULL);
-    } else {
+    if (models != NULL) {
         for (i = 0; i < num; i++) {
             WriteModel(models[i], df);
         }
         m = num;
+    } else {
+        BrModelEnum(NULL, (br_model_enum_cbfn*)&WriteModel, df);
+        m = BrModelCount(NULL);
     }
     DfClose(df);
     return m;

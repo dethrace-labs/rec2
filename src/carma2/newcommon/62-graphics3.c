@@ -56,7 +56,8 @@ const int gArrows[2][4][60] = {
 
 // GLOBAL: CARMA2_HW 0x00655df0
 // GLOBAL: CARMA2_SW 0x00650cd8
-br_vector3 y_unit_vector = { { 0.f, 1.f, 0.f } };
+// GLOBAL: CARMA2_CHEAT 0x0065c670
+br_vector3 y_unit_vector = { { 0.0f, 1.0f, 0.0f } };
 
 // GLOBAL: CARMA2_HW 0x00655dfc
 // GLOBAL: CARMA2_SW 0x00650ce4
@@ -88,22 +89,27 @@ int gTarget_lock_enabled;
 
 // GLOBAL: CARMA2_HW 0x0068d8cc
 // GLOBAL: CARMA2_SW 0x00687924
+// GLOBAL: CARMA2_CHEAT 0x0069516c
 int gInitMap_done;
 
 // GLOBAL: CARMA2_HW 0x0074abdc
 // GLOBAL: CARMA2_SW 0x00741288
+// GLOBAL: CARMA2_CHEAT 0x0075227c
 float gHeadup_map_x_float;
 
 // GLOBAL: CARMA2_HW 0x0074abd8
 // GLOBAL: CARMA2_SW 0x00741284
+// GLOBAL: CARMA2_CHEAT 0x00752278
 float gHeadup_map_y_float;
 
 // GLOBAL: CARMA2_HW 0x0074abcc
 // GLOBAL: CARMA2_SW 0x00741278
+// GLOBAL: CARMA2_CHEAT 0x0075226c
 float gHeadup_map_w_float;
 
 // GLOBAL: CARMA2_HW 0x0074ab80
 // GLOBAL: CARMA2_SW 0x00741230
+// GLOBAL: CARMA2_CHEAT 0x00752220
 float gHeadup_map_h_float;
 
 // GLOBAL: CARMA2_HW 0x0074ab88
@@ -112,6 +118,7 @@ int gINT_0074ab88;
 
 // GLOBAL: CARMA2_HW 0x0074ab8c
 // GLOBAL: CARMA2_SW 0x00741238
+// GLOBAL: CARMA2_CHEAT 0x0075222c
 int gINT_0074ab8c;
 
 // GLOBAL: CARMA2_HW 0x0074ab94
@@ -268,6 +275,7 @@ int flash_state;
 
 // GLOBAL: CARMA2_HW 0x0068d6f8
 // GLOBAL: CARMA2_SW 0x00687750
+// GLOBAL: CARMA2_CHEAT 0x00694f98
 tOppo_status_messages gOppo_status_messages[9];
 
 // GLOBAL: CARMA2_HW 0x0074abe0

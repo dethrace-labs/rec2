@@ -488,6 +488,7 @@ void C2_HOOK_FASTCALL ActuallySmashPart(tCar_spec* pCar_spec, tCar_crush_smashab
 
 // STUB: CARMA2_HW 0x004eb4a0
 // STUB: CARMA2_SW 0x004e7170
+// STUB: CARMA2_CHEAT 0x004f1140
 br_scalar C2_HOOK_FASTCALL SetInitPosition(br_actor* pActor, tSmashable_initial_position_spec* pInitial_position, br_actor* pSource_actor, br_vector3* pPosition, br_vector3* pAlternate_position, br_actor* pReference_actor, br_bounds3* pBounds, br_matrix34* pMatrix) {
     NOT_IMPLEMENTED();
 }
@@ -1052,6 +1053,7 @@ void C2_HOOK_FASTCALL InitSmashing(void) {
 
 // STUB: CARMA2_HW 0x004eff30
 // STUB: CARMA2_SW 0x004ebb90
+// STUB: CARMA2_CHEAT 0x004f5bd0
 void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32 pTime, float pDelta_time) {
     NOT_IMPLEMENTED();
 }

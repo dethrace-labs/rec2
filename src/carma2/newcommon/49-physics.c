@@ -36,14 +36,17 @@ int gINT_00692dc8;
 
 // GLOBAL: CARMA2_HW 0x006940c0
 // GLOBAL: CARMA2_SW 0x0068e118
+// GLOBAL: CARMA2_CHEAT 0x0069bc38
 tPhysicsError_cbfn* gPhysics_error_cb;
 
 // GLOBAL: CARMA2_HW 0x00744818
 // GLOBAL: CARMA2_SW 0x0073b2d8
+// GLOBAL: CARMA2_CHEAT 0x0074beb8
 void* gPhysics_buffer1_ptr;
 
 // GLOBAL: CARMA2_HW 0x00744814
 // GLOBAL: CARMA2_SW 0x0073b2d4
+// GLOBAL: CARMA2_CHEAT 0x0074beb4
 void* gPhysics_buffer2_ptr;
 
 // GLOBAL: CARMA2_HW 0x0074480c
@@ -73,6 +76,7 @@ tPedestrian* gPedestrian_array;
 
 // GLOBAL: CARMA2_HW 0x0074a5e0
 // GLOBAL: CARMA2_SW 0x007410a0
+// GLOBAL: CARMA2_CHEAT 0x00751c80
 void* gPhysics_buffer3_ptr;
 
 // GLOBAL: CARMA2_HW 0x0074a5e4
@@ -85,6 +89,7 @@ int gPHIL_munging_objects;
 
 // GLOBAL: CARMA2_HW 0x006940c8
 // GLOBAL: CARMA2_SW 0x0068e120
+// GLOBAL: CARMA2_CHEAT 0x0069bc40
 int gPhysics_other_buffer_capacity;
 
 // GLOBAL: CARMA2_HW 0x00694140
@@ -99,6 +104,7 @@ tPed_giblet_size_spec* gGiblet_sizes;
 
 // GLOBAL: CARMA2_HW 0x00694278
 // GLOBAL: CARMA2_SW 0x0068e2d0
+// GLOBAL: CARMA2_CHEAT 0x0069bdf0
 br_model* gPed_spurt_model;
 
 // GLOBAL: CARMA2_HW 0x0069427c
@@ -108,6 +114,7 @@ int gPed_spurty_lumps_count;
 
 // GLOBAL: CARMA2_HW 0x00694268
 // GLOBAL: CARMA2_SW 0x0068e2c0
+// GLOBAL: CARMA2_CHEAT 0x0069bde0
 int gPed_times[3];
 
 // GLOBAL: CARMA2_HW 0x00694280
@@ -117,10 +124,12 @@ br_actor* gPed_limbed_actors[30];
 
 // GLOBAL: CARMA2_HW 0x006942f8
 // GLOBAL: CARMA2_SW 0x0068e350
+// GLOBAL: CARMA2_CHEAT 0x0069be70
 tShrapnel_time_info gPed_spurt_min_max_time;
 
 // GLOBAL: CARMA2_HW 0x006940c4
 // GLOBAL: CARMA2_SW 0x0068e11c
+// GLOBAL: CARMA2_CHEAT 0x0069bc3c
 void* gPhysics_other_buffer;
 
 // GLOBAL: CARMA2_HW 0x006940bc
@@ -1432,12 +1441,14 @@ void C2_HOOK_FASTCALL FillInShape(tPhysics_shape* pShape) {
 
 // STUB: CARMA2_HW 0x004c60a0
 // STUB: CARMA2_SW 0x004c27d0
+// STUB: CARMA2_CHEAT 0x004cbbc0
 void C2_HOOK_FASTCALL UpdateCollisionObject(tPhysics_object* pCollision_info) {
     NOT_IMPLEMENTED();
 }
 
 // FUNCTION: CARMA2_HW 0x004c61c0
 // FUNCTION: CARMA2_SW 0x004c28f0
+// FUNCTION: CARMA2_CHEAT 0x004cbce0
 void C2_NORETURN C2_HOOK_FASTCALL PhysicsError(tPhysicsError pError, const char* pMessage) {
 
     if (gPhysics_error_cb != NULL) {
@@ -1454,6 +1465,7 @@ void C2_HOOK_FASTCALL PhysicsWarning(const char* pMessage) {
 
 // FUNCTION: CARMA2_HW 0x004c61f0
 // FUNCTION: CARMA2_SW 0x004c2920
+// FUNCTION: CARMA2_CHEAT 0x004cbd10
 void C2_HOOK_FASTCALL PhysicsSetErrorHandler(tPhysicsError_cbfn* pError_cbfn) {
 
     gPhysics_error_cb = pError_cbfn;
@@ -1578,6 +1590,7 @@ int C2_HOOK_FASTCALL PhysicsObjectRecurseChildren(tPhysics_object* pObject, tEnu
 
 // FUNCTION: CARMA2_HW 0x004c6510
 // FUNCTION: CARMA2_SW 0x004c2c40
+// FUNCTION: CARMA2_CHEAT 0x004cc030
 void C2_HOOK_FASTCALL InitPhysicsWorkspace(tU8* pBuffer, int pSize) {
 
     gPhysics_buffer1_ptr = pBuffer;

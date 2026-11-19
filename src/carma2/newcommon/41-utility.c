@@ -64,6 +64,7 @@ tU32 gLast_tick_count;
 
 // GLOBAL: CARMA2_HW 0x00762180
 // GLOBAL: CARMA2_SW 0x007586e0
+// GLOBAL: CARMA2_CHEAT 0x00769820
 char gCurrent_load_directory[256];
 
 // FUNCTION: CARMA2_HW 0x00513400
@@ -107,6 +108,7 @@ int C2_HOOK_FASTCALL CheckQuit(void) {
     int result;
 
     // GLOBAL: CARMA2_HW 0x006abee0
+    // GLOBAL: CARMA2_CHEAT 0x006b3570
     static int active;
 
     result = 0;
