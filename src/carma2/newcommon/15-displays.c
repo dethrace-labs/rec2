@@ -53,6 +53,7 @@ br_pixelmap* gRevs[13];
 br_pixelmap* gArmour_colour_map;
 
 // GLOBAL: CARMA2_HW 0x0067fcd0
+// GLOBAL: CARMA2_CHEAT 0x00687578
 br_pixelmap* gPowerbar;
 
 // GLOBAL: CARMA2_HW 0x0074cab4
@@ -138,6 +139,7 @@ br_pixelmap* gIcon_greyTop;
 
 // GLOBAL: CARMA2_HW 0x0067fd40
 // GLOBAL: CARMA2_SW 0x0067a488
+// GLOBAL: CARMA2_CHEAT 0x006875e8
 tHud_message gHud_messages[46];
 
 // GLOBAL: CARMA2_HW 0x00655e54
@@ -456,6 +458,7 @@ void C2_HOOK_FASTCALL DimAFewBits(void) {
 
 // STUB: CARMA2_HW 0x00449830
 // STUB: CARMA2_SW 0x00449980
+// STUB: CARMA2_CHEAT 0x00449d40
 void C2_HOOK_FASTCALL DoTestPowerHeadup(int pLevel, const char* pAPO_str) {
     NOT_IMPLEMENTED();
 }
@@ -503,6 +506,7 @@ int C2_HOOK_FASTCALL FindAHeadupHoleWoofBarkSoundsABitRude(int pSlot_index) {
 
 // STUB: CARMA2_HW 0x0044a220
 // STUB: CARMA2_SW 0x0044a3b0
+// STUB: CARMA2_CHEAT 0x0044a740
 int C2_HOOK_FASTCALL MungeHeadupWidth(tHeadup* pHeadup) {
     NOT_IMPLEMENTED();
 }

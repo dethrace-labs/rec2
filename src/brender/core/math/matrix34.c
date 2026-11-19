@@ -397,6 +397,7 @@ void C2_HOOK_CDECL BrMatrix34LPInverse(br_matrix34* A, const br_matrix34* B) {
 
 // FUNCTION: CARMA2_HW 0x00532f60
 // FUNCTION: CARMA2_SW 0x0052e600
+// FUNCTION: CARMA2_CHEAT 0x00538b50
 void C2_HOOK_CDECL BrMatrix34LPNormalise(br_matrix34* A, const br_matrix34* B) {
 
     BrVector3Normalise((br_vector3*)A->m[2], (br_vector3*)B->m[2]);

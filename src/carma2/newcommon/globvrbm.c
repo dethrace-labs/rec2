@@ -321,8 +321,8 @@ int gTimerLeftHUD_dim_x = 0x10e;
 // GLOBAL: CARMA2_CHEAT 0x006931a4
 int gTimerLeftHUD_dim_y;
 
-
 // GLOBAL: CARMA2_HW 0x00655ee0
+// GLOBAL: CARMA2_CHEAT 0x0065c760
 int gTimerRightHUD_dim_w = 0x40;
 
 // GLOBAL: CARMA2_HW 0x00655ee4

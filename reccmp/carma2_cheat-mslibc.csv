@@ -7,6 +7,7 @@ address,type,name
 0x0057b8a0,library,_sscanf
 0x0057b8f0,library,_strtok
 0x0057b9d0,library,_sprintf
+0x0057ba40,library,_floor
 0x0057bc70,library,_memmove
 0x0057c080,library,_qsort
 0x0057c2c0,library,_strncpy
@@ -54,6 +55,16 @@ address,type,name
 0x005804a0,library,__input
 0x005812c0,library,__flsbuf
 0x005813f0,library,__output
+0x00581eb0,library,__frnd
+0x00581ed0,library,__handle_qnan1
+0x00581fa0,library,__except1
+0x00582150,library,__raise_exc
+0x00582490,library,__handle_exc
+0x005827c0,library,__umatherr
+0x00582870,library,__set_errno
+0x005828d0,library,__errcode
+0x005829e0,library,__sptype
+0x00582b80,library,__ctrlfp
 0x00583220,library,___crtLCMapStringA
 0x00584930,library,__stbuf
 0x005849f0,library,__ftbuf
@@ -102,6 +113,7 @@ address,type,name
 0x0058a090,library,__isatty
 0x0058a0c0,library,_wctomb
 0x0058a140,library,__aullrem
+0x0058a1c0,library,__matherr
 0x0058a2f0,library,__alloc_osfhnd
 0x0058a3b0,library,__set_osfhnd
 0x0058a460,library,__free_osfhnd
@@ -181,3 +193,4 @@ address,type,name
 0x007a7f2c,global,__acmdln
 0x007a7f38,global,___piob
 0x007a8f40,global,__nstream
+0x0067dd10,global,__matherr_flag

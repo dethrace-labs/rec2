@@ -91,6 +91,7 @@ br_colour gRGB_colours[9] = {
 
 // GLOBAL: CARMA2_HW 0x0074a620
 // GLOBAL: CARMA2_SW 0x007410e0
+// GLOBAL: CARMA2_CHEAT 0x00751cc0
 br_colour gColours[9];
 
 // FUNCTION: CARMA2_HW 0x004e5cb0

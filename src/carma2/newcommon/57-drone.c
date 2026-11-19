@@ -40,6 +40,7 @@ tDrone_form gDrone_forms[64];
 
 // GLOBAL: CARMA2_HW 0x0068450c
 // GLOBAL: CARMA2_SW 0x0067ec4c
+// GLOBAL: CARMA2_CHEAT 0x0068bdb4
 int gCount_drone_forms;
 
 // GLOBAL: CARMA2_HW 0x00684510
@@ -53,6 +54,7 @@ int gCurrent_selected_drone;
 
 // GLOBAL: CARMA2_HW 0x00684504
 // GLOBAL: CARMA2_SW 0x0067ec44
+// GLOBAL: CARMA2_CHEAT 0x0068bdac
 tDrone_spec* gDrone_specs;
 
 // GLOBAL: CARMA2_HW 0x00684508
@@ -385,6 +387,7 @@ void C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
 
 // FUNCTION: CARMA2_HW 0x0044fc10
 // FUNCTION: CARMA2_SW 0x0044f9b0
+// FUNCTION: CARMA2_CHEAT 0x00450160
 void C2_HOOK_FASTCALL DisposeDronesRaceStuff(void) {
     int i;
 

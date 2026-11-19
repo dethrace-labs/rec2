@@ -1338,6 +1338,7 @@ tPhysics_joint* C2_HOOK_FASTCALL ClonePhysicsJoint(const tPhysics_joint* pJoint,
 
 // FUNCTION: CARMA2_HW 0x004c5e70
 // FUNCTION: CARMA2_SW 0x004c25a0
+// FUNCTION: CARMA2_CHEAT 0x004cb990
 void C2_HOOK_FASTCALL FreeShape(void* pData) {
     BrMemFree(pData);
 }
@@ -1459,6 +1460,7 @@ void C2_NORETURN C2_HOOK_FASTCALL PhysicsError(tPhysicsError pError, const char*
 
 // FUNCTION: CARMA2_HW 0x004c61e0
 // FUNCTION: CARMA2_SW 0x004c2910
+// FUNCTION: CARMA2_CHEAT 0x004cbd00
 void C2_HOOK_FASTCALL PhysicsWarning(const char* pMessage) {
     (void)pMessage;
 }
@@ -1473,6 +1475,7 @@ void C2_HOOK_FASTCALL PhysicsSetErrorHandler(tPhysicsError_cbfn* pError_cbfn) {
 
 // FUNCTION: CARMA2_HW 0x004c62e0
 // FUNCTION: CARMA2_SW 0x004c2a10
+// FUNCTION: CARMA2_CHEAT 0x004cbe00
 void C2_HOOK_FASTCALL RepositionAndOrientateChildren(tPhysics_object* pObject, br_matrix34* pParent_matrix) {
     br_matrix34 inverse;
     br_matrix34 parent_matrix;

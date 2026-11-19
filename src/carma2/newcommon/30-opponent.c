@@ -38,6 +38,7 @@ const char* gDrone_name = "Innocent Civilian";
 
 // GLOBAL: CARMA2_HW 0x0065a3c4
 // GLOBAL: CARMA2_SW 0x00654cdc
+// GLOBAL: CARMA2_CHEAT 0x00660d50
 int gBIG_APC_index = -1;
 
 // GLOBAL: CARMA2_HW 0x0065a3cc
@@ -1132,6 +1133,7 @@ void C2_HOOK_FASTCALL DisposeOpponentPaths(void) {
 
 // FUNCTION: CARMA2_HW 0x004ae5d0
 // FUNCTION: CARMA2_SW 0x004aa740
+// FUNCTION: CARMA2_CHEAT 0x004afae0
 void C2_HOOK_FASTCALL DisposeOpponents(void) {
     int i;
 
