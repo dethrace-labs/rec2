@@ -323,10 +323,12 @@ int gDevious_2d;
 
 // GLOBAL: CARMA2_HW 0x0068c71c
 // GLOBAL: CARMA2_SW 0x0068676c
+// GLOBAL: CARMA2_CHEAT 0x00693fbc
 int gNumber_of_actors;
 
 // GLOBAL: CARMA2_HW 0x0074ac00
 // GLOBAL: CARMA2_SW 0x7412c0
+// GLOBAL: CARMA2_CHEAT 0x007522a0
 br_actor* gActor_array[100];
 
 // GLOBAL: CARMA2_HW 0x0068c720
@@ -608,6 +610,7 @@ int gINT_0068b8e4;
 
 // GLOBAL: CARMA2_HW 0x00762120
 // GLOBAL: CARMA2_SW 0x00758680
+// GLOBAL: CARMA2_CHEAT 0x007697c0
 int gWasted_explosion_chance;
 
 // GLOBAL: CARMA2_HW 0x007620f8
@@ -655,10 +658,12 @@ float gGravity_multiplier;
 
 // GLOBAL: CARMA2_HW 0x00761d00
 // GLOBAL: CARMA2_SW 0x00758260
+// GLOBAL: CARMA2_CHEAT 0x007693a0
 tFloat_bunch_info gRepair_cost;
 
 // GLOBAL: CARMA2_HW 0x007634c0
 // GLOBAL: CARMA2_SW 0x00759a20
+// GLOBAL: CARMA2_CHEAT 0x0076ab60
 tFloat_bunch_info gRecovery_cost;
 
 // GLOBAL: CARMA2_HW 0x0074d634
@@ -772,6 +777,7 @@ br_actor* gArrow_actor;
 
 // GLOBAL: CARMA2_HW 0x0074d3d0
 // GLOBAL: CARMA2_SW 0x00743930
+// GLOBAL: CARMA2_CHEAT 0x00754a70
 int gJump_start_fine[3];
 //int gReal_graf_data_index;
 //float gCar_time_value[3];
@@ -780,6 +786,7 @@ int gJump_start_fine[3];
 
 // GLOBAL: CARMA2_HW 0x007634f0
 // GLOBAL: CARMA2_SW 0x00759a50
+// GLOBAL: CARMA2_CHEAT 0x0076ab90
 tU32 gKnobbled_frame_period;
 //int gWait_for_it;
 //int gCheck_point_cash[3];

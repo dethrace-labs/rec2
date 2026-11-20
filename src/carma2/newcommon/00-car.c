@@ -57,10 +57,12 @@ int gTesting_car_for_sensible_place;
 
 // GLOBAL: CARMA2_HW 0x00763500
 // GLOBAL: CARMA2_SW 0x00759a60
+// GLOBAL: CARMA2_CHEAT 0x0076aba0
 int gCunning_stunt_bonus[3];
 
 // GLOBAL: CARMA2_HW 0x0074d1c0
 // GLOBAL: CARMA2_SW 0x00743720
+// GLOBAL: CARMA2_CHEAT 0x00754860
 float gArmour_starting_value[100];
 
 // GLOBAL: CARMA2_HW 0x00761f5c
@@ -70,18 +72,22 @@ int gExplosion_sound_id;
 
 // GLOBAL: CARMA2_HW 0x00761f60
 // GLOBAL: CARMA2_SW 0x007584c0
+// GLOBAL: CARMA2_CHEAT 0x00769600
 float gPower_starting_value[100];
 
 // GLOBAL: CARMA2_HW 0x00761d40
 // GLOBAL: CARMA2_SW 0x007582a0
+// GLOBAL: CARMA2_CHEAT 0x007693e0
 float gOffensive_starting_value[100];
 
 // GLOBAL: CARMA2_HW 0x0075ba20
 // GLOBAL: CARMA2_SW 0x00751f80
+// GLOBAL: CARMA2_CHEAT 0x007630c0
 tFloat_bunch_info gCar_softness;
 
 // GLOBAL: CARMA2_HW 0x0074d600
 // GLOBAL: CARMA2_SW 0x00743b60
+// GLOBAL: CARMA2_CHEAT 0x00754ca0
 tFloat_bunch_info gCar_car_damage_multiplier;
 
 // GLOBAL: CARMA2_HW 0x0068b8d0

@@ -98,10 +98,12 @@ tFlic_bunch gFlic_bunch[9] = {
 
 // GLOBAL: CARMA2_HW 0x0068b8b4
 // GLOBAL: CARMA2_SW 0x00685e14
+// GLOBAL: CARMA2_CHEAT 0x0069315c
 float gFlic_sound_delay_pre_smack;
 
 // GLOBAL: CARMA2_HW 0x0068b8b8
 // GLOBAL: CARMA2_SW 0x00685e18
+// GLOBAL: CARMA2_CHEAT 0x00693160
 float gFlic_sound_delay_post_smack;
 
 // GLOBAL: CARMA2_HW 0x0068b8bc

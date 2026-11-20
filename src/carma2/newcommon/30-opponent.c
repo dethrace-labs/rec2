@@ -43,6 +43,7 @@ int gBIG_APC_index = -1;
 
 // GLOBAL: CARMA2_HW 0x0065a3cc
 // GLOBAL: CARMA2_SW 0x00654ce4
+// GLOBAL: CARMA2_CHEAT 0x00660d58
 float gOpponent_nastyness_frigger = 1.0f;
 
 // GLOBAL: CARMA2_HW 0x0074a684
@@ -1235,6 +1236,7 @@ tCar_spec* C2_HOOK_FASTCALL GetCarSpec(tVehicle_type pCategory, int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x004ae880
 // FUNCTION: CARMA2_SW 0x004aa9f0
+// FUNCTION: CARMA2_CHEAT 0x004afd90
 const char* C2_HOOK_FASTCALL GetDriverName(tVehicle_type pCategory, int pIndex) {
     tCar_spec* car;
     char* name;

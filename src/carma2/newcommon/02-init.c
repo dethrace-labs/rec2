@@ -105,6 +105,7 @@ tSlot_info gInitial_APO_potential[3];
 
 // GLOBAL: CARMA2_HW 0x0074cfa0
 // GLOBAL: CARMA2_SW 0x00743500
+// GLOBAL: CARMA2_CHEAT 0x00754640
 tSlot_info gMax_APO[3];
 
 // GLOBAL: CARMA2_HW 0x0068d8e0

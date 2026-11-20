@@ -1036,6 +1036,7 @@ void C2_HOOK_FASTCALL RemoveAllDecals(void) {
 
 // STUB: CARMA2_HW 0x004efa00
 // STUB: CARMA2_SW 0x004eb660
+// STUB: CARMA2_CHEAT 0x004f56a0
 void C2_HOOK_FASTCALL ReadPowerupSmash(FILE* pF) {
     NOT_IMPLEMENTED();
 }

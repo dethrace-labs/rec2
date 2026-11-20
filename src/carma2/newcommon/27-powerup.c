@@ -125,18 +125,22 @@ tSlot_info gCost_APO;
 
 // GLOBAL: CARMA2_HW 0x0075b900
 // GLOBAL: CARMA2_SW 0x00751e60
+// GLOBAL: CARMA2_CHEAT 0x00762fa0
 tSlot_info gTrade_in_value_APO;
 
 // GLOBAL: CARMA2_HW 0x0074d380
 // GLOBAL: CARMA2_SW 0x007438e0
+// GLOBAL: CARMA2_CHEAT 0x00754a20
 tSlot_info gSubstitution_value_APO;
 
 // GLOBAL: CARMA2_HW 0x00761c60
 // GLOBAL: CARMA2_SW 0x007581c0
+// GLOBAL: CARMA2_CHEAT 0x00769300
 tSlot_info gPotential_substitution_value_APO;
 
 // GLOBAL: CARMA2_HW 0x0074d1a4
 // GLOBAL: CARMA2_SW 0x00743704
+// GLOBAL: CARMA2_CHEAT 0x00754844
 int gNet_powerup_time_replacement;
 
 // GLOBAL: CARMA2_HW 0x007447d8
@@ -176,6 +180,7 @@ int gPanicking_peds;
 
 // GLOBAL: CARMA2_HW 0x007059c0
 // GLOBAL: CARMA2_SW 0x006fc480
+// GLOBAL: CARMA2_CHEAT 0x0070d060
 int gCount_mutant_tail_parts;
 
 // GLOBAL: CARMA2_HW 0x006a0458
@@ -200,10 +205,12 @@ int gMutant_tail_state;
 
 // GLOBAL: CARMA2_HW 0x00705b78
 // GLOBAL: CARMA2_SW 0x006fc638
+// GLOBAL: CARMA2_CHEAT 0x0070d218
 float gMass_mutant_tail_link;
 
 // GLOBAL: CARMA2_HW 0x00705b74
 // GLOBAL: CARMA2_SW 0x006fc634
+// GLOBAL: CARMA2_CHEAT 0x0070d214
 float gMass_mutant_tail_ball;
 
 // GLOBAL: CARMA2_HW 0x0065ebbc
@@ -1670,6 +1677,7 @@ void C2_HOOK_FASTCALL ResetMutantCorpses(tPowerup* pPowerup, tCar_spec* pCar) {
 
 // STUB: CARMA2_HW 0x004dedf0
 // STUB: CARMA2_SW 0x004db2f0
+// STUB: CARMA2_CHEAT 0x004e49b0
 void C2_HOOK_FASTCALL SendCurrentPowerups(void) {
     NOT_IMPLEMENTED();
 }

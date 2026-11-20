@@ -32,6 +32,7 @@ tSave_game* gSaved_games;
 
 // GLOBAL: CARMA2_HW 0x0068c728
 // GLOBAL: CARMA2_SW 0x00686778
+// GLOBAL: CARMA2_CHEAT 0x00693fc8
 int gCount_saved_games;
 
 // Encryptificate

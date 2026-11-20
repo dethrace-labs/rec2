@@ -58,6 +58,7 @@ FILE* gTempFile;
 
 // GLOBAL: CARMA2_HW 0x0068c718
 // GLOBAL: CARMA2_SW 0x00686768
+// GLOBAL: CARMA2_CHEAT 0x00693fb8
 const char* gPedTextTxtPath;
 
 // GLOBAL: CARMA2_HW 0x0068b88c
@@ -68,6 +69,7 @@ int gKey_map_index;
 #define DECODE_OFFSET 50
 // GLOBAL: CARMA2_HW 0x00655e38
 // GLOBAL: CARMA2_SW 0x00650d20
+// GLOBAL: CARMA2_CHEAT 0x0065c6c0
 char gDecode_string[14] = {
     (char)('i' + DECODE_OFFSET),
     (char)(' ' + DECODE_OFFSET),
@@ -87,30 +89,37 @@ char gDecode_string[14] = {
 
 // GLOBAL: CARMA2_HW 0x0068c6f8
 // GLOBAL: CARMA2_SW 0x00686748
+// GLOBAL: CARMA2_CHEAT 0x00693f98
 char gUnderwater_screen_name[32];
 
 // GLOBAL: CARMA2_HW 0x00764ea0
 // GLOBAL: CARMA2_SW 0x0075b400
+// GLOBAL: CARMA2_CHEAT 0x0076c540
 char gDefault_car[32];
 
 // GLOBAL: CARMA2_HW 0x00764ec0
 // GLOBAL: CARMA2_SW 0x0075b420
+// GLOBAL: CARMA2_CHEAT 0x0076c560
 char gBasic_car_name[32];
 
 // GLOBAL: CARMA2_HW 0x007638c0
 // GLOBAL: CARMA2_SW 0x00759e20
+// GLOBAL: CARMA2_CHEAT 0x0076af60
 int gNet_score_targets[8];
 
 // GLOBAL: CARMA2_HW 0x0074b58c
 // GLOBAL: CARMA2_SW 0x00741c4c
+// GLOBAL: CARMA2_CHEAT 0x00752c2c
 int gDemo_race_rank_equivalent;
 
 // GLOBAL: CARMA2_HW 0x0074b4fc
 // GLOBAL: CARMA2_SW 0x00741bbc
+// GLOBAL: CARMA2_CHEAT 0x00752b9c
 int gCount_demo_opponents;
 
 // GLOBAL: CARMA2_HW 0x0074b4c0
 // GLOBAL: CARMA2_SW 0x00741b80
+// GLOBAL: CARMA2_CHEAT 0x00752b60
 int gDemo_opponents[15];
 
 // GLOBAL: CARMA2_HW 0x00679308
@@ -125,10 +134,12 @@ tActionReplayCameraMode gAction_replay_camera_mode_00679324;
 
 // GLOBAL: CARMA2_HW 0x0074b4a8
 // GLOBAL: CARMA2_SW 0x00741b68
+// GLOBAL: CARMA2_CHEAT 0x00752b48
 int gGroove_funk_offset;
 
 // GLOBAL: CARMA2_HW 0x00657558
 // GLOBAL: CARMA2_SW 0x00651f08
+// GLOBAL: CARMA2_CHEAT 0x0065dde8
 const char* gNet_avail_names[4] = {
     "never",
     "eagle",
@@ -296,6 +307,9 @@ void C2_HOOK_FASTCALL LoadInRegisteeDir(const char *pRoot, const char *pSubDir, 
 void C2_HOOK_FASTCALL LoadInRegistees(void) {
 
     LoadInRegisteeDir(gApplication_path, "REG", 1);
+#ifdef REC2_CHEAT
+    LoadInRegisteeDir(gApplication_path, "DEVREG", 0);
+#endif
 }
 
 void C2_HOOK_FASTCALL LoadBunchOParameters(tSlot_info* pSlot_info) {

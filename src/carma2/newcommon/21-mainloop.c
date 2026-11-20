@@ -23,6 +23,7 @@ tU32 gOld_camera_time;
 
 // GLOBAL: CARMA2_HW 0x0068c820
 // GLOBAL: CARMA2_SW 0x00686874
+// GLOBAL: CARMA2_CHEAT 0x006940c0
 tU32 gActual_last_tick_count;
 
 // GLOBAL: CARMA2_HW 0x0068c824
@@ -32,14 +33,17 @@ tU32 gAverage_frame_period;
 
 // GLOBAL: CARMA2_HW 0x00761ef0
 // GLOBAL: CARMA2_SW 0x00758450
+// GLOBAL: CARMA2_CHEAT 0x00769590
 int gCredits_per_second_time_bonus[3];  /* FIXME: rename to gPoints_per_second */
 
 // GLOBAL: CARMA2_HW 0x0074b740
 // GLOBAL: CARMA2_SW 0x00741e00
+// GLOBAL: CARMA2_CHEAT 0x00752de0
 int gAuto_increase_credits_dt[3];
 
 // GLOBAL: CARMA2_HW 0x0074b720
 // GLOBAL: CARMA2_SW 0x00741de0
+// GLOBAL: CARMA2_CHEAT 0x00752dc0
 tU32 gNet_auto_increase_credits_dt[8];
 
 // GLOBAL: CARMA2_HW 0x007447d4
@@ -49,6 +53,7 @@ int gPed_count;
 
 // GLOBAL: CARMA2_HW 0x0068c748
 // GLOBAL: CARMA2_SW 0x00686798
+// GLOBAL: CARMA2_CHEAT 0x00693fe8
 int gQueued_wasted_messages[5] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x0068c75c
@@ -193,6 +198,7 @@ tU32 C2_HOOK_FASTCALL GetLastTickCount(void) {
 
 // STUB: CARMA2_HW 0x00492980
 // STUB: CARMA2_SW 0x0048fbf0
+// STUB: CARMA2_CHEAT 0x00492920
 tRace_result C2_HOOK_FASTCALL MainGameLoop(void) {
 
     NOT_IMPLEMENTED();

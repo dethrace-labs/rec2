@@ -227,6 +227,7 @@ br_actor* C2_HOOK_FASTCALL LoadActor(const char* pName) {
 
 // FUNCTION: CARMA2_HW 0x0048f090
 // FUNCTION: CARMA2_SW 0x0048c330
+// FUNCTION: CARMA2_CHEAT 0x0048f420
 void C2_HOOK_FASTCALL DRLoadPalette(const char* pPath_name) {
     br_pixelmap* palette_array[100];
     int number_of_palettes;
@@ -243,6 +244,7 @@ void C2_HOOK_FASTCALL DRLoadPalette(const char* pPath_name) {
 
 // FUNCTION: CARMA2_HW 0x0048f100
 // FUNCTION: CARMA2_SW 0x0048c3a0
+// FUNCTION: CARMA2_CHEAT 0x0048f490
 void C2_HOOK_FASTCALL DRLoadShadeTable(const char* pPath_name) {
     br_pixelmap* table_array[100];
     int number_of_tables;
@@ -268,6 +270,7 @@ void C2_HOOK_FASTCALL RezeroPixelmaps(br_pixelmap** pPixelmap_array, int pCount)
 
 // FUNCTION: CARMA2_HW 0x0048f170
 // FUNCTION: CARMA2_SW 0x0048c410
+// FUNCTION: CARMA2_CHEAT 0x0048f500
 void C2_HOOK_FASTCALL DRLoadPixelmaps(const char* pPath_name) {
     br_pixelmap* pixelmaps[100];
     int number_of_pixelmaps;
@@ -280,6 +283,7 @@ void C2_HOOK_FASTCALL DRLoadPixelmaps(const char* pPath_name) {
 
 // FUNCTION: CARMA2_HW 0x0048f1d0
 // FUNCTION: CARMA2_SW 0x0048c470
+// FUNCTION: CARMA2_CHEAT 0x0048f560
 void C2_HOOK_FASTCALL DRLoadMaterials(const char* pPath_name) {
     br_material* material_array[100];
     int i;
@@ -295,6 +299,7 @@ void C2_HOOK_FASTCALL DRLoadMaterials(const char* pPath_name) {
 
 // FUNCTION: CARMA2_HW 0x0048f230
 // FUNCTION: CARMA2_SW 0x0048c4d0
+// FUNCTION: CARMA2_CHEAT 0x0048f5c0
 void C2_HOOK_FASTCALL DRLoadModels(const char* pPath_name) {
     int i;
     br_model* model_array[100];
@@ -313,6 +318,7 @@ void C2_HOOK_FASTCALL DRLoadModels(const char* pPath_name) {
 
 // FUNCTION: CARMA2_HW 0x0048f290
 // FUNCTION: CARMA2_SW 0x0048c530
+// FUNCTION: CARMA2_CHEAT 0x0048f620
 void C2_HOOK_FASTCALL DRLoadActors(const char* pPath_name) {
     int i;
     br_actor* actor_array[100];
@@ -328,6 +334,7 @@ void C2_HOOK_FASTCALL DRLoadActors(const char* pPath_name) {
 
 // FUNCTION: CARMA2_HW 0x0048f2e0
 // FUNCTION: CARMA2_SW 0x0048c580
+// FUNCTION: CARMA2_CHEAT 0x0048f670
 void C2_HOOK_FASTCALL DRLoadLights(const char* pPath_name) {
 #ifdef REC2_HW
     br_actor* actor;
