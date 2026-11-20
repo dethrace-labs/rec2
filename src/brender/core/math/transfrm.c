@@ -27,6 +27,7 @@
 
 // GLOBAL: CARMA2_HW 0x0066cb68
 // GLOBAL: CARMA2_SW 0x006672f8
+// GLOBAL: CARMA2_CHEAT 0x00674418
 const br_uint_8 _CombineTransforms[7][7] = {
 
     /* M34 */ {
@@ -96,6 +97,7 @@ const br_uint_8 _CombineTransforms[7][7] = {
 
 // FUNCTION: CARMA2_HW 0x00531870
 // FUNCTION: CARMA2_SW 0x0052cf10
+// FUNCTION: CARMA2_CHEAT 0x00537460
 void C2_HOOK_CDECL BrTransformToMatrix34(br_matrix34* mat, const br_transform* xform) {
 
     switch (xform->type) {
@@ -168,6 +170,7 @@ void C2_HOOK_CDECL BrTransformToMatrix34(br_matrix34* mat, const br_transform* x
 
 // FUNCTION: CARMA2_HW 0x00531b60
 // FUNCTION: CARMA2_SW 0x0052d200
+// FUNCTION: CARMA2_CHEAT 0x00537750
 void C2_HOOK_CDECL BrMatrix34PreTransform(br_matrix34* mat, const br_transform* xform) {
     br_matrix34 tmp;
 
@@ -181,6 +184,7 @@ void C2_HOOK_CDECL BrMatrix34PreTransform(br_matrix34* mat, const br_transform* 
 
 // FUNCTION: CARMA2_HW 0x00531ba0
 // FUNCTION: CARMA2_SW 0x0052d240
+// FUNCTION: CARMA2_CHEAT 0x00537790
 void C2_HOOK_CDECL BrMatrix34PostTransform(br_matrix34* mat, const br_transform* xform) {
     br_matrix34 tmp;
 
@@ -205,6 +209,7 @@ void C2_HOOK_CDECL BrMatrix4PreTransform(br_matrix4* mat, const br_transform* xf
 
 // FUNCTION: CARMA2_HW 0x00531c20
 // FUNCTION: CARMA2_SW 0x0052d2c0
+// FUNCTION: CARMA2_CHEAT 0x00537810
 void C2_HOOK_CDECL BrMatrix34ToTransform(br_transform* xform, const br_matrix34* mat) {
 
     switch (xform->type) {
@@ -240,6 +245,7 @@ void C2_HOOK_CDECL BrMatrix34ToTransform(br_transform* xform, const br_matrix34*
 
 // FUNCTION: CARMA2_HW 0x00531d70
 // FUNCTION: CARMA2_SW 0x0052d410
+// FUNCTION: CARMA2_CHEAT 0x00537960
 void C2_HOOK_CDECL BrTransformToTransform(br_transform* dest, const br_transform* src) {
     br_matrix34 temp;
 
