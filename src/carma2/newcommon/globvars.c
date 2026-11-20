@@ -417,6 +417,7 @@ tU32 gWait_for_it;
 
 // GLOBAL: CARMA2_HW 0x00655dd4
 // GLOBAL: CARMA2_SW 0x00650cbc
+// GLOBAL: CARMA2_CHEAT 0x0065c654
 int gGame_to_load = -1;
 
 // GLOBAL: CARMA2_HW 0x007623a0
@@ -638,6 +639,7 @@ int gTrack_version;
 
 // GLOBAL: CARMA2_HW 0x00761f00
 // GLOBAL: CARMA2_SW 0x00758460
+// GLOBAL: CARMA2_CHEAT 0x007695a0
 tBrender_storage gNet_cars_storage_space;
 //float gNet_softness[7];
 //tS32 gJoystick_deadzone;
@@ -671,6 +673,7 @@ float gDefault_gravity;
 
 // GLOBAL: CARMA2_HW 0x0074d350
 // GLOBAL: CARMA2_SW 0x007438b0
+// GLOBAL: CARMA2_CHEAT 0x007549f0
 tU32 gKeys_pressed;
 //tSpecial_volume* gDefault_default_water_spec_vol;
 //float gNet_repair_cost[7];
@@ -706,6 +709,7 @@ tU32 gRace_start;
 
 // GLOBAL: CARMA2_HW 0x0068be28
 // GLOBAL: CARMA2_SW 0x00685e6c
+// GLOBAL: CARMA2_CHEAT 0x006936c8
 br_actor* gSelf;
 
 // GLOBAL: CARMA2_HW 0x00762128

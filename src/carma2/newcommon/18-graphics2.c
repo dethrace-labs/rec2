@@ -115,6 +115,7 @@ br_pixelmap* gRender_palette;
 
 // GLOBAL: CARMA2_HW 0x0079ec14
 // GLOBAL: CARMA2_SW 0x00795174
+// GLOBAL: CARMA2_CHEAT 0x007a62b4
 int gDim_amount;
 
 // GLOBAL: CARMA2_HW 0x0074a680

@@ -36,6 +36,7 @@ br_pixelmap* gTexture_maps[1024] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x0059ad30
 // GLOBAL: CARMA2_SW 0x00595c78
+// GLOBAL: CARMA2_CHEAT 0x005a15b0
 const char* gFont_names[24] = {
     "TYPEABLE",
     "ORANGHED",
@@ -71,6 +72,7 @@ size_t gPixelmap_buffer_size;
 
 // GLOBAL: CARMA2_HW 0x0076d960
 // GLOBAL: CARMA2_SW 0x00763ec0
+// GLOBAL: CARMA2_CHEAT 0x00775000
 tPolyFont gPoly_fonts[27];
 
 // GLOBAL: CARMA2_HW 0x0068648c
@@ -118,6 +120,7 @@ int gCount_polyfont_glyph_actors;
 
 // GLOBAL: CARMA2_HW 0x0059ada0
 // GLOBAL: CARMA2_SW 0x00595ce8
+// GLOBAL: CARMA2_CHEAT 0x005a1620
 int gDRFont_to_polyfont_mapping[24] = {
     kPolyfont_ingame_tiny_red,
     kPolyfont_ingame_tiny_yellow,
@@ -156,6 +159,7 @@ int gRender_poly_text = 1;
 
 // FUNCTION: CARMA2_HW 0x00463730
 // FUNCTION: CARMA2_SW 0x004631c0
+// FUNCTION: CARMA2_CHEAT 0x00463ba0
 int C2_HOOK_FASTCALL PolyFontHeight(int pFont_index) {
 
     CheckAvailabilityOfThisFont(pFont_index);
@@ -632,6 +636,7 @@ void C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00464290
+// FUNCTION: CARMA2_CHEAT 0x00464700
 void C2_HOOK_FASTCALL RemovePolyFont(int pFont) {
     int i;
 

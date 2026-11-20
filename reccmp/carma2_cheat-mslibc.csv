@@ -13,7 +13,10 @@ address,type,name
 0x0057c2c0,library,_strncpy
 0x0057c3c0,library,_strstr
 0x0057c450,library,_tolower
+0x0057c550,library,_srand
+0x0057c7ba,library,__CIfmod
 0x0057c7f0,library,_div
+0x0057c8f0,library,_fprintf
 0x0057c930,library,_malloc
 0x0057c950,library,__nh_malloc
 0x0057c9a0,library,__heap_alloc
@@ -26,6 +29,7 @@ address,type,name
 0x0057ccd0,library,_rewind
 0x0057cd30,library,__fsopen
 0x0057cd60,library,_fopen
+0x0057ce90,library,_fsetpos
 0x0057cee0,library,_ftell
 0x0057d090,library,_fwrite
 0x0057d1e0,library,_free
@@ -35,13 +39,19 @@ address,type,name
 0x0057d2f0,library,_fflush
 0x0057d340,library,__flush
 0x0057d520,library,_printf
+0x0057d560,library,_strrchr
+0x0057d590,library,_atof
 0x0057d5f0,library,_atol
+0x0057d690,library,_atoi
 0x0057d770,library,__isctype
 0x0057d810,library,_fscanf
 0x0057d830,library,_fputc
 0x0057d880,library,__strcmpi
 0x0057d910,library,__memicmp
 0x0057d9b0,library,_time
+0x0057db30,library,___dtoxmode
+0x0057dc00,library,_stat
+0x0057dff0,library,__mkdir
 0x0057e0a0,library,__cinit
 0x0057e0d0,library,_exit
 0x0057e0f0,library,__exit
@@ -51,6 +61,7 @@ address,type,name
 0x0057e630,library,__amsg_exit
 0x0057e6b0,library,_getenv
 0x0057ebc0,library,__filbuf
+0x0057eff0,library,_memset
 0x0057f710,library,_calloc
 0x005804a0,library,__input
 0x005812c0,library,__flsbuf
@@ -66,6 +77,9 @@ address,type,name
 0x005829e0,library,__sptype
 0x00582b80,library,__ctrlfp
 0x00583220,library,___crtLCMapStringA
+0x00583950,library,__cintrindisp2
+0x005843a6,library,__fprem_common
+0x005845ac,library,__adj_fprem
 0x00584930,library,__stbuf
 0x005849f0,library,__ftbuf
 0x00584a70,library,__callnewh
@@ -84,6 +98,8 @@ address,type,name
 0x00585880,library,__ioinit
 0x00585ab0,library,__openfile
 0x00585c80,library,__getstream
+0x00585d10,library,__fseeki64
+0x00585dc0,library,__ftelli64
 0x00585fb0,library,__write
 0x005861d0,library,__close
 0x005862b0,library,__freebuf
@@ -92,6 +108,12 @@ address,type,name
 0x005864e0,library,__allmul
 0x005866b0,library,___crtGetStringTypeA
 0x005867f0,library,___loctotime_t
+0x005868e0,library,__mbsicmp
+0x00586a60,library,__mbsrchr
+0x00586ae0,library,__fullpath
+0x00586bb0,library,__getdrive
+0x00586c60,library,__mbctolower
+0x00586d00,library,__mbspbrk
 0x00586da0,library,_asctime
 0x00586ed0,library,_localtime
 0x005870c0,library,__XcptFilter
@@ -120,6 +142,7 @@ address,type,name
 0x0058a500,library,__get_osfhandle
 0x0058a5f0,library,_open
 0x0058a610,library,__sopen
+0x0058a9d0,library,__lseeki64
 0x0058b2a0,library,___tzset
 0x0058b2c0,library,__tzset
 0x0058b570,library,__isindst
@@ -138,6 +161,7 @@ address,type,name
 0x00594008,global,___xi_a
 0x00594010,global,___xi_z
 0x0067afd0,global,__FPinit
+0x0067b020,global,__OP_FMODjmptab
 0x0067b080,global,_iob
 0x0067b300,global,_pctype
 0x0067b50c,global,__mb_cur_max
@@ -151,12 +175,14 @@ address,type,name
 0x0067db28,global,__First_FPE_Indx
 0x0067db2c,global,__Num_FPE
 0x0067db34,global,__fpecode
+0x0067dd10,global,__matherr_flag
 0x0067dd18,global,__timezone
 0x0067dd1c,global,__daylight
 0x0067dd20,global,__dstbias
 0x0067dda8,global,__tzname
 0x0067ddd0,global,__lpdays
 0x0067de08,global,__days
+0x006ba46c,global,__adjust_fdiv
 0x006ba474,global,__cflush
 0x006ba490,global,errno
 0x006ba494,global,__doserrno
@@ -180,6 +206,7 @@ address,type,name
 0x006ba53c,global,?_pnhHeap@@3P6AHI@ZA
 0x006ba584,global,__pxcptinfoptrs
 0x006ba698,global,__mbctype
+0x006ba7a0,global,__mbcasemap
 0x006ba8a0,global,___mbcodepage
 0x006ba8a4,global,___mblcid
 0x006ba8a8,global,___mbulinfo
@@ -193,4 +220,3 @@ address,type,name
 0x007a7f2c,global,__acmdln
 0x007a7f38,global,___piob
 0x007a8f40,global,__nstream
-0x0067dd10,global,__matherr_flag

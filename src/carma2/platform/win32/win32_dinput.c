@@ -134,16 +134,20 @@ const GUID* gJoystick_effect_guids[13] = {
 
 // GLOBAL: CARMA2_HW 0x006ad4b8
 // GLOBAL: CARMA2_SW 0x006a6c44
+// GLOBAL: CARMA2_CHEAT 0x006b4b44
 int gJoy1_valid;
 
 // GLOBAL: CARMA2_HW 0x006ac7e8
+// GLOBAL: CARMA2_CHEAT 0x006b3e78
 JOYINFOEX gJoy1_info;
 
 // GLOBAL: CARMA2_HW 0x006ad4bc
 // GLOBAL: CARMA2_SW 0x006a6c48
+// GLOBAL: CARMA2_CHEAT 0x006b4b48
 int gJoy2_valid;
 
 // GLOBAL: CARMA2_HW 0x006ac820
+// GLOBAL: CARMA2_CHEAT 0x006b3eb0
 JOYINFOEX gJoy2_info;
 
 // GLOBAL: CARMA2_HW 0x00595f98
@@ -1203,6 +1207,7 @@ void C2_HOOK_FASTCALL PDSetKeysFromJoystick(int *keys) {
 
 // FUNCTION: CARMA2_HW 0x0051cef0
 // FUNCTION: CARMA2_SW 0x00518670
+// FUNCTION: CARMA2_CHEAT 0x00522a10
 void C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
     BYTE diKeys[256];
     HRESULT res;
@@ -1284,6 +1289,7 @@ void C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
 
 // FUNCTION: CARMA2_HW 0x0051d1d0
 // FUNCTION: CARMA2_SW 0x00518ae0
+// FUNCTION: CARMA2_CHEAT 0x00522dc0
 void C2_HOOK_FASTCALL PDReadJoysticks(void) {
 
     if (gJoystick_index != -1) {

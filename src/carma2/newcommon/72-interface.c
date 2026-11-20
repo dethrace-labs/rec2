@@ -69,6 +69,7 @@ br_actor* gFrontend_billboard_actors[8] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x00763960
 // GLOBAL: CARMA2_SW 0x00759ec0
+// GLOBAL: CARMA2_CHEAT 0x0076b000
 tNet_game_options gNet_settings[9] = { 0 };
 
 #ifdef REC2_MATCHING
@@ -251,6 +252,7 @@ int gFrontend_selected_item_index;
 
 // GLOBAL: CARMA2_HW 0x00688780
 // GLOBAL: CARMA2_SW 0x00682ce0
+// GLOBAL: CARMA2_CHEAT 0x00690028
 tSave_game gStashed_save_game;
 
 // GLOBAL: CARMA2_HW 0x0068b8a0
@@ -270,6 +272,7 @@ float gFrontend_wreck_bought_car_dz;
 
 // GLOBAL: CARMA2_HW 0x0068723c
 // GLOBAL: CARMA2_SW 0x0068179c
+// GLOBAL: CARMA2_CHEAT 0x0068eae4
 int gFrontend_text_input_item_index;
 
 // GLOBAL: CARMA2_HW 0x00763900
@@ -319,6 +322,7 @@ int gPicked_wreck;
 
 // GLOBAL: CARMA2_HW 0x00763b5c
 // GLOBAL: CARMA2_SW 0x0075a0bc
+// GLOBAL: CARMA2_CHEAT 0x0076b1fc
 tWreck_gallery_car_info gWreck_gallery_car_infos[30];
 
 // GLOBAL: CARMA2_HW 0x00688aec
@@ -333,10 +337,12 @@ br_actor* gFrontend_wrecks_camera;
 
 // GLOBAL: CARMA2_HW 0x00688afc
 // GLOBAL: CARMA2_SW 0x0068305c
+// GLOBAL: CARMA2_CHEAT 0x006903a4
 int gFrontend_wrecks_hscroll;
 
 // GLOBAL: CARMA2_HW 0x007635e4
 // GLOBAL: CARMA2_SW 0x00759b44
+// GLOBAL: CARMA2_CHEAT 0x0076ac84
 br_pixelmap* gFrontend_wrecks_pixelmap;
 
 // GLOBAL: CARMA2_HW 0x007635ec
@@ -346,6 +352,7 @@ tU32 gFrontend_wrecks_previous_update;
 
 // GLOBAL: CARMA2_HW 0x00763844
 // GLOBAL: CARMA2_SW 0x00759da4
+// GLOBAL: CARMA2_CHEAT 0x0076aee4
 br_actor* gFrontend_wrecks_light;
 
 // GLOBAL: CARMA2_HW 0x00686834
@@ -419,6 +426,7 @@ int gFrontend_count_saved_games;
 
 // GLOBAL: CARMA2_HW 0x00763890
 // GLOBAL: CARMA2_SW 0x00759df0
+// GLOBAL: CARMA2_CHEAT 0x0076af30
 int gFrontend_wrecks_current;
 
 // GLOBAL: CARMA2_HW 0x00763894
@@ -458,6 +466,7 @@ int gFrontend_leave_current_menu;
 
 // GLOBAL: CARMA2_HW 0x006883b0
 // GLOBAL: CARMA2_SW 0x00682910
+// GLOBAL: CARMA2_CHEAT 0x0068fc58
 tStruct_00686508 gUNK_006883b0;
 
 // GLOBAL: CARMA2_HW 0x00688abc
@@ -533,15 +542,19 @@ br_pixelmap* gFrontend_backdrop;
 
 // GLOBAL: CARMA2_HW 0x00688ae8
 // GLOBAL: CARMA2_SW 0x00683048
+// GLOBAL: CARMA2_CHEAT 0x00690390
 br_colour gFrontend_some_color;
 
 // GLOBAL: CARMA2_HW 0x006870b8
+// GLOBAL: CARMA2_CHEAT 0x0068e960
 tFrontend_model gFrontend_A_models[13];
 
 // GLOBAL: CARMA2_HW 0x00687188
+// GLOBAL: CARMA2_CHEAT 0x0068ea30
 tFrontend_model gFrontend_B_models[11];
 
 // GLOBAL: CARMA2_HW 0x00687058
+// GLOBAL: CARMA2_CHEAT 0x0068e900
 tFrontend_model gFrontend_C_models[6];
 
 // GLOBAL: CARMA2_HW 0x00688378
@@ -562,6 +575,7 @@ br_model* gFrontend_B_model_to;
 
 // GLOBAL: CARMA2_HW 0x006886e8
 // GLOBAL: CARMA2_SW 0x00682c48
+// GLOBAL: CARMA2_CHEAT 0x0068ff90
 tStruct_00686508 gUNK_006886e8;
 
 // GLOBAL: CARMA2_HW 0x00686504
@@ -586,6 +600,7 @@ int gFrontend_backdrop2_opacity_mode;
 int gFrontend_interpolate_steps_left;
 
 // GLOBAL: CARMA2_HW 0x00763820
+// GLOBAL: CARMA2_CHEAT 0x0076aec0
 tFrontend_slider gOptions_sound_slider;
 
 // GLOBAL: CARMA2_HW 0x00688ae4
@@ -600,6 +615,7 @@ tConnected_items gControls_scroller;
 
 // GLOBAL: CARMA2_HW 0x00688458
 // GLOBAL: CARMA2_SW 0x006829b8
+// GLOBAL: CARMA2_CHEAT 0x0068fd00
 char* gKey_names[153] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006886bc
@@ -609,6 +625,7 @@ br_model* gFrontend_C_model_to = NULL;
 
 // GLOBAL: CARMA2_HW 0x00604888
 // GLOBAL: CARMA2_SW 0x005ff7b8
+// GLOBAL: CARMA2_CHEAT 0x0060b108
 const int gControls_frontend_to_key_mapping_lut[29] = {
     49, 50, 47, 48, 54, 45, 60, 58, 56, 46,
     57, 67, 68, 69, 71, 61, 62, 63, 64, 74,
@@ -894,12 +911,16 @@ br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmapPleaseMrTwatter(const char* 
                 }
             }
         }
+#ifdef REC2_V102A
         EnsurePixelmapAllowed(result, 0);
+#endif
         return result;
     } else {
         PathCat(the_path, pFolder, pName);
         result = DRImageLoad(the_path);
+#ifdef REC2_V102A
         EnsurePixelmapAllowed(result, 0);
+#endif
         return result;
     }
 }
@@ -1223,11 +1244,15 @@ int C2_HOOK_FASTCALL FuckingMakeTheFuckingRaceAndGroupsDisplayHaveTheRightCuntin
     int race_index;
 
     race_index = gProgram_state.current_race_index;
+#ifdef REC2_CHEAT
+    pFrontend->items[7].enabled = kFrontendItemEnabled_enabled;
+#else
     if (!gIs_boundary_race && !gProgram_state.game_completed) {
         pFrontend->items[7].enabled = kFrontendItemEnabled_disabled;
     } else {
         pFrontend->items[7].enabled = kFrontendItemEnabled_enabled;
     }
+#endif
     div(race_index, 4);
     return 0;
 }
@@ -2035,10 +2060,14 @@ int C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec) {
                 BrFailure("FRONTEND: Error loading background graphics.", 0);
             }
             PixelmapSwapByteOrder(gFrontend_backdrop);
+#ifdef REC2_V102A
             BrMapAdd(gFrontend_backdrop);
+#endif
         } else if (gFrontend_backdrop != NULL) {
 
+#ifdef REC2_V102A
             BrMapRemove(gFrontend_backdrop);
+#endif
             BrPixelmapFree(gFrontend_backdrop);
 
             PathCat(s2, gApplication_path, "INTRFACE");
@@ -2057,7 +2086,9 @@ int C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec) {
                 BrFailure("FRONTEND: Error loading background graphics.", 0);
             }
             PixelmapSwapByteOrder(gFrontend_backdrop);
+#ifdef REC2_V102A
             BrMapAdd(gFrontend_backdrop);
+#endif
         }
     }
     StartMouseCursor();
@@ -3436,6 +3467,7 @@ int C2_HOOK_FASTCALL ScrollSet_TranslateItemToIndex(tConnected_items* pConnected
 
 // STUB: CARMA2_HW 0x00470c20
 // STUB: CARMA2_SW 0x004701b0
+// STUB: CARMA2_CHEAT 0x00470fb0
 int C2_HOOK_FASTCALL Generic_MenuHandler(tFrontend_spec* pFrontend) {
     NOT_IMPLEMENTED();
 }
@@ -3654,6 +3686,7 @@ void C2_HOOK_FASTCALL Slider_ForceProc(tFrontend_slider* pSlider) {
 
 // STUB: CARMA2_HW 0x00472210
 // STUB: CARMA2_SW 0x004717a0
+// STUB: CARMA2_CHEAT 0x004725a0
 void C2_HOOK_FASTCALL DisplayJoystickSettings(tFrontend_spec* pFrontend) {
     NOT_IMPLEMENTED();
 }
@@ -3771,6 +3804,7 @@ int C2_HOOK_FASTCALL Controls_Outfunc(tFrontend_spec* pFrontend) {
 
 // STUB: CARMA2_HW 0x00472b00
 // STUB: CARMA2_SW 0x00472090
+// STUB: CARMA2_CHEAT 0x00472e90
 int C2_HOOK_FASTCALL Controls_SlotActivated(tFrontend_spec* pFrontend) {
     NOT_IMPLEMENTED();
 }

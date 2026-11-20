@@ -404,6 +404,7 @@ void C2_HOOK_FASTCALL NetStartProducingJoinList(tAddToJoinListProc* pAdd_proc) {
 
 // STUB: CARMA2_HW 0x0049dc00
 // STUB: CARMA2_SW 0x00499d80
+// STUB: CARMA2_CHEAT 0x0049e140
 void C2_HOOK_FASTCALL NetEndJoinList(void) {
     NOT_IMPLEMENTED();
 }

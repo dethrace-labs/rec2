@@ -15,10 +15,12 @@
 
 // GLOBAL: CARMA2_HW 0x006b09c0
 // GLOBAL: CARMA2_SW 0x006aa148
+// GLOBAL: CARMA2_CHEAT 0x006b8050
 br_matrix34 mattmp1;
 
 // GLOBAL: CARMA2_HW 0x006b09f0
 // GLOBAL: CARMA2_SW 0x006aa178
+// GLOBAL: CARMA2_CHEAT 0x006b8080
 br_matrix34 mattmp2;
 
 #define M(x, y) mat->m[x][y]
@@ -721,6 +723,7 @@ void C2_HOOK_CDECL BrMatrix34PreShearX(br_matrix34* mat, br_scalar sy, br_scalar
 
 // FUNCTION: CARMA2_HW 0x00534070
 // FUNCTION: CARMA2_SW 0x0052f710
+// FUNCTION: CARMA2_CHEAT 0x00539c60
 void C2_HOOK_CDECL BrMatrix34PostShearX(br_matrix34* mat, br_scalar sy, br_scalar sz) {
 
     BrMatrix34ShearX(&mattmp2, sy, sz);
@@ -739,6 +742,7 @@ void C2_HOOK_CDECL BrMatrix34PreShearY(br_matrix34* mat, br_scalar sx, br_scalar
 
 // FUNCTION: CARMA2_HW 0x005341b0
 // FUNCTION: CARMA2_SW 0x0052f850
+// FUNCTION: CARMA2_CHEAT 0x00539da0
 void C2_HOOK_CDECL BrMatrix34PostShearY(br_matrix34* mat, br_scalar sx, br_scalar sz) {
 
     BrMatrix34ShearY(&mattmp2, sx, sz);

@@ -162,6 +162,7 @@ int C2_HOOK_FASTCALL ARReplayForwards(void) {
 
 // FUNCTION: CARMA2_HW 0x00402360
 // FUNCTION: CARMA2_SW 0x00402360
+// FUNCTION: CARMA2_CHEAT 0x00402360
 int C2_HOOK_FASTCALL ARReplayIsReallyPaused(void) {
     return gReplay_rate == 0.0f;
 }
@@ -985,6 +986,7 @@ void C2_HOOK_FASTCALL PipeSingleScreenWobble(int pWobble_x, int pWobble_y) {
 
 // STUB: CARMA2_HW 0x004c80b0
 // STUB: CARMA2_SW 0x004c47e0
+// STUB: CARMA2_CHEAT 0x004cdbd0
 void C2_HOOK_FASTCALL PipeSingleGrooveStop(int pGroove_index, br_matrix34* pMatrix, int pPath_interrupt, int pObject_interrupt, float pPath_resumption, float pObject_resumption) {
     NOT_IMPLEMENTED();
 }

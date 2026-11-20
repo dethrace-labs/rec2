@@ -235,6 +235,7 @@ int C2_HOOK_FASTCALL S3StopChannel(tS3_channel* pChannel) {
 
 // FUNCTION: CARMA2_HW 0x005698fc
 // FUNCTION: CARMA2_SW 0x00564f9c
+// FUNCTION: CARMA2_CHEAT 0x0056f4ed
 int C2_HOOK_FASTCALL S3GetCountChannels(int pCount_channels_1, int pCount_channels_2) {
 
     return pCount_channels_2;
@@ -242,6 +243,7 @@ int C2_HOOK_FASTCALL S3GetCountChannels(int pCount_channels_1, int pCount_channe
 
 // FUNCTION: CARMA2_HW 0x005653c7
 // FUNCTION: CARMA2_SW 0x00560a67
+// FUNCTION: CARMA2_CHEAT 0x0056afb7
 tS3_outlet* C2_HOOK_FASTCALL S3CreateOutlet(int pCount_channels_1, int pCount_channels_2) {
     tS3_outlet* o;
     tS3_outlet* next_outlet;
@@ -585,6 +587,7 @@ void C2_HOOK_FASTCALL S3EnableCDA(void) {
 
 // FUNCTION: CARMA2_HW 0x00565571
 // FUNCTION: CARMA2_SW 0x00560c11
+// FUNCTION: CARMA2_CHEAT 0x0056b161
 int C2_HOOK_FASTCALL S3CreateOutletChannels(tS3_outlet* outlet, int pChannel_count) {
     tS3_channel* chan;
     tS3_channel* last_chan;

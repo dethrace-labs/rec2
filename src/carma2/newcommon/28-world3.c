@@ -122,6 +122,7 @@ intptr_t C2_HOOK_CDECL RemoveBounds(br_actor* pActor, void* pArg) {
 
 // STUB: CARMA2_HW 0x00506c20
 // STUB: CARMA2_SW 0x00502070
+// STUB: CARMA2_CHEAT 0x0050c610
 void C2_HOOK_FASTCALL FreeTrack(tTrack_spec* pTrack_spec) {
     NOT_IMPLEMENTED();
 }

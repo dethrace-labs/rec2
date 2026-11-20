@@ -261,6 +261,7 @@ void C2_HOOK_FASTCALL PHILDisable(void) {
 
 // STUB: CARMA2_HW 0x004b5d40
 // STUB: CARMA2_SW 0x004b2460
+// STUB: CARMA2_CHEAT 0x004bb610
 int C2_HOOK_FASTCALL PHILAddObject(tPhysics_object* pObject) {
     NOT_IMPLEMENTED();
 }
@@ -449,6 +450,7 @@ int C2_HOOK_FASTCALL PHILAddActiveObjectImmediately(tPhysics_object* pObject, co
 
 // STUB: CARMA2_HW 0x004b63b0
 // STUB: CARMA2_SW 0x004b2ad0
+// STUB: CARMA2_CHEAT 0x004bbe50
 int C2_HOOK_CDECL PHILSetObjectProperty(tPhysics_object* pCollision_info, int pParam, ...) {
     NOT_IMPLEMENTED();
 }

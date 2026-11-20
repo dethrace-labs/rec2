@@ -76,14 +76,17 @@ tU32 gAustere_time;
 
 // GLOBAL: CARMA2_HW 0x0074b760
 // GLOBAL: CARMA2_SW 0x00741e20
+// GLOBAL: CARMA2_CHEAT 0x00752e00
 int gCredits_per_rank[3];
 
 // GLOBAL: CARMA2_HW 0x0074b76c
 // GLOBAL: CARMA2_SW 0x00741e2c
+// GLOBAL: CARMA2_CHEAT 0x00752e0c
 int gInitial_rank;
 
 // GLOBAL: CARMA2_HW 0x00762110
 // GLOBAL: CARMA2_SW 0x00758670
+// GLOBAL: CARMA2_CHEAT 0x007697b0
 int gStarting_money[3];
 
 // GLOBAL: CARMA2_HW 0x00762160
@@ -942,7 +945,7 @@ void C2_HOOK_FASTCALL Init2DStuff(void) {
         \
         REC2_V101A_RUN(InitialiseStorageSpace(0, &gOur_car_storage_space, 100, 2, 100, 100, 10);) \
         REC2_V101A_RUN(InitialiseStorageSpace(0, &gTheir_cars_storage_space, 1100, 50, 1000, 1000, 50);) \
-        REC2_V101A_RUN(InitialiseStorageSpace(0, &gDroneStorage, 1000, 50, 1000, 1008, 10);) \
+        REC2_V101A_RUN(InitialiseStorageSpace(0, &gDroneStorage, 1000, 50, 1000, 1000, 10);) \
         REC2_V101A_RUN(InitialiseStorageSpace(0, &gPedStorage, 100, 10, 50, 300, 100);) \
         REC2_V101A_RUN(InitialiseStorageSpace(0, &gTrack_storage_space, 500, 50, 500, 500, 50);) \
         \

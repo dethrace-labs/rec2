@@ -388,6 +388,7 @@ void C2_HOOK_FASTCALL ShadowMode(void) {
 
 // STUB: CARMA2_HW 0x004e4650
 // STUB: CARMA2_SW 0x004e09e0
+// STUB: CARMA2_CHEAT 0x004ea1d0
 void C2_HOOK_FASTCALL LollipopizeActor(br_actor* pSubject_actor, br_matrix34* ref_to_world, tLollipop_mode pWhich_axis) {
     NOT_IMPLEMENTED();
 }

@@ -225,6 +225,7 @@ void C2_HOOK_FASTCALL PathCat(char* pDestn_str, const char* pStr_1, const char* 
 
 // FUNCTION: CARMA2_HW 0x00513770
 // FUNCTION: CARMA2_SW 0x0050ebb0
+// FUNCTION: CARMA2_CHEAT 0x000519160
 float C2_HOOK_STDCALL tandeg(float pAngle) {
 
     pAngle = (float)DEG_TO_RAD(pAngle);

@@ -27,6 +27,7 @@
 
 // GLOBAL: CARMA2_HW 0x006820c0
 // GLOBAL: CARMA2_SW 0x0067c800
+// GLOBAL: CARMA2_CHEAT 0x00689968
 br_vector3 gRender_bounds_centre;
 
 // GLOBAL: CARMA2_HW 0x006820d0
@@ -64,6 +65,7 @@ tDrone_path_node* gDrone_path_nodes;
 
 // GLOBAL: CARMA2_HW 0x00684518
 // GLOBAL: CARMA2_SW 0x0067ec58
+// GLOBAL: CARMA2_CHEAT 0x0068bdc0
 int gTraffic_disabled;
 
 // GLOBAL: CARMA2_HW 0x00681fb0
@@ -474,6 +476,7 @@ void C2_HOOK_FASTCALL DronePreCollisionStuff(void) {
 
 // STUB: CARMA2_HW 0x00451e70
 // STUB: CARMA2_SW 0x00451c00
+// STUB: CARMA2_CHEAT 0x004523c0
 void C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec* pDrone) {
     NOT_IMPLEMENTED();
 }

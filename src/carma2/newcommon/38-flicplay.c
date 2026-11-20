@@ -121,6 +121,7 @@ int gTranslation_count;
 
 // GLOBAL: CARMA2_HW 0x006861e8
 // GLOBAL: CARMA2_SW 0x00680928
+// GLOBAL: CARMA2_CHEAT 0x0068da90
 tFlic_descriptor* gFirst_flic;
 
 // GLOBAL: CARMA2_HW 0x006861d8
@@ -135,10 +136,12 @@ br_pixelmap* gPalette;
 
 // GLOBAL: CARMA2_HW 0x00686210
 // GLOBAL: CARMA2_SW 0x00680950
+// GLOBAL: CARMA2_CHEAT 0x0068dab8
 tTranslation_record* gTranslations;
 
 // GLOBAL: CARMA2_HW 0x00686218
 // GLOBAL: CARMA2_SW 0x00680958
+// GLOBAL: CARMA2_CHEAT 0x0068dac0
 tFlic_descriptor gPanel_flic[2] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006862f8
@@ -173,6 +176,7 @@ br_pixelmap* gPanel_buffer[2];
 
 // GLOBAL: CARMA2_HW 0x006861e0
 // GLOBAL: CARMA2_SW 0x00680920
+// GLOBAL: CARMA2_CHEAT 0x0068da88
 tDR_font* gTrans_fonts[2];
 
 // GLOBAL: CARMA2_HW 0x00686308
@@ -1152,6 +1156,7 @@ br_pixelmap* C2_HOOK_FASTCALL GetPanelPixelmap(int pPanel_index) {
 
 // FUNCTION: CARMA2_HW 0x00463130
 // FUNCTION: CARMA2_SW 0x00462bc0
+// FUNCTION: CARMA2_CHEAT 0x004635a0
 void C2_HOOK_FASTCALL ServicePanelFlics(int pCopy_to_buffer) {
     tU32 time_diff;
     tU32 the_time;

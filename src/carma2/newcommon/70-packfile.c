@@ -267,6 +267,7 @@ br_size_t C2_HOOK_FASTCALL PFfread(void* buf, br_size_t size, unsigned int n, vo
 
 // FUNCTION: CARMA2_HW 0x004b4a80
 // FUNCTION: CARMA2_SW 0x004b0bf0
+// FUNCTION: CARMA2_CHEAT 0x004ba350
 int C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned int n, void* f) {
 
     if ((uintptr_t)f >= REC2_ASIZE(gTwatVfsFiles)) {
@@ -277,6 +278,7 @@ int C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned int n, v
 
 // FUNCTION: CARMA2_HW 0x004b4ac0
 // FUNCTION: CARMA2_SW 0x004b0c30
+// FUNCTION: CARMA2_CHEAT 0x004ba390
 int C2_HOOK_FASTCALL PFfgetpos(FILE* pF, fpos_t* pPos) {
 
     if ((uintptr_t)pF >= REC2_ASIZE(gTwatVfsFiles)) {
@@ -293,6 +295,7 @@ int C2_HOOK_FASTCALL PFfgetpos(FILE* pF, fpos_t* pPos) {
 
 // FUNCTION: CARMA2_HW 0x004b4b00
 // FUNCTION: CARMA2_SW 0x004b0c70
+// FUNCTION: CARMA2_CHEAT 0x004ba3d0
 int C2_HOOK_FASTCALL PFftell(FILE* pF) {
     int pos;
 
@@ -306,6 +309,7 @@ int C2_HOOK_FASTCALL PFftell(FILE* pF) {
 
 // FUNCTION: CARMA2_HW 0x004b4b30
 // FUNCTION: CARMA2_SW 0x004b0ca0
+// FUNCTION: CARMA2_CHEAT 0x004ba400
 int C2_HOOK_FASTCALL PFfsetpos(FILE* pFile, fpos_t* pPos) {
     tTwatVfsFile* twtFile;
     tU8* newpos;

@@ -19,6 +19,7 @@
 
 // GLOBAL: CARMA2_HW 0x0068b840
 // GLOBAL: CARMA2_SW 0x00685da0
+// GLOBAL: CARMA2_CHEAT 0x006930e8
 br_scalar gSight_distance_squared;
 
 // GLOBAL: CARMA2_HW 0x0068b84c
@@ -38,6 +39,7 @@ int gGroovidelics_array_size;
 
 // GLOBAL: CARMA2_HW 0x0068b838
 // GLOBAL: CARMA2_SW 0x00685d98
+// GLOBAL: CARMA2_CHEAT 0x006930e0
 tU32 gPrevious_groove_times[2];
 
 // GLOBAL: CARMA2_HW 0x00688b30
@@ -109,6 +111,7 @@ void C2_HOOK_FASTCALL ControlBoundFunkGroove(int pSlot_number, float pValue) {
 
 // STUB: CARMA2_HW 0x00474950
 // STUB: CARMA2_SW 0x00473eb0
+// STUB: CARMA2_CHEAT 0x00474cd0
 void C2_HOOK_FASTCALL DisposeFunkotronics(int pOwner) {
     NOT_IMPLEMENTED();
 }

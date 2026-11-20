@@ -27,6 +27,7 @@
 
 // GLOBAL: CARMA2_HW 0x00684550
 // GLOBAL: CARMA2_SW 0x0067ec90
+// GLOBAL: CARMA2_CHEAT 0x0068bdf8
 const char* gPed_sound_path;
 
 // GLOBAL: CARMA2_HW 0x0068b898
@@ -88,6 +89,7 @@ undefined4 gUNK_0068455c;
 
 // GLOBAL: CARMA2_HW 0x0079e13c
 // GLOBAL: CARMA2_SW 0x0079469c
+// GLOBAL: CARMA2_CHEAT 0x007a57dc
 int gCD_is_disabled;
 
 // GLOBAL: CARMA2_HW 0x00595c78
@@ -139,10 +141,12 @@ tS3_outlet* gCar_outlet;
 
 // GLOBAL: CARMA2_HW 0x00684604
 // GLOBAL: CARMA2_SW 0x0067ed44
+// GLOBAL: CARMA2_CHEAT 0x0068beac
 tS3_outlet* gEngine_outlet;
 
 // GLOBAL: CARMA2_HW 0x00684608
 // GLOBAL: CARMA2_SW 0x0067ed48
+// GLOBAL: CARMA2_CHEAT 0x0068beb0
 tS3_outlet* gDriver_outlet;
 
 // GLOBAL: CARMA2_HW 0x0068460c
@@ -157,6 +161,7 @@ tS3_outlet* gMusic_outlet;
 
 // GLOBAL: CARMA2_HW 0x00684614
 // GLOBAL: CARMA2_SW 0x0067ed54
+// GLOBAL: CARMA2_CHEAT 0x0068bebc
 tS3_outlet* gXXX_outlet;
 
 // GLOBAL: CARMA2_HW 0x0079e160
@@ -178,10 +183,12 @@ const char* gSound_generator_type_names[3] = {
 
 // GLOBAL: CARMA2_HW 0x00655dd8
 // GLOBAL: CARMA2_SW 0x00650cc0
+// GLOBAL: CARMA2_cHEAT 0x0065c658
 int gVirgin_pass = 1;
 
 // GLOBAL: CARMA2_HW 0x00595c4c
 // GLOBAL: CARMA2_SW 0x00590bac
+// GLOBAL: CARMA2_CHEAT 0x0059c5a4
 int gOld_sound_detail_level = -1;
 
 // GLOBAL: CARMA2_HW 0x0079e120
@@ -943,8 +950,10 @@ void C2_HOOK_FASTCALL StartMusic(void) {
 
     if (!gINT_00595c44 || gProgram_state.music_volume >= 128) {
         if (!S3IsCDAPlaying()) {
+#ifdef REC2_V102A
             gNext_track_finished_check = PDGetTotalTime() + 10000;
             dr_dprintf("CDINFO: StartMusic(): New gNext_track_finished_check %d", gNext_track_finished_check);
+#endif
             gINT_00684568 = DRS3StartCDA(gINT_00595c20);
         }
     }
