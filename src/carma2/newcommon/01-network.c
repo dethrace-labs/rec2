@@ -34,6 +34,7 @@ int gJoin_poll_index;
 
 // GLOBAL: CARMA2_HW 0x0068d978
 // GLOBAL: CARMA2_SW 0x006879d0
+// GLOBAL: CARMA2_CHEAT 0x00695218
 int gBastard_has_answered;
 
 // GLOBAL: CARMA2_HW 0x0068d984
@@ -90,6 +91,7 @@ tPlayer_ID gLocal_net_ID;
 
 // GLOBAL: CARMA2_HW 0x00690c44
 // GLOBAL: CARMA2_SW 0x0068ac9c
+// GLOBAL: CARMA2_CHEAT 0x006984e4
 int gOnly_receive_guarantee_replies;
 
 // GLOBAL: CARMA2_HW 0x0068d97c
@@ -109,6 +111,7 @@ tMax_message* gMax_messages;
 
 // GLOBAL: CARMA2_HW 0x0068d96c
 // GLOBAL: CARMA2_SW 0x006879c4
+// GLOBAL: CARMA2_CHEAT 0x0069520c
 int gNet_initialised;
 
 // GLOBAL: CARMA2_HW 0x0068d960
@@ -118,10 +121,12 @@ int gDont_allow_joiners;
 
 // GLOBAL: CARMA2_HW 0x0074a690
 // GLOBAL: CARMA2_SW 0x00741150
+// GLOBAL: CARMA2_CHEAT 0x00751d30
 tU32 gUINT_0074a690;
 
 // GLOBAL: CARMA2_HW 0x0074a718
 // GLOBAL: CARMA2_SW 0x007411d8
+// GLOBAL: CARMA2_CHEAT 0x00751db8
 tU32 gUINT_0074a718;
 
 #ifdef REC2_HW
@@ -158,6 +163,7 @@ int gINT_0074a770 = 0;
 
 // GLOBAL: CARMA2_HW 0x00659d30
 // GLOBAL: CARMA2_SW 0x00654648
+// GLOBAL: CARMA2_CHEAT 0x00660650
 tU16 gGuarantee_number = 1;
 
 // GLOBAL: CARMA2_HW 0x00659d34
@@ -167,6 +173,7 @@ int INT_00659d34 = -1;
 
 // GLOBAL: CARMA2_HW 0x0068d958
 // GLOBAL: CARMA2_SW 0x006879b0
+// GLOBAL: CARMA2_CHEAT 0x006951f8
 int gNext_guarantee;
 
 // GLOBAL: CARMA2_HW 0x0068d990
@@ -273,6 +280,7 @@ void C2_HOOK_FASTCALL ReenableNetService(void) {
 
 // FUNCTION: CARMA2_HW 0x0049d400
 // FUNCTION: CARMA2_SW 0x00499580
+// FUNCTION: CARMA2_CHEAT 0x0049d7b0
 int C2_HOOK_FASTCALL PermitNetServiceReentrancy(void) {
 
     if (gIn_net_service) {
@@ -284,6 +292,7 @@ int C2_HOOK_FASTCALL PermitNetServiceReentrancy(void) {
 
 // FUNCTION: CARMA2_HW 0x0049d420
 // FUNCTION: CARMA2_SW 0x004995a0
+// FUNCTION: CARMA2_CHEAT 0x0049d7d0
 void C2_HOOK_FASTCALL HaltNetServiceReentrancy(void) {
 
     gIn_net_service = 1;
@@ -312,6 +321,7 @@ void C2_HOOK_FASTCALL NetSendHeadupToEverybody(const char* pMessage) {
 
 // FUNCTION: CARMA2_HW 0x0049daf0
 // FUNCTION: CARMA2_SW 0x00499c70
+// FUNCTION: CARMA2_CHEAT 0x0049e030
 void C2_HOOK_FASTCALL NetSendHeadupToPlayer(char* pMessage, tPlayer_ID pPlayer) {
     tNet_message* message;
 
@@ -899,6 +909,7 @@ tNet_message* C2_HOOK_FASTCALL NetGetNextMessage(tNet_game_details* pDetails, vo
 
 // STUB: CARMA2_HW 0x004a0080
 // STUB: CARMA2_SW 0x0049c200
+// STUB: CARMA2_CHEAT 0x004a0bb0
 void C2_HOOK_FASTCALL NetFullScreenMessage(int pStr_index, int pLeave_it_up_there) {
     NOT_IMPLEMENTED();
 }
@@ -1027,6 +1038,7 @@ void C2_HOOK_FASTCALL CheckForPendingStartRace(void) {
 
 // STUB: CARMA2_HW 0x004a5280
 // STUB: CARMA2_SW 0x004a1400
+// STUB: CARMA2_CHEAT 0x004a6150
 void C2_HOOK_FASTCALL NetService(int pIn_race) {
     tU32 time;
 

@@ -133,6 +133,7 @@ int gDisable_advance;
 
 // GLOBAL: CARMA2_HW 0x00694104
 // GLOBAL: CARMA2_SW 0x0068e15c
+// GLOBAL: CARMA2_CHEAT 0x0069bc7c
 tPipe_smudge_data* gCrush_space;
 
 // GLOBAL: CARMA2_HW 0x0069410c
@@ -216,6 +217,7 @@ void C2_HOOK_FASTCALL ARResetPiping(void) {
 
 // FUNCTION: CARMA2_HW 0x004024a0
 // FUNCTION: CARMA2_SW 0x004024a0
+// FUNCTION: CARMA2_CHEAT 0x004024a0
 void C2_HOOK_FASTCALL ARDispose(void) {
 
     if (gPipe_buffer_start != NULL) {

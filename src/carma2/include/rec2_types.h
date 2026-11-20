@@ -4584,6 +4584,7 @@ typedef struct {
 } tPHIL_queued_header;
 
 typedef struct {
+    /* FIXME: CARMA2_CHEAT has extra 32-bit member */
     tPhysics_object* collision_info;
     undefined2 field_0x4;
     undefined field_0x6[0x2];
@@ -5486,7 +5487,12 @@ typedef struct tSave_game {
 } tSave_game;
 
 typedef struct tMin_message {
+#ifdef REC2_V101A
+    tU8 buffer[96];
+#endif
+#ifdef REC2_V102A
     tU8 buffer[92];
+#endif
 } tMin_message;
 
 typedef struct tMid_message {

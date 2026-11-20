@@ -66,6 +66,7 @@ int gSpark_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa5ac
 // GLOBAL: CARMA2_SW 0x006a3ffc
+// GLOBAL: CARMA2_CHEAT 0x006b2124
 br_pixelmap* gIt_shade_table;
 
 // GLOBAL: CARMA2_HW 0x006aa590
@@ -918,6 +919,7 @@ void C2_HOOK_FASTCALL GenerateSmokeShades(void) {
 
 // FUNCTION: CARMA2_HW 0x004fb9c0
 // FUNCTION: CARMA2_SW 0x004f6f20
+// FUNCTION: CARMA2_cHEAT 0x00501660
 void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void) {
     if (gIt_shade_table == NULL) {
         gIt_shade_table = GenerateDarkenedShadeTable(16, gRender_palette, 0, 255, 254, .25f, .5f, .75f, .6f);
@@ -1395,6 +1397,7 @@ void C2_HOOK_FASTCALL DisposeKevStuffCar(tCar_spec* pCar) {
 
 // STUB: CARMA2_HW 0x004fe360
 // STUB: CARMA2_SW 0x004f9900
+// STUB: CARMA2_CHEAT 0x00504000
 void C2_HOOK_FASTCALL MakeCarIt(tCar_spec* pCar) {
     NOT_IMPLEMENTED();
 }
@@ -1405,6 +1408,7 @@ void C2_HOOK_FASTCALL MakeCarIt(tCar_spec* pCar) {
 
 // STUB: CARMA2_HW 0x004fe570
 // STUB: CARMA2_SW 0x004f9d90
+// STUB: CARMA2_CHEAT 0x00504210
 void C2_HOOK_FASTCALL StopCarBeingIt(tCar_spec* pCar) {
     NOT_IMPLEMENTED();
 }

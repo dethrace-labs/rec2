@@ -109,6 +109,7 @@ void C2_HOOK_FASTCALL GetMatrixFromOrientation(br_matrix34* pMatrix, const tFixe
 
 // STUB: CARMA2_HW 0x0049c0d0
 // STUB: CARMA2_SW 0x00498250
+// STUB: CARMA2_CHEAT 0x0049c480
 int C2_HOOK_FASTCALL GetObjectNetworkStuff(tPhysics_object* pObject, tU8* pBuffer, tU32 pSize) {
 
     NOT_IMPLEMENTED();
@@ -265,9 +266,27 @@ void C2_HOOK_FASTCALL PHILDisable(void) {
 int C2_HOOK_FASTCALL PHILAddObject(tPhysics_object* pObject) {
     NOT_IMPLEMENTED();
 }
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_CHEAT
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_CHEAT 0x004bb790
+void C2_HOOK_FASTCALL PHILVerify(void) {
+    NOT_IMPLEMENTED();
+}
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
+#endif
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
 #endif
 
 // STUB: CARMA2_HW 0x004b5ea0
@@ -350,12 +369,14 @@ int C2_HOOK_FASTCALL PHILMakeObjectPassive(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004b6090
 // FUNCTION: CARMA2_SW 0x004b27b0
+// FUNCTION: CARMA2_CHEAT 0x004bbad0
 int C2_HOOK_FASTCALL PHILMakeObjectActive(tPhysics_object* pObject, const br_vector3* pVelocity, const br_vector3* pOmega, int pFlag) {
     tPHIL_queued_object_info* info;
 
     if (gPHIL_disabled) {
         return 0;
     }
+    PHILVerify();
     if (pObject->field_0x239 == 2) {
         info = pObject->field_0x240;
         info->field_0x8 = 2;
@@ -372,6 +393,7 @@ int C2_HOOK_FASTCALL PHILMakeObjectActive(tPhysics_object* pObject, const br_vec
         } else {
             info->field_0x4 &= ~0x2;
         }
+        PHILVerify();
         return 0;
     }
     info = pObject->field_0x240;
@@ -390,14 +412,17 @@ int C2_HOOK_FASTCALL PHILMakeObjectActive(tPhysics_object* pObject, const br_vec
             pObject->omega = *pOmega;
         }
         ResetCarSpecialVolume(pObject);
+        PHILVerify();
         return 0;
     } else {
+        PHILVerify();
         return 3;
     }
 }
 
 // FUNCTION: CARMA2_HW 0x004b61a0
 // FUNCTION: CARMA2_SW 0x004b28c0
+// FUNCTION: CARMA2_cHEAT 0x004bbc00
 int C2_HOOK_FASTCALL PHILSetPassiveObjectsMatrix(tPhysics_object* pObject, const br_matrix34* pMatrix) {
     tPHIL_queued_object_info* queued;
     tPHIL_queued_header* info;
@@ -405,20 +430,25 @@ int C2_HOOK_FASTCALL PHILSetPassiveObjectsMatrix(tPhysics_object* pObject, const
     if (gPHIL_disabled) {
         return 0;
     }
+    PHILVerify();
     if (pObject->field_0x239 == 2) {
         queued = pObject->field_0x240;
         queued->field_0x30 = *pMatrix;
         queued->flags |= 0x4;
+        PHILVerify();
         return 0;
     }
     info = pObject->field_0x240;
     if (info != NULL) {
         if (info->field_0x8 != 1) {
+            PHILVerify();
             return 4;
         }
         info->collision_info->actor->t.t.mat = *pMatrix;
+        PHILVerify();
         return 0;
     } else {
+        PHILVerify();
         return 3;
     }
 }

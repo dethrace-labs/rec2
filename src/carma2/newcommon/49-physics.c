@@ -32,6 +32,7 @@
 
 // GLOBAL: CARMA2_HW 0x00692dc8
 // GLOBAL: CARMA2_SW 0x0068ce20
+// GLOBAL: CARMA2_CHEAT 0x0069a940
 int gINT_00692dc8;
 
 // GLOBAL: CARMA2_HW 0x006940c0
@@ -648,6 +649,7 @@ void C2_HOOK_FASTCALL WriteNewPositions(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004b9eb0
 // FUNCTION: CARMA2_SW 0x004b65d0
+// FUNCTION: CARMA2_CHEAT 0x004bf9e0
 void C2_HOOK_FASTCALL SetListDoingNothingFlag(tPhysics_object* pObject, int pFlag) {
     while (pObject != NULL) {
         pObject->disable_move_rotate = pFlag;
@@ -993,6 +995,7 @@ void C2_HOOK_FASTCALL SetGravityDeltaV(tPhysics_object* pObject, br_vector3* pIm
 
 // FUNCTION: CARMA2_HW 0x004c2b20
 // FUNCTION: CARMA2_SW 0x004bf250
+// FUNCTION: CARMA2_CHEAT 0x004c8640
 void C2_HOOK_FASTCALL InternalPositionChildren(tPhysics_object* pParent, tPhysics_object* pRoot) {
     tPhysics_object* child;
     br_vector3 parent_point;

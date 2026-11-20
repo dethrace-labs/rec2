@@ -39,10 +39,12 @@
 
 // GLOBAL: CARMA2_HW 0x0075b8f8
 // GLOBAL: CARMA2_SW 0x00751e58
+// GLOBAL: CARMA2_cHEAT 0x00762f98
 br_pixelmap* gDigits_pix;
 
 // GLOBAL: CARMA2_HW 0x0068d920
 // GLOBAL: CARMA2_SW 0x00687978
+// GLOBAL: CARMA2_CHEAT 0x006951c0
 int gINT_0068d920;
 
 // GLOBAL: CARMA2_HW 0x0068d924
@@ -55,6 +57,7 @@ int gLast_it_change;
 
 // GLOBAL: CARMA2_HW 0x0068d92c
 // GLOBAL: CARMA2_SW 0x00687984
+// GLOBAL: CARMA2_cHEAT 0x006951cc
 tU32 gTime_for_punishment;
 
 // SendShapeNumbers
@@ -401,6 +404,7 @@ void C2_HOOK_FASTCALL CreateBoxes(void) {
 
 // STUB: CARMA2_HW 0x00499a00
 // STUB: CARMA2_SW 0x004962a0
+// STUB: CARMA2_CHEAT 0x00499db0
 void C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
     NOT_IMPLEMENTED();
 }
@@ -419,6 +423,7 @@ void C2_HOOK_FASTCALL DoNetScores(void) {
 
 // FUNCTION: CARMA2_HW 0x0049a710
 // FUNCTION: CARMA2_SW 0x00496890
+// FUNCTION: CARMA2_CHEAT 0x0049aac0
 void C2_HOOK_FASTCALL InitNetHeadups(void) {
 
     gDigits_pix = LoadPixelmap("HDIGITS.PIX");
@@ -429,6 +434,7 @@ void C2_HOOK_FASTCALL InitNetHeadups(void) {
 
 // FUNCTION: CARMA2_HW 0x0049a730
 // FUNCTION: CARMA2_SW 0x004968b0
+// FUNCTION: CARMA2_CHEAT 0x0049aae0
 void C2_HOOK_FASTCALL DisposeNetHeadups(void) {
 
     if (gDigits_pix != NULL) {
@@ -445,6 +451,7 @@ void C2_HOOK_FASTCALL DisposeNetHeadups(void) {
 
 // STUB: CARMA2_HW 0x0049a760
 // STUB: CARMA2_SW 0x004968e0
+// STUB: CARMA2_CHEAT 0x0049ab10
 void C2_HOOK_FASTCALL DeclareWinner(int pWinner_index) {
     NOT_IMPLEMENTED();
 }
@@ -477,6 +484,7 @@ void C2_HOOK_FASTCALL CheckForVampireWinner(void) {
 
 // FUNCTION: CARMA2_HW 0x0049b540
 // FUNCTION: CARMA2_SW 0x004976c0
+// FUNCTION: CARMA2_CHEAT 0x0049b8f0
 void C2_HOOK_FASTCALL PlayerIsInfected(tNet_game_player_info* pPlayer) {
     int i;
     char s[256];
@@ -559,6 +567,7 @@ void C2_HOOK_FASTCALL PlayerIsIt(tNet_game_player_info* pPlayer) {
 
 // STUB: CARMA2_HW 0x0049abf0
 // STUB: CARMA2_SW 0x00496d70
+// STUB: CARMA2_CHEAT 0x0049afa0
 void C2_HOOK_FASTCALL CalcPlayerScores(void) {
     NOT_IMPLEMENTED();
 }
@@ -605,6 +614,7 @@ inline void C2_HOOK_FASTCALL SendPlayerScores(void) {
 void C2_HOOK_FASTCALL DoNetGameManagement(void) {
     // GLOBAL: CARMA2_HW 0x00659c34
     // GLOBAL: CARMA2_SW 0x006545cc
+    // GLOBAL: CARMA2_CHEAT 0x00660554
     static tU32 last_playerscores_sent = (tU32)-1;
 
     if (gNet_mode == eNet_mode_host) {
@@ -698,6 +708,7 @@ void C2_HOOK_FASTCALL ReceivedGameplay(tNet_message_chunk* pContents, tNet_messa
 
     // GLOBAL: CARMA2_HW 0x0068d954
     // GLOBAL: CARMA2_SW 0x006879ac
+    // GLOBAL: CARMA2_CHEAT 0x006951f4
     static int pause_semaphore;
 
     if (pContents->gameplay.mess == eNet_gameplay_host_paused) {
