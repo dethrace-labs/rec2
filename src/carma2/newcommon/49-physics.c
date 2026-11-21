@@ -304,10 +304,35 @@ tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList2(br_vector3* pPosition, br_vecto
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x00425ba0
-// STUB: CARMA2_SW 0x00425c40
+// FUNCTION: CARMA2_HW 0x00425ba0
+// FUNCTION: CARMA2_SW 0x00425c40
+// FUNCTION: CARMA2_CHEAT 0x00425d30
 int C2_HOOK_FASTCALL BoundsOverlapTest(br_bounds3* pBounds_1, br_bounds3* pBounds_2) {
-    NOT_IMPLEMENTED();
+    int i;
+
+    if (pBounds_1->min.v[2] > pBounds_2->max.v[2]
+            || pBounds_2->min.v[2] > pBounds_1->max.v[2]
+            || pBounds_1->min.v[1] > pBounds_2->max.v[1]
+            || pBounds_2->min.v[1] > pBounds_1->max.v[1]
+            || pBounds_1->min.v[0] > pBounds_2->max.v[0]
+            || pBounds_2->min.v[0] > pBounds_1->max.v[0]) {
+        return 0;
+    }
+    for (i = 0; i < 3; i++) {
+        if (!isfinite(pBounds_1->min.v[i])) {
+            return 0;
+        }
+        if (!isfinite(pBounds_1->max.v[i])) {
+            return 0;
+        }
+        if (!isfinite(pBounds_2->min.v[i])) {
+            return 0;
+        }
+        if (!isfinite(pBounds_2->max.v[i])) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 #ifdef REC2_MATCHING
