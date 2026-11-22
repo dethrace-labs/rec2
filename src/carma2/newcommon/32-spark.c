@@ -1405,9 +1405,9 @@ void C2_HOOK_FASTCALL LoadInKevStuff(FILE* pF) {
         scale = BR_LENGTH3(gShrapnel[i].axis.v[0], gShrapnel[i].axis.v[1], gShrapnel[i].axis.v[2]);
         if (scale > BR_SCALAR_EPSILON * 2) {
             dscale = 1.0 / scale;
-            gShrapnel[i].axis.v[0] = gShrapnel[i].axis.v[0] * dscale;
-            gShrapnel[i].axis.v[1] = gShrapnel[i].axis.v[1] * dscale;
-            gShrapnel[i].axis.v[2] = gShrapnel[i].axis.v[2] * dscale;
+            gShrapnel[i].axis.v[0] = (br_scalar)(gShrapnel[i].axis.v[0] * dscale);
+            gShrapnel[i].axis.v[1] = (br_scalar)(gShrapnel[i].axis.v[1] * dscale);
+            gShrapnel[i].axis.v[2] = (br_scalar)(gShrapnel[i].axis.v[2] * dscale);
         } else {
             gShrapnel[i].axis.v[0] = 1.0f;
             gShrapnel[i].axis.v[1] = 0.0f;
