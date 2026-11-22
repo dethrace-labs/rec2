@@ -797,8 +797,9 @@ typedef struct {
 } tPipe_chunk_split_weld;
 
 typedef struct {
-    undefined4 field_0x0;
+    br_material* material;
     tS32 count;
+    tU16 face_data[];
 } tPipe_chunk_remove_faces;
 
 typedef struct {
