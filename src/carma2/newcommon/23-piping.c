@@ -1796,9 +1796,9 @@ void C2_HOOK_FASTCALL ApplySmoke(tPipe_chunk** pChunk) {
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x4);
 
     chunk = (tPipe_chunk_smoke*)(*pChunk)->data.raw_data;
-    pos.v[0] = chunk->pos.v[0] * 0.00125;
-    pos.v[1] = chunk->pos.v[1] * 0.00125;
-    pos.v[2] = chunk->pos.v[2] * 0.00125;
+    pos.v[0] = (br_scalar)(chunk->pos.v[0] * 0.00125);
+    pos.v[1] = (br_scalar)(chunk->pos.v[1] * 0.00125);
+    pos.v[2] = (br_scalar)(chunk->pos.v[2] * 0.00125);
     pos.v[0] += gProgram_state.current_car.car_master_actor->t.t.translate.t.v[0];
     pos.v[1] += gProgram_state.current_car.car_master_actor->t.t.translate.t.v[1];
     pos.v[2] += gProgram_state.current_car.car_master_actor->t.t.translate.t.v[2];
