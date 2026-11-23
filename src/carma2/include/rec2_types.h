@@ -834,10 +834,12 @@ typedef struct tPipe_chunk {
         tPipe_chunk_shrapnel shrapnel;
         tPipe_chunk_remove_faces remove_faces;
         tPipe_chunk_identity identity;
+        tPipe_chunk_flame flame;
         tPipe_chunk_split_weld split_weld;
         tPipe_chunk_flap flap;
         tPipe_chunk_splash splash;
         tPipe_chunk_relink relink;
+        tPipe_chunk_spark spark;
         tPipe_chunk_smash_model_change smash_model_change;
         tPipe_smash_texture_change smash_texture_change;
         tPipe_single_transform_type transform_type;
@@ -4104,7 +4106,8 @@ typedef struct  {
     float field_0x18;
     float field_0x1c;
     tU8 kev_o_flap;
-    undefined field_0x21[7];
+    undefined field_0x21[3];
+    tPhysics_object* field_0x24;
     tU8 is_door;
     undefined field_0x29[3];
 } tCar_crush_flap_data;
@@ -6119,6 +6122,7 @@ enum {
     eSoundId_BendCar = 5099,
     eSoundId_DamageRepair = 5200,
     eSoundId_Horn = 5209,
+    eSoundId_DoorSlam = 5250,
     eSoundId_Cop_Siren = 5350,
     eSoundId_Explosion = 5400,
     eSoundId_FlaskGone = 5401,
