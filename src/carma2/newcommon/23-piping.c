@@ -2220,6 +2220,8 @@ void C2_HOOK_FASTCALL ApplyDSModel(tPipe_chunk** pChunk) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c9c70
+// FUNCTION: CARMA2_SW 0x004c63a0
+// FUNCTION: CARMA2_CHEAT 0x004cf7a0
 void C2_HOOK_FASTCALL ApplyPedDiagnostics(tPipe_chunk** pChunk) {
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x4);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_ped_diagnostic, instance, 0x54);
