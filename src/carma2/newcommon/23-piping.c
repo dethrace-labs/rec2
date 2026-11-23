@@ -1164,7 +1164,7 @@ void C2_HOOK_FASTCALL PipeSingleSound(tS3_outlet* pOutlet, int pSound, tS3_volum
 // FUNCTION: CARMA2_HW 0x004c8530
 // FUNCTION: CARMA2_SW 0x004c4c60
 // FUNCTION: CARMA2_CHEAT 0x004ce050
-void C2_HOOK_FASTCALL PipeSingleSpecial(tSpecial_type pType) {
+void C2_HOOK_FASTCALL PipeSingleSpecial(tPipe_special_action pType) {
     ARDoSingleVariedSession(ePipe_chunk_special, pType, 0);
 }
 
@@ -1933,19 +1933,21 @@ void C2_HOOK_FASTCALL ApplyGWS(tPipe_chunk** pChunk) {
 // ApplyDamage
 
 // FUNCTION: CARMA2_HW 0x004c97c0
+// FUNCTION: CARMA2_SW 0x004c5ef0
+// FUNCTION: CARMA2_CHEAT 0x004cf2e0
 void C2_HOOK_FASTCALL ApplySpecial(tPipe_chunk** pChunk) {
     tU32 type;
 
     type = (*pChunk)->subject_index;
     switch (type) {
-    case ePipe_special_fade:
+    case ePipe_special_action_recovery:
         if (fabs(ARGetReplayRate()) <= 1.0) {
             FadePaletteDown();
         }
-        return;
-    case 1: /* initial tail; no enumerator yet */
+        break;
+    case ePipe_special_action_tail_growth:
         DoInitialTail();
-        return;
+        break;
     }
 }
 
