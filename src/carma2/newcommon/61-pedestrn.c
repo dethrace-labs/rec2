@@ -2396,8 +2396,6 @@ void C2_HOOK_FASTCALL ScaleModelXYZ(br_model* pModel, br_scalar pScale_x, br_sca
 // FUNCTION: CARMA2_SW 0x004042f0
 // FUNCTION: CARMA2_CHEAT 0x004042f0
 void C2_HOOK_FASTCALL ScaleModel(br_model* pModel, float pScale) {
-    int i;
-    br_vertex* v;
 
     ScaleModelXYZ(pModel, pScale, pScale, pScale);
 }
