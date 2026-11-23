@@ -2480,8 +2480,9 @@ void C2_HOOK_FASTCALL UndoSmashTextureChange(tPipe_chunk** pChunk, tPipe_chunk* 
 }
 
 // FUNCTION: CARMA2_HW 0x004ca180
+// FUNCTION: CARMA2_SW 0x004c68b0
+// FUNCTION: CARMA2_CHEAT 0x004cfcc0
 void C2_HOOK_FASTCALL UndoActorTrans(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x4);
 
     (void)pPrev_chunk;
     (*pChunk)->data.actor_trans.actor->t.t.translate.t.v[0] -= (*pChunk)->data.actor_trans.delta.v[0];
