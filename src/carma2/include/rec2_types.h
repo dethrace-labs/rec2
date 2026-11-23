@@ -797,6 +797,17 @@ typedef struct {
 } tPipe_chunk_split_weld;
 
 typedef struct {
+    br_uint_16 vertices[3];
+    br_uint_16 smoothing;
+} tPipe_remove_face;
+
+typedef struct {
+    br_material* material;
+    tS32 count;
+    tPipe_remove_face faces[];
+} tPipe_chunk_remove_faces;
+
+typedef struct {
     tCar_spec* car_spec;
     undefined4 field_0x4;
     br_pixelmap* texture1;
@@ -826,11 +837,14 @@ typedef struct tPipe_chunk {
         tPipe_phil_object phil_object;
         tPipe_funk_enable funk_enable;
         tPipe_chunk_shrapnel shrapnel;
+        tPipe_chunk_remove_faces remove_faces;
         tPipe_chunk_identity identity;
+        tPipe_chunk_flame flame;
         tPipe_chunk_split_weld split_weld;
         tPipe_chunk_flap flap;
         tPipe_chunk_splash splash;
         tPipe_chunk_relink relink;
+        tPipe_chunk_spark spark;
         tPipe_chunk_smash_model_change smash_model_change;
         tPipe_smash_texture_change smash_texture_change;
         tPipe_single_transform_type transform_type;
@@ -857,6 +871,7 @@ typedef struct tPipe_chunk {
         tPipe_single_drone_straight_pos drone_straight_pos;
         tPipe_chunk_repulse_ray repulse_ray;
         tPipe_chunk_oil_spill oil_spill;
+        tPipe_chunk_extended_splash extended_splash;
         tPipe_single_graphical_wheel_stuff graphical_wheel_stuff;
         char raw_data[0];
     } data;
@@ -4098,7 +4113,8 @@ typedef struct  {
     float field_0x18;
     float field_0x1c;
     tU8 kev_o_flap;
-    undefined field_0x21[7];
+    undefined field_0x21[3];
+    tPhysics_object* field_0x24;
     tU8 is_door;
     undefined field_0x29[3];
 } tCar_crush_flap_data;
@@ -6113,6 +6129,7 @@ enum {
     eSoundId_BendCar = 5099,
     eSoundId_DamageRepair = 5200,
     eSoundId_Horn = 5209,
+    eSoundId_DoorSlam = 5250,
     eSoundId_Cop_Siren = 5350,
     eSoundId_Explosion = 5400,
     eSoundId_FlaskGone = 5401,
