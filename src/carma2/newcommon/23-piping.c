@@ -2444,17 +2444,13 @@ void C2_HOOK_FASTCALL UndoScreenWobble(tPipe_chunk** pChunk, tPipe_chunk* pPrev_
 }
 
 // FUNCTION: CARMA2_HW 0x004c9e80
+// FUNCTION: CARMA2_SW 0x004c65b0
+// FUNCTION: CARMA2_CHEAT 0x004cf9b0
 void C2_HOOK_FASTCALL UndoSplash(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x4);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, water_normal, 0x244);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, water_d, 0x250);
 
     ARDisableAdvance();
     if (pPrev_chunk != NULL) {
-        ((tPhysics_object*)pPrev_chunk->subject_index)->water_d = pPrev_chunk->data.splash.water_d;
-        ((tPhysics_object*)pPrev_chunk->subject_index)->water_normal.v[0] = pPrev_chunk->data.splash.normal.v[0];
-        ((tPhysics_object*)pPrev_chunk->subject_index)->water_normal.v[1] = pPrev_chunk->data.splash.normal.v[1];
-        ((tPhysics_object*)pPrev_chunk->subject_index)->water_normal.v[2] = pPrev_chunk->data.splash.normal.v[2];
+        ApplySplash(&pPrev_chunk);
     } else {
         ((tPhysics_object*)(*pChunk)->subject_index)->water_d = 10000.0f;
     }
