@@ -201,7 +201,7 @@ extern void C2_HOOK_FASTCALL AddProxRayToPipingSession(int pRay_index, tCar_spec
 
 extern void C2_HOOK_FASTCALL AddFlapToPipingSession(br_actor* pActor, br_angle pAngle);
 
-// AddModelMashToPipingSession
+extern void C2_HOOK_FASTCALL AddModelMashToPipingSession(br_model* pModel, br_vector3* pMash);
 
 extern void C2_HOOK_FASTCALL AddRepulseRayToPipingSession(int pIndex, br_vector3* pOrigin, br_vector3* pVictim, tU32 pTime);
 
@@ -317,7 +317,7 @@ extern void C2_HOOK_FASTCALL PipeSingleOppoRenderage(tOpponent_spec* pOpponent_s
 
 extern void C2_HOOK_FASTCALL ApplySmudge(tPipe_chunk** pChunk);
 
-// ApplySpark
+extern void C2_HOOK_FASTCALL ApplySpark(tPipe_chunk** pChunk);
 
 extern void C2_HOOK_FASTCALL ApplyShrapnel(tPipe_chunk** pChunk);
 
@@ -331,9 +331,9 @@ extern void C2_HOOK_FASTCALL ApplyNonCar(tPipe_chunk** pChunk);
 
 extern void C2_HOOK_FASTCALL ApplySmokeColumn(tPipe_chunk** pChunk);
 
-// ApplyFlame
+extern void C2_HOOK_FASTCALL ApplyFlame(tPipe_chunk** pChunk);
 
-// ApplySplash
+extern void C2_HOOK_FASTCALL ApplySplash(tPipe_chunk** pChunk);
 
 // ApplyExtendedSplash
 
