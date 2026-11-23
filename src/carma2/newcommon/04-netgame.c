@@ -118,6 +118,8 @@ int C2_HOOK_FASTCALL TimeToSendData(void) {
 // SendCarData
 
 // FUNCTION: CARMA2_HW 0x00498390
+// FUNCTION: CARMA2_SW 0x00494fc0
+// FUNCTION: CARMA2_CHEAT 0x00498740
 void C2_HOOK_FASTCALL ReceivedRecover(tNet_message_chunk_recover* pContents) {
     int i;
 
