@@ -148,9 +148,9 @@ void C2_HOOK_FASTCALL PreprocessDronePaths(void) {
                 len = BrVector3Length(&gDrone_path_nodes[i].sections[j].field_0x04);
                 if (len > BR_SCALAR_EPSILON * 2) {
                     scale = 1.0 / len;
-                    gDrone_path_nodes[i].sections[j].field_0x10.v[0] = gDrone_path_nodes[i].sections[j].field_0x04.v[0] * scale;
-                    gDrone_path_nodes[i].sections[j].field_0x10.v[1] = gDrone_path_nodes[i].sections[j].field_0x04.v[1] * scale;
-                    gDrone_path_nodes[i].sections[j].field_0x10.v[2] = gDrone_path_nodes[i].sections[j].field_0x04.v[2] * scale;
+                    gDrone_path_nodes[i].sections[j].field_0x10.v[0] = (br_scalar)(gDrone_path_nodes[i].sections[j].field_0x04.v[0] * scale);
+                    gDrone_path_nodes[i].sections[j].field_0x10.v[1] = (br_scalar)(gDrone_path_nodes[i].sections[j].field_0x04.v[1] * scale);
+                    gDrone_path_nodes[i].sections[j].field_0x10.v[2] = (br_scalar)(gDrone_path_nodes[i].sections[j].field_0x04.v[2] * scale);
                 } else {
                     gDrone_path_nodes[i].sections[j].field_0x10.v[0] = 1.0f;
                     gDrone_path_nodes[i].sections[j].field_0x10.v[1] = 0.0f;
