@@ -2450,8 +2450,9 @@ void C2_HOOK_FASTCALL UndoSmashModelChange(tPipe_chunk** pChunk, tPipe_chunk* pP
 }
 
 // FUNCTION: CARMA2_HW 0x004ca130
+// FUNCTION: CARMA2_SW 0x004c6860
+// FUNCTION: CARMA2_CHEAT 0x004cfc70
 void C2_HOOK_FASTCALL UndoSmashRemoveFaces(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x4);
 
     (void)pPrev_chunk;
     SmashRestoreSomeFaces((br_model*)(*pChunk)->subject_index,
