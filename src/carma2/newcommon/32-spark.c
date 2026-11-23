@@ -1330,7 +1330,7 @@ void C2_HOOK_FASTCALL GetVelocitiesFromMatrices(br_vector3* pVel, br_vector3* pR
     br_quat quat_speed;
     br_scalar ts;
 
-    ts = pTime * 0.001;
+    ts = (br_scalar)(pTime * 0.001);
     BrVector3Sub(pVel, (br_vector3*)pMat_prev->m[3], (br_vector3*)pMat_now->m[3]);
     pVel->v[0] /= ts;
     pVel->v[1] /= ts;
