@@ -313,6 +313,7 @@ void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tU8** pChunk, int pType) {
 
 // FUNCTION: CARMA2_HW 0x00402540
 // FUNCTION: CARMA2_SW 0x00402540
+// FUNCTION: CARMA2_CHEAT 0x00402540
 int C2_HOOK_FASTCALL ARPipeSearchForwards(void) {
     return ARReplayForwards();
 }
@@ -327,6 +328,7 @@ int C2_HOOK_FASTCALL ARIsActionReplayAvailable(void) {
 
 // FUNCTION: CARMA2_HW 0x004025b0
 // FUNCTION: CARMA2_SW 0x004025b0
+// FUNCTION: CARMA2_CHEAT 0x004025b0
 int C2_HOOK_FASTCALL ARSomeReplayLeft(void) {
     return (gPlay_direction > 0 && gPipe_play_ptr != gPipe_record_ptr)
         || (gPlay_direction < 0 && gPipe_play_ptr != gPipe_buffer_oldest);
@@ -993,7 +995,12 @@ void C2_HOOK_FASTCALL AddFlapToPipingSession(br_actor* pActor, br_angle pAngle) 
         SIZE_OFFSET_PIPING(tPipe_chunk_flap, angle), pAngle);
 }
 
-// AddModelMashToPipingSession
+// STUB: CARMA2_HW 0x004c7550
+// STUB: CARMA2_SW 0x004c3c80
+// STUB: CARMA2_CHEAT 0x004cd070
+void C2_HOOK_FASTCALL AddModelMashToPipingSession(br_model* pModel, br_vector3* pMash) {
+    NOT_IMPLEMENTED();
+}
 
 // FUNCTION: CARMA2_HW 0x004c7940
 // FUNCTION: CARMA2_SW 0x004c4070
