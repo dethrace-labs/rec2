@@ -2376,7 +2376,21 @@ void C2_HOOK_FASTCALL SetGoreLevel(int pNewLevel) {
 
 // DRVector3SafeCrossXZ
 
-// ScaleModelXYZ
+// FUNCTION: CARMA2_HW 0x00404290
+// FUNCTION: CARMA2_SW 0x00404290
+// FUNCTION: CARMA2_CHEAT 0x00404290
+void C2_HOOK_FASTCALL ScaleModelXYZ(br_model* pModel, br_scalar pScale_x, br_scalar pScale_y, br_scalar pScale_z) {
+    int i;
+    br_vertex* v;
+
+    v = pModel->vertices;
+    for (i = 0; i < pModel->nvertices; i++, v++) {
+        v->p.v[0] *= pScale_x;
+        v->p.v[1] *= pScale_y;
+        v->p.v[2] *= pScale_z;
+    }
+    BrModelUpdate(pModel, BR_MODU_VERTEX_POSITIONS);
+}
 
 // FUNCTION: CARMA2_HW 0x004042f0
 // FUNCTION: CARMA2_SW 0x004042f0
@@ -2385,11 +2399,7 @@ void C2_HOOK_FASTCALL ScaleModel(br_model* pModel, float pScale) {
     int i;
     br_vertex* v;
 
-    v = pModel->vertices;
-    for (i = 0; i < pModel->nvertices; i++, v++) {
-        BrVector3Scale(&v->p, &v->p, pScale);
-    }
-    BrModelUpdate(pModel, BR_MODU_VERTEX_POSITIONS);
+    ScaleModelXYZ(pModel, pScale, pScale, pScale);
 }
 
 // DisposeMove
