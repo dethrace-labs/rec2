@@ -1833,6 +1833,8 @@ void C2_HOOK_FASTCALL ApplyFlame(tPipe_chunk** pChunk) {
 // ApplySplash
 
 // FUNCTION: CARMA2_HW 0x004c9310
+// FUNCTION: CARMA2_SW 0x004c5a40
+// FUNCTION: CARMA2_CHEAT 0x004cee30
 void C2_HOOK_FASTCALL ApplyExtendedSplash(tPipe_chunk** pChunk) {
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x4);
 
