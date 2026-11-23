@@ -313,6 +313,7 @@ void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tU8** pChunk, int pType) {
 
 // FUNCTION: CARMA2_HW 0x00402540
 // FUNCTION: CARMA2_SW 0x00402540
+// FUNCTION: CARMA2_CHEAT 0x00402540
 int C2_HOOK_FASTCALL ARPipeSearchForwards(void) {
     return ARReplayForwards();
 }
@@ -327,6 +328,7 @@ int C2_HOOK_FASTCALL ARIsActionReplayAvailable(void) {
 
 // FUNCTION: CARMA2_HW 0x004025b0
 // FUNCTION: CARMA2_SW 0x004025b0
+// FUNCTION: CARMA2_CHEAT 0x004025b0
 int C2_HOOK_FASTCALL ARSomeReplayLeft(void) {
     return (gPlay_direction > 0 && gPipe_play_ptr != gPipe_record_ptr)
         || (gPlay_direction < 0 && gPipe_play_ptr != gPipe_buffer_oldest);
@@ -993,7 +995,12 @@ void C2_HOOK_FASTCALL AddFlapToPipingSession(br_actor* pActor, br_angle pAngle) 
         SIZE_OFFSET_PIPING(tPipe_chunk_flap, angle), pAngle);
 }
 
-// AddModelMashToPipingSession
+// STUB: CARMA2_HW 0x004c7550
+// STUB: CARMA2_SW 0x004c3c80
+// STUB: CARMA2_CHEAT 0x004cd070
+void C2_HOOK_FASTCALL AddModelMashToPipingSession(br_model* pModel, br_vector3* pMash) {
+    NOT_IMPLEMENTED();
+}
 
 // FUNCTION: CARMA2_HW 0x004c7940
 // FUNCTION: CARMA2_SW 0x004c4070
@@ -1749,7 +1756,14 @@ void C2_HOOK_FASTCALL DoSmudge(tPipe_chunk** pChunk, int pDir) {
     }
 }
 
-// ApplySpark
+// FUNCTION: CARMA2_HW 0x004c9140
+// FUNCTION: CARMA2_SW 0x004c5870
+// FUNCTION: CARMA2_CHEAT 0x004cec60
+void C2_HOOK_FASTCALL ApplySpark(tPipe_chunk** pChunk) {
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x4);
+
+    AdjustSpark((*pChunk)->subject_index, &(*pChunk)->data.spark.p, &(*pChunk)->data.spark.v);
+}
 
 // FUNCTION: CARMA2_HW 0x004c9160
 // FUNCTION: CARMA2_SW 0x004c5890
@@ -1801,7 +1815,20 @@ void C2_HOOK_FASTCALL ApplySmokeColumn(tPipe_chunk** pChunk) {
         (*pChunk)->subject_index >> 14);
 }
 
-// ApplyFlame
+// FUNCTION: CARMA2_HW 0x004c92a0
+// FUNCTION: CARMA2_SW 0x004c59d0
+// FUNCTION: CARMA2_CHEAT 0x004cedc0
+void C2_HOOK_FASTCALL ApplyFlame(tPipe_chunk** pChunk) {
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x4);
+
+    /* FIXME: the game passes offset_x for both offset arguments */
+    AdjustFlame((*pChunk)->subject_index,
+        (*pChunk)->data.flame.frame_count,
+        (*pChunk)->data.flame.scale_x,
+        (*pChunk)->data.flame.scale_y,
+        (*pChunk)->data.flame.offset_x,
+        (*pChunk)->data.flame.offset_x);
+}
 
 // ApplySplash
 
