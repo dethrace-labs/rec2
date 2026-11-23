@@ -1809,10 +1809,12 @@ void C2_HOOK_FASTCALL ApplySmokeColumn(tPipe_chunk** pChunk) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c92a0
+// FUNCTION: CARMA2_SW 0x004c59d0
+// FUNCTION: CARMA2_CHEAT 0x004cedc0
 void C2_HOOK_FASTCALL ApplyFlame(tPipe_chunk** pChunk) {
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x4);
 
-    /* the original passes offset_x for both offset arguments */
+    /* FIXME: the game passes offset_x for both offset arguments */
     AdjustFlame((*pChunk)->subject_index,
         (*pChunk)->data.flame.frame_count,
         (*pChunk)->data.flame.scale_x,
