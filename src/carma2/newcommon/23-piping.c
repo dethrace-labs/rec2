@@ -1530,18 +1530,19 @@ void C2_HOOK_FASTCALL PipeSinglePHILObject(tPhysics_object* pObject) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c8ce0
-void C2_HOOK_FASTCALL PipeSingleGibShower(uintptr_t pId, undefined4 pArg2, undefined4 pArg3, undefined4 pArg4, undefined4 pArg5, br_vector3* pArg6, br_vector3* pArg7, br_vector3* pArg8) {
+// FUNCTION: CARMA2_SW 0x004c5410
+// FUNCTION: CARMA2_CHEAT 0x004ce800
+void C2_HOOK_FASTCALL PipeSingleGibShower(uintptr_t pId, tU32 pTime, tU32 pUid, float pForce, undefined4 pArg5, const br_vector3* pPos1, const br_vector3* pPos2, const br_vector3* pV) {
 
-    *(volatile tU32*)&gFloat_pipe_union.u32 = pArg4;
-    /* chunk type 0x31 (gib shower) has no enumerator yet */
-    ARDoSingleVariedSession(0x31, pId, 7,
-        4, 8, pArg2,
-        4, 4, pArg3,
-        4, 0xc, *(volatile tU32*)&gFloat_pipe_union.u32,
-        4, 0, pArg5,
-        0xc, 0x10, pArg6,
-        0xc, 0x1c, pArg7,
-        0xc, 0x28, pArg8);
+    gFloat_pipe_union.f = pForce;
+    ARDoSingleVariedSession(ePipe_chunk_gib_shower, pId, 7,
+        SIZE_OFFSET_PIPING(tPipe_chunk_gib_shower, time), pTime,
+        SIZE_OFFSET_PIPING(tPipe_chunk_gib_shower, uid), pUid,
+        SIZE_OFFSET_PIPING(tPipe_chunk_gib_shower, force), gFloat_pipe_union.u32,
+        SIZE_OFFSET_PIPING(tPipe_chunk_gib_shower, field_0x0), pArg5,
+        SIZE_OFFSET_PIPING(tPipe_chunk_gib_shower, p1), pPos1,
+        SIZE_OFFSET_PIPING(tPipe_chunk_gib_shower, p2), pPos2,
+        SIZE_OFFSET_PIPING(tPipe_chunk_gib_shower, v), pV);
 }
 
 // PipeSingleBloodSpurt
