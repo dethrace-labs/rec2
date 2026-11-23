@@ -2238,8 +2238,9 @@ void C2_HOOK_FASTCALL ApplyVector3(tPipe_chunk** pChunk) {
 // ApplyDroneCornerPos
 
 // FUNCTION: CARMA2_HW 0x004c9cf0
+// FUNCTION: CARMA2_SW 0x004c6420
+// FUNCTION: CARMA2_CHEAT 0x004cf820
 void C2_HOOK_FASTCALL ApplyDroneStraightPos(tPipe_chunk** pChunk) {
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x4);
 
     ApplyDroneStraightPos2((*pChunk)->subject_index,
         (*pChunk)->data.drone_straight_pos.section,
