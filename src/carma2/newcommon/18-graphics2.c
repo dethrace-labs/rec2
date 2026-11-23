@@ -451,6 +451,8 @@ void C2_HOOK_FASTCALL InitPaletteAnimate(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004b52b0
+// FUNCTION: CARMA2_SW 0x004b1a10
+// FUNCTION: CARMA2_CHEAT 0x004bab80
 void C2_HOOK_FASTCALL RevertPalette(void) {
 
     memcpy(gRender_palette->pixels, gOrig_render_palette->pixels, 256 * sizeof(br_colour));
