@@ -797,9 +797,14 @@ typedef struct {
 } tPipe_chunk_split_weld;
 
 typedef struct {
+    br_uint_16 vertices[3];
+    br_uint_16 smoothing;
+} tPipe_remove_face;
+
+typedef struct {
     br_material* material;
     tS32 count;
-    tU16 face_data[];
+    tPipe_remove_face faces[];
 } tPipe_chunk_remove_faces;
 
 typedef struct {
