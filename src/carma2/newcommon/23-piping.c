@@ -1903,6 +1903,8 @@ void C2_HOOK_FASTCALL ApplyProxRay(tPipe_chunk** pChunk) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c9810
+// FUNCTION: CARMA2_SW 0x004c5f40
+// FUNCTION: CARMA2_CHEAT 0x004cf330
 void C2_HOOK_FASTCALL ApplySkidAdjustment(tPipe_chunk** pChunk) {
 
     AdjustSkid((*pChunk)->subject_index,
