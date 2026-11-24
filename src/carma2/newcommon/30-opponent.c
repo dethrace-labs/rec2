@@ -1363,6 +1363,8 @@ int C2_HOOK_FASTCALL GetOpponentsNextSection(const tOpponent_spec* pOpponent_spe
 // GetOpponentsSectionFinishNodePoint
 
 // FUNCTION: CARMA2_HW 0x004aece0
+// FUNCTION: CARMA2_SW 0x004aae50
+// FUNCTION: CARMA2_CHEAT 0x004b01f0
 float C2_HOOK_FASTCALL GetOpponentsSectionWidth(const tOpponent_spec* pOpponent_spec, tS16 pSection) {
     if (pSection >= 20000) {
         int sections = pOpponent_spec->nnext_sections;
