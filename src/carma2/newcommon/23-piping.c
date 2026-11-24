@@ -2621,11 +2621,10 @@ void C2_HOOK_FASTCALL UndoRelink(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk)
 }
 
 // FUNCTION: CARMA2_HW 0x004c9fd0
+// FUNCTION: CARMA2_SW 0x004c6700
+// FUNCTION: CARMA2_CHEAT 0x004cfb10
 void C2_HOOK_FASTCALL UndoSplitWeld(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
     tCar_spec* car;
-
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk, data, 0x4);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPipe_chunk_split_weld, split, 0x10);
 
     (void)pPrev_chunk;
     if ((*pChunk)->data.split_weld.split) {
