@@ -1850,6 +1850,8 @@ void C2_HOOK_FASTCALL ApplyNonCar(tPipe_chunk** pChunk) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c91c0
+// FUNCTION: CARMA2_SW 0x004c58f0
+// FUNCTION: CARMA2_CHEAT 0x004cece0
 void C2_HOOK_FASTCALL ApplySmoke(tPipe_chunk** pChunk) {
     tPipe_chunk_smoke* chunk;
     br_vector3 pos;
