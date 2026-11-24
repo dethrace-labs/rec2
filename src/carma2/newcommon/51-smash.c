@@ -582,6 +582,7 @@ void C2_HOOK_FASTCALL ReadShrapnelMovementSpec(FILE* pFile, tMovement_spec* pIni
 }
 
 // FUNCTION: CARMA2_HW 0x004ee550
+// FUNCTION: CARMA2_SW 0x004ea220
 // FUNCTION: CARMA2_CHEAT 0x004f41f0
 void C2_HOOK_FASTCALL ReadShrapnelInitialPosition(FILE* pF, tSmashable_initial_position_spec* pInitial_pos) {
     pInitial_pos->type = GetALineAndInterpretCommand(pF, gInitial_position_type_names, REC2_ASIZE(gInitial_position_type_names));
@@ -638,7 +639,12 @@ br_actor* C2_HOOK_FASTCALL LoadActorFromRace(const char *pName) {
     return BrActorLoad(path);
 }
 
-// ReadSpillData
+// STUB: CARMA2_HW 0x004ee5e0
+// STUB: CARMA2_SW 0x004ea2b0
+// STUB: CARMA2_CHEAT 0x004f4280
+void C2_HOOK_FASTCALL ReadSpillData(FILE* pF, tSlick_spec* pSlick_spec) {
+    NOT_IMPLEMENTED();
+}
 
 // FUNCTION: CARMA2_HW 0x004ee780
 // FUNCTION: CARMA2_SW 0x004ea420
@@ -2005,7 +2011,7 @@ void C2_HOOK_FASTCALL TurnOffSmashModel(br_actor* pActor) {
 // FUNCTION: CARMA2_HW 0x004f5f90
 // FUNCTION: CARMA2_SW 0x004f1bf0
 // FUNCTION: CARMA2_CHEAT 0x004fbc30
-void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, tS16 pCount) {
+void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, int pCount) {
     pModel->nfaces -= pCount;
     DRModelUpdateAndKevificateMaterials(pModel, BR_MODU_ALL);
 }
@@ -2013,17 +2019,17 @@ void C2_HOOK_FASTCALL SmashRemoveSomeFaces(br_model* pModel, tS16 pCount) {
 // FUNCTION: CARMA2_HW 0x004f5fa0
 // FUNCTION: CARMA2_SW 0x004f1c00
 // FUNCTION: CARMA2_CHEAT 0x004fbc40
-void C2_HOOK_FASTCALL SmashRestoreSomeFaces(br_model* pModel, int pFace_count, const tU16* pFace_data, br_material* pMaterial) {
+void C2_HOOK_FASTCALL SmashRestoreSomeFaces(br_model* pModel, int pFace_count, const tPipe_remove_face* pFace_data, br_material* pMaterial) {
     br_face* face;
     int i;
 
     face = &pModel->faces[pModel->nfaces];
     for (i = 0; i < pFace_count; i++) {
         face->material = pMaterial;
-        face->vertices[0] = pFace_data[4 * i + 0];
-        face->vertices[1] = pFace_data[4 * i + 1];
-        face->vertices[2] = pFace_data[4 * i + 2];
-        face->smoothing = pFace_data[4 * i + 3];
+        face->vertices[0] = pFace_data[i].vertices[0];
+        face->vertices[1] = pFace_data[i].vertices[1];
+        face->vertices[2] = pFace_data[i].vertices[2];
+        face->smoothing = pFace_data[i].smoothing;
         face->flags = 0;
         face++;
     }
