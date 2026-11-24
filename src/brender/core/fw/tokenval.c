@@ -45,11 +45,11 @@ void C2_HOOK_STDCALL templateResolveNames(br_tv_template* template) {
     br_tv_template_entry* tp;
     int n;
 
-    for (n = 0; n < template->n_map_entries; n++) {
-        tp = &template->entries[n];
-        if (tp->name != NULL) {
-            tp->token = BrTokenCreate(tp->name, BR_NULL_TOKEN);
+    for (n = 0, tp = template->entries; n < template->n_entries; tp++, n++) {
+        if (tp->name == NULL) {
+            continue;
         }
+        tp->token = BrTokenCreate(tp->name, BR_NULL_TOKEN);
     }
 }
 
@@ -732,13 +732,13 @@ br_error C2_HOOK_CDECL BrTokenValueQueryAllSize(br_size_t* psize, void* block, b
     int n;
     br_size_t extra_size;
 
+    n = 1;
+    extra_size = 0;
+
     if (!template->names_resolved) {
         templateResolveNames(template);
     }
-    extra_size = 0;
-    n = 1;
-    for (e = 0; e < template->n_entries; e++) {
-        tp = &template->entries[e];
+    for (e = 0, tp = template->entries; e < template->n_entries; tp++, e++) {
         if (tp->token == BR_NULL_TOKEN) {
             continue;
         }
@@ -748,7 +748,7 @@ br_error C2_HOOK_CDECL BrTokenValueQueryAllSize(br_size_t* psize, void* block, b
         n++;
         extra_size += ValueExtraSize(block, tp);
     }
-    *psize = extra_size + sizeof(br_token_value) * n;
+    *psize = n * sizeof(br_token_value) + extra_size;
     return 0;
 }
 
