@@ -34,6 +34,7 @@ int gPHIL_count_list_collision_infos;
 
 // GLOBAL: CARMA2_HW 0x006923e4
 // GLOBAL: CARMA2_SW 0x0068c43c
+// GLOBAL: CARMA2_CHEAT 0x00699dcc
 int gPHIL_object_added;
 
 // GLOBAL: CARMA2_HW 0x006923f0
@@ -514,6 +515,8 @@ int C2_HOOK_FASTCALL PHILAddActiveObject(tPhysics_object* pInfo, const br_matrix
 }
 
 // FUNCTION: CARMA2_HW 0x004b62b0
+// FUNCTION: CARMA2_SW 0x004b29d0
+// FUNCTION: CARMA2_CHEAT 0x004bbd40
 int C2_HOOK_FASTCALL PHILAddObjectImmediately(tPhysics_object* pObject) {
     int result;
 
