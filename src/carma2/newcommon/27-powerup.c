@@ -269,8 +269,12 @@ char* C2_HOOK_FASTCALL GetPowerupMessage(int pPowerup_index) {
 
 // DoPowerupTextHeadup
 
+// QueueIconGoing
+
 // FUNCTION: CARMA2_HW 0x004d9670
-void C2_HOOK_FASTCALL QueueIconGoing(tPowerup* pPowerup, tHeadup_icon* pHeadup_icons, int* pCount_icons) {
+// FUNCTION: CARMA2_SW 0x004d5b40
+// FUNCTION: CARMA2_CHEAT 0x004df230
+void C2_HOOK_FASTCALL QueueIconComing(tPowerup* pPowerup, tHeadup_icon* pHeadup_icons, int* pCount_icons) {
     int i;
 
     for (i = 0; i < *pCount_icons; i++) {
@@ -282,8 +286,6 @@ void C2_HOOK_FASTCALL QueueIconGoing(tPowerup* pPowerup, tHeadup_icon* pHeadup_i
         }
     }
 }
-
-// QueueIconComing
 
 // LosePowerupX
 
