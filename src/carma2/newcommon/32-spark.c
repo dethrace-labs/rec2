@@ -1469,7 +1469,7 @@ inline void C2_HOOK_FASTCALL ForEveryModelMaterial(br_model* pModel, tMaterialMa
 
 // FUNCTION: CARMA2_HW 0x004fe8a0
 // FUNCTION: CARMA2_SW 0x004fa180
-// FUNCTION: CARMA2_CHEAT 0x005045d0
+// FUNCTION: CARMA2_CHEAT 0x00504540
 intptr_t C2_HOOK_CDECL ForEveryActorMaterial(br_actor* pActor, void* pContext) {
     tUser_crush_data* user_crush_data;
     tMaterialMaybeUpdate_cbfn* callback;
