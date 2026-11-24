@@ -1867,6 +1867,8 @@ inline void C2_HOOK_FASTCALL ResetNapalmBolts(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004d5b10
+// FUNCTION: CARMA2_SW 0x004d2200
+// FUNCTION: CARMA2_CHEAT 0x004db6d0
 void C2_HOOK_FASTCALL ARResetNapalmBolts(void) {
     int i;
     int j;
