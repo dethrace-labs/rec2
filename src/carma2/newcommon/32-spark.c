@@ -202,6 +202,7 @@ int gNum_splash_types;
 
 // GLOBAL: CARMA2_HW 0x006a82b8
 // GLOBAL: CARMA2_SW 0x006a2318
+// GLOBAL: CARMA2_CHEAT 0x006afe30
 tSplash gSplash[32] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006aa570
@@ -211,6 +212,7 @@ int gSplash_flags;
 
 // GLOBAL: CARMA2_HW 0x006a9130
 // GLOBAL: CARMA2_SW 0x006a2b80
+// GLOBAL: CARMA2_CHEAT 0x006b0ca8
 br_material* gSplash_material[20];
 
 // GLOBAL: CARMA2_HW 0x006a8758
