@@ -1525,7 +1525,9 @@ void C2_HOOK_FASTCALL FreezeMechanics(void) {
 // FlyCar
 
 // FUNCTION: CARMA2_HW 0x0041fbe0
-float C2_HOOK_FASTCALL GetCarOverallBoundsMinY(tCar_spec* pCar_spec) {
+// FUNCTION: CARMA2_SW 0x0041fc60
+// FUNCTION: CARMA2_CHEAT 0x0041fe40
+float C2_HOOK_FASTCALL GetCarOverallBoundsMinY(const tCar_spec* pCar_spec) {
     float rear;
     float rear_susp;
     float rear_min;
@@ -1536,14 +1538,13 @@ float C2_HOOK_FASTCALL GetCarOverallBoundsMinY(tCar_spec* pCar_spec) {
     rear_susp = pCar_spec->susp_height[0];
     rear_min = rear - rear_susp;
     front_min = pCar_spec->wpos[2].v[1] - pCar_spec->susp_height[1];
-    rear_min = rear_min * (1.0f / WORLD_SCALE);
-    front_min = front_min * (1.0f / WORLD_SCALE);
+
+    rear_min = rear_min / WORLD_SCALE;
+    front_min = front_min / WORLD_SCALE;
     min_value = pCar_spec->collision_info->bb1.min.v[1];
 
-    if (rear_min < front_min) {
-        if (rear_min < min_value) {
-            return rear_min;
-        }
+    if (rear_min < front_min && rear_min < min_value) {
+        return rear_min;
     }
     if (front_min < min_value) {
         return front_min;
