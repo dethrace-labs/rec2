@@ -2000,6 +2000,8 @@ void C2_HOOK_FASTCALL PrevPedCam(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004d62e0
+// FUNCTION: CARMA2_SW 0x004d28e0
+// FUNCTION: CARMA2_CHEAT 0x004dbea0
 void C2_HOOK_FASTCALL FindNearestPed(void) {
     int i;
     int nearest;
@@ -2013,16 +2015,14 @@ void C2_HOOK_FASTCALL FindNearestPed(void) {
     best = 1e7f;
     for (i = 0; i < gPed_count; i++) {
         ped = &gPedestrian_array[i];
-        d = (ped->pos.v[0] - gProgram_state.current_car.pos.v[0]) * (ped->pos.v[0] - gProgram_state.current_car.pos.v[0])
-                + (ped->pos.v[1] - gProgram_state.current_car.pos.v[1]) * (ped->pos.v[1] - gProgram_state.current_car.pos.v[1])
-                + (ped->pos.v[2] - gProgram_state.current_car.pos.v[2]) * (ped->pos.v[2] - gProgram_state.current_car.pos.v[2]);
+        d = Vector3DistanceSquared(&ped->pos, &gProgram_state.current_car.pos);
         if (d < best) {
             best = d;
             nearest = i;
         }
     }
     gSelected_ped = nearest;
-    gPed_nearness = 1;
+    ResetPedNearness();
 }
 
 // FUNCTION: CARMA2_HW 0x004d6390
