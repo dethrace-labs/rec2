@@ -143,7 +143,7 @@ extern void C2_HOOK_FASTCALL ARMainLoopStart(void);
 
 // ARToggleReplay
 
-// GetReducedPos
+extern void C2_HOOK_FASTCALL GetReducedPos(br_vector3* pPos, const tReduced_pos* pReduced_pos);
 
 extern void C2_HOOK_FASTCALL SaveReducedPos(tReduced_pos* pReduced_pos, br_vector3* pPos);
 
