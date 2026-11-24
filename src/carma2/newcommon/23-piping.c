@@ -2052,6 +2052,8 @@ void C2_HOOK_FASTCALL ApplyModelMash(tPipe_chunk** pChunk) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c9850
+// FUNCTION: CARMA2_SW 0x004c5f80
+// FUNCTION: CARMA2_CHEAT 0x004cf370
 void C2_HOOK_FASTCALL ApplyRelink(tPipe_chunk** pChunk) {
     br_actor* actor;
     br_actor* parent;
@@ -2069,6 +2071,10 @@ void C2_HOOK_FASTCALL ApplyRelink(tPipe_chunk** pChunk) {
     } else {
         if (parent != NULL) {
             BrActorAdd(parent, actor);
+        } else {
+#ifdef REC2_CHEAT
+            NonFatalError(kFatalError_RelinActorNullToNullInActionReplay);
+#endif
         }
     }
 }
