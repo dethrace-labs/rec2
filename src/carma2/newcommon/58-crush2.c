@@ -593,7 +593,9 @@ void C2_HOOK_FASTCALL CrashEarnings(tCar_spec* pCar1, tCar_spec* pCar2) {
 }
 
 // FUNCTION: CARMA2_HW 0x00441350
-int C2_HOOK_FASTCALL PercentageCarHealth(tCar_spec* pCar) {
+// FUNCTION: CARMA2_SW 0x00441430
+// FUNCTION: CARMA2_CHEAT 0x00441600
+int C2_HOOK_FASTCALL PercentageCarHealth(const tCar_spec* pCar) {
     int engine;
     int transmission;
     int driver;
@@ -604,14 +606,14 @@ int C2_HOOK_FASTCALL PercentageCarHealth(tCar_spec* pCar) {
         return 0;
     }
 
-    wheels = pCar->damage_units[eDamage_lr_wheel].damage_level;
-    wheels += pCar->damage_units[eDamage_rr_wheel].damage_level;
-    wheels += pCar->damage_units[eDamage_lf_wheel].damage_level;
-    wheels += pCar->damage_units[eDamage_rf_wheel].damage_level;
     engine = pCar->damage_units[eDamage_engine].damage_level;
     transmission = pCar->damage_units[eDamage_transmission].damage_level;
     driver = pCar->damage_units[eDamage_driver].damage_level;
-    wheels /= 4;
+    wheels = (
+        pCar->damage_units[eDamage_lf_wheel].damage_level
+        + pCar->damage_units[eDamage_rf_wheel].damage_level
+        + pCar->damage_units[eDamage_lr_wheel].damage_level
+        + pCar->damage_units[eDamage_rr_wheel].damage_level) / 4;
 
     if (engine <= 75 && transmission <= 75 && driver <= 75 && wheels <= 75) {
         health = 100 - (wheels + driver + transmission + engine) / 4;
