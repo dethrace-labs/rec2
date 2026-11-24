@@ -8,7 +8,8 @@
 
 #include "pattern.h"
 
-#include <ctype.h>
+#define UPPER(c) (((c) >= 'a' && (c) <= 'z') ? ((c) - ('a' - 'A')) : (c))
+#define MATCH_CHAR(a, b) (UPPER(a) == UPPER(b))
 
 // FUNCTION: CARMA2_HW 0x00529860
 // FUNCTION: CARMA2_SW 0x005243d0
@@ -16,21 +17,24 @@
 br_boolean C2_HOOK_CDECL BrNamePatternMatch(const char* p, const char* s) {
     const char* cp;
 
+    // A NULL pattern matches everything
     if (p == NULL) {
         return 1;
     }
+    // A NULL string never matches
     if (s == NULL) {
         return 0;
     }
 
-    for (;; s++, p++) {
+    for (;;) {
+        switch (*p) {
+        case '/':
+        case '\0':
+            // Empty pattern only matches empty string
+            return *s == '\0';
 
-        if (*p == '\0') {
-            // if pattern string ends at the same point as search string, we match
-            return *s == 0;
-        }
-
-        if (*p == '*') {
+        case '*':
+            // Match p+1 in any position from s to end of s
             cp = s;
             do {
                 if (BrNamePatternMatch(p + 1, cp)) {
@@ -38,20 +42,24 @@ br_boolean C2_HOOK_CDECL BrNamePatternMatch(const char* p, const char* s) {
                 }
             } while (*cp++);
             return 0;
-        }
-        if (*p == '/') {
-            return *s == 0;
-        }
-        if (*p == '?') {
+
+        case '?':
+            // Match any character followed by matching(p+1, s+1)
             if (*s == '\0') {
                 return 0;
             }
+            p++;
+            s++;
+            continue;
+
+        default:
+            // Match this character followed by matching(p+1, s+1)
+            if (!MATCH_CHAR(*s, *p)) {
+                return 0;
+            }
+            p++;
+            s++;
             continue;
         }
-
-        if (toupper(*p) != toupper(*s)) {
-            return 0;
-        }
     }
-    return 1;
 }
