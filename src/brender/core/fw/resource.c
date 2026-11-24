@@ -229,7 +229,12 @@ br_uint_32 C2_HOOK_CDECL BrResSize(void* vres) {
 // FUNCTION: CARMA2_CHEAT 0x0052d6c0
 br_uint_32 C2_HOOK_CDECL ResSizeTotal(void* vres, br_uint_32* ptotal) {
 
+#ifdef BRENDER_FIX_BUGS
     *ptotal += BrResSize(vres);
+#else
+    // The original adds the size to the pointer instead of the value it points to
+    ptotal += BrResSize(vres);
+#endif
     BrResChildEnum(vres, (br_resenum_cbfn*)ResSizeTotal, ptotal);
     return 0;
 }
