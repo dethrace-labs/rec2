@@ -413,12 +413,43 @@ void C2_HOOK_FASTCALL CreateShrapnelShowerWorld(const br_vector3* pPosition, con
 
 // random
 
-// InitShrapnel
+inline void C2_HOOK_FASTCALL InitShrapnel(void) {
+    int i;
+    br_scalar scale;
+    double dscale;
+
+    for (i = 0; i < (int)REC2_ASIZE(gShrapnel); i++) {
+        gShrapnel[i].actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+        gShrapnel[i].actor->parent = NULL;
+        gShrapnel[i].actor->model = gShrapnel_model[i & 1];
+        gShrapnel[i].actor->render_style = BR_RSTYLE_DEFAULT;
+        gShrapnel[i].actor->t.type = BR_TRANSFORM_MATRIX34;
+        gShrapnel[i].actor->material = BrMaterialFind("DEBRIS.MAT");
+        gShrapnel[i].age = 0;
+        gShrapnel[i].shear1 = FRandomBetween(-2.0f, 2.0f);
+        gShrapnel[i].shear2 = FRandomBetween(-2.0f, 2.0f);
+        BrVector3SetFloat(&gShrapnel[i].axis,
+            FRandomBetween(-1.f, 1.f),
+            FRandomBetween(-1.f, 1.f),
+            FRandomBetween(-1.f, 1.f));
+        scale = BR_LENGTH3(gShrapnel[i].axis.v[0], gShrapnel[i].axis.v[1], gShrapnel[i].axis.v[2]);
+        if (scale > BR_SCALAR_EPSILON * 2) {
+            dscale = 1.0 / scale;
+            gShrapnel[i].axis.v[0] = (br_scalar)(gShrapnel[i].axis.v[0] * dscale);
+            gShrapnel[i].axis.v[1] = (br_scalar)(gShrapnel[i].axis.v[1] * dscale);
+            gShrapnel[i].axis.v[2] = (br_scalar)(gShrapnel[i].axis.v[2] * dscale);
+        } else {
+            gShrapnel[i].axis.v[0] = 1.0f;
+            gShrapnel[i].axis.v[1] = 0.0f;
+            gShrapnel[i].axis.v[2] = 0.0f;
+        }
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004f8b90
 // FUNCTION: CARMA2_SW 0x004f4210
 // FUNCTION: CARMA2_CHEAT 0x004fe830
-void C2_HOOK_FASTCALL LoadInShrapnel(void) {
+inline void C2_HOOK_FASTCALL LoadInShrapnel(void) {
     gShrapnel_model[0] = LoadModel("FRAG4.DAT");
     DRScaleModel(gShrapnel_model[0], 0.5f);
     gShrapnel_model[1] = LoadModel("FRAG5.DAT");
@@ -1123,14 +1154,14 @@ void C2_HOOK_FASTCALL InitFlame(void) {
         }
     }
     gLollipop_model->nvertices = 4;
-    BrVector3SetFloat(&gLollipop_model->vertices[0].p, -.5f, 0.f, 0.f);
-    BrVector3SetFloat(&gLollipop_model->vertices[1].p, .5f, 0.f, 0.f);
-    BrVector3SetFloat(&gLollipop_model->vertices[2].p, .5f, 1.f, 0.f);
-    BrVector3SetFloat(&gLollipop_model->vertices[3].p, -.5f, 1.f, 0.f);
-    BrVector2Set(&gLollipop_model->vertices[0].map, 0.f, 1.f);
-    BrVector2Set(&gLollipop_model->vertices[1].map, 1.f, 1.f);
-    BrVector2Set(&gLollipop_model->vertices[2].map, 1.f, 0.f);
-    BrVector2Set(&gLollipop_model->vertices[3].map, 0.f, 0.f);
+    BrVector3SetFloat(&gLollipop_model->vertices[0].p, -0.5f, 0.0f, 0.0f);
+    BrVector3SetFloat(&gLollipop_model->vertices[1].p, 0.5f, 0.0f, 0.0f);
+    BrVector3SetFloat(&gLollipop_model->vertices[2].p, 0.5f, 1.0f, 0.0f);
+    BrVector3SetFloat(&gLollipop_model->vertices[3].p, -0.5f, 1.0f, 0.0f);
+    BrVector2Set(&gLollipop_model->vertices[0].map, 0.0f, 1.0f);
+    BrVector2Set(&gLollipop_model->vertices[1].map, 1.0f, 1.0f);
+    BrVector2Set(&gLollipop_model->vertices[2].map, 1.0f, 0.0f);
+    BrVector2Set(&gLollipop_model->vertices[3].map, 0.0f, 0.0f);
     gLollipop_model->nfaces = 2;
     gLollipop_model->faces[0].vertices[0] = 0;
     gLollipop_model->faces[0].vertices[1] = 1;
@@ -1145,6 +1176,7 @@ void C2_HOOK_FASTCALL InitFlame(void) {
 
 // FUNCTION: CARMA2_HW 0x004fdde0
 // FUNCTION: CARMA2_SW 0x004f9380
+// FUNCTION: CARMA2_CHEAT 0x00503a80
 void C2_HOOK_FASTCALL InitSplash(FILE* pF) {
     int i;
     int num_files;
@@ -1392,48 +1424,15 @@ void C2_HOOK_FASTCALL FreeSmokeShadeTables(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004fdc10
+// FUNCTION: CARMA2_SW 0x004f91b0
+// FUNCTION: CARMA2_CHEAT 0x005038b0
 void C2_HOOK_FASTCALL LoadInKevStuff(FILE* pF) {
-    int i;
-    br_scalar scale;
-    double dscale;
 
     PackFileRevertTiffLoading();
     PossibleService();
-    gShrapnel_model[0] = LoadModel("FRAG4.DAT");
-    DRScaleModel(gShrapnel_model[0], 0.5f);
-    gShrapnel_model[1] = LoadModel("FRAG5.DAT");
-    DRScaleModel(gShrapnel_model[1], 0.5f);
-    BrModelAdd(gShrapnel_model[0]);
-    BrModelAdd(gShrapnel_model[1]);
-    gBlack_material = GetSimpleMaterial("M14.MAT", 4);
-    gNon_track_actor->material = gBlack_material;
+    LoadInShrapnel();
     PossibleService();
-    for (i = 0; i < (int)REC2_ASIZE(gShrapnel); i++) {
-        gShrapnel[i].actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
-        gShrapnel[i].actor->parent = NULL;
-        gShrapnel[i].actor->model = gShrapnel_model[i & 1];
-        gShrapnel[i].actor->render_style = BR_RSTYLE_DEFAULT;
-        gShrapnel[i].actor->t.type = BR_TRANSFORM_MATRIX34;
-        gShrapnel[i].actor->material = BrMaterialFind("DEBRIS.MAT");
-        gShrapnel[i].age = 0;
-        gShrapnel[i].shear1 = FRandomBetween(-2.f, 2.f);
-        gShrapnel[i].shear2 = FRandomBetween(-2.f, 2.f);
-        BrVector3SetFloat(&gShrapnel[i].axis,
-            FRandomBetween(-1.f, 1.f),
-            FRandomBetween(-1.f, 1.f),
-            FRandomBetween(-1.f, 1.f));
-        scale = BR_LENGTH3(gShrapnel[i].axis.v[0], gShrapnel[i].axis.v[1], gShrapnel[i].axis.v[2]);
-        if (scale > BR_SCALAR_EPSILON * 2) {
-            dscale = 1.0 / scale;
-            gShrapnel[i].axis.v[0] = (br_scalar)(gShrapnel[i].axis.v[0] * dscale);
-            gShrapnel[i].axis.v[1] = (br_scalar)(gShrapnel[i].axis.v[1] * dscale);
-            gShrapnel[i].axis.v[2] = (br_scalar)(gShrapnel[i].axis.v[2] * dscale);
-        } else {
-            gShrapnel[i].axis.v[0] = 1.0f;
-            gShrapnel[i].axis.v[1] = 0.0f;
-            gShrapnel[i].axis.v[2] = 0.0f;
-        }
-    }
+    InitShrapnel();
     PossibleService();
     InitFlame();
     PossibleService();
