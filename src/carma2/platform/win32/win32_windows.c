@@ -18,6 +18,10 @@
 
 #include <windows.h>
 
+#ifdef REC2_MATCHING
+#pragma optimize("gy", on)
+#endif
+
 // FUNCTION: CARMA2_HW 0x0051cad0
 // FUNCTION: CARMA2_SW 0x00517d60
 void C2_HOOK_CDECL Win32ServiceMessages(void) {
@@ -25,6 +29,9 @@ void C2_HOOK_CDECL Win32ServiceMessages(void) {
 
 #ifdef REC2_SW
     SSDXUnlockAttachedSurface();
+#endif
+#ifdef REC2_HW
+    dr_dprintf("Win32ServiceMessages() - START");
 #endif
     while (1) {
 #ifdef REC2_HW
@@ -78,6 +85,10 @@ void C2_HOOK_CDECL Win32ServiceMessages(void) {
     FUN_005171c0();
 #endif
 }
+#ifdef REC2_MATCHING
+#pragma optimize("gy", off)
+#endif
+
 
 
 #ifdef REC2_MATCHING
