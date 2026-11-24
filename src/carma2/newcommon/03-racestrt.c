@@ -15,6 +15,8 @@
 #include "globvars.h"
 
 // GLOBAL: CARMA2_HW 0x006a0c74
+// GLOBAL: CARMA2_SW 0x0069accc
+// GLOBAL: CARMA2_CHEAT 0x006a87ec
 int gOur_starting_position;
 
 // GLOBAL: CARMA2_HW 0x006a0d38
@@ -31,6 +33,8 @@ int C2_HOOK_CDECL SortGridFunction(const void* pFirst_one, const void* pSecond_o
 }
 
 // FUNCTION: CARMA2_HW 0x004e2b70
+// FUNCTION: CARMA2_SW 0x004deef0
+// FUNCTION: CARMA2_CHEAT 0x004e8700
 int C2_HOOK_FASTCALL SortOpponents(void) {
     int i;
 
