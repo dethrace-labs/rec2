@@ -110,10 +110,12 @@ float gFloat_sine_table[91] = {
 
 // GLOBAL: CARMA2_HW 0x006ab950
 // GLOBAL: CARMA2_SW 0x006a53a0
+// GLOBAL: CARMA2_CHEAT 0x006b2fe0
 br_matrix23 mat23tmp1__trig;
 
 // GLOBAL: CARMA2_HW 0x006ab968
 // GLOBAL: CARMA2_SW 0x006a53b8
+// GLOBAL: CARMA2_CHEAT 0x006b2ff8
 br_matrix23 mat23tmp2__trig;
 
 // GLOBAL: CARMA2_HW 0x006ab980
@@ -441,52 +443,27 @@ void C2_HOOK_FASTCALL DRMatrix34PostRotateZ(br_matrix34* mat, br_angle rz) {
     NOT_IMPLEMENTED();
 }
 
-// DRMatrix23Rotate
-
-// FUNCTION: CARMA2_HW 0x005132a0
-void C2_HOOK_FASTCALL DRMatrix23PostRotate(br_matrix23* mat, br_angle rz) {
-    int angle_in_degrees;
-    int angle;
+void C2_HOOK_FASTCALL DRMatrix23Rotate(br_matrix23* mat, br_angle rz) {
     br_scalar s;
     br_scalar c;
 
-    angle_in_degrees = (int)((double)rz * (360.0 / 65536.0));
-    angle = angle_in_degrees;
-    if (angle < 0) {
-        angle = 360 - -angle % 360;
-    } else {
-        angle = angle % 360;
-    }
-    if (angle > 270) {
-        s = -gFloat_sine_table[360 - angle];
-    } else if (angle > 180) {
-        s = -gFloat_sine_table[angle - 180];
-    } else if (angle > 90) {
-        s = *(gFloat_sine_table + 90 - (angle - 90));
-    } else {
-        s = gFloat_sine_table[angle];
-    }
-    angle = angle_in_degrees;
-    if (angle < 0) {
-        angle = 360 - -angle % 360;
-    } else {
-        angle = angle % 360;
-    }
-    if (angle > 270) {
-        c = gFloat_sine_table[angle - 270];
-    } else if (angle > 180) {
-        c = -gFloat_sine_table[270 - angle];
-    } else if (angle > 90) {
-        c = -gFloat_sine_table[angle - 90];
-    } else {
-        c = *(gFloat_sine_table + 90 - angle);
-    }
-    mat23tmp2__trig.m[0][0] = c;
-    mat23tmp2__trig.m[0][1] = s;
-    mat23tmp2__trig.m[1][0] = -s;
-    mat23tmp2__trig.m[1][1] = c;
-    mat23tmp2__trig.m[2][0] = 0.0f;
-    mat23tmp2__trig.m[2][1] = 0.0f;
+    s = FastScalarSinAngle(rz);
+    c = FastScalarCosAngle(rz);
+
+    mat->m[0][0] = c;
+    mat->m[0][1] = s;
+    mat->m[1][0] = -s;
+    mat->m[1][1] = c;
+    mat->m[2][0] = 0.0f;
+    mat->m[2][1] = 0.0f;
+}
+
+// FUNCTION: CARMA2_HW 0x005132a0
+// FUNCTION: CARMA2_SW 0x0050e6e0
+// FUNCTION: CARMA2_CHEAT 0x00518c90
+void C2_HOOK_FASTCALL DRMatrix23PostRotate(br_matrix23* mat, br_angle rz) {
+
+    DRMatrix23Rotate(&mat23tmp2__trig, rz);
     BrMatrix23Mul(&mat23tmp1__trig, mat, &mat23tmp2__trig);
     BrMatrix23Copy(mat, &mat23tmp1__trig);
 }
