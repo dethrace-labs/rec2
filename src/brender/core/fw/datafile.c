@@ -1092,8 +1092,7 @@ int C2_HOOK_STDCALL DfStructSizeText(br_datafile* df, br_file_struct* str, void*
     int lines;
 
     lines = 1;
-    for (m = 0; m < str->nmembers; m++) {
-        sm = &str->members[m];
+    for (m = 0, sm = str->members; m < str->nmembers; m++, sm++) {
         if (sm->type == DF_TYPE_STRUCT) {
             lines += DfStructSizeText(df, sm->extra, (br_uint_8*)base + sm->offset);
         } else {
