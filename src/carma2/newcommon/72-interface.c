@@ -771,6 +771,8 @@ void C2_HOOK_FASTCALL DisposeJoinList(int pException) {
 }
 
 // FUNCTION: CARMA2_HW 0x004681d0
+// FUNCTION: CARMA2_SW 0x00467f50
+// FUNCTION: CARMA2_CHEAT 0x004685f0
 void C2_HOOK_FASTCALL AddToJoinList(tNet_game_details* pGame) {
     int i;
     int slot_to_use;
@@ -781,8 +783,7 @@ void C2_HOOK_FASTCALL AddToJoinList(tNet_game_details* pGame) {
     for (i = 0; i < (int)REC2_ASIZE(gGames_to_join); i++) {
         if (gGames_to_join[i].game != NULL) {
             if (NetExtractGameID(gGames_to_join[i].game) == this_game_ID) {
-                NetDisposeGameDetails(gGames_to_join[i].game);
-                gGames_to_join[i].game = NULL;
+                DisposeJoinableGame(i);
                 slot_to_use = i;
                 break;
             }
