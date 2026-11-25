@@ -126,9 +126,12 @@ tSmashable_item_spec gPowerup_respawn_smashable = { 0 };
 // GLOBAL: CARMA2_CHEAT 0x006afb40
 tRepair_animation gRepair_animations[25] = { 0 };
 
+#ifdef REC2_MATCHING
 // GLOBAL: CARMA2_HW 0x006a80f4
 // GLOBAL: CARMA2_SW 0x006a2154
+// GLOBAL: CARMA2_CHEAT 0x006afc6c
 int gINT_006a80f4 = 0;
+#endif
 
 // GLOBAL: CARMA2_HW 0x006a80f8
 // GLOBAL: CARMA2_SW 0x006a2158
