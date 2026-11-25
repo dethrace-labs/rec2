@@ -2801,7 +2801,9 @@ typedef struct tCar_spec {
     float dt;
     undefined* field_0xc8;
     char name[32];
-    char driver_name[32];
+    char driver_name[20];
+    tU32 flags;
+    undefined field_0x104[0x10c - 0x104];
     char grid_icon_names[3][14];
     undefined field_0x136;
     undefined field_0x137;
