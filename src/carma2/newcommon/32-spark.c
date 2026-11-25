@@ -1437,17 +1437,20 @@ void C2_HOOK_FASTCALL CreateSplash(tPhysics_object* pObject, tU32 pTime) {
 }
 
 // FUNCTION: CARMA2_HW 0x004fda70
+// FUNCTION: CARMA2_SW 0x004f8fd0
+// FUNCTION: CARMA2_CHEAT 0x00503710
 void C2_HOOK_FASTCALL GetVelocitiesFromMatrices(br_vector3* pVel, br_vector3* pRot, br_matrix34* pMat_now, br_matrix34* pMat_prev, tU32 pTime) {
     br_quat quat_now;
     br_quat quat_prev;
     br_quat quat_speed;
     br_scalar ts;
 
-    ts = (br_scalar)(pTime * 0.001);
+    ts = (br_scalar)(pTime / 1000.0);
     BrVector3Sub(pVel, (br_vector3*)pMat_prev->m[3], (br_vector3*)pMat_now->m[3]);
     pVel->v[0] /= ts;
     pVel->v[1] /= ts;
     pVel->v[2] /= ts;
+
     BrMatrix34ToQuat(&quat_now, pMat_now);
     BrMatrix34ToQuat(&quat_prev, pMat_now);
     BrQuatInvert(&quat_now, &quat_now);
