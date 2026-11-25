@@ -1455,10 +1455,12 @@ void C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_matrix34* 
     tv.v[1] = pOmega->v[2] * pPoint->v[0] - pOmega->v[0] * pPoint->v[2];
     tv.v[2] = pOmega->v[0] * pPoint->v[1] - pOmega->v[1] * pPoint->v[0];
     BrMatrix34ApplyV(&vel, &tv, pMatrix);
-    BrVector3Scale(&tv, pVelocity, WORLD_SCALE_D);
+    tv.v[0] = (br_scalar)(pVelocity->v[0] *  WORLD_SCALE);
+    tv.v[1] = (br_scalar)(pVelocity->v[1] *  WORLD_SCALE);
+    tv.v[2] = (br_scalar)(pVelocity->v[2] *  WORLD_SCALE);
     BrVector3Accumulate(&vel, &tv);
     speed = BrVector3Length(&vel);
-    size = (fabs(BrVector3Dot(pNormal, &vel)) * 5.0f + speed) / 150.0f;
+    size = (br_scalar)((fabs(BrVector3Dot(pNormal, &vel)) * 5.0f + speed) / 150.0f);
     size += 99.0f / 300.0f / WORLD_SCALE;
     if (size > 0.5f) {
         size = 0.5f;
@@ -1485,7 +1487,7 @@ void C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_matrix34* 
                 if (ts > 15.0f) {
                     ts = 15.0f;
                 }
-                tv.v[1] += SRandomBetween(5.0f, ts) / WORLD_SCALE_D;
+                tv.v[1] = (br_scalar)(tv.v[1] + SRandomBetween(5.0f, ts) / WORLD_SCALE_D);
                 BrMatrix34TApplyV(&vel, &tv, &pObject->actor->t.t.mat);
                 BrVector3Cross(&tv, &vel, &pObject->water_normal);
                 if (BrVector3Dot(pPoint, &tv) > 0.0f) {
