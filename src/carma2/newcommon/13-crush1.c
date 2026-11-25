@@ -2428,36 +2428,38 @@ void C2_HOOK_FASTCALL CompletelyUnBendCar(tCar_spec* pCar_spec) {
 // RepairObject
 
 // FUNCTION: CARMA2_HW 0x0043b740
+// FUNCTION: CARMA2_SW 0x0043b790
+// FUNCTION: CARMA2_CHEAT 0x0043b970
 void C2_HOOK_FASTCALL RepairCarCollisionShapes(tCar_spec* pCar, float pStep) {
     tCar_crush_shape_info* shape_info;
-    br_vector3* pCurrent;
-    float* pTarget;
+    br_vector3* point;
+    const br_vector3* target;
     float value;
-    int shape_index;
-    int point_index;
+    int i;
+    int j;
     int axis;
 
-    for (shape_index = 0; shape_index < pCar->car_crush_spec->count_shapes; shape_index++) {
-        shape_info = &pCar->car_crush_spec->field_0x4[shape_index];
-        for (point_index = 0; point_index < shape_info->count_points; point_index++) {
-            pCurrent = &shape_info->field_0x18[point_index].field_0x18;
-            pTarget = shape_info->field_0x18[point_index].field_0x0.v;
+    for (i = 0; i < pCar->car_crush_spec->count_shapes; i++) {
+        shape_info = &pCar->car_crush_spec->field_0x4[i];
+        for (j = 0; j < shape_info->count_points; j++) {
+            point = &shape_info->field_0x18[j].field_0x18;
+            target = &shape_info->field_0x18[j].field_0x0;
             for (axis = 0; axis < 3; axis++) {
-                if (pCurrent->v[axis] > pTarget[axis]) {
-                    value = pCurrent->v[axis] - pStep;
-                    pCurrent->v[axis] = value;
-                    if (value < pTarget[axis]) {
-                        pCurrent->v[axis] = pTarget[axis];
+                if (point->v[axis] > target->v[axis]) {
+                    value = point->v[axis] - pStep;
+                    point->v[axis] = value;
+                    if (value < target->v[axis]) {
+                        point->v[axis] = target->v[axis];
                     }
-                } else if (pCurrent->v[axis] < pTarget[axis]) {
-                    value = pCurrent->v[axis];
-                    pCurrent->v[axis] = value + pStep;
-                    if (pTarget[axis] < value + pStep) {
-                        pCurrent->v[axis] = pTarget[axis];
+                } else if (point->v[axis] < target->v[axis]) {
+                    value = point->v[axis];
+                    point->v[axis] = value + pStep;
+                    if (target->v[axis] < value + pStep) {
+                        point->v[axis] = target->v[axis];
                     }
                 }
             }
-            if (DRVector3TestForNan(pCurrent)) {
+            if (DRVector3TestForNan(point)) {
                 PDEnterDebugger("NaN");
             }
         }
