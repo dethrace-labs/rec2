@@ -15,9 +15,18 @@
 extern int gPed_count_limbed_actors;
 extern br_actor* gLimbs_actor;
 extern tSmashable_initial_position_spec gGiblet_initial_position;
+extern float gGiblet_scrape_start;
+extern tSlick_spec gPed_slick;
+extern int gPed_spurting_period;
+extern br_material* gPed_smear_material;
+extern tExplosion_animation gPed_explosion_small_blood_cloud;
+extern tExplosion_animation gPed_medium_blood_cloud;
+extern tExplosion_animation gPed_large_blood_cloud;
 extern tMovement_spec gGiblet_initial_speed;
 extern tShrapnel_time_info gGiblet_min_max_time;
 extern int gGiblet_size_count;
+
+extern int gPed_move_fsm[118][7];
 
 extern tPedForms_vtable* gPed_vtable;
 
@@ -75,7 +84,7 @@ extern int gPed_valium_left;
 
 extern int C2_HOOK_FASTCALL OrientationChanged(const br_matrix34* pOrientation_1, const br_matrix34* pOrientation_2, float pCos_angle);
 
-// AssertRootObjectsMatrix
+extern void C2_HOOK_FASTCALL AssertRootObjectsMatrix(tPed_character_instance* pPed);
 
 // InitFaceCaches
 
@@ -89,7 +98,7 @@ extern void C2_HOOK_FASTCALL ResetPedFaceCache(void);
 
 extern void C2_HOOK_FASTCALL PedApplyPedDir(tU32 pId, const br_vector3* pDir);
 
-// SetCharacterMoveAR
+extern void C2_HOOK_FASTCALL SetCharacterMoveAR(tPed_character_instance* pCharacter, int pMove_action, float pSpeed, int pArg4, int pArg5, tU32 pTime);
 
 // SetPedStartRun
 
@@ -103,7 +112,7 @@ extern void C2_HOOK_FASTCALL PedApplyPedFPChange(tPedestrian* pPed, float pSpeed
 
 // PedUndoStatus
 
-extern void C2_HOOK_CDECL SetCharacterPhysicsLevelAR(tPed_character_instance* pCharacter, tU32 pLevel);
+extern void C2_HOOK_CDECL SetCharacterPhysicsLevelAR(tPed_character_instance* pCharacter, tU32 pLevel, ...);
 
 // PedApplyPedPhysics
 
@@ -129,9 +138,9 @@ extern void C2_HOOK_FASTCALL ReadPedSpecs(FILE* pF);
 
 extern br_vector3* C2_HOOK_FASTCALL GetPedPos(tPedestrian* pPed);
 
-// SetUpGibSlicks
+extern void C2_HOOK_FASTCALL SetUpGibSlicks(void);
 
-// ReadInGiblets
+extern void C2_HOOK_FASTCALL ReadInGiblets(FILE* pFile);
 
 // ReadSettingsFile
 
@@ -141,9 +150,9 @@ extern void C2_HOOK_FASTCALL InitNapalmNolts(void);
 
 extern void C2_HOOK_FASTCALL InitPolyPedSystem(void);
 
-// DisposePedSpawnSpec
+extern void C2_HOOK_FASTCALL DisposePedSpawnSpec(void);
 
-// DisposeCharacterInstances
+extern void C2_HOOK_FASTCALL DisposeCharacterInstances(void);
 
 extern void C2_HOOK_FASTCALL DisposePedStuff(void);
 
@@ -207,7 +216,7 @@ extern void C2_HOOK_FASTCALL CBFillInObject(tPhysics_object* pObject, undefined4
 
 extern void C2_HOOK_FASTCALL DoGibShower(tU32 pId, tU32 pTime, unsigned int pSeed, float pForce, int pStart_size, br_vector3* pPosition, br_vector3* pAlternate_position, br_vector3* pImpactee_velocity);
 
-// PedApplyGibShower
+extern void C2_HOOK_FASTCALL PedApplyGibShower(tU32 pId, tU32 pTime, unsigned int pSeed, float pForce, int pStart_size, br_vector3* pPosition, br_vector3* pAlternate_position, br_vector3* pImpactee_velocity);
 
 // PedUndoGibShower
 
@@ -347,7 +356,7 @@ extern void C2_HOOK_FASTCALL ResetPedSystem(void);
 
 extern void C2_HOOK_FASTCALL ResetNapalmBolts(void);
 
-// ARResetNapalmBolts
+extern void C2_HOOK_FASTCALL ARResetNapalmBolts(void);
 
 extern void C2_HOOK_FASTCALL AdjustNapalmBolt(int pIndex, tPedestrian* pPed, br_vector3* pPositions);
 
@@ -365,7 +374,7 @@ extern void C2_HOOK_FASTCALL NextPedCam(void);
 
 extern void C2_HOOK_FASTCALL PrevPedCam(void);
 
-// FindNearestPed
+extern void C2_HOOK_FASTCALL FindNearestPed(void);
 
 extern void C2_HOOK_FASTCALL ResetPedNearness(void);
 
@@ -441,9 +450,9 @@ extern void C2_HOOK_FASTCALL SetGoreLevel(int pNewLevel);
 
 // DRVector3SafeCrossXZ
 
-// ScaleModelXYZ
+extern void C2_HOOK_FASTCALL ScaleModelXYZ(br_model* pModel, br_scalar pScale_x, br_scalar pScale_y, br_scalar pScale_z);
 
-// DRScaleModel
+extern void C2_HOOK_FASTCALL ScaleModel(br_model* pModel, float pScale);
 
 // DisposeMove
 
@@ -543,7 +552,7 @@ extern int C2_HOOK_FASTCALL BonerActiveHalted2(tPed_character_instance* pCharact
 
 extern int C2_HOOK_FASTCALL CharacterNoLongerPhysicworthy(tPed_character_instance* pCharacter);
 
-// SetCharacterPhysicsLevel
+extern void C2_HOOK_CDECL SetCharacterPhysicsLevel(tPed_character_instance* pCharacter, tU32 pLevel, ...);
 
 extern void C2_HOOK_FASTCALL StopCharacterMorphing(tPed_character_instance* pCharacter);
 
@@ -565,11 +574,11 @@ extern int C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pPed, int 
 
 extern void C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pPed, const br_vector3* pDir, const br_vector3* pUp);
 
-// SetCharacterPosition
+extern void C2_HOOK_FASTCALL SetCharacterPosition(tPed_character_instance* pCharacter, br_vector3* pPos, int pArg3);
 
 // DisposeClonedMaterials
 
-// DisposeAllBonerData
+extern void C2_HOOK_FASTCALL DisposeAllBonerData(void);
 
 extern int C2_HOOK_FASTCALL SetCharacterBoneModel(tPed_character_instance* pCharacter, int pBone_index, int pModel_index, int pModel_set);
 
