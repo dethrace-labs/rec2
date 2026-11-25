@@ -233,9 +233,9 @@ extern void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32 pTime
 
 extern void C2_HOOK_FASTCALL MungeGlassFragments2(int pEnd_race);
 
-// MungeAnimationRepairs
+extern void C2_HOOK_FASTCALL MungeAnimationRepairs(void);
 
-extern void C2_HOOK_FASTCALL MungeGlassFragments(void);
+// MungeGlassFragments
 
 // KillAllGlassFragments
 
