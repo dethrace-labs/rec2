@@ -69,6 +69,8 @@ int gNum_dust_tables;
 int gSpark_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa578
+// GLOBAL: CARMA2_SW 0x006a3fc4
+// GLOBAL: CARMA2_CHEAT 0x006b20f0
 int gNext_spark;
 
 // GLOBAL: CARMA2_HW 0x006aa5ac
