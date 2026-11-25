@@ -3042,6 +3042,8 @@ int C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pPed, int pMove_a
 // DRMatrix34RotateCos
 
 // FUNCTION: CARMA2_HW 0x0040b030
+// FUNCTION: CARMA2_SW 0x0040b020
+// FUNCTION: CARMA2_CHEAT 0x0040b0a0
 void C2_HOOK_FASTCALL DropPointOntoPlane(const br_vector3* pPoint, const br_vector3* pPlane, br_vector3* pDest) {
     float dot;
 
