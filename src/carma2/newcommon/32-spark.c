@@ -69,7 +69,9 @@ int gNum_dust_tables;
 int gSpark_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa578
-int gSpark_next;
+// GLOBAL: CARMA2_SW 0x006a3fc4
+// GLOBAL: CARMA2_CHEAT 0x006b20f0
+int gNext_spark;
 
 // GLOBAL: CARMA2_HW 0x006aa5ac
 // GLOBAL: CARMA2_SW 0x006a3ffc
@@ -215,7 +217,9 @@ tSplash gSplash[32] = { 0 };
 int gSplash_flags;
 
 // GLOBAL: CARMA2_HW 0x006a82ac
-int gSplash_next;
+// GLOBAL: CARMA2_SW 0x006a230c
+// GLOBAL: CARMA2_CHEAT 0x006afe24
+int gNext_splash;
 
 // GLOBAL: CARMA2_HW 0x006a9130
 // GLOBAL: CARMA2_SW 0x006a2b80
@@ -332,7 +336,21 @@ void C2_HOOK_FASTCALL SetLineModelCols(tU8 pCol) {
 
 // RenderSparks
 
-// CreateSingleSpark
+inline void C2_HOOK_FASTCALL CreateSingleSpark(tCar_spec* pCar, const br_vector3* pPos, const br_vector3* pVelocity) {
+
+    BrVector3Copy(&gSparks[gNext_spark].pos, pPos);
+    BrVector3SetFloat(&gSparks[gNext_spark].normal, 0.0f, 0.0f, 0.0f);
+    BrVector3Copy(&gSparks[gNext_spark].v, pVelocity);
+    gSparks[gNext_spark].count = 500;
+    gSparks[gNext_spark].car = pCar;
+    gSpark_flags |= 1 << gNext_spark;
+    gSparks[gNext_spark].time_sync = 1;
+    gSparks[gNext_spark].colour = 1;
+    gNext_spark += 1;
+    if (gNext_spark >= (int)REC2_ASIZE(gSparks)) {
+        gNext_spark = 0;
+    }
+}
 
 // CreateSparks
 
@@ -1422,96 +1440,66 @@ void C2_HOOK_FASTCALL ConditionalSmokeColumn(tCar_spec* pCar, int pFire_point, i
 }
 
 // FUNCTION: CARMA2_HW 0x004fd530
+// FUNCTION: CARMA2_SW 0x004f8a90
+// FUNCTION: CARMA2_CHEAT 0x005031d0
 void C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_matrix34* pMatrix, const br_vector3* pVelocity, const br_vector3* pNormal_velocity, const br_vector3* pOmega, const br_vector3* pPoint, const br_vector3* pNormal, tU32 pTime) {
-    br_vector3 cross;
-    br_vector3 velocity;
+    br_vector3 tv;
+    br_vector3 vel;
     br_scalar speed;
     br_scalar size;
-    br_scalar range;
-    br_scalar dot;
+    br_scalar ts;
     tCar_spec* car;
 
-    BrMatrix34ApplyP((br_vector3*)gSplash[gSplash_next].actor->t.t.mat.m[3], pPoint, pMatrix);
-    cross.v[0] = pOmega->v[1] * pPoint->v[2] - pOmega->v[2] * pPoint->v[1];
-    cross.v[1] = pOmega->v[2] * pPoint->v[0] - pOmega->v[0] * pPoint->v[2];
-    cross.v[2] = pOmega->v[0] * pPoint->v[1] - pOmega->v[1] * pPoint->v[0];
-    BrMatrix34ApplyV(&velocity, &cross, pMatrix);
-    cross.v[0] = (br_scalar)(pVelocity->v[0] * 6.9);
-    cross.v[1] = (br_scalar)(pVelocity->v[1] * 6.9);
-    velocity.v[0] = velocity.v[0] + cross.v[0];
-    velocity.v[1] = velocity.v[1] + cross.v[1];
-    cross.v[2] = (br_scalar)(pVelocity->v[2] * 6.9);
-    velocity.v[2] = velocity.v[2] + cross.v[2];
-    speed = (br_scalar)sqrt(velocity.v[0] * velocity.v[0] + velocity.v[1] * velocity.v[1] + velocity.v[2] * velocity.v[2]);
-    dot = pNormal->v[1] * velocity.v[1] + pNormal->v[2] * velocity.v[2] + pNormal->v[0] * velocity.v[0];
-    size = (speed - (float)fabs(dot) * -5.f) * .006666666828095913f - -.04782608523964882f;
-    if (size > .5f) {
-        size = .5f;
+    BrMatrix34ApplyP(&gSplash[gNext_splash].actor->t.t.translate.t, pPoint, pMatrix);
+    tv.v[0] = pOmega->v[1] * pPoint->v[2] - pOmega->v[2] * pPoint->v[1];
+    tv.v[1] = pOmega->v[2] * pPoint->v[0] - pOmega->v[0] * pPoint->v[2];
+    tv.v[2] = pOmega->v[0] * pPoint->v[1] - pOmega->v[1] * pPoint->v[0];
+    BrMatrix34ApplyV(&vel, &tv, pMatrix);
+    BrVector3Scale(&tv, pVelocity, WORLD_SCALE_D);
+    BrVector3Accumulate(&vel, &tv);
+    speed = BrVector3Length(&vel);
+    size = (fabs(BrVector3Dot(pNormal, &vel)) * 5.0f + speed) / 150.0f;
+    size += 99.0f / 300.0f / WORLD_SCALE;
+    if (size > 0.5f) {
+        size = 0.5f;
     }
-    dot = pNormal_velocity->v[0] * pPoint->v[0] + pNormal_velocity->v[1] * pPoint->v[1] + pNormal_velocity->v[2] * pPoint->v[2];
-    if (dot < 0.f) {
-        size = size * .5f;
+    if (0.0f > BrVector3Dot(pNormal_velocity, pPoint)) {
+        size = size / 2.0f;
     }
-    gSplash[gSplash_next].size = SRandomBetween(size * .5f, size);
-    if (!(gSplash_flags & (1 << gSplash_next))) {
-        BrActorAdd(gNon_track_actor, gSplash[gSplash_next].actor);
+    gSplash[gNext_splash].size = SRandomBetween(size / 2.0f, size);
+    if (!(gSplash_flags & (1 << gNext_splash))) {
+        BrActorAdd(gNon_track_actor, gSplash[gNext_splash].actor);
     }
-    gSplash_flags |= 1 << gSplash_next;
-    gSplash[gSplash_next].just_done = 1;
-    if (pObject != NULL && gAction_replay_mode == 0) {
+    gSplash_flags |= 1 << gNext_splash;
+    gSplash[gNext_splash].just_done = 1;
+    if (pObject != NULL && !gAction_replay_mode) {
         car = pObject->owner;
         if (car == NULL || pObject->flags_0x238 != 1) {
             car = NULL;
         }
         if (car != NULL) {
-            if (SRandomBetween(0.f, 1.f) < pTime * .003f) {
-                range = (br_scalar)(sqrt(speed * .014285714365541935f) * 15.f);
-                velocity.v[0] = velocity.v[0] * .14492753148078918f;
-                velocity.v[1] = velocity.v[1] * .14492753148078918f;
-                velocity.v[2] = velocity.v[2] * .14492753148078918f;
-                cross.v[0] = velocity.v[0] * -.1f;
-                cross.v[1] = velocity.v[1] * -.1f;
-                cross.v[2] = velocity.v[2] * -.1f;
-                if (range > 15.f) {
-                    range = 15.f;
+            if (pTime * 0.003f > SRandomBetween(0.0f, 1.0f)) {
+                BrVector3InvScale(&vel, &vel, WORLD_SCALE);
+                BrVector3Scale(&tv, &vel, -0.1f);
+                ts = (br_scalar)sqrt(speed / 70.0f) * 15.0f;
+                if (ts > 15.0f) {
+                    ts = 15.0f;
                 }
-                cross.v[1] = (br_scalar)(cross.v[1] - SRandomBetween(5.f, range) * -.14492753623188406);
-                BrMatrix34TApplyV(&velocity, &cross, &pObject->actor->t.t.mat);
-                cross.v[0] = (pObject->water_normal.v[2] * velocity.v[1] - pObject->water_normal.v[1] * velocity.v[2]) * .5f;
-                cross.v[1] = (pObject->water_normal.v[0] * velocity.v[2] - pObject->water_normal.v[2] * velocity.v[0]) * .5f;
-                cross.v[2] = (pObject->water_normal.v[1] * velocity.v[0] - pObject->water_normal.v[0] * velocity.v[1]) * .5f;
-                dot = pPoint->v[0] * cross.v[0] + pPoint->v[1] * cross.v[1] + pPoint->v[2] * cross.v[2];
-                if (dot > 0.f) {
-                    velocity.v[0] = velocity.v[0] + cross.v[0];
-                    velocity.v[1] = velocity.v[1] + cross.v[1];
-                    velocity.v[2] = velocity.v[2] + cross.v[2];
+                tv.v[1] += SRandomBetween(5.0f, ts) / WORLD_SCALE_D;
+                BrMatrix34TApplyV(&vel, &tv, &pObject->actor->t.t.mat);
+                BrVector3Cross(&tv, &vel, &pObject->water_normal);
+                if (BrVector3Dot(pPoint, &tv) > 0.0f) {
+                    BrVector3Accumulate(&vel, &tv);
                 } else {
-                    velocity.v[0] = velocity.v[0] - cross.v[0];
-                    velocity.v[1] = velocity.v[1] - cross.v[1];
-                    velocity.v[2] = velocity.v[2] - cross.v[2];
+                    BrVector3Sub(&vel, &vel, &tv);
                 }
-                gSparks[gSpark_next].pos.v[0] = pPoint->v[0];
-                gSparks[gSpark_next].pos.v[1] = pPoint->v[1];
-                gSparks[gSpark_next].pos.v[2] = pPoint->v[2];
-                BrVector3SetFloat(&gSparks[gSpark_next].normal, 0.f, 0.f, 0.f);
-                gSparks[gSpark_next].v.v[0] = velocity.v[0];
-                gSparks[gSpark_next].v.v[1] = velocity.v[1];
-                gSparks[gSpark_next].v.v[2] = velocity.v[2];
-                gSparks[gSpark_next].count = 500;
-                gSparks[gSpark_next].car = car;
-                gSparks[gSpark_next].time_sync = 1;
-                gSparks[gSpark_next].colour = 1;
-                gSpark_flags |= 1 << gSpark_next;
-                gSpark_next++;
-                if (gSpark_next >= 32) {
-                    gSpark_next = 0;
-                }
+                CreateSingleSpark(car, pPoint, &vel);
             }
         }
     }
-    gSplash_next++;
-    if ((tU32)gSplash_next >= 32u) {
-        gSplash_next = 0;
+    gNext_splash += 1;
+    if (gNext_splash >= (int)REC2_ASIZE(gSplash)) {
+        gNext_splash = 0;
     }
 }
 

@@ -23,7 +23,7 @@ extern br_pixelmap** gShade_table;
 extern tSmash_vertex gSmash_glass_fragments[200];
 extern int gNum_dust_tables;
 extern int gSpark_flags;
-extern int gSpark_next;
+extern int gNext_spark;
 extern br_pixelmap* gIt_shade_table;
 extern int gSmoke_flags;
 extern int gSmoke_num;
@@ -48,7 +48,7 @@ extern tCar_spec* gCar_of_material;
 extern int gNum_splash_types;
 extern tSplash gSplash[32];
 extern int gSplash_flags;
-extern int gSplash_next;
+extern int gNext_splash;
 extern br_material* gSplash_material[20];
 extern br_model* gSplash_model;
 extern br_pixelmap* gFog_shade_table;
@@ -70,7 +70,7 @@ extern void C2_HOOK_FASTCALL SetLineModelCols(tU8 pCol);
 
 // RenderSparks
 
-// CreateSingleSpark
+extern void C2_HOOK_FASTCALL CreateSingleSpark(tCar_spec* pCar, const br_vector3* pPos, const br_vector3* pVelocity);
 
 // CreateSparks
 
