@@ -679,11 +679,12 @@ void C2_HOOK_FASTCALL ARMoveToStartOfReplay(tReplay_session_callback* pBetween_s
 }
 
 // FUNCTION: CARMA2_HW 0x00403cc0
-void C2_HOOK_FASTCALL ARDoActionReplay(int pUnused, void (C2_HOOK_FASTCALL * pBetween_sessions)(int), tPreprocess_AR_callback* pBefore_frame, tPostProcess_AR_callback* pAfter_frame) {
-    typedef void (C2_HOOK_FASTCALL * tReplay_between_sessions_callback)(int pFrames);
+// FUNCTION: CARMA2_SW 0x00403cc0
+// FUNCTION: CARMA2_CHEAT 0x00403cc0
+void C2_HOOK_FASTCALL ARDoActionReplay(int pUnused, tReplay_session_callback* pBetween_sessions, tPreprocess_AR_callback* pBefore_frame, tPostProcess_AR_callback* pAfter_frame) {
 
     if (gReplay_rate != 0.0f) {
-        MoveReplayBuffer((int)gReplay_rate, (tReplay_between_sessions_callback)pBetween_sessions, pBefore_frame, pAfter_frame);
+        MoveReplayBuffer((int)gReplay_rate, pBetween_sessions, pBefore_frame, pAfter_frame);
     }
 }
 
