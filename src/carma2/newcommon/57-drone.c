@@ -138,6 +138,8 @@ int C2_HOOK_FASTCALL ReallyAddDroneToPHIL(tDrone_spec* pDrone) {
 // AddDroneToPHIL
 
 // FUNCTION: CARMA2_HW 0x00451070
+// FUNCTION: CARMA2_SW 0x00450e00
+// FUNCTION: CARMA2_CHEAT 0x004515c0
 void C2_HOOK_FASTCALL PreprocessDronePaths(void) {
     int i;
     int j;
@@ -146,22 +148,7 @@ void C2_HOOK_FASTCALL PreprocessDronePaths(void) {
         for (j = 0; j < gDrone_path_nodes[i].count_sections; j++) {
             BrVector3Sub(&gDrone_path_nodes[i].sections[j].field_0x04, &gDrone_path_nodes[gDrone_path_nodes[i].sections[j].node1].position, &gDrone_path_nodes[i].position);
             gDrone_path_nodes[i].sections[j].field_0x1c = BrVector3Length(&gDrone_path_nodes[i].sections[j].field_0x04);
-            {
-                br_scalar len;
-                double scale;
-
-                len = BrVector3Length(&gDrone_path_nodes[i].sections[j].field_0x04);
-                if (len > BR_SCALAR_EPSILON * 2) {
-                    scale = 1.0 / len;
-                    gDrone_path_nodes[i].sections[j].field_0x10.v[0] = (br_scalar)(gDrone_path_nodes[i].sections[j].field_0x04.v[0] * scale);
-                    gDrone_path_nodes[i].sections[j].field_0x10.v[1] = (br_scalar)(gDrone_path_nodes[i].sections[j].field_0x04.v[1] * scale);
-                    gDrone_path_nodes[i].sections[j].field_0x10.v[2] = (br_scalar)(gDrone_path_nodes[i].sections[j].field_0x04.v[2] * scale);
-                } else {
-                    gDrone_path_nodes[i].sections[j].field_0x10.v[0] = 1.0f;
-                    gDrone_path_nodes[i].sections[j].field_0x10.v[1] = 0.0f;
-                    gDrone_path_nodes[i].sections[j].field_0x10.v[2] = 0.0f;
-                }
-            }
+            BrVector3Normalise(&gDrone_path_nodes[i].sections[j].field_0x10, &gDrone_path_nodes[i].sections[j].field_0x04);
         }
     }
 }
