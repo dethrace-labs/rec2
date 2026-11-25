@@ -4030,6 +4030,8 @@ int C2_HOOK_FASTCALL NetOptions_CreditsRoller(tFrontend_spec* pFrontend) {
 }
 
 // FUNCTION: CARMA2_HW 0x004732b0
+// FUNCTION: CARMA2_SW 0x00472820
+// FUNCTION: CARMA2_CHEAT 0x00473650
 int C2_HOOK_FASTCALL NetOptions_TargetRoller(tFrontend_spec* pFrontend) {
     int increment;
     int minimum;
