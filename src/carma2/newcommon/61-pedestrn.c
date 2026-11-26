@@ -2867,29 +2867,29 @@ int C2_HOOK_FASTCALL MakeCharacterRenderable(tPed_character_instance* pCharacter
 // CharacterNoLongerRenderable
 
 // FUNCTION: CARMA2_HW 0x004087b0
+// FUNCTION: CARMA2_SW 0x004087b0
+// FUNCTION: CARMA2_CHEAT 0x004087b0
 void C2_HOOK_FASTCALL CalcCollisionObjectThings(tPhysics_object* pObject, br_bounds3* pFrame, int pNull, br_vector3* pBoneVec, br_vector3* pBonePtr) {
-    br_scalar P[3];
-    br_scalar Q[3];
-    br_scalar dmax[3];
-    br_scalar d[3];
-    br_scalar a;
-    br_scalar b;
     br_scalar maxcomp;
-    br_scalar Vx;
-    br_scalar Vy;
-    br_scalar Vz;
+    br_vector3 P;
+    br_vector3 Q;
+    br_vector3 dmax;
+    br_vector3 d;
+    br_vector3 tv;
     int index;
     int r1;
     int r2;
     int i;
 
     if (pFrame != NULL) {
-        d[0] = pFrame->max.v[0] - pFrame->min.v[0];
-        d[1] = pFrame->max.v[1] - pFrame->min.v[1];
-        d[2] = pFrame->max.v[2] - pFrame->min.v[2];
-        dmax[0] = d[0];
-        dmax[1] = d[1];
-        dmax[2] = d[2];
+        BrVector3Sub(&d, &pFrame->max, &pFrame->min);
+        BrVector3Copy(&dmax, &d);
+    } else {
+#ifdef REC2_CHEAT
+        if (pObject->shape->common.type != kCollisionShapeType_Wireframe || pBoneVec == NULL) {
+            PDFatalError("Can't make shape for object with no model unless its a wireframe");
+        }
+#endif
     }
     switch (pObject->shape->common.type) {
     case kCollisionShapeType_Box:
@@ -2897,69 +2897,50 @@ void C2_HOOK_FASTCALL CalcCollisionObjectThings(tPhysics_object* pObject, br_bou
         break;
     case kCollisionShapeType_Wireframe:
         if (pBoneVec != NULL && pBonePtr != NULL) {
-            pObject->shape->wireframe.wireframe.points[0].v[0] = pBoneVec->v[0];
-            pObject->shape->wireframe.wireframe.points[0].v[1] = pBoneVec->v[1];
-            pObject->shape->wireframe.wireframe.points[0].v[2] = pBoneVec->v[2];
-            pObject->shape->wireframe.wireframe.points[1].v[0] = pBonePtr->v[0];
-            pObject->shape->wireframe.wireframe.points[1].v[1] = pBonePtr->v[1];
-            pObject->shape->wireframe.wireframe.points[1].v[2] = pBonePtr->v[2];
+            BrVector3Copy(&pObject->shape->wireframe.wireframe.points[0], pBoneVec);
+            BrVector3Copy(&pObject->shape->wireframe.wireframe.points[1], pBonePtr);
         } else {
             maxcomp = -1.0f;
             index = -1;
             for (i = 0; i < 3; i++) {
-                if (maxcomp < dmax[i]) {
-                    maxcomp = dmax[i];
+                if (maxcomp < dmax.v[i]) {
+                    maxcomp = dmax.v[i];
                     index = i;
                 }
             }
             r1 = (index + 1) % 3;
             r2 = (index + 2) % 3;
-            P[index] = pFrame->min.v[index];
-            Q[index] = pFrame->max.v[index];
-            P[r1] = (pFrame->min.v[r1] + pFrame->max.v[r1]) * 0.5f;
-            Q[r1] = P[r1];
-            P[r2] = (pFrame->min.v[r2] + pFrame->max.v[r2]) * 0.5f;
-            Q[r2] = P[r2];
+            P.v[index] = pFrame->min.v[index];
+            Q.v[index] = pFrame->max.v[index];
+            P.v[r1] = (pFrame->min.v[r1] + pFrame->max.v[r1]) / 2.0f;
+            Q.v[r1] = P.v[r1];
+            P.v[r2] = (pFrame->min.v[r2] + pFrame->max.v[r2]) / 2.0f;
+            Q.v[r2] = P.v[r2];
             if (pBoneVec == NULL && pBonePtr == NULL) {
-                pObject->shape->wireframe.wireframe.points[0].v[0] = P[0];
-                pObject->shape->wireframe.wireframe.points[0].v[1] = P[1];
-                pObject->shape->wireframe.wireframe.points[0].v[2] = P[2];
-                pObject->shape->wireframe.wireframe.points[1].v[0] = Q[0];
-                pObject->shape->wireframe.wireframe.points[1].v[1] = Q[1];
-                pObject->shape->wireframe.wireframe.points[1].v[2] = Q[2];
+                BrVector3Copy(&pObject->shape->wireframe.wireframe.points[0], &P);
+                BrVector3Copy(&pObject->shape->wireframe.wireframe.points[1], &Q);
             } else {
                 if (pBoneVec != NULL) {
-                    Vx = pBoneVec->v[0];
-                    Vy = pBoneVec->v[1];
-                    Vz = pBoneVec->v[2];
+                    BrVector3Copy(&tv, pBoneVec);
                 } else {
-                    Vx = pBonePtr->v[0];
-                    Vy = pBonePtr->v[1];
-                    Vz = pBonePtr->v[2];
+                    BrVector3Copy(&tv, pBonePtr);
                 }
-                a = (Vx - P[0]) * (Vx - P[0]) + (Vy - P[1]) * (Vy - P[1]) + (Vz - P[2]) * (Vz - P[2]);
-                b = (Vx - Q[0]) * (Vx - Q[0]) + (Vy - Q[1]) * (Vy - Q[1]) + (Vz - Q[2]) * (Vz - Q[2]);
-                if (a > b) {
-                    pObject->shape->wireframe.wireframe.points[0].v[0] = P[0];
-                    pObject->shape->wireframe.wireframe.points[0].v[1] = P[1];
-                    pObject->shape->wireframe.wireframe.points[0].v[2] = P[2];
+                if (Vector3DistanceSquared(&tv, &P) > Vector3DistanceSquared(&tv, &Q)) {
+                    BrVector3Copy(&pObject->shape->wireframe.wireframe.points[0], &P);
+                    BrVector3Copy(&pObject->shape->wireframe.wireframe.points[1], &tv);
                 } else {
-                    pObject->shape->wireframe.wireframe.points[0].v[0] = Q[0];
-                    pObject->shape->wireframe.wireframe.points[0].v[1] = Q[1];
-                    pObject->shape->wireframe.wireframe.points[0].v[2] = Q[2];
+                    BrVector3Copy(&pObject->shape->wireframe.wireframe.points[0], &Q);
+                    BrVector3Copy(&pObject->shape->wireframe.wireframe.points[1], &tv);
                 }
-                pObject->shape->wireframe.wireframe.points[1].v[0] = Vx;
-                pObject->shape->wireframe.wireframe.points[1].v[1] = Vy;
-                pObject->shape->wireframe.wireframe.points[1].v[2] = Vz;
             }
         }
         break;
     case kCollisionShapeType_Sphere:
-        pObject->shape->sphere.sphere.radius = (d[0] + d[1] + d[2]) * 0.166666672f;
-        pObject->shape->sphere.sphere.radius_squared = pObject->shape->sphere.sphere.radius * pObject->shape->sphere.sphere.radius;
-        pObject->shape->sphere.sphere.center.v[0] = pFrame->min.v[0] - -0.5f * d[0];
-        pObject->shape->sphere.sphere.center.v[1] = pFrame->min.v[1] - -0.5f * d[1];
-        pObject->shape->sphere.sphere.center.v[2] = pFrame->min.v[2] - -0.5f * d[2];
+        pObject->shape->sphere.sphere.radius = (d.v[0] + d.v[1] + d.v[2]) / 6.0f;
+        pObject->shape->sphere.sphere.radius_squared = REC2_SQR(pObject->shape->sphere.sphere.radius);
+        pObject->shape->sphere.sphere.center.v[0] = pFrame->min.v[0] + d.v[0] / 2.0f;
+        pObject->shape->sphere.sphere.center.v[1] = pFrame->min.v[1] + d.v[1] / 2.0f;
+        pObject->shape->sphere.sphere.center.v[2] = pFrame->min.v[2] + d.v[2] / 2.0f;
         break;
     default:
         break;
@@ -2968,17 +2949,15 @@ void C2_HOOK_FASTCALL CalcCollisionObjectThings(tPhysics_object* pObject, br_bou
     UpdateCollisionObject(pObject);
     if (pFrame == NULL) {
         pFrame = &pObject->shape->common.bb;
-        d[0] = pFrame->max.v[0] - pFrame->min.v[0];
-        d[1] = pFrame->max.v[1] - pFrame->min.v[1];
-        d[2] = pFrame->max.v[2] - pFrame->min.v[2];
+        BrVector3Sub(&d, &pFrame->max, &pFrame->min);
     }
-    pObject->I.v[2] = pObject->M * (d[1] * d[1] + d[0] * d[0]) * 0.025f;
-    pObject->I.v[1] = pObject->M * (d[2] * d[2] + d[0] * d[0]) * 0.025f;
-    pObject->I.v[0] = pObject->M * (d[2] * d[2] + d[1] * d[1]) * 0.025f;
+    pObject->I.v[2] = pObject->M * (REC2_SQR(d.v[1]) + REC2_SQR(d.v[0])) / 40.0f;
+    pObject->I.v[1] = pObject->M * (REC2_SQR(d.v[2]) + REC2_SQR(d.v[0])) / 40.0f;
+    pObject->I.v[0] = pObject->M * (REC2_SQR(d.v[2]) + REC2_SQR(d.v[1])) / 40.0f;
     if (pNull != 0) {
-        pObject->cmpos.v[0] = pFrame->min.v[0] - -0.5f * d[0];
-        pObject->cmpos.v[1] = pFrame->min.v[1] - -0.5f * d[1];
-        pObject->cmpos.v[2] = pFrame->min.v[2] - -0.5f * d[2];
+        pObject->cmpos.v[0] = pFrame->min.v[0] + d.v[0] / 2.0f;
+        pObject->cmpos.v[1] = pFrame->min.v[1] + d.v[1] / 2.0f;
+        pObject->cmpos.v[2] = pFrame->min.v[2] + d.v[2] / 2.0f;
     }
 }
 
