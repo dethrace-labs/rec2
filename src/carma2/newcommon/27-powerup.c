@@ -1463,21 +1463,20 @@ inline void C2_HOOK_FASTCALL FillInMine(tNet_message_chunk* pChunk, tShit_mine* 
 }
 
 // FUNCTION: CARMA2_HW 0x004dcfb0
+// FUNCTION: CARMA2_SW 0x004d94b0
+// FUNCTION: CARMA2_CHEAT 0x004e2b70
 void C2_HOOK_FASTCALL SendMines(tU32 pNext_frame_time) {
+    int i;
     int j;
-    int k;
-    int hierarchy_size;
-    int chunk_size;
+    int size;
+    int index;
     tShit_mine* mine;
-    tU8 tmp_buf[0x23c];
-    tNet_message_chunk_mine_explode* tmp;
-    tNet_message_chunk* chunk;
-    tPlayer_ID target_id;
-    tPlayer_ID proxy_id;
-    int check_idx;
-    float dx;
-    float dy;
-    float dz;
+    union {
+        tNet_message_chunk chunk;
+        tU8 raw[0x23c]; /* FIXME: should raw buffer be added to tNet_message_chunk or is sizeof(tNet_message_chunk) == 0x235? */
+    } message;
+    tNet_message_chunk* contents;
+    br_vector3 tv;
 
     if (gNet_mode != eNet_mode_host) {
         return;
@@ -1485,48 +1484,32 @@ void C2_HOOK_FASTCALL SendMines(tU32 pNext_frame_time) {
     if (gNumber_of_net_players == 1) {
         return;
     }
-    tmp = (tNet_message_chunk_mine_explode*)tmp_buf;
-    for (mine = gShit_mines; mine < &gShit_mines[REC2_ASIZE(gShit_mines)]; mine++) {
-        if (!(mine->flags & 1)) {
+    for (i = 0; i < (int)REC2_ASIZE(gShit_mines); i++) {
+        mine = &gShit_mines[i];
+        if (!(mine->flags & 0x1)) {
             continue;
         }
-        tmp->mine_index = (tS8)(mine - gShit_mines);
-        tmp->field_0x3 = mine->field_0x35;
-        tmp->field_0x4 = mine->field_0x34;
-        tmp->field_0x5 = (tU8)(NetPlayerFromCar(mine->field_0x30) - gNet_players);
-        tmp->field_0x8 = (tS32)pNext_frame_time;
-        GetHierarchyNetworkStuff(mine->collision_info, tmp->object_hierarchy, 0x48);
-        hierarchy_size = GetHierarchyNetworkSize(mine->collision_info);
-        chunk_size = (int)((float)hierarchy_size - (-12.0f));
-        tmp->header.size = (tU8)chunk_size;
-        tmp->header.type = 0x31;
+        FillInMine(&message.chunk, mine, pNext_frame_time);
+        size = (int)(GetHierarchyNetworkSize(gShit_mines[i].collision_info) + 12.0f);
+        message.chunk.mine_explode.header.size = size;
+        message.chunk.mine_explode.header.type = eNet_message_chunk_type_mine_explosion;
         for (j = 1; j < gNumber_of_net_players; j++) {
-            target_id = gNet_players[j].ID;
-            proxy_id = *(tPlayer_ID*)&gNet_players[j].field_0xd0;
-            if (proxy_id == 0) {
-                check_idx = j;
-            } else {
-                check_idx = 0;
-                if (gNumber_of_net_players - 1 > 0) {
-                    for (k = 0; k < gNumber_of_net_players - 1; k++) {
-                        if (gNet_players[k].ID == proxy_id) {
-                            break;
-                        }
+            if (gNet_players[j].field_0xd0 != 0) {
+                for (index = 0; index < gNumber_of_net_players - 1; index++) {
+                    if (gNet_players[index].ID == gNet_players[j].field_0xd0) {
+                        break;
                     }
-                    check_idx = k;
+                }
+            } else {
+                index = j;
+            }
+            BrVector3Sub(&tv, (br_vector3*)mine->collision_info->transform_matrix.m[3], (br_vector3*)gNet_players[index].car->collision_info->transform_matrix.m[3]);
+            if (BrVector3LengthSquared(&tv) < REC2_SQR(20.0f)) {
+                contents = NetGetToPlayerContents(eNet_message_chunk_type_mine_explosion, size, gNet_players[j].ID);
+                if (contents != NULL) {
+                    memcpy(contents, &message.chunk, size);
                 }
             }
-            dx = mine->collision_info->transform_matrix.m[3][0] - gNet_players[check_idx].car->collision_info->transform_matrix.m[3][0];
-            dy = mine->collision_info->transform_matrix.m[3][1] - gNet_players[check_idx].car->collision_info->transform_matrix.m[3][1];
-            dz = mine->collision_info->transform_matrix.m[3][2] - gNet_players[check_idx].car->collision_info->transform_matrix.m[3][2];
-            if (dx * dx + dy * dy + dz * dz >= 400.0f) {
-                continue;
-            }
-            chunk = NetGetToPlayerContents(0x31, chunk_size, target_id);
-            if (chunk == NULL) {
-                continue;
-            }
-            memcpy(chunk, tmp, chunk_size);
         }
     }
 }
