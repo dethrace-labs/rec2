@@ -2022,7 +2022,7 @@ void C2_HOOK_FASTCALL ApplyCar(tPipe_chunk** pChunk) {
     BrVector3Accumulate(&car->pos, &com_offset_w);
 
     car->speedo_speed = (float)((double)(*pChunk)->data.car.speedo_speed / 468100.0);
-    car->revs = (*pChunk)->data.car.revs * 10;
+    car->revs = (float)((*pChunk)->data.car.revs * 10);
     car->gear = (*pChunk)->data.car.gear - 1;
     car->frame_collision_flag = (*pChunk)->data.car.frame_collision_flag;
     car->field_0x18cc = (*pChunk)->data.car.field_0x40;
