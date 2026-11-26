@@ -1703,34 +1703,29 @@ void C2_HOOK_FASTCALL MenuSetDriverImage(int pOpponent_index, int pFrontend_inde
 }
 
 // FUNCTION: CARMA2_HW 0x00469a40
+// FUNCTION: CARMA2_SW 0x004697a0
+// FUNCTION: CARMA2_CHEAT 0x00469e60
 int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
-    int group;
-    int race_index;
-    int i;
     char group_name[12];
     br_camera* camera;
     tFrontend_item_spec* item;
+    int group;
+    int race_index;
+    int i;
 
-    if (!pFrontend->loaded) {
-        LoadMenuSettings(pFrontend);
-        FuckWithWidths(pFrontend);
-        if (pFrontend->previous != NULL) {
-            pFrontend->previous->isPreviousSomeOtherMenu = 1;
-        }
-    }
-    gFrontend_scrollbars_updated = 0;
-    EdgeTriggerModeOff();
-    WaitForNoKeys();
-    EdgeTriggerModeOn();
-    gFrontend_time_last_input = PDGetTotalTime();
-    group = (gCurrent_race_group - gRace_groups) % 10;
-    sprintf(group_name, "%s %d", IString_Get(78), group + 1);
+    DefaultInfunc(pFrontend);
+    ResetInterfaceTimeout();
+    group = (gCurrent_race_group - gRace_groups) % 10 + 1;
+    sprintf(group_name, "%s %d", IString_Get(eInterfaceString_mission), group);
     strcpy(pFrontend->items[2].text, group_name);
-    race_index = 4 * group;
-    for (i = pFrontend->scrollers[0].indexFirstScrollableItem; i <= pFrontend->scrollers[0].indexLastScrollableItem; i++) {
+    for (race_index = 4 * (group - 1), i = pFrontend->scrollers[0].indexFirstScrollableItem; i <= pFrontend->scrollers[0].indexLastScrollableItem; race_index++, i++) {
         item = &pFrontend->items[i];
         strcpy(item->text, gRace_list[race_index].name);
-        item->radioButton_selected = race_index == gProgram_state.current_race_index;
+        if (race_index == gProgram_state.current_race_index) {
+            item->radioButton_selected = 1;
+        } else {
+            item->radioButton_selected = 0;
+        }
         if (gRace_list[race_index].is_boundary) {
             item->unlitFont = 2;
             item->highFont = 3;
@@ -1738,18 +1733,9 @@ int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
             item->unlitFont = 0;
             item->highFont = 1;
         }
-        race_index++;
     }
-    if (gIs_boundary_race || gProgram_state.game_completed) {
-        pFrontend->items[7].enabled = kFrontendItemEnabled_enabled;
-    } else {
-        pFrontend->items[7].enabled = kFrontendItemEnabled_disabled;
-    }
-    div(gProgram_state.current_race_index, 4);
-    strcpy(pFrontend->items[22].text, gRace_list[gProgram_state.current_race_index].description);
-    MungeMetaCharactersChar(pFrontend->items[22].text, 'R', '\r');
-    MungeMetaCharactersNum(pFrontend->items[22].text, 'O', gRace_list[gProgram_state.current_race_index].count_explicit_opponents);
-    MungeMetaCharactersNum(pFrontend->items[22].text, 'L', gRace_list[gProgram_state.current_race_index].count_laps);
+    FuckingMakeTheFuckingRaceAndGroupsDisplayHaveTheRightCuntingStuffInIt(pFrontend);
+    FillInRaceDescription(pFrontend->items[22].text, gProgram_state.current_race_index);
     strcpy(pFrontend->items[18].text, gProgram_state.player_name);
     strcpy(pFrontend->items[20].text, gOpponents[gProgram_state.current_car_index].car_name);
     strcpy(pFrontend->items[23].text, MungeCommas(gProgram_state.credits));
@@ -1760,10 +1746,10 @@ int C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
     camera = gFrontend_menu_camera->type_data;
     camera->type = BR_CAMERA_PARALLEL;
     camera->field_of_view = BR_ANGLE_DEG(90);
-    camera->hither_z = 1.f;
-    camera->yon_z = 3.f;
-    camera->width = 640.f;
-    camera->height = 480.f;
+    camera->hither_z = 1.0f;
+    camera->yon_z = 3.0f;
+    camera->width = 640.0f;
+    camera->height = 480.0f;
     gFrontend_billboard_actors[0] = CreateAPOactor();
     gFrontend_APO_Colour_1 = FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupport(gFrontend_billboard_actors[0]->material->colour_map, 0xff, 0x80, 0x00, 0xff);
     gFrontend_APO_Colour_2 = FudgeBRenderIntoTheNinetiesWithSomeProperFuckingColourSupport(gFrontend_billboard_actors[0]->material->colour_map, 0x00, 0x00, 0x80, 0xff);
