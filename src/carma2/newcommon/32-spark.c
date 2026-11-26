@@ -69,6 +69,11 @@ int gNum_dust_tables;
 // GLOBAL: CARMA2_CHEAT 0x006b20f4
 int gSpark_flags;
 
+// GLOBAL: CARMA2_HW 0x006aa578
+// GLOBAL: CARMA2_SW 0x006a3fc4
+// GLOBAL: CARMA2_CHEAT 0x006b20f0
+int gNext_spark;
+
 // GLOBAL: CARMA2_HW 0x006aa5ac
 // GLOBAL: CARMA2_SW 0x006a3ffc
 // GLOBAL: CARMA2_CHEAT 0x006b2124
@@ -333,7 +338,69 @@ void C2_HOOK_FASTCALL SetLineModelCols(tU8 pCol) {
 
 // CreateSparks
 
-// CreateSparkShower
+// FUNCTION: CARMA2_HW 0x004f8290
+// FUNCTION: CARMA2_SW 0x004f3910
+// FUNCTION: CARMA2_CHEAT 0x004fdf30
+void C2_HOOK_FASTCALL CreateSparkShower(br_vector3* pPosition, br_vector3* pVelocity, br_vector3* pForce, tCar_spec* pCar1, tCar_spec* pCar2) {
+    br_vector3 normal;
+    br_vector3 tv;
+    br_vector3 tv2;
+    br_scalar ts;
+    br_scalar ts2;
+    tCar_spec* c;
+    int num;
+    int i;
+
+    ts = BrVector3Length(pForce);
+    if (pCar1 != NULL && pCar1->driver == eDriver_local_human) {
+        c = pCar1;
+    } else {
+        c = pCar2;
+    }
+    BrVector3InvScale(&normal, pForce, ts);
+    if (ts < 10.0f) {
+        return;
+    }
+    CreateShrapnelShower2(pPosition, pVelocity, &normal, ts, pCar1, pCar2, 0, NULL);
+    if ((pCar1 != NULL && pCar1->driver > 5)
+            || (pCar1->flags & 0x200000)
+            || (pCar2 != NULL && pCar2->driver > 5)
+            || (pCar2->flags & 0x200000)) {
+        ts2 = BrVector3Dot(pForce, pVelocity) / REC2_SQR(ts);
+        BrVector3Scale(&tv, pForce, ts2);
+        BrVector3Sub(&tv, pVelocity, &tv);
+        BrMatrix34TApplyV(pVelocity, &tv, &pCar1->car_master_actor->t.t.mat);
+        BrVector3Sub(&tv, pPosition, &c->car_master_actor->t.t.translate.t);
+        BrMatrix34TApplyV(pPosition, &tv, &c->car_master_actor->t.t.mat);
+        BrMatrix34TApplyV(&tv, pForce, &c->car_master_actor->t.t.mat);
+        BrVector3Copy(pForce, &tv);
+        num = (int)(ts / 10.0f) + 3;
+        if (num > 20) {
+            num = 20;
+        }
+        for (i = 0; i < num; i++) {
+            BrVector3Copy(&gSparks[gNext_spark].pos, pPosition);
+            BrVector3SetFloat(&gSparks[gNext_spark].normal, 0.0f, 0.0f, 0.0f);
+            BrVector3SetFloat(&tv,
+                FRandomBetween(-1.0f, 1.0f),
+                FRandomBetween(-0.2f, 1.0f),
+                FRandomBetween(-1.0f, 1.0f));
+            ts2 = BrVector3Dot(pForce, &tv) / REC2_SQR(ts);
+            BrVector3Scale(&tv2, pForce, ts2);
+            BrVector3Sub(&gSparks[gNext_spark].v, &tv, &tv2);
+            BrVector3Accumulate(&gSparks[gNext_spark].v, pVelocity);
+            gSparks[gNext_spark].count = 1000;
+            gSparks[gNext_spark].car = c;
+            gSpark_flags |= 1 << gNext_spark;
+            gSparks[gNext_spark].time_sync = gPHIL_mechanics_time_sync;
+            gSparks[gNext_spark].colour = 0;
+            gNext_spark += 1;
+            if (gNext_spark >= (int)REC2_ASIZE(gSparks)) {
+                gNext_spark = 0;
+            }
+        }
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004f8630
 // FUNCTION: CARMA2_SW 0x004f3cb0
