@@ -2216,12 +2216,15 @@ void C2_HOOK_FASTCALL CompletelyUnBendCollisionShape(tCar_crush_shape_info* pSha
 // CompletelyUnBendCollisionShapes
 
 // FUNCTION: CARMA2_HW 0x0043a010
+// FUNCTION: CARMA2_SW 0x0043a050
+// FUNCTION: CARMA2_CHEAT 0x0043a230
 void C2_HOOK_FASTCALL CompletelyUnBendWheels(tCar_spec* pCar_spec) {
+    br_actor* actor;
+    tGroovidelic_spec* groove;
+    br_vector3 delta;
     int i;
 
     for (i = 0; i < (int)REC2_ASIZE(pCar_spec->wheel_actors); i++) {
-        br_actor* actor;
-        tGroovidelic_spec* groove;
 
         actor = pCar_spec->pivot_actors[i];
         if (actor == NULL) {
@@ -2233,15 +2236,10 @@ void C2_HOOK_FASTCALL CompletelyUnBendWheels(tCar_spec* pCar_spec) {
         groove = ActorsGroove(actor);
         if (groove != NULL && groove->path_type == eGroove_path_straight) {
             br_vector3* centre = &groove->path_data.straight_info.centre;
-            br_vector3 delta;
 
-            delta.v[0] = -centre->v[0];
-            delta.v[1] = -centre->v[1];
-            delta.v[2] = -centre->v[2];
+            BrVector3Negate(&delta, centre);
             BrVector3Copy(centre, &pCar_spec->car_crush_spec->field_0x1ec[i]);
-            delta.v[0] += centre->v[0];
-            delta.v[1] += centre->v[1];
-            delta.v[2] += centre->v[2];
+            BrVector3Accumulate(&delta, centre);
             PipeSingleVector3(centre, &delta);
         }
     }
@@ -2249,8 +2247,8 @@ void C2_HOOK_FASTCALL CompletelyUnBendWheels(tCar_spec* pCar_spec) {
     for (i = 0; i < REC2_ASIZE(pCar_spec->wpos); i++) {
         BrVector3Copy(&pCar_spec->wpos[i], &pCar_spec->car_crush_spec->field_0x234[i]);
     }
-    SetCarSuspGiveAndHeight(pCar_spec, 1.f, 1.f, 1.f, 0.f, 0.f);
-    pCar_spec->field_0x1260 = 0.f;
+    SetCarSuspGiveAndHeight(pCar_spec, 1.0f, 1.0f, 1.f, 0.0f, 0.0f);
+    pCar_spec->field_0x1260 = 0.0f;
 }
 
 // CompletelyUnBendOtherThings
