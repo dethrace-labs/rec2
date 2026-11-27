@@ -122,11 +122,11 @@ extern void C2_HOOK_FASTCALL DoSpecial(tSpecial_effects_spec* pSpecial, br_actor
 
 // QueueDelayedSideEffect
 
-// DoDelayedNonCar
+extern void C2_HOOK_FASTCALL DoDelayedNonCar(tU32 pTime, tDelayed_non_car* pDelayed_non_car);
 
-// DoDelayedSmash
+extern void C2_HOOK_FASTCALL DoDelayedSmash(tDelayed_smash* pDelayed_smash);
 
-// MungeDelayedSideEffects
+extern void C2_HOOK_FASTCALL MungeDelayedSideEffects(void);
 
 // ActivateNonCarSideEffects
 
@@ -304,7 +304,7 @@ extern void C2_HOOK_FASTCALL SendNetSmash(tPhysics_object* pObject, undefined4 p
 
 // HitPowerup
 
-// SmashEnvironment
+extern float C2_HOOK_FASTCALL SmashEnvironment(tPhysics_object* pObject, undefined4* pArg2, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pSnap, int pNetwork);
 
 extern float C2_HOOK_FASTCALL BashObject(tPhysics_object* pObject, br_actor* pActor, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pSnap, int pNetwork);
 
