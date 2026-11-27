@@ -285,9 +285,61 @@ char* C2_HOOK_FASTCALL GetPowerupMessage(int pPowerup_index) {
 
 // GetNextGoodyTime
 
-// DoPowerupTextHeadup
+inline void C2_HOOK_FASTCALL DoPowerupTextHeadup(tPowerup* pPowerup, int pGot_it) {
+    char s[256];
+    char* s2;
 
-// QueueIconGoing
+    if (pGot_it) {
+        sprintf(s, "%s %s", GetMiscString(190), pPowerup->message);
+    } else {
+        strcpy(s, pPowerup->message);
+    }
+    s2 = s;
+    if (pPowerup->got_proc == FreezeTimer) {
+        s2 = strtok(s, "/");
+        if (gFreeze_timer) {
+            s2 = strtok(NULL, "/");
+        }
+    }
+    NewTextHeadupSlot(4, 0, 3000, -4, s2);
+}
+
+inline void C2_HOOK_FASTCALL QueueIconGoing(tPowerup* pPowerup, tHeadup_icon* pHeadup_icons, int* pCount_icons, int pMax_count_icons) {
+    int i;
+#ifdef REC2_HW
+    // GLOBAL: CARMA2_HW 0x0065e8f8
+    // GLOBAL: CARMA2_CHEAT 0x00666060
+    static br_token_value icon_prims[3] = {
+        { BRT_BLEND_B, { 1 } },
+        { BRT_OPACITY_X, { BR_FIXED_INT(100) } },
+        { 0 },
+    };
+#endif
+
+    for (i = 0; i < *pCount_icons; i++) {
+        if (pPowerup == pHeadup_icons[i].powerup) {
+            pHeadup_icons[i].fizzle_stage = 4;
+            return;
+        }
+    }
+    if (*pCount_icons != pMax_count_icons) {
+        pHeadup_icons[*pCount_icons].powerup = pPowerup;
+        pHeadup_icons[*pCount_icons].fizzle_stage = 0;
+        pHeadup_icons[*pCount_icons].fizzle_direction = 1;
+        pHeadup_icons[*pCount_icons].fizzle_start = GetTotalTime();
+#ifdef REC2_HW
+        if (pPowerup->icon_actor != NULL) {
+            pHeadup_icons[*pCount_icons].icon_actor = pPowerup->icon_actor;
+            memcpy(pPowerup->material_prims, icon_prims, sizeof(icon_prims));
+            pPowerup->icon_actor->material->extra_prim[1].v.x = BR_FIXED_INT(255);
+            BrMaterialUpdate(pPowerup->icon_actor->material, BR_MATU_EXTRA_PRIM);
+            pPowerup->icon_actor->render_style = BR_RSTYLE_NONE;
+            RenderThisHeadup(pPowerup->icon_actor);
+        }
+#endif
+        *pCount_icons += 1;
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004d9670
 // FUNCTION: CARMA2_SW 0x004d5b40
@@ -305,43 +357,257 @@ void C2_HOOK_FASTCALL QueueIconComing(tPowerup* pPowerup, tHeadup_icon* pHeadup_
     }
 }
 
-// LosePowerupX
+// FUNCTION: CARMA2_HW 0x004db630
+// FUNCTION: CARMA2_SW 0x004d7b30
+// FUNCTION: CARMA2_CHEAT 0x004e11f0
+inline void C2_HOOK_FASTCALL LosePowerupX(tPowerup* pPowerup, int pTell_net_players) {
+    tNet_message* the_message;
 
-// LosePowerup
+    if (pPowerup->got_time != 0 && pPowerup->lose_proc != NULL) {
+        pPowerup->lose_proc(pPowerup, pPowerup->car);
+    }
+    if (pPowerup->net_type & 0x80) {
+        PipeSinglePowerupLose(pPowerup, pPowerup->car);
+    }
+    if (gNet_mode != eNet_mode_none) {
+        the_message = NetBuildGuaranteedMessage(eNet_message_chunk_type_powerup, 0);
+        the_message->contents.powerup.event = 2;
+        the_message->contents.powerup.player = gLocal_net_ID;
+        the_message->contents.powerup.powerup_index = pPowerup - gPowerup_array;
+        NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, the_message, NULL);
+    }
+    gProgram_state.current_car.powerups[pPowerup - gPowerup_array] = 0;
+    if (pPowerup->initial_value == 0) {
+        QueueIconComing(pPowerup, gPickedup_powerups, &gNumber_of_icons);
+    }
+    pPowerup->got_time = 0;
+}
+
+inline void C2_HOOK_FASTCALL LosePowerup(tPowerup* pPowerup) {
+
+    LosePowerupX(pPowerup, 1);
+}
 
 // LoseKeyboardPowerupN
 
-// KeyboardPowerupFinished
+// FUNCTION: CARMA2_HW 0x004db730
+// FUNCTION: CARMA2_SW 0x004d7c30
+// FUNCTION: CARMA2_CHEAT 0x004e12f0
+inline void C2_HOOK_FASTCALL KeyboardPowerupFinished(tPowerup* pPowerup, int pSelect_new) {
+    int i;
 
-// LoseAllSimilarPowerups
+    if (pPowerup->initial_value < 0 || gINT_006a0a6c) {
+        LosePowerup(pPowerup);
+    }
+    gINT_006a0a5c = 1;
+    if (pSelect_new) {
+        gInventory[gInventory_selected] = -1;
+        gInventory_selected = -1;
+        for (i = 0; i < (int)REC2_ASIZE(gInventory); i++) {
+            if (gInventory[i] >= 0) {
+                gInventory_selected = i;
+                break;
+            }
+        }
+    }
+}
 
-// ExcludedPowerup
+inline void C2_HOOK_FASTCALL LoseAllSimilarPowerups(tPowerup* pPowerup) {
+    int i;
+    tPowerup* the_powerup;
+
+    for (i = 0; i < gNumber_of_powerups; i++) {
+        the_powerup = &gPowerup_array[i];
+        if (the_powerup != pPowerup && the_powerup->got_time != 0 && (the_powerup->group_inclusion & pPowerup->group_inclusion)) {
+            LosePowerup(the_powerup);
+        }
+    }
+}
+
+inline int C2_HOOK_FASTCALL ExcludedPowerup(int pIndex, tRace_list_spec* pRace_spec) {
+    int i;
+    tPowerup* the_powerup;
+
+    the_powerup = &gPowerup_array[pIndex];
+    if (GetPedCount() < 1 && (the_powerup->net_type & 0x40)) {
+        return 1;
+    }
+    if (gNet_mode != eNet_mode_none && (the_powerup->net_type & eNet_powerup_inappropriate)) {
+        return 1;
+    }
+    if (gNet_mode == eNet_mode_none && pIndex == 97) {
+        return 1;
+    }
+    if (!IsItOkayToFireHorribleBallsOfNastyNapalmDeathAtPerfectlyInnocentPassersByAndByInnocentIDoMeanInTheBiblicalSense() && pIndex == 91) {
+        return 1;
+    }
+    if (!IsItReallyOKThatWeDontMakeAnyEffortToProtectAnySadFuckersOutThereThatDontWishToSeeInnocentPeopleBlownToBitsByHighExplosiveMinesAndShells() && (pIndex == 52 || pIndex == 96)) {
+        return 1;
+    }
+    if (GetHowMuchBloodAndSnotToSmearAbout() > 0 && (pIndex == 4 || pIndex == 57)) {
+        return 1;
+    }
+    for (i = 0; i < pRace_spec->count_powerup_exclusions; i++) {
+        if (pIndex == pRace_spec->powerup_exclusions[i]) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x004d9150
-// STUB: CARMA2_SW 0x004d5680
+// FUNCTION: CARMA2_HW 0x004d9150
+// FUNCTION: CARMA2_SW 0x004d5680
+// FUNCTION: CARMA2_CHEAT 0x004ded10
 int C2_HOOK_FASTCALL GotPowerupX(tCar_spec* pCar, int pIndex, int pArg3, int pMessage, tU32 pTime) {
-    NOT_IMPLEMENTED();
+    tPowerup* the_powerup;
+    int original_index;
+    int ps_power;
+    tNet_message* the_message;
+
+    if (pIndex >= gNumber_of_powerups || pIndex < 0) {
+        return -1;
+    }
+    the_powerup = &gPowerup_array[pIndex];
+    if (the_powerup->type == ePowerup_dummy) {
+        return -1;
+    }
+    if (ExcludedPowerup(pIndex, gCurrent_race.race_spec)) {
+        pIndex = 0;
+        the_powerup = &gPowerup_array[0];
+    }
+    the_powerup->current_value = -1;
+    LoseAllSimilarPowerups(the_powerup);
+    if (gNet_mode != eNet_mode_none && the_powerup->got_proc == GotTimeOrPower) {
+        ps_power = 1;
+    } else {
+        ps_power = 0;
+    }
+    original_index = pIndex;
+    the_powerup->car = pCar;
+    if (the_powerup->got_proc != NULL) {
+        pIndex = the_powerup->got_proc(the_powerup, pCar);
+    }
+    if (pIndex < 0) {
+        return -1;
+    }
+    the_powerup = &gPowerup_array[pIndex];
+    if (the_powerup->message[0] != '\0' && pMessage && the_powerup->initial_value == 0 && !ps_power) {
+        DoPowerupTextHeadup(the_powerup, pMessage == 2);
+    }
+    if ((the_powerup->net_type & 0x80) && gProgram_state.current_car.powerups[pIndex] == 0) {
+        PipeSinglePowerupGot(the_powerup, pCar);
+    }
+    switch (the_powerup->type) {
+    case ePowerup_instantaneous:
+        break;
+    case ePowerup_timed:
+        the_powerup->got_time = GetTotalTime();
+        if (!pArg3 && gNet_mode != eNet_mode_none) {
+            the_powerup->lose_time = the_powerup->got_time + pTime;
+        } else {
+            the_powerup->lose_time = the_powerup->got_time + the_powerup->duration;
+        }
+        gProgram_state.current_car.powerups[pIndex] = the_powerup->lose_time;
+        break;
+    case ePowerup_whole_race:
+        the_powerup->got_time = GetTotalTime();
+        gProgram_state.current_car.powerups[pIndex] = -1;
+        break;
+    default:
+        break;
+    }
+    if (the_powerup->prat_cam_event >= 0) {
+        PratcamEvent(the_powerup->prat_cam_event);
+    }
+    if (gNet_mode != eNet_mode_none && pArg3 && original_index == pIndex && !ps_power && the_powerup->got_proc != RepulseOpponents) {
+        the_message = NetBuildGuaranteedMessage(eNet_message_chunk_type_powerup, 0);
+        the_message->contents.powerup.event = 0;
+        the_message->contents.powerup.player = gLocal_net_ID;
+        the_message->contents.powerup.powerup_index = pIndex;
+        if (the_powerup->type == ePowerup_timed) {
+            the_message->contents.powerup.time_left = the_powerup->duration;
+        } else {
+            the_message->contents.powerup.time_left = 0;
+        }
+        NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, the_message, NULL);
+    }
+    if (the_powerup->type != ePowerup_instantaneous && the_powerup->icon != NULL && the_powerup->initial_value == 0) {
+        QueueIconGoing(the_powerup, gPickedup_powerups, &gNumber_of_icons, REC2_ASIZE(gPickedup_powerups));
+    }
+    return pIndex;
 }
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
 #endif
 
-// GotPowerupXX
+inline int C2_HOOK_FASTCALL GotPowerupXX(tCar_spec* pCar, int pIndex, int pMessage) {
+    int tell_net_players;
+
+    if (gNet_mode != eNet_mode_none && pCar != NULL && pCar->driver == eDriver_local_human) {
+        tell_net_players = 1;
+    } else {
+        tell_net_players = 0;
+    }
+    return GotPowerupX(pCar, pIndex, tell_net_players, pMessage, 0);
+}
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x004d8d40
-// STUB: CARMA2_SW 0x004d5270
-// STUB: CARMA2_CHEAT 0x004de900
+// FUNCTION: CARMA2_HW 0x004d8d40
+// FUNCTION: CARMA2_SW 0x004d5270
+// FUNCTION: CARMA2_CHEAT 0x004de900
 void C2_HOOK_FASTCALL GotPowerupEarwig(tCar_spec* pCar, int pIndex, int pMessage, int pSelect_inventory) {
-    NOT_IMPLEMENTED();
+    tPowerup* the_powerup;
+    int slot;
+    int i;
+
+    slot = -1;
+    if (pIndex < gNumber_of_powerups) {
+        the_powerup = &gPowerup_array[pIndex];
+        if (0 != the_powerup->initial_value) {
+            if (ExcludedPowerup(pIndex, gCurrent_race.race_spec)) {
+                GotPowerupXX(pCar, 0, pMessage);
+            } else {
+            if (pMessage) {
+                DoPowerupTextHeadup(the_powerup, 2 == pMessage);
+            }
+            for (i = 0; i < (int)REC2_ASIZE(gInventory); i++) {
+                if (pIndex == gInventory[i]) {
+                    slot = i;
+                    break;
+                }
+            }
+            if (0 > slot) {
+                for (i = 0; i < (int)REC2_ASIZE(gInventory); i++) {
+                    if (gInventory[i] < 0) {
+                        the_powerup->value = 0;
+                        slot = i;
+                        break;
+                    }
+                }
+            }
+            if (slot >= 0) {
+                if (slot != gInventory_selected && gInventory_selected >= 0) {
+                    KeyboardPowerupFinished(&gPowerup_array[gInventory[gInventory_selected]], 0);
+                }
+                if (pSelect_inventory || 0 > gInventory_selected) {
+                    gInventory_selected = slot;
+                }
+                the_powerup->value += the_powerup->initial_value;
+                gInventory[slot] = pIndex;
+            }
+            }
+        } else {
+            GotPowerupXX(pCar, pIndex, pMessage);
+        }
+    }
 }
 
 #ifdef REC2_MATCHING
@@ -795,9 +1061,51 @@ void C2_HOOK_FASTCALL ToggleInventory(void) {
     }
 }
 
-// RightInventory
+// FUNCTION: CARMA2_HW 0x004daa00
+// FUNCTION: CARMA2_SW 0x004d6ed0
+// FUNCTION: CARMA2_CHEAT 0x004e05c0
+void C2_HOOK_FASTCALL RightInventory(void) {
+    int i;
 
-// LeftInventory
+    gInventory_timeout = GetTotalTime() + 3000;
+    gInventory_cycling = 1;
+    if (gInventory_selected >= 0) {
+        i = gInventory_selected;
+        do {
+            i--;
+            if (i < 0) {
+                i = (int)REC2_ASIZE(gInventory) - 1;
+            }
+            if (gInventory[i] >= 0) {
+                KeyboardPowerupFinished(&gPowerup_array[gInventory[gInventory_selected]], 0);
+                gInventory_selected = i;
+            }
+        } while (i != gInventory_selected);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004dab80
+// FUNCTION: CARMA2_SW 0x004d7050
+// FUNCTION: CARMA2_CHEAT 0x004e0740
+void C2_HOOK_FASTCALL LeftInventory(void) {
+    int i;
+
+    gInventory_timeout = GetTotalTime() + 3000;
+    gInventory_cycling = 1;
+    if (gInventory_selected >= 0) {
+        i = gInventory_selected;
+        do {
+            i++;
+            if (i >= (int)REC2_ASIZE(gInventory)) {
+                i = 0;
+            }
+            if (gInventory[i] >= 0) {
+                KeyboardPowerupFinished(&gPowerup_array[gInventory[gInventory_selected]], 0);
+                gInventory_selected = i;
+            }
+        } while (i != gInventory_selected);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004dad00
 // FUNCTION: CARMA2_SW 0x004d71d0
@@ -2195,11 +2503,19 @@ void C2_HOOK_FASTCALL SendCurrentPowerups(void) {
     }
 }
 
-// STUB: CARMA2_HW 0x004def00
-// STUB: CARMA2_SW 0x004db400
-// STUB: CARMA2_CHEAT 0x004e4ac0
+// FUNCTION: CARMA2_HW 0x004def00
+// FUNCTION: CARMA2_SW 0x004db400
+// FUNCTION: CARMA2_CHEAT 0x004e4ac0
 void C2_HOOK_FASTCALL LoseAllLocalPowerups(tCar_spec* pCar) {
-    NOT_IMPLEMENTED();
+    int i;
+
+    if (pCar != NULL && pCar->driver == eDriver_local_human) {
+        for (i = 0; i < gNumber_of_powerups; i++) {
+            if (pCar->powerups[i] != 0 && !(gPowerup_array[i].net_type & eNet_powerup_global)) {
+                LosePowerup(&gPowerup_array[i]);
+            }
+        }
+    }
 }
 
 // LoseDodgyPowerups
