@@ -69,6 +69,11 @@ int gNum_dust_tables;
 // GLOBAL: CARMA2_CHEAT 0x006b20f4
 int gSpark_flags;
 
+// GLOBAL: CARMA2_HW 0x006aa578
+// GLOBAL: CARMA2_SW 0x006a3fc4
+// GLOBAL: CARMA2_CHEAT 0x006b20f0
+int gNext_spark;
+
 // GLOBAL: CARMA2_HW 0x006aa5ac
 // GLOBAL: CARMA2_SW 0x006a3ffc
 // GLOBAL: CARMA2_CHEAT 0x006b2124
@@ -213,6 +218,11 @@ tSplash gSplash[32] = { 0 };
 // GLOBAL: CARMA2_CHEAT 0x006b20e8
 int gSplash_flags;
 
+// GLOBAL: CARMA2_HW 0x006a82ac
+// GLOBAL: CARMA2_SW 0x006a230c
+// GLOBAL: CARMA2_CHEAT 0x006afe24
+int gNext_splash;
+
 // GLOBAL: CARMA2_HW 0x006a9130
 // GLOBAL: CARMA2_SW 0x006a2b80
 // GLOBAL: CARMA2_CHEAT 0x006b0ca8
@@ -329,7 +339,21 @@ void C2_HOOK_FASTCALL SetLineModelCols(tU8 pCol) {
 
 // RenderSparks
 
-// CreateSingleSpark
+inline void C2_HOOK_FASTCALL CreateSingleSpark(tCar_spec* pCar, const br_vector3* pPos, const br_vector3* pVelocity) {
+
+    BrVector3Copy(&gSparks[gNext_spark].pos, pPos);
+    BrVector3SetFloat(&gSparks[gNext_spark].normal, 0.0f, 0.0f, 0.0f);
+    BrVector3Copy(&gSparks[gNext_spark].v, pVelocity);
+    gSparks[gNext_spark].count = 500;
+    gSparks[gNext_spark].car = pCar;
+    gSpark_flags |= 1 << gNext_spark;
+    gSparks[gNext_spark].time_sync = 1;
+    gSparks[gNext_spark].colour = 1;
+    gNext_spark += 1;
+    if (gNext_spark >= (int)REC2_ASIZE(gSparks)) {
+        gNext_spark = 0;
+    }
+}
 
 // CreateSparks
 
@@ -1476,7 +1500,71 @@ void C2_HOOK_FASTCALL ConditionalSmokeColumn(tCar_spec* pCar, int pFire_point, i
     CreateSmokeColumn(pCar, pColour, pCar->fire_vertex[pFire_point], 10000000);
 }
 
-// SingleSplash
+// FUNCTION: CARMA2_HW 0x004fd530
+// FUNCTION: CARMA2_SW 0x004f8a90
+// FUNCTION: CARMA2_CHEAT 0x005031d0
+void C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_matrix34* pMatrix, const br_vector3* pVelocity, const br_vector3* pNormal_velocity, const br_vector3* pOmega, const br_vector3* pPoint, const br_vector3* pNormal, tU32 pTime) {
+    br_vector3 tv;
+    br_vector3 vel;
+    br_scalar speed;
+    br_scalar size;
+    br_scalar ts;
+    tCar_spec* car;
+
+    BrMatrix34ApplyP(&gSplash[gNext_splash].actor->t.t.translate.t, pPoint, pMatrix);
+    tv.v[0] = pOmega->v[1] * pPoint->v[2] - pOmega->v[2] * pPoint->v[1];
+    tv.v[1] = pOmega->v[2] * pPoint->v[0] - pOmega->v[0] * pPoint->v[2];
+    tv.v[2] = pOmega->v[0] * pPoint->v[1] - pOmega->v[1] * pPoint->v[0];
+    BrMatrix34ApplyV(&vel, &tv, pMatrix);
+    tv.v[0] = (br_scalar)(pVelocity->v[0] *  WORLD_SCALE);
+    tv.v[1] = (br_scalar)(pVelocity->v[1] *  WORLD_SCALE);
+    tv.v[2] = (br_scalar)(pVelocity->v[2] *  WORLD_SCALE);
+    BrVector3Accumulate(&vel, &tv);
+    speed = BrVector3Length(&vel);
+    size = (br_scalar)((fabs(BrVector3Dot(pNormal, &vel)) * 5.0f + speed) / 150.0f);
+    size += 99.0f / 300.0f / WORLD_SCALE;
+    if (size > 0.5f) {
+        size = 0.5f;
+    }
+    if (0.0f > BrVector3Dot(pNormal_velocity, pPoint)) {
+        size = size / 2.0f;
+    }
+    gSplash[gNext_splash].size = SRandomBetween(size / 2.0f, size);
+    if (!(gSplash_flags & (1 << gNext_splash))) {
+        BrActorAdd(gNon_track_actor, gSplash[gNext_splash].actor);
+    }
+    gSplash_flags |= 1 << gNext_splash;
+    gSplash[gNext_splash].just_done = 1;
+    if (pObject != NULL && !gAction_replay_mode) {
+        car = pObject->owner;
+        if (car == NULL || pObject->flags_0x238 != 1) {
+            car = NULL;
+        }
+        if (car != NULL) {
+            if (pTime * 0.003f > SRandomBetween(0.0f, 1.0f)) {
+                BrVector3InvScale(&vel, &vel, WORLD_SCALE);
+                BrVector3Scale(&tv, &vel, -0.1f);
+                ts = (br_scalar)sqrt(speed / 70.0f) * 15.0f;
+                if (ts > 15.0f) {
+                    ts = 15.0f;
+                }
+                tv.v[1] = (br_scalar)(tv.v[1] + SRandomBetween(5.0f, ts) / WORLD_SCALE_D);
+                BrMatrix34TApplyV(&vel, &tv, &pObject->actor->t.t.mat);
+                BrVector3Cross(&tv, &vel, &pObject->water_normal);
+                if (BrVector3Dot(pPoint, &tv) > 0.0f) {
+                    BrVector3Accumulate(&vel, &tv);
+                } else {
+                    BrVector3Sub(&vel, &vel, &tv);
+                }
+                CreateSingleSpark(car, pPoint, &vel);
+            }
+        }
+    }
+    gNext_splash += 1;
+    if (gNext_splash >= (int)REC2_ASIZE(gSplash)) {
+        gNext_splash = 0;
+    }
+}
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
