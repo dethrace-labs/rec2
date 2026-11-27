@@ -578,6 +578,7 @@ void C2_HOOK_FASTCALL CreateJointTorque(tPhysics_object* pObject, tPhysics_objec
 
 // FUNCTION: CARMA2_HW 0x004c1840
 // FUNCTION: CARMA2_SW 0x004bdf70
+// FUNCTION: CARMA2_CHEAT 0x004c7360
 void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
     br_scalar ts = BrVector3LengthSquared(&pObject->omega) * REC2_SQR(0.04f);
     if (ts > (br_scalar)REC2_SQR(1.57)) {
@@ -725,6 +726,7 @@ void C2_HOOK_FASTCALL SetHierarchyDoingNothingFlag(tPhysics_object* pObject, int
 
 // FUNCTION: CARMA2_HW 0x004bae80
 // FUNCTION: CARMA2_SW 0x004b75a0
+// FUNCTION: CARMA2_CHEAT 0x004c09b0
 void C2_HOOK_FASTCALL SetGroup(tPhysics_object* pObject, int pGroup) {
     tPhysics_object* child;
 
@@ -1079,6 +1081,7 @@ void C2_HOOK_FASTCALL PositionChildren(tPhysics_object* pCollision_info) {
 
 // FUNCTION: CARMA2_HW 0x004c2c30
 // FUNCTION: CARMA2_SW 0x004bf360
+// FUNCTION: CARMA2_CHEAT 0x004c8750
 void C2_HOOK_FASTCALL ApplyTorque(tPhysics_object* pObject, const br_vector3* pTorque) {
     br_vector3 torque;
     br_vector3 inertia;
@@ -1284,6 +1287,8 @@ void C2_HOOK_FASTCALL RqBackSub(const br_scalar* pR, const br_scalar* pQ, const 
 }
 
 // FUNCTION: CARMA2_HW 0x004c5c70
+// FUNCTION: CARMA2_SW 0x004c23a0
+// FUNCTION: CARMA2_CHEAT 0x004cb790
 void* C2_HOOK_FASTCALL GetPhysicsScratchPointer(int pSize) {
 
     if ((tU8*)gPhysics_scratch_ptr + pSize > (tU8*)gPhysics_other_buffer + gPhysics_other_buffer_capacity) {
@@ -1293,6 +1298,8 @@ void* C2_HOOK_FASTCALL GetPhysicsScratchPointer(int pSize) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c5cb0
+// FUNCTION: CARMA2_SW 0x004c23e0
+// FUNCTION: CARMA2_CHEAT 0x004cb7d0
 void C2_HOOK_FASTCALL IncreasePhysicsScratchPointer(int pSize) {
 
     if ((tU8*)gPhysics_scratch_ptr + pSize > (tU8*)gPhysics_other_buffer + gPhysics_other_buffer_capacity) {
