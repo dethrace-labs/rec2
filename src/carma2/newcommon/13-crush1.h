@@ -70,7 +70,7 @@ extern intptr_t C2_HOOK_CDECL LinkCarCrushData(br_actor* pActor, void* pData);
 
 extern intptr_t C2_HOOK_CDECL AccumulateSquashVertices(br_actor* pActor, void* pData);
 
-// InitModelMasterCrushData
+extern void C2_HOOK_FASTCALL InitModelMasterCrushData(tCar_spec* pCar_spec);
 
 extern void C2_HOOK_FASTCALL InitNetworkShapesStuff(tCar_crush_spec* pCar_crush);
 
@@ -86,13 +86,13 @@ extern intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseWithTranslation(br_actor* pAc
 
 // SoftnessOfNearestPoint
 
-// SetUpShapeLimitingStuff
+extern void C2_HOOK_FASTCALL SetUpShapeLimitingStuff(tCar_crush_spec* pCar_crush, tCar_spec* pCar_spec);
 
-// CopyShapePolyhedron
+extern void C2_HOOK_FASTCALL CopyShapePolyhedron(tCollision_shape_polyhedron* pDest, const tCollision_shape_polyhedron* pSource);
 
-// InitShapeStuff
+extern void C2_HOOK_FASTCALL InitShapeStuff(tCar_crush_spec* pCar_crush, tPhysics_object* pCollision_info, tCar_spec* pCar_spec);
 
-// InitPhysMasterCrushData
+extern void C2_HOOK_FASTCALL InitPhysMasterCrushData(tCar_spec* pCar_spec);
 
 // CheckHingePointOrder
 
@@ -104,15 +104,15 @@ extern intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseWithTranslation(br_actor* pAc
 
 // SetUpSemiDetachJointStuff
 
-// InitPhysCrushDataCB
+extern intptr_t C2_HOOK_CDECL InitPhysCrushDataCB(br_actor* pActor, void* pContext);
 
-// InitPhysCrushData
+extern void C2_HOOK_FASTCALL InitPhysCrushData(tCar_spec* pCar_spec);
 
 // CalculateReferencePoints
 
 extern intptr_t C2_HOOK_CDECL InitModelCrushDataCB(br_actor* pActor, void* pData);
 
-// InitModelCrushData
+extern void C2_HOOK_FASTCALL InitModelCrushData(tCar_spec* pCar_spec);
 
 // PointEdgeDistSq
 
@@ -122,11 +122,11 @@ extern void C2_HOOK_FASTCALL InitModelVertexData(tModel_detail_vertex_data* pVer
 
 extern intptr_t C2_HOOK_CDECL InitVertexDataCB(br_actor* pActor, void* pData);
 
-// InitVertexData
+extern void C2_HOOK_FASTCALL InitVertexData(tCar_spec* pCar_spec);
 
-// CheckWheelPositions
+extern void C2_HOOK_FASTCALL CheckWheelPositions(tCar_spec* pCar_spec);
 
-// InitPhysModCrushData
+extern void C2_HOOK_FASTCALL InitPhysModCrushData(tCar_spec* pCar_spec);
 
 extern void C2_HOOK_FASTCALL DisposeMasterCrushData(tCar_crush_spec* pCar_crush, tCar_spec* pCar);
 
