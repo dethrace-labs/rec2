@@ -39,9 +39,9 @@ extern void C2_HOOK_FASTCALL SetCharacterMoveAR(tPed_character_instance* pCharac
 
 // SetPedStartRun
 
-// PedApplyPedMove
+extern void C2_HOOK_FASTCALL PedApplyPedMove(tPedestrian* pPed, int pMove_action, float pSpeed, int pArg5, int pArg4, int pFrame, br_vector3* pPos, int pAction, br_matrix34* pMat);
 
-// PedUndoPedMove
+extern void C2_HOOK_FASTCALL PedUndoPedMove(tPedestrian* pPed, int pMove_action, float pSpeed, int pArg5, int pArg4, int pFrame, br_vector3* pPos, int pAction, br_matrix34* pMat);
 
 extern void C2_HOOK_FASTCALL PedApplyPedFPChange(tPedestrian* pPed, float pSpeed);
 
