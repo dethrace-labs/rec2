@@ -10,6 +10,9 @@
 #define GUARD_64_MOVIE_H
 
 #include "c2_hooks.h"
+#include "rec2_types.h"
+
+#include <ImageCompression.h>
 
 extern int gNext_replay_record_state;
 extern int gShow_status_message;
@@ -22,15 +25,15 @@ extern char gQuick_time_temp_path[256];
 extern char gQuick_time_movie_path_stub[256];
 extern char gQuick_time_banner_texture_name[256];
 
-// Create555BELookupTable
+extern void C2_HOOK_FASTCALL Create555BELookupTable(void);
 
-// Convert565BrPixelmapTo555BigEndianPixmap
+extern void C2_HOOK_FASTCALL Convert565BrPixelmapTo555BigEndianPixmap(PixMapHandle pDest, br_pixelmap* pSrc);
 
 // SwapPixelmapBytePairs
 
-// WriteBannerFrame
+extern int C2_HOOK_FASTCALL WriteBannerFrame(void);
 
-// Allocate555BackScreen
+extern tU16* C2_HOOK_FASTCALL Allocate555BackScreen(void);
 
 // GetCompressorQualityFromOptions
 
@@ -38,13 +41,13 @@ extern char gQuick_time_banner_texture_name[256];
 
 // InitMovie
 
-// CreateMovie
+extern OSErr C2_HOOK_FASTCALL CreateMovie(void);
 
 // MovieStartNewMovie
 
-// MovieStopRecordingAndSave
+extern int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void);
 
-// FreeOffQTshite
+extern void C2_HOOK_FASTCALL FreeOffQTshite(void);
 
 extern void C2_HOOK_CDECL InitQuickTimeStuff(void);
 
@@ -54,7 +57,7 @@ extern void C2_HOOK_FASTCALL SetQuickTimeDefaults(void);
 
 extern void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void);
 
-// GenerateOneMovieFrame
+extern OSErr C2_HOOK_FASTCALL GenerateOneMovieFrame(br_pixelmap* pScreen);
 
 // MovieRecordFrame
 

@@ -9,13 +9,23 @@
 #include "64-movie.h"
 
 #include "16-graphics1.h"
+#include "18-graphics2.h"
 #include "25-grafdata.h"
 #include "41-utility.h"
+#include "52-errors.h"
+#include "63-loading3.h"
 #include "globvars.h"
 #include "platform.h"
 
-#include <QTML.h>
+#include <FileTypesAndCreators.h>
+#include <FixMath.h>
+#include <GXMath.h>
+#include <ImageCompression.h>
+#include <MacMemory.h>
 #include <Movies.h>
+#include <QTML.h>
+#include <Script.h>
+#include <TextUtils.h>
 
 #include "c2_string.h"
 
@@ -68,15 +78,213 @@ char gDefault_quick_time_quality[32] = "normal";
 // GLOBAL: CARMA2_CHEAT 0x00666508
 char gDefault_quick_time_compressor[32] = "animation";
 
-// Create555BELookupTable
+// GLOBAL: CARMA2_HW 0x006a0af0
+// GLOBAL: CARMA2_SW 0x0069ab48
+// GLOBAL: CARMA2_CHEAT 0x006a8668
+short gQuicktime_movie_file;
 
-// Convert565BrPixelmapTo555BigEndianPixmap
+// GLOBAL: CARMA2_HW 0x006a0af4
+// GLOBAL: CARMA2_SW 0x0069ab4c
+// GLOBAL: CARMA2_CHEAT 0x006a866c
+ImageSequence gQuicktime_image_sequence;
+
+// GLOBAL: CARMA2_HW 0x006a0af8
+// GLOBAL: CARMA2_SW 0x0069ab50
+// GLOBAL: CARMA2_CHEAT 0x006a8670
+long gQuicktime_max_compressed_size;
+
+// GLOBAL: CARMA2_HW 0x006a0afc
+// GLOBAL: CARMA2_SW 0x0069ab54
+// GLOBAL: CARMA2_CHEAT 0x006a8674
+Media gQuicktime_media;
+
+// GLOBAL: CARMA2_HW 0x006a0c10
+// GLOBAL: CARMA2_SW 0x0069ac68
+// GLOBAL: CARMA2_CHEAT 0x006a8788
+Track gQuicktime_track;
+
+// GLOBAL: CARMA2_HW 0x006a0c18
+// GLOBAL: CARMA2_SW 0x0069ac70
+// GLOBAL: CARMA2_CHEAT 0x006a8790
+Rect gQuicktime_rect;
+
+// GLOBAL: CARMA2_HW 0x006a0c2c
+// GLOBAL: CARMA2_SW 0x0069ac84
+// GLOBAL: CARMA2_CHEAT 0x006a87a4
+int gQuicktime_movie_counter;
+
+// GLOBAL: CARMA2_HW 0x006a0c30
+// GLOBAL: CARMA2_SW 0x0069ac88
+// GLOBAL: CARMA2_CHEAT 0x006a87a8
+Movie gQuicktime_movie;
+
+// GLOBAL: CARMA2_HW 0x006a0c34
+// GLOBAL: CARMA2_SW 0x0069ac8c
+// GLOBAL: CARMA2_CHEAT 0x006a87ac
+PixMapHandle gQuicktime_frame_pixmap_handle;
+
+// GLOBAL: CARMA2_HW 0x006a0c38
+// GLOBAL: CARMA2_SW 0x0069ac90
+// GLOBAL: CARMA2_CHEAT 0x006a87b0
+Ptr gQuicktime_compressed_frame;
+
+// GLOBAL: CARMA2_HW 0x006a0c3c
+// GLOBAL: CARMA2_SW 0x0069ac94
+// GLOBAL: CARMA2_CHEAT 0x006a87b4
+Handle gQuicktime_compressed_frame_handle;
+
+// GLOBAL: CARMA2_HW 0x006a0c40
+// GLOBAL: CARMA2_SW 0x0069ac98
+// GLOBAL: CARMA2_CHEAT 0x006a87b8
+ImageDescriptionHandle gQuicktime_image_description_handle;
+
+// GLOBAL: CARMA2_HW 0x006a0c44
+// GLOBAL: CARMA2_SW 0x0069ac9c
+// GLOBAL: CARMA2_CHEAT 0x006a87bc
+tU16* gQuicktime_555_back_screen;
+
+// GLOBAL: CARMA2_HW 0x006a0c48
+// GLOBAL: CARMA2_SW 0x0069aca0
+// GLOBAL: CARMA2_CHEAT 0x006a87c0
+tU16* gQuicktime_555_lookup;
+
+// GLOBAL: CARMA2_HW 0x006a0c4c
+// GLOBAL: CARMA2_SW 0x0069aca4
+// GLOBAL: CARMA2_CHEAT 0x006a87c4
+CodecType gQuicktime_codec_type;
+
+// GLOBAL: CARMA2_HW 0x0065ef2c
+// GLOBAL: CARMA2_SW 0x0065988c
+// GLOBAL: CARMA2_CHEAT 0x00666704
+int gQuicktime_key_frame = 1;
+
+// GLOBAL: CARMA2_HW 0x0065ef34
+// GLOBAL: CARMA2_SW 0x00659894
+// GLOBAL: CARMA2_CHEAT 0x0066670c
+short gQuicktime_depth = 16;
+
+inline void C2_HOOK_FASTCALL Create555BELookupTable(void) {
+    int i;
+    tU16 value;
+    br_uint_32 colour;
+
+    gQuicktime_555_lookup = BrMemAllocate(0x10000 * sizeof(tU16), kMem_misc);
+    if (gNbPixelBits == 16) {
+        for (i = 0; i < 0x10000; i++) {
+            value = ((i >> 1) & 0x7fe0) | (i & 0x1f);
+            gQuicktime_555_lookup[i] = (tU16)((value >> 8) | (value << 8));
+        }
+    } else {
+        for (i = 0; i < 256; i++) {
+            colour = ((br_uint_32*)gRender_palette->pixels)[i];
+            value = (((((colour >> 19) & 0x1f) << 5) | ((colour >> 11) & 0x1f)) << 5) | ((colour >> 3) & 0x1f);
+            gQuicktime_555_lookup[i] = (tU16)((value >> 8) | (value << 8));
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004e1400
+// FUNCTION: CARMA2_SW 0x004dd720
+// FUNCTION: CARMA2_CHEAT 0x004e6fa0
+void C2_HOOK_FASTCALL Convert565BrPixelmapTo555BigEndianPixmap(PixMapHandle pDest, br_pixelmap* pSrc) {
+    int width;
+    int height;
+    int step;
+    int first_line;
+    int x;
+    int y;
+
+    if (gQuicktime_555_lookup == NULL) {
+        Create555BELookupTable();
+    }
+#ifdef REC2_HW
+    PossibleLock(1);
+#endif
+    width = GetMovieWidth();
+    height = GetMovieHeight();
+    step = 2;
+    if (gNbPixelBits == 16) {
+        if (pSrc->height == 200) {
+            height = 200;
+            first_line = 20;
+            step = 1;
+        } else {
+            first_line = 0;
+        }
+        for (y = 0; y < height; y++) {
+            for (x = 0; x < width; x++) {
+                gQuicktime_555_back_screen[(first_line + y) * width + x] = gQuicktime_555_lookup[((tU16*)pSrc->pixels)[step * y * pSrc->row_bytes / 2 + x * step]];
+            }
+        }
+    } else {
+        for (y = 0; y < 200; y++) {
+            for (x = 0; x < width; x++) {
+                gQuicktime_555_back_screen[y * width + x] = gQuicktime_555_lookup[((tU8*)pSrc->pixels)[y * pSrc->row_bytes + x]];
+            }
+        }
+    }
+#ifdef REC2_HW
+    PossibleUnlock(1);
+#endif
+}
 
 // SwapPixelmapBytePairs
 
-// WriteBannerFrame
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// Allocate555BackScreen
+// FUNCTION: CARMA2_HW 0x004e1250
+// FUNCTION: CARMA2_SW 0x004dd570
+// FUNCTION: CARMA2_CHEAT 0x004e6e10
+int C2_HOOK_FASTCALL WriteBannerFrame(void) {
+    br_pixelmap* banner;
+    int i;
+    long data_size;
+    unsigned char similarity;
+    OSErr err;
+
+    if (gQuick_time_banner_number != 0) {
+        banner = LoadPixelmap(gQuick_time_banner_texture_name);
+        if (banner != NULL) {
+            if (banner->width != 320 || banner->height != 200) {
+                BrFailure("Banner picture must be 320x200");
+            }
+            (*gQuicktime_frame_pixmap_handle)->baseAddr = (Ptr)gQuicktime_555_back_screen;
+            (*gQuicktime_frame_pixmap_handle)->rowBytes = GetMovieWidth() * 2;
+            memset(gQuicktime_555_back_screen, 0, GetMovieWidth() * GetMovieHeight() * 2);
+            dr_dprintf("Converting banner. w=%d, h=%d, type=%d", banner->width, banner->height, banner->type);
+            Convert565BrPixelmapTo555BigEndianPixmap(gQuicktime_frame_pixmap_handle, banner);
+            for (i = 0; i < 18; i++) {
+                err = CompressSequenceFrame(gQuicktime_image_sequence, gQuicktime_frame_pixmap_handle, &gQuicktime_rect,
+                    codecFlagUpdatePreviousComp | codecFlagForceKeyFrame, *gQuicktime_compressed_frame_handle, &data_size, &similarity, NULL);
+                if (err != noErr) {
+                    return err;
+                }
+                (*gQuicktime_image_description_handle)->dataSize = data_size;
+                err = AddMediaSample(gQuicktime_media, gQuicktime_compressed_frame_handle, 0, (*gQuicktime_image_description_handle)->dataSize, 55,
+                    (SampleDescriptionHandle)gQuicktime_image_description_handle, 1, 0, NULL);
+                if (err != noErr) {
+                    return err;
+                }
+            }
+        }
+    }
+    gQuicktime_key_frame = 1;
+    return noErr;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+inline tU16* C2_HOOK_FASTCALL Allocate555BackScreen(void) {
+
+    if (gQuicktime_555_back_screen == NULL) {
+        gQuicktime_555_back_screen = BrMemAllocate(GetMovieWidth() * GetMovieHeight() * sizeof(tU16), kMem_misc);
+    }
+    return gQuicktime_555_back_screen;
+}
 
 // GetCompressorQualityFromOptions
 
@@ -84,13 +292,125 @@ char gDefault_quick_time_compressor[32] = "animation";
 
 // InitMovie
 
-// CreateMovie
+// FUNCTION: CARMA2_HW 0x004e0fe0
+// FUNCTION: CARMA2_SW 0x004dd300
+// FUNCTION: CARMA2_CHEAT 0x004e6ba0
+OSErr C2_HOOK_FASTCALL CreateMovie(void) {
+    OSErr err;
+
+    gQuicktime_track = NewMovieTrack(gQuicktime_movie, FixRatio(GetMovieWidth() * 2, 1), FixRatio(GetMovieHeight() * 2, 1), kFullVolume);
+    err = GetMoviesError();
+    if (err != noErr) {
+        return err;
+    }
+    gQuicktime_media = NewTrackMedia(gQuicktime_track, VideoMediaType, 1000, NULL, 0);
+    err = GetMoviesError();
+    if (err != noErr) {
+        return err;
+    }
+    err = BeginMediaEdits(gQuicktime_media);
+    if (err != noErr) {
+        return err;
+    }
+    gQuicktime_frame_pixmap_handle = (PixMapHandle)NewHandle(sizeof(PixMap));
+    err = MemError();
+    if (err != noErr) {
+        return err;
+    }
+    memset(*gQuicktime_frame_pixmap_handle, 0, sizeof(PixMap));
+    (*gQuicktime_frame_pixmap_handle)->pixelType = 16;
+    (*gQuicktime_frame_pixmap_handle)->pixelSize = 16;
+    (*gQuicktime_frame_pixmap_handle)->cmpCount = 3;
+    (*gQuicktime_frame_pixmap_handle)->cmpSize = 5;
+    err = GetMaxCompressionSize(gQuicktime_frame_pixmap_handle, &gQuicktime_rect, 0, codecNormalQuality, gQuicktime_codec_type, bestFidelityCodec, &gQuicktime_max_compressed_size);
+    if (err != noErr) {
+        return err;
+    }
+    gQuicktime_compressed_frame_handle = NewHandle(gQuicktime_max_compressed_size);
+    err = MemError();
+    if (err != noErr) {
+        return err;
+    }
+    MoveHHi(gQuicktime_compressed_frame_handle);
+    HLock(gQuicktime_compressed_frame_handle);
+    gQuicktime_compressed_frame = *gQuicktime_compressed_frame_handle;
+    gQuicktime_image_description_handle = (ImageDescriptionHandle)NewHandle(4);
+    err = MemError();
+    if (err != noErr) {
+        return err;
+    }
+    if (Allocate555BackScreen() == NULL) {
+        return 1;
+    }
+    err = CompressSequenceBegin(&gQuicktime_image_sequence, gQuicktime_frame_pixmap_handle, NULL, &gQuicktime_rect, &gQuicktime_rect,
+        gQuicktime_depth, gQuicktime_codec_type, bestFidelityCodec, codecNormalQuality, codecNormalQuality, 15, NULL,
+        codecFlagUpdatePreviousComp | codecFlagForceKeyFrame, gQuicktime_image_description_handle);
+    if (err != noErr) {
+        return err;
+    }
+    return WriteBannerFrame();
+}
 
 // MovieStartNewMovie
 
-// MovieStopRecordingAndSave
+// FUNCTION: CARMA2_HW 0x004e1640
+// FUNCTION: CARMA2_SW 0x004dd940
+// FUNCTION: CARMA2_CHEAT 0x004e71e0
+inline void C2_HOOK_FASTCALL FreeOffQTshite(void) {
+    char path[260];
 
-// FreeOffQTshite
+    if (gQuicktime_movie_file != 0) {
+        CloseMovieFile(gQuicktime_movie_file);
+    }
+    DisposeMovie(gQuicktime_movie);
+    PDFileDelete(gQuick_time_temp_path, 1);
+    sprintf(path, "%s.#Res", gQuick_time_temp_path);
+    PDFileDelete(path, 1);
+    if (gQuicktime_frame_pixmap_handle != NULL) {
+        DisposeHandle((Handle)gQuicktime_frame_pixmap_handle);
+        gQuicktime_frame_pixmap_handle = NULL;
+    }
+    if (gQuicktime_image_description_handle != NULL) {
+        DisposeHandle((Handle)gQuicktime_image_description_handle);
+        gQuicktime_image_description_handle = NULL;
+    }
+    if (gQuicktime_compressed_frame_handle != NULL) {
+        DisposeHandle(gQuicktime_compressed_frame_handle);
+        gQuicktime_compressed_frame_handle = NULL;
+    }
+}
+
+inline int C2_HOOK_FASTCALL MovieStopRecordingAndSave(void) {
+    FSSpec fs_spec;
+    TimeValue duration;
+    char path[260];
+
+    if (gNext_replay_record_state == 4) {
+        gNext_replay_record_state = 5;
+        ShowStatusMessage(eMiscString_post_processing, eMiscString_please_wait);
+        TidyMovieARDisplay();
+        WriteBannerFrame();
+        gNext_replay_record_state = 0;
+        CDSequenceEnd(gQuicktime_image_sequence);
+        EndMediaEdits(gQuicktime_media);
+        duration = GetMediaDuration(gQuicktime_media);
+        if (duration != 0) {
+            InsertMediaIntoTrack(gQuicktime_track, 0, 0, duration, IntToFixed(1));
+        }
+        if (gQuicktime_movie_file != 0) {
+            CloseMovieFile(gQuicktime_movie_file);
+        }
+        sprintf(path, "%s%3.3d.MOV", gQuick_time_movie_path_stub, gQuicktime_movie_counter);
+        gQuicktime_movie_counter++;
+        fs_spec.vRefNum = 0;
+        fs_spec.parID = 0;
+        strcpy(fs_spec.name, path);
+        c2pstr(fs_spec.name);
+        FlattenMovieData(gQuicktime_movie, flattenAddMovieToDataFork, &fs_spec, sigMoviePlayer, smSystemScript, createMovieFileDeleteCurFile);
+        FreeOffQTshite();
+    }
+    return 1;
+}
 
 // FUNCTION: CARMA2_HW 0x004e1700
 // FUNCTION: CARMA2_SW 0x004dda00
@@ -135,11 +455,13 @@ void C2_HOOK_FASTCALL SetQuickTimeDefaults(void) {
 
 // MovieRecordButtonPressed
 
-// STUB: CARMA2_HW 0x004e1a20
-// STUB: CARMA2_SW 0x004ddd20
-// STUB: CARMA2_CHEAT 0x004e75b0
+// FUNCTION: CARMA2_HW 0x004e1a20
+// FUNCTION: CARMA2_SW 0x004ddd20
+// FUNCTION: CARMA2_CHEAT 0x004e75b0
 void C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
-    NOT_IMPLEMENTED();
+
+    MovieStopRecordingAndSave();
+    KillStatusMessage();
 }
 
 // FUNCTION: CARMA2_HW 0x004e1c30
@@ -166,7 +488,49 @@ void C2_HOOK_FASTCALL FUN_004e1c60(undefined4 pArg1, undefined4 pArg2, undefined
     /* Unused */
 }
 
-// GenerateOneMovieFrame
+// FUNCTION: CARMA2_HW 0x004e1c70
+// FUNCTION: CARMA2_SW 0x004ddf70
+// FUNCTION: CARMA2_CHEAT 0x004e7800
+OSErr C2_HOOK_FASTCALL GenerateOneMovieFrame(br_pixelmap* pScreen) {
+    CodecFlags flags;
+    long data_size;
+    unsigned char similarity;
+    OSErr err;
+
+    if (gQuicktime_key_frame) {
+        flags = codecFlagUpdatePreviousComp | codecFlagForceKeyFrame;
+        gQuicktime_key_frame = 0;
+    } else {
+        flags = codecFlagUpdatePreviousComp;
+    }
+#ifdef REC2_HW
+    PossibleLock(1);
+#endif
+    (*gQuicktime_frame_pixmap_handle)->baseAddr = (Ptr)gQuicktime_555_back_screen;
+    (*gQuicktime_frame_pixmap_handle)->rowBytes = GetMovieWidth() * 2;
+    Convert565BrPixelmapTo555BigEndianPixmap(gQuicktime_frame_pixmap_handle, pScreen);
+    err = CompressSequenceFrame(gQuicktime_image_sequence, gQuicktime_frame_pixmap_handle, &gQuicktime_rect,
+        flags, *gQuicktime_compressed_frame_handle, &data_size, &similarity, NULL);
+    if (err != noErr) {
+#ifdef REC2_HW
+        PossibleUnlock(1);
+#endif
+        return err;
+    }
+    (*gQuicktime_image_description_handle)->dataSize = data_size;
+    err = AddMediaSample(gQuicktime_media, gQuicktime_compressed_frame_handle, 0, (*gQuicktime_image_description_handle)->dataSize, 55,
+        (SampleDescriptionHandle)gQuicktime_image_description_handle, 1, 0, NULL);
+    if (err != noErr) {
+#ifdef REC2_HW
+        PossibleUnlock(1);
+#endif
+        return err;
+    }
+#ifdef REC2_HW
+    PossibleUnlock(1);
+#endif
+    return noErr;
+}
 
 // MovieRecordFrame
 
