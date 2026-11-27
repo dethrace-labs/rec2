@@ -35,6 +35,16 @@
 // GLOBAL: CARMA2_CHEAT 0x0069a940
 int gINT_00692dc8;
 
+// GLOBAL: CARMA2_HW 0x00692dd0
+// GLOBAL: CARMA2_SW 0x0068ce28
+// GLOBAL: CARMA2_CHEAT 0x0069a948
+br_scalar gPhysics_bounds_max_x;
+
+// GLOBAL: CARMA2_HW 0x00692dd4
+// GLOBAL: CARMA2_SW 0x0068ce2c
+// GLOBAL: CARMA2_CHEAT 0x0069a94c
+br_scalar gPhysics_bounds_min_x;
+
 // GLOBAL: CARMA2_HW 0x006940c0
 // GLOBAL: CARMA2_SW 0x0068e118
 // GLOBAL: CARMA2_CHEAT 0x0069bc38
@@ -653,7 +663,51 @@ void C2_HOOK_FASTCALL TellPhysicsJointsHaveChanged(tPhysics_object* pCollision_i
 
 // GetWorldBoundingBoxForObjects
 
-// GetWorldBoundingBoxForObject
+// FUNCTION: CARMA2_HW 0x004b9ce0
+// FUNCTION: CARMA2_SW 0x004b6400
+// FUNCTION: CARMA2_CHEAT 0x004bf810
+void C2_HOOK_FASTCALL GetWorldBoundingBoxForObject(tPhysics_object* pObject, br_bounds* pBounds) {
+    br_bounds bounds;
+    tPhysics_object* child;
+    br_scalar extent;
+    int i;
+
+    GetNewBoundingBox(&pObject->field_0xf4, &pObject->bb1, &pObject->transform_matrix);
+    GetNewBoundingBox(&bounds, &pObject->bb1, &pObject->actor->t.t.mat);
+    for (i = 0; i < 3; i++) {
+        if (pObject->field_0xf4.min.v[i] > bounds.min.v[i]) {
+            pObject->field_0xf4.min.v[i] = bounds.min.v[i];
+        }
+        if (pObject->field_0xf4.max.v[i] < bounds.max.v[i]) {
+            pObject->field_0xf4.max.v[i] = bounds.max.v[i];
+        }
+        pObject->field_0xf4.min.v[i] -= 0.0025;
+        pObject->field_0xf4.max.v[i] -= -0.0025;
+    }
+    pObject->field_0x10c = pObject->field_0xf4;
+    for (child = pObject->child; child != NULL; child = child->next) {
+        GetWorldBoundingBoxForObject(child, &pObject->field_0x10c);
+    }
+    if (pBounds != NULL) {
+        for (i = 0; i < 3; i++) {
+            if (pObject->field_0x10c.min.v[i] < pBounds->min.v[i]) {
+                pBounds->min.v[i] = pObject->field_0x10c.min.v[i];
+            }
+            if (pObject->field_0x10c.max.v[i] > pBounds->max.v[i]) {
+                pBounds->max.v[i] = pObject->field_0x10c.max.v[i];
+            }
+        }
+    } else {
+        extent = pObject->field_0x10c.max.v[0] - pObject->transform_matrix.m[3][0];
+        if (gPhysics_bounds_max_x <= extent) {
+            gPhysics_bounds_max_x = extent;
+        }
+        extent = pObject->field_0x10c.min.v[0] - pObject->transform_matrix.m[3][0];
+        if (gPhysics_bounds_min_x >= extent) {
+            gPhysics_bounds_min_x = extent;
+        }
+    }
+}
 
 // MatricesAreIdentical
 
@@ -767,7 +821,60 @@ void C2_HOOK_FASTCALL MakeObjectListDoSomething(tPhysics_object* pObject) {
 
 // MakeObjectDoSomething
 
-// GetReducedList
+// FUNCTION: CARMA2_HW 0x004bd830
+// FUNCTION: CARMA2_SW 0x004b9f50
+// FUNCTION: CARMA2_CHEAT 0x004c3360
+tPhysics_object** C2_HOOK_FASTCALL GetReducedList(tPhysics_object* pObject, tPhysics_object* pList, tPhysics_object** pTail) {
+    tPhysics_object* object;
+    tPhysics_object* children;
+    tPhysics_object** children_tail;
+    tPhysics_object** tail;
+    br_scalar limit;
+
+    tail = pTail;
+    if (pList->parent != NULL) {
+        for (object = pList; object != NULL; object = object->next) {
+            if ((object == pObject && !(pObject->flags & 0x8)) || BoundsOverlapTest(&pObject->field_0x10c, &object->field_0x10c)) {
+                *tail = object;
+                tail = &object->field_0x234;
+            }
+        }
+    } else {
+        limit = pObject->field_0x10c.min.v[0] - gPhysics_bounds_max_x;
+        for (object = pObject->prev; object != NULL && object->transform_matrix.m[3][0] >= limit; object = object->prev) {
+            if (BoundsOverlapTest(&pObject->field_0x10c, &object->field_0x10c)) {
+                *tail = object;
+                tail = &object->field_0x234;
+            }
+        }
+        limit = pObject->field_0x10c.max.v[0] - gPhysics_bounds_min_x;
+        for (object = pObject->next; object != NULL && object->transform_matrix.m[3][0] <= limit; object = object->next) {
+            if (BoundsOverlapTest(&pObject->field_0x10c, &object->field_0x10c)) {
+                *tail = object;
+                tail = &object->field_0x234;
+            }
+        }
+        if (!(pObject->flags & 0x8)) {
+            *tail = pObject;
+            tail = &pObject->field_0x234;
+        }
+    }
+    *tail = NULL;
+    children = NULL;
+    object = *pTail;
+    children_tail = &children;
+    for (; object != NULL; object = object->field_0x234) {
+        if (object->child != NULL) {
+            children_tail = GetReducedList(pObject, object->child, children_tail);
+        }
+    }
+    if (children != NULL) {
+        *children_tail = NULL;
+        *tail = children;
+        return children_tail;
+    }
+    return tail;
+}
 
 // ReduceReducedList
 
