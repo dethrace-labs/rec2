@@ -120,7 +120,10 @@ tU16 C2_HOOK_FASTCALL OmegaCompScalarTo16(br_scalar pOmega) {
     return ScalarToFraction(pOmega, -39.269908f, 39.269908f);
 }
 
-// OmegaComp16ToScalar
+inline br_scalar C2_HOOK_FASTCALL OmegaComp16ToScalar(tU16 pOmega16) {
+    /* Range is [-12.5 * PI, 12.5 * PI] */
+    return FractionToScalar(pOmega16, -39.269908f, 39.269908f);
+}
 
 void C2_HOOK_FASTCALL GetOmega16FromOmega(tFixed_vec3* pOmega16, const br_vector3* pOmega) {
     int i;
@@ -130,7 +133,13 @@ void C2_HOOK_FASTCALL GetOmega16FromOmega(tFixed_vec3* pOmega16, const br_vector
     }
 }
 
-// GetOmegaFromOmega16
+inline void C2_HOOK_FASTCALL GetOmegaFromOmega16(br_vector3* pOmega, const tFixed_vec3* pOmega16) {
+    int i;
+
+    for (i = 0; i < 3; i++) {
+        pOmega->v[i] = OmegaComp16ToScalar(pOmega16->v[i]);
+    }
+}
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
@@ -191,7 +200,20 @@ int C2_HOOK_FASTCALL GetObjectNetworkStuff(tPhysics_object* pObject, tU8* pBuffe
 #pragma auto_inline(on)
 #endif
 
-// GetVelocityAndPosition
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0049cb00
+// STUB: CARMA2_SW 0x00498c80
+// STUB: CARMA2_CHEAT 0x0049ceb0
+void C2_HOOK_FASTCALL GetVelocityAndPosition(tPhysics_object* pObject, br_matrix34* pMatrix, br_matrix34* pParent_matrix) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 int C2_HOOK_FASTCALL SizeOfObjectNetworkStuff(tPhysics_joint_type pType) {
 
@@ -211,7 +233,73 @@ int C2_HOOK_FASTCALL SizeOfObjectNetworkStuff(tPhysics_joint_type pType) {
     }
 }
 
-// WriteObjectNetworkStuff
+// FUNCTION: CARMA2_HW 0x0049c630
+// FUNCTION: CARMA2_SW 0x004987b0
+// FUNCTION: CARMA2_CHEAT 0x0049c9e0
+int C2_HOOK_FASTCALL WriteObjectNetworkStuff(const tU8* pBuffer, tPhysics_object* pObject, int pMode) {
+    const tObject_network_stuff* stuff = (const tObject_network_stuff*)pBuffer;
+    br_matrix34* mat;
+    br_matrix34* parent_mat;
+    br_vector3 tv;
+    br_scalar rotation;
+    int size;
+
+    if (pObject == NULL) {
+        return SizeOfObjectNetworkStuff(*pBuffer);
+    }
+    if (pMode == 1) {
+        mat = &pObject->actor->t.t.mat;
+        if (pObject->parent != NULL) {
+            parent_mat = &pObject->parent->actor->t.t.mat;
+        } else {
+            parent_mat = NULL;
+        }
+    } else {
+        mat = &pObject->transform_matrix;
+        if (pObject->parent != NULL) {
+            parent_mat = &pObject->parent->transform_matrix;
+        } else {
+            parent_mat = NULL;
+        }
+    }
+    switch (*pBuffer & 0xf) {
+    case eJoint_none:
+        GetOmegaFromOmega16(&pObject->omega, &stuff->none.omega);
+        BrVector3Copy(&pObject->v, &stuff->none.v);
+        GetMatrixFromOrientation(mat, &stuff->none.orientation);
+        BrVector3Copy((br_vector3*)mat->m[3], &stuff->none.pos);
+        size = sizeof(stuff->none);
+        break;
+    case eJoint_hinge:
+    case eJoint_quick_hinge:
+        GetMatrixFromOrientation(mat, &stuff->hinge.orientation);
+        BrMatrix34ApplyV(&tv, &pObject->parent->omega, parent_mat);
+        BrMatrix34TApplyV(&pObject->omega, &tv, mat);
+        rotation = OmegaComp16ToScalar(stuff->hinge.rotation) - BrVector3Dot(&pObject->omega, &pObject->physics_joint1->hinge_axis);
+        BrVector3Scale(&tv, &pObject->physics_joint1->hinge_axis, rotation);
+        BrVector3Accumulate(&pObject->omega, &tv);
+        GetVelocityAndPosition(pObject, mat, parent_mat);
+        size = sizeof(stuff->hinge);
+        break;
+    case eJoint_universal:
+    case eJoint_ball_n_socket:
+        GetOmegaFromOmega16(&pObject->omega, &stuff->universal.omega);
+        GetMatrixFromOrientation(mat, &stuff->universal.orientation);
+        GetVelocityAndPosition(pObject, mat, parent_mat);
+        size = sizeof(stuff->universal);
+        break;
+    default:
+        PhysicsError(ePhysicsError_error9, "netphys got messed up");
+#ifdef REC2_FIX_BUGS
+        size = 0;
+#endif
+        break;
+    }
+    if (pMode == 2) {
+        BrMatrix34Copy(&pObject->actor->t.t.mat, mat);
+    }
+    return size;
+}
 
 // FUNCTION: CARMA2_HW 0x0049cd00
 // FUNCTION: CARMA2_SW 0x00498e80
@@ -245,17 +333,48 @@ int C2_HOOK_FASTCALL GetHierarchyNetworkStuff(tPhysics_object* pObject, tU8* pBu
     return size;
 }
 
-// FindObject
+inline tPhysics_object* C2_HOOK_FASTCALL FindObject(tPhysics_object* pParent, tU8 pUid) {
+    tPhysics_object* child;
+
+    if (pParent == NULL) {
+        return NULL;
+    }
+    for (child = pParent->child; child != NULL; child = child->next) {
+        if (child->uid == pUid) {
+            return child;
+        }
+    }
+    return NULL;
+}
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x0049cd90
-// STUB: CARMA2_SW 0x00498f10
-// STUB: CARMA2_CHEAT 0x0049d140
-int C2_HOOK_FASTCALL WriteHierarchyNetworkStuff(tU8* pBuffer, tPhysics_object* pObject, int pArg3) {
-    NOT_IMPLEMENTED();
+// FUNCTION: CARMA2_HW 0x0049cd90
+// FUNCTION: CARMA2_SW 0x00498f10
+// FUNCTION: CARMA2_CHEAT 0x0049d140
+int C2_HOOK_FASTCALL WriteHierarchyNetworkStuff(tU8* pBuffer, tPhysics_object* pObject, int pMode) {
+    int size;
+    tU8* child_buffer;
+    tPhysics_object* child;
+    tU8 more;
+
+    if (pObject != NULL && pBuffer[1] != pObject->uid) {
+        PhysicsError(ePhysicsError_error9, "netphys got messed up");
+    }
+    size = WriteObjectNetworkStuff(pBuffer, pObject, pMode);
+    more = *pBuffer & 0x80;
+    while (more != 0) {
+        child_buffer = pBuffer + size;
+        child = FindObject(pObject, child_buffer[1]);
+        size += WriteHierarchyNetworkStuff(child_buffer, FindObject(pObject, child_buffer[1]), pMode);
+        if (child != NULL) {
+            child->field_0xf0 = pObject->field_0xf0;
+        }
+        more = *child_buffer & 0x40;
+    }
+    return size;
 }
 
 #ifdef REC2_MATCHING
