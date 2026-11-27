@@ -268,9 +268,29 @@ void C2_HOOK_FASTCALL PedApplyVanishDismembered(tPedestrian* pPedestrian, tU32 p
 
 // SetCharacterBoneModelAR
 
-// PedApplyPedModelChangeP
+// FUNCTION: CARMA2_HW 0x004ca8a0
+// FUNCTION: CARMA2_SW 0x004c6fd0
+// FUNCTION: CARMA2_CHEAT 0x004d03e0
+void C2_HOOK_FASTCALL PedApplyPedModelChangeP(tPedestrian* pPed, int pBone_index, br_model* pModel, int pModel_set) {
 
-// PedApplyPedModelChange
+    if (pBone_index < 0) {
+        SetCharacterAllBonesModel(pPed->character, -1, pModel_set);
+    } else {
+        SetCharacterBoneModelP(pPed->character, pBone_index, pModel, pModel_set);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004ca8d0
+// FUNCTION: CARMA2_SW 0x004c7000
+// FUNCTION: CARMA2_CHEAT 0x004d0410
+void C2_HOOK_FASTCALL PedApplyPedModelChange(tPedestrian* pPed, int pBone_index, int pModel_index, int pModel_set) {
+
+    if (pBone_index < 0) {
+        SetCharacterAllBonesModel(pPed->character, pModel_index, pModel_set);
+    } else {
+        SetCharacterBoneModel(pPed->character, pBone_index, pModel_index, pModel_set);
+    }
+}
 
 inline int C2_HOOK_FASTCALL DismemberCharacterAR(tPed_character_instance* pCharacter, int pBone_index, br_vector3* pVelocity, br_vector3* pAngular_velocity) {
     tPed_form_actor_set* actor_set;
