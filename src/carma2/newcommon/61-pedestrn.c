@@ -1128,6 +1128,7 @@ void C2_HOOK_FASTCALL RecalculateOrientationOfRoot(tPed_character_instance* pCha
 
 // STUB: CARMA2_HW 0x00409400
 // STUB: CARMA2_SW 0x00409400
+// STUB: CARMA2_CHEAT 0x00409450
 int C2_HOOK_FASTCALL BonerActiveHalted2(tPed_character_instance* pCharacter, undefined4 pArg2) {
     NOT_IMPLEMENTED();
 }
@@ -1344,16 +1345,27 @@ int C2_HOOK_FASTCALL GetCharacterModelSet(tPed_character_instance* pCharacter) {
     return pCharacter->field_0xa;
 }
 
-// BonerPassiveCollision
+// STUB: CARMA2_HW 0x0040b620
+// STUB: CARMA2_SW 0x0040b610
+// STUB: CARMA2_CHEAT 0x0040b690
+int C2_HOOK_FASTCALL BonerPassiveCollision(tPed_character_instance* pCharacter, tPhysics_object* pOther) {
+    NOT_IMPLEMENTED();
+}
 
 // FUNCTION: CARMA2_HW 0x0040b760
 // FUNCTION: CARMA2_SW 0x0040b750
+// FUNCTION: CARMA2_CHEAT 0x0040b7e0
 int C2_HOOK_FASTCALL BonerActiveHalted(tPed_character_instance* pCharacter) {
 
     return BonerActiveHalted2(pCharacter, 0);
 }
 
-// BonerPedMovedByPhysics
+// STUB: CARMA2_HW 0x0040b770
+// STUB: CARMA2_SW 0x0040b760
+// STUB: CARMA2_CHEAT 0x0040b7f0
+void C2_HOOK_FASTCALL BonerPedMovedByPhysics(tPed_character_instance* pCharacter, undefined4 pArg2) {
+    NOT_IMPLEMENTED();
+}
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
