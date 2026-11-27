@@ -170,7 +170,81 @@ void C2_HOOK_FASTCALL DrMatrix34ApplyLPInverse(br_vector3* dest, const br_vector
     BrMatrix34TApplyV(dest, &relative, matrix);
 }
 
-// AddObjectWallForce
+// FUNCTION: CARMA2_HW 0x00422fe0
+// FUNCTION: CARMA2_SW 0x00423060
+// FUNCTION: CARMA2_CHEAT 0x00423160
+int C2_HOOK_FASTCALL AddObjectWallForce(tPhysics_joint_force* pForces, const br_vector3* pPosition, br_scalar pT, const br_vector3* pNormal, br_scalar pUnused, int pCount, tPhysics_object* pObject, int pType, tFace_ref* pFace, const br_vector3* pReference_position) {
+    br_bounds3 joint_bounds;
+    br_scalar dx;
+    br_scalar dy;
+    br_scalar dz;
+    br_scalar size;
+    br_scalar d;
+    br_scalar dot;
+    int i;
+    int j;
+    tPhysics_joint_force* force;
+
+    if (pObject->parent == NULL && pObject->physics_joint2 != NULL && pObject->physics_joint2->type != eJoint_none) {
+        BrVector3Sub(&joint_bounds.max, &pObject->bb1.max, &pObject->physics_joint2->field_0x08);
+        BrVector3Sub(&joint_bounds.min, &pObject->bb1.min, &pObject->physics_joint2->field_0x08);
+        size = 0.0f;
+        for (i = 0; i < 3; i++) {
+            d = MIN((br_scalar)fabs(joint_bounds.max.v[i]), (br_scalar)fabs(joint_bounds.min.v[i]));
+            if (d > size) {
+                size = d;
+            }
+        }
+        size = (br_scalar)(size + 0.01);
+        BrVector3Sub(&joint_bounds.min, pPosition, &pObject->physics_joint2->field_0x08);
+        if (fabs(joint_bounds.min.v[0]) < size) {
+            d = (br_scalar)fabs(joint_bounds.min.v[1]);
+            if (d < size
+                && d + d < pObject->bb1.max.v[1] - pObject->bb1.min.v[1]
+                && fabs(joint_bounds.min.v[2]) < size) {
+                return pCount;
+            }
+        }
+    }
+    for (i = 0; i < pCount; i++) {
+        dx = pForces[i].point_a.v[0] - (pPosition->v[0] - pObject->cmpos.v[0]);
+        dy = pForces[i].point_a.v[1] - (pPosition->v[1] - pObject->cmpos.v[1]);
+        dz = pForces[i].point_a.v[2] - (pPosition->v[2] - pObject->cmpos.v[2]);
+        d = dx * dx + dy * dy + dz * dz;
+        if (d < 0.0045) {
+            dot = BrVector3Dot(&pForces[i].direction_a, pNormal);
+            if (dot > 0.95 && d < 0.0005) {
+                return pCount;
+            }
+            if (dot < -0.95) {
+                return pCount;
+            }
+        }
+    }
+    if (pCount < 4) {
+        pForces[pCount].field_0x0 = 2.0f;
+        pCount++;
+    }
+    for (i = 0, force = pForces; i < pCount; i++, force++) {
+        if (pT < force->field_0x0) {
+            for (j = MIN(3, pCount); j >= i; j--) {
+                pForces[j] = pForces[j - 1];
+            }
+            force->field_0x0 = pT;
+            force->object_a = pObject;
+            force->object_b = NULL;
+            force->field_0xc = pFace;
+            BrVector3Copy(&force->direction_a, pNormal);
+            BrVector3Sub(&force->point_a, pPosition, &pObject->cmpos);
+            if (pReference_position != NULL) {
+                BrVector3Copy(&force->point_b, pReference_position);
+            }
+            force->type = pType;
+            return pCount;
+        }
+    }
+    return pCount;
+}
 
 // FUNCTION: CARMA2_HW 0x004268a0
 // FUNCTION: CARMA2_SW 0x00426940
@@ -280,9 +354,66 @@ tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList2(br_vector3* pPosition, br_vecto
 
 // GetSphereToFacePoints
 
-// CheckSingleEdgeWithSphere
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// GetSphereToEdgePoints
+// FUNCTION: CARMA2_HW 0x00423ce0
+// FUNCTION: CARMA2_SW 0x00423d60
+// FUNCTION: CARMA2_CHEAT 0x00423e60
+int C2_HOOK_FASTCALL CheckSingleEdgeWithSphere(br_vector3* pEdge_start, br_vector3* pEdge_end, tPhysics_object* pObject, tCollision_shape_sphere_data* pSphere, tPhysics_joint_force* pForces, int pCount, br_vector3* pSphere_start, br_vector3* pSphere_end, tFace_ref* pFace) {
+    br_vector3 point;
+    br_vector3 normal;
+    br_vector3 trial_normal;
+    br_vector3 old_normal;
+    br_vector3 direction;
+    br_vector3 surface_point;
+    br_scalar t;
+
+    SphereEdgeCollide(pEdge_start, pEdge_end, pSphere_start, pSphere_end, pSphere, &point, &normal, &t, 0, 0);
+    if (t <= 1.0f) {
+        BrMatrix34TApplyV(&trial_normal, &normal, &pObject->transform_matrix);
+        BrMatrix34TApplyV(&old_normal, &normal, &pObject->actor->t.t.mat);
+        BrVector3Scale(&old_normal, &old_normal, t);
+        BrVector3Scale(&direction, &trial_normal, 1.0f - t);
+        BrVector3Accumulate(&direction, &old_normal);
+        BrVector3Normalise(&direction, &direction);
+        BrVector3Scale(&direction, &direction, pSphere->radius);
+        BrVector3Add(&surface_point, &pSphere->center, &direction);
+        BrVector3Negate(&trial_normal, &trial_normal);
+        return AddObjectWallForce(pForces, &surface_point, t, &trial_normal, 0.0f, pCount, pObject, 4, pFace, NULL);
+    }
+    return pCount;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+// FUNCTION: CARMA2_HW 0x00423c00
+// FUNCTION: CARMA2_SW 0x00423c80
+// FUNCTION: CARMA2_CHEAT 0x00423d80
+int C2_HOOK_FASTCALL GetSphereToEdgePoints(tPhysics_object* pObject, tCollision_shape_sphere_data* pSphere, tPhysics_joint_force* pForces, int pCount, int pMax_count, br_vector3* pSphere_start, br_vector3* pSphere_end, br_matrix34* pMatrix) {
+    int i;
+    tFace_ref* face;
+
+    i = pObject->box_face_start;
+    face = &gFace_list__car[i];
+    for (; i < pObject->box_face_end; i++, face++) {
+        if (!(face->flags & 0x80)) {
+            if (!(face->flags & 0x1)) {
+                pCount = CheckSingleEdgeWithSphere(&face->v[0], &face->v[1], pObject, pSphere, pForces, pCount, pSphere_start, pSphere_end, face);
+            }
+            if (!(face->flags & 0x2)) {
+                pCount = CheckSingleEdgeWithSphere(&face->v[1], &face->v[2], pObject, pSphere, pForces, pCount, pSphere_start, pSphere_end, face);
+            }
+            if (!(face->flags & 0x4)) {
+                pCount = CheckSingleEdgeWithSphere(&face->v[2], &face->v[0], pObject, pSphere, pForces, pCount, pSphere_start, pSphere_end, face);
+            }
+        }
+    }
+    return pCount;
+}
 
 // GetCornerToFacePoints
 

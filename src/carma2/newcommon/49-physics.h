@@ -42,7 +42,7 @@ extern tWorld_callbacks gWorld_callbacks;
 
 void C2_HOOK_FASTCALL DrMatrix34ApplyLPInverse(br_vector3* dest, const br_vector3* source, const br_matrix34* matrix);
 
-// AddObjectWallForce
+extern int C2_HOOK_FASTCALL AddObjectWallForce(tPhysics_joint_force* pForces, const br_vector3* pPosition, br_scalar pT, const br_vector3* pNormal, br_scalar pUnused, int pCount, tPhysics_object* pObject, int pType, tFace_ref* pFace, const br_vector3* pReference_position);
 
 extern int C2_HOOK_FASTCALL AddObjectObjectForce(tPhysics_joint_force* pForces, const br_vector3* pPoint_a, br_scalar pT, const br_vector3* pPoint_b, const br_vector3* pNormal, int pCount, tPhysics_object* pObject_a, tPhysics_object* pObject_b, int pType, void* pUnused, br_scalar pValue);
 
@@ -68,9 +68,9 @@ extern tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList2(br_vector3* pPosition, b
 
 // GetSphereToFacePoints
 
-// CheckSingleEdgeWithSphere
+extern int C2_HOOK_FASTCALL CheckSingleEdgeWithSphere(br_vector3* pEdge_start, br_vector3* pEdge_end, tPhysics_object* pObject, tCollision_shape_sphere_data* pSphere, tPhysics_joint_force* pForces, int pCount, br_vector3* pSphere_start, br_vector3* pSphere_end, tFace_ref* pFace);
 
-// GetSphereToEdgePoints
+extern int C2_HOOK_FASTCALL GetSphereToEdgePoints(tPhysics_object* pObject, tCollision_shape_sphere_data* pSphere, tPhysics_joint_force* pForces, int pCount, int pMax_count, br_vector3* pSphere_start, br_vector3* pSphere_end, br_matrix34* pMatrix);
 
 // GetCornerToFacePoints
 
