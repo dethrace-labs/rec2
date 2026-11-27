@@ -800,6 +800,23 @@ void C2_HOOK_FASTCALL DoFancyHeadup(int pIndex) {
     }
 }
 
+/* FIXME: this is the Mac build's MoveHeadupTo; master's MoveHeadupTo (0x0044a8a0) has no Mac counterpart */
+// FUNCTION: CARMA2_HW 0x0044a860
+// FUNCTION: CARMA2_SW 0x0044a9f0
+// FUNCTION: CARMA2_CHEAT 0x0044ad80
+void C2_HOOK_FASTCALL MoveHeadupKeepingOffset(int pHeadup_index, int pNew_x, int pNew_y) {
+    int delta_x;
+    tHeadup* the_headup;
+
+    if (pHeadup_index >= 0) {
+        the_headup = &gHeadups[pHeadup_index];
+        delta_x = the_headup->x - the_headup->original_x;
+        the_headup->original_x = pNew_x;
+        the_headup->x = pNew_x + delta_x;
+        the_headup->y = pNew_y;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0044a8a0
 void C2_HOOK_FASTCALL MoveHeadupTo(int pHeadup_index, int pNew_x, int pNew_y) {
     tHeadup* the_headup;
