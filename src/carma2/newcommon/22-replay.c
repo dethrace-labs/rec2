@@ -11,15 +11,22 @@
 #include "04-netgame.h"
 #include "08-loading1.h"
 #include "10-loading2.h"
+#include "15-displays.h"
+#include "16-graphics1.h"
 #include "18-graphics2.h"
+#include "21-mainloop.h"
 #include "23-piping.h"
+#include "27-powerup.h"
 #include "30-opponent.h"
 #include "32-spark.h"
+#include "39-oil.h"
 #include "40-main.h"
 #include "41-utility.h"
+#include "42-input.h"
 #include "53-controls.h"
 #include "59-camera.h"
 #include "61-pedestrn-phys.h"
+#include "63-loading3.h"
 #include "globvars.h"
 #include "globvrpb.h"
 #include "platform.h"
@@ -53,6 +60,23 @@ float gPending_replay_rate;
 // GLOBAL: CARMA2_SW 0x0069c3d4
 // GLOBAL: CARMA2_CHEAT 0x006a9ef4
 tU32 gUINT_006a237c;
+
+// GLOBAL: CARMA2_HW 0x0065fbb0
+// GLOBAL: CARMA2_SW 0x0065a4f0
+// GLOBAL: CARMA2_CHEAT 0x006673f8
+const char* gReplay_pixie_names[11] = {
+    "REPLAY.PIX",
+    "RBUTTONS.PIX",
+    "REWSTART.PIX",
+    "REW.PIX",
+    "REVPLAY.PIX",
+    "PAUSE.PIX",
+    "PLAY.PIX",
+    "FFWD.PIX",
+    "FWDEND.PIX",
+    "CAMERA.PIX",
+    "RECORD.PIX",
+};
 
 // GLOBAL: CARMA2_HW 0x006a2380
 // GLOBAL: CARMA2_SW 0x0069c3d8
@@ -196,11 +220,37 @@ void C2_HOOK_FASTCALL DoActionReplayHeadups(void) {
     ActualActionReplayHeadups(0);
 }
 
-// PreProcess
+// FUNCTION: CARMA2_HW 0x004e6950
+// FUNCTION: CARMA2_SW 0x004e2840
+// FUNCTION: CARMA2_CHEAT 0x004ec640
+void C2_HOOK_FASTCALL PreProcess(int pFrame_period) {
 
-// PostProcess
+    UpdateFramePeriod(&gCamera_period);
+    if (ARGetReplayRate() < 0.0f) {
+        MungePedestrians(pFrame_period);
+    }
+}
 
-// DoActionReplay
+// FUNCTION: CARMA2_HW 0x004e6980
+// FUNCTION: CARMA2_SW 0x004e2870
+// FUNCTION: CARMA2_CHEAT 0x004ec670
+void C2_HOOK_FASTCALL PostProcess(int pFrame_period) {
+
+    ProcessOilSpills(pFrame_period);
+    if (ARGetReplayRate() >= 0.0f) {
+        MungePedestrians(pFrame_period);
+    }
+    MungePowerupStuff(pFrame_period);
+}
+
+// FUNCTION: CARMA2_HW 0x004e68e0
+// FUNCTION: CARMA2_SW 0x004e27d0
+// FUNCTION: CARMA2_CHEAT 0x004ec5d0
+void C2_HOOK_FASTCALL DoActionReplay(tU32 pFrame_period) {
+
+    gLast_replay_zappy_screen = 0;
+    ARDoActionReplay(pFrame_period, DoZappyActionReplayHeadups, PreProcess, PostProcess);
+}
 
 // MoveToEndOfReplay
 
@@ -208,9 +258,46 @@ void C2_HOOK_FASTCALL DoActionReplayHeadups(void) {
 
 // PollActionReplayControls
 
-// CheckReplayTurnOn
+// FUNCTION: CARMA2_HW 0x004e72e0
+// FUNCTION: CARMA2_CHEAT 0x004ecf80
+void C2_HOOK_FASTCALL ToggleReplay(tU32* pFrame_period, tU32* pFrame_period_2) {
 
-// InitializeActionReplayPix
+    if (gAction_replay_mode) {
+        RenderAFrame(1);
+        RenderAFrame(1);
+    }
+    if (!ARToggleReplay(TurnOnActionReplay, TurnOffActionReplay, AfterActionReplay, DoZappyActionReplayHeadups, PreProcess, PostProcess, pFrame_period, pFrame_period_2)) {
+        NewTextHeadupSlot(4, 0, 1000, -4, GetMiscString(eMiscString_action_replay_unavailable));
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004e6ff0
+// FUNCTION: CARMA2_CHEAT 0x004ecce0
+void C2_HOOK_FASTCALL CheckReplayTurnOn(void) {
+
+    if (!gAction_replay_mode) {
+        if (!KeyIsDown(58) || gEntering_message) {
+            gKey_down = -1;
+        } else if (gKey_down == -1) {
+            ToggleReplay(NULL, NULL);
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004e7090
+// FUNCTION: CARMA2_SW 0x004e2ed0
+// FUNCTION: CARMA2_CHEAT 0x004ecd80
+void C2_HOOK_FASTCALL InitializeActionReplayPix(void) {
+    int i;
+
+    for (i = 0; i < (int)REC2_ASIZE(gReplay_pixies); i++) {
+        gReplay_pixies[i] = LoadPixelmap(gReplay_pixie_names[i]);
+        BRPM_convert(gReplay_pixies[i], gBack_screen->type);
+#ifndef REC2_CHEAT
+        BrMapAdd(gReplay_pixies[i]);
+#endif
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004e70d0
 // FUNCTION: CARMA2_SW 0x004e2f10
