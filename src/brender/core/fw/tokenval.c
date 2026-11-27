@@ -784,17 +784,17 @@ br_error C2_HOOK_CDECL BrTokenValueSet(void* mem, br_uint_32* pcombined_mask, br
 // FUNCTION: CARMA2_SW 0x00529fe0
 // FUNCTION: CARMA2_CHEAT 0x00534530
 br_error C2_HOOK_CDECL BrTokenValueSetMany(void* mem, br_int_32* pcount, br_uint_32* pcombined_mask, br_token_value* tv, br_tv_template* template) {
-    br_int_32 o;
     br_int_32 n;
-    br_error r;
     br_uint_32 cm;
+    br_error r;
+    br_int_32 o;
 
-    if (template->n_map_entries == 0) {
+    if (!template->n_map_entries) {
         templateMakeMap(template);
     }
-    cm = 0;
     n = 0;
-    for (; tv->t != 0; tv++) {
+    cm = 0;
+    for (; 0 != tv->t; tv++) {
         o = tv->t - template->map_base;
         if (o < 0 || o >= template->n_map_entries) {
             continue;
