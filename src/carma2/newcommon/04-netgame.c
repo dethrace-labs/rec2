@@ -19,6 +19,7 @@
 #include "27-powerup.h"
 #include "30-opponent.h"
 #include "32-spark.h"
+#include "37-brucetrk.h"
 #include "41-utility.h"
 #include "43-pratcam.h"
 #include "52-errors.h"
@@ -28,6 +29,7 @@
 #include "63-loading3.h"
 #include "72-interface.h"
 #include "c2_stdio.h"
+#include "c2_string.h"
 #include "globvars.h"
 #include "globvrkm.h"
 #include "globvrpb.h"
@@ -78,7 +80,33 @@ void C2_HOOK_FASTCALL ClearShapeStatusFlag(tCar_crush_network_shapes* pShapes, i
     }
 }
 
-// SendNonCar
+// FUNCTION: CARMA2_HW 0x00497f10
+// FUNCTION: CARMA2_SW 0x00494b40
+// FUNCTION: CARMA2_CHEAT 0x004982c0
+void C2_HOOK_FASTCALL SendNonCar(tNon_car_spec* pNon_car, tU32 pTime) {
+    int size;
+    tNet_message_chunk* contents;
+
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, ID, 0x4);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, time, 0x8);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, flags, 0x10);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_non_car, object_hierarchy, 0x12);
+
+    size = GetHierarchyNetworkSize(pNon_car->collision_info);
+    contents = NetStartBroadcastContents(eNet_message_chunk_type_non_car, size + offsetof(tNet_message_chunk_non_car, object_hierarchy));
+    if (contents != NULL) {
+        contents->non_car.ID = (tU16)pNon_car->car_ID;
+        contents->non_car.time = pTime;
+        contents->non_car.flags = ((pNon_car->flags & 0xff00) != 0) << 3
+            | ((pNon_car->flags & 0xff) != 0) << 2
+            | pNon_car->collision_info->disable_move_rotate << 1
+            | (pNon_car->car_master_actor->identifier[3] == '!');
+        if (GetHierarchyNetworkStuff(pNon_car->collision_info, contents->non_car.object_hierarchy, 0x48) != size) {
+            FatalError(kFatalError_NetContentsTooBig_S, "in non_car object data");
+        }
+        NetBroadcastContents(contents);
+    }
+}
 
 // HostFillInCarContents
 
@@ -152,7 +180,85 @@ void C2_HOOK_FASTCALL ReceivedCopInfo(void) {
 
 // ReceivedNonCarPosition
 
-// ReceivedNonCar
+// FUNCTION: CARMA2_HW 0x00498c00
+// FUNCTION: CARMA2_SW 0x00495830
+// FUNCTION: CARMA2_CHEAT 0x00498fb0
+void C2_HOOK_FASTCALL ReceivedNonCar(tNet_message_chunk_non_car* pContents) {
+    br_actor* actor;
+    tNon_car_spec* non_car;
+    tNon_car_spec* non_car_spec;
+    br_vector3 tv;
+    tU8 column_x;
+    tU8 column_z;
+    int i;
+    char c;
+
+    if (pContents->ID >= gProgram_state.track_spec.count_non_cars) {
+        return;
+    }
+    actor = gProgram_state.track_spec.non_car_list[pContents->ID];
+    if (actor == NULL) {
+        return;
+    }
+    non_car = actor->type_data;
+    if (non_car != NULL && (non_car->driver != eDriver_4 || (tU16)non_car->car_ID != pContents->ID)) {
+        non_car = NULL;
+    }
+    if (pContents->flags & 0x1) {
+        actor->identifier[3] = '!';
+    } else {
+        actor->identifier[3] = 'x';
+    }
+    if (non_car == NULL) {
+        c = actor->identifier[1];
+        if (c >= '0' && c <= '9') {
+            i = (c - '0') * 10 + actor->identifier[2] - '0';
+            if (gNon_car_spec_indices[i] != 0) {
+                non_car_spec = &gProgram_state.non_cars[gNon_car_spec_indices[i] + 39];
+            } else {
+                non_car_spec = NULL;
+            }
+            BrVector3Sub(&tv, &gProgram_state.current_car.car_master_actor->t.t.translate.t, &actor->t.t.translate.t);
+            if ((non_car_spec != NULL && (non_car_spec->flags & 0x10000)) || BrVector3LengthSquared(&tv) < 900.0f) {
+                DoPullActorFromWorld(actor);
+                non_car = actor->type_data;
+            }
+        }
+    }
+    if (non_car == NULL) {
+        GetSingleMatrixFromNetworkData(pContents->object_hierarchy, &actor->t.t.mat);
+        XZToColumnXZ(&column_x, &column_z, actor->t.t.mat.m[3][0], actor->t.t.mat.m[3][2], &gProgram_state.track_spec);
+        if (gProgram_state.track_spec.columns[column_z][column_x].actor_0x0 != actor->parent
+            && gProgram_state.track_spec.columns[column_z][column_x].actor_0x0 != NULL) {
+            BrActorRemove(actor);
+            BrActorAdd(gProgram_state.track_spec.columns[column_z][column_x].actor_0x0, actor);
+        }
+    } else {
+        if (pContents->flags & 0x4) {
+            if ((non_car->flags & 0xff) == 0) {
+                non_car->flags = (non_car->flags & 0xffffff01) | 0x1;
+            }
+        } else {
+            non_car->flags &= 0xffffff00;
+        }
+        if (pContents->flags & 0x8) {
+            if ((non_car->flags & 0xff00) == 0) {
+                non_car->flags = (non_car->flags & 0xffff01ff) | 0x100;
+            }
+        } else {
+            non_car->flags &= 0xffff00ff;
+        }
+        if (pContents->flags & 0x2) {
+            WriteHierarchyNetworkStuff(pContents->object_hierarchy, non_car->collision_info, 2);
+            non_car->collision_info->disable_move_rotate = 1;
+        } else {
+            memcpy(non_car->collision_info->field_0x294, pContents->object_hierarchy, GetNetworkDataSize(pContents->object_hierarchy));
+            non_car->collision_info->message_time = pContents->time;
+            non_car->collision_info->field_0x261 = 0x11;
+            non_car->collision_info->disable_move_rotate = 0;
+        }
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x00498e70
 // FUNCTION: CARMA2_SW 0x00495aa0
