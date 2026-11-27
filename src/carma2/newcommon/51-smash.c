@@ -234,6 +234,8 @@ void C2_HOOK_FASTCALL DisableAutoFogification(void) {
 // FUNCTION: CARMA2_SW 0x004e6560
 // FUNCTION: CARMA2_CHEAT 0x004f0500
 void C2_HOOK_FASTCALL RemoveMaterialFromFogification(br_material* pMaterial) {
+
+#ifdef REC2_HW
     int count = gMaterials_to_adapt_count;
     int i;
 
@@ -242,6 +244,7 @@ void C2_HOOK_FASTCALL RemoveMaterialFromFogification(br_material* pMaterial) {
             gMaterials_to_adapt[i] = NULL;
         }
     }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004ea880
@@ -281,8 +284,10 @@ void C2_HOOK_FASTCALL InitExplosions(void) {
         explosion->actor->material = BrMaterialAllocate("BANG!");
         explosion->actor->material->flags &= ~BR_MATF_LIGHT;
         explosion->actor->material->flags |= BR_MATF_ALWAYS_VISIBLE;
+#ifdef REC2_HW
         explosion->actor->material->colour_map = gBack_screen;
         GlorifyMaterial(&explosion->actor->material, 1, kRendererShadingType_AmbientOnly);
+#endif
         BrMaterialAdd(explosion->actor->material);
         explosion->actor->render_style = BR_RSTYLE_FACES;
 
@@ -854,6 +859,7 @@ void C2_HOOK_FASTCALL ReadExplosion(FILE* pF, tExplosion_animation* pAnimation) 
 
 // FUNCTION: CARMA2_HW 0x004ee950
 // FUNCTION: CARMA2_SW 0x004ea5f0
+// FUNCTION: CARMA2_CHEAT 0x004f45f0
 void C2_HOOK_FASTCALL FreeExplosionAnimation(tExplosion_animation* pAnimation) {
     int i;
     tExplosion_animation_group* group;
@@ -1050,6 +1056,7 @@ void C2_HOOK_FASTCALL LoadMinMax(FILE* pF, br_bounds3* pBounds) {
 #ifdef REC2_MATCHING
 // FUNCTION: CARMA2_HW 0x004ef830
 // FUNCTION: CARMA2_SW 0x004eb490
+// FUNCTION: CARMA2_CHEAT 0x004f54d0
 void C2_HOOK_FASTCALL FUN_004ef830(tCar_spec* pCar_spec, tCar_crush_smashable_part* pSmashable, undefined4 pArg3, int pLevel) {
 
     /* Unused */
