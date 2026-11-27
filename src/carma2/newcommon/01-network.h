@@ -20,6 +20,7 @@ extern int rr_min;
 extern int rr_mid;
 extern int rr_max;
 extern int gInitialised_grid;
+extern int gReceived_game_scores;
 #ifdef REC2_HW
 extern br_actor* gNetscore_box_universe;
 extern br_material* gNetscore_box_materials[4];
@@ -66,7 +67,7 @@ extern void C2_HOOK_FASTCALL NetDisposeGameDetails(tNet_game_details* pDetails);
 
 extern tNet_game_details* C2_HOOK_FASTCALL NetAllocatePIDGameDetails(void);
 
-extern void C2_HOOK_FASTCALL NetLeaveGameLowLevel(void);
+extern void C2_HOOK_FASTCALL NetLeaveGameLowLevel(tNet_game_details* pDetails);
 
 extern void C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game);
 
