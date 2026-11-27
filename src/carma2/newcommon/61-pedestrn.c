@@ -26,6 +26,7 @@
 #include "51-smash.h"
 #include "52-errors.h"
 #include "54-runtime.h"
+#include "60-phil.h"
 #include "61-pedestrn-phys.h"
 #include "62-graphics3.h"
 #include "63-loading3.h"
@@ -1060,10 +1061,6 @@ int C2_HOOK_FASTCALL MakeCharacterCollideworthy(tPed_character_instance* pCharac
     return MakeCharacterCollideworthy2(pCharacter, pArg2, pArg3, -1);
 }
 
-#ifdef REC2_MATCHING
-#pragma auto_inline(off)
-#endif
-
 // FUNCTION: CARMA2_HW 0x00409040
 // FUNCTION: CARMA2_SW 0x00409040
 // FUNCTION: CARMA2_CHEAT 0x00409070
@@ -1081,10 +1078,6 @@ tPhysics_object* C2_HOOK_FASTCALL GetRootObject(tPed_character_instance* pPed) {
     }
     return NULL;
 }
-
-#ifdef REC2_MATCHING
-#pragma auto_inline(on)
-#endif
 
 // CharacterNoLongerCollideworthy
 
@@ -1126,10 +1119,26 @@ void C2_HOOK_FASTCALL RecalculateOrientationOfRoot(tPed_character_instance* pCha
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x00409400
-// STUB: CARMA2_SW 0x00409400
+// FUNCTION: CARMA2_HW 0x00409400
+// FUNCTION: CARMA2_SW 0x00409400
+// FUNCTION: CARMA2_CHEAT 0x00409450
 int C2_HOOK_FASTCALL BonerActiveHalted2(tPed_character_instance* pCharacter, undefined4 pArg2) {
-    NOT_IMPLEMENTED();
+    tPhysics_object* object;
+
+    object = (pCharacter->field_0x14 & 0x1) ? pCharacter->personality->form->simple_physicing[(tS8)pCharacter->field_0x5].collision_info : GetRootObject(pCharacter);
+    RecalculateOrientationOfRoot(pCharacter);
+    SetCharacterBonePositions(pCharacter, 3, 0);
+    pCharacter->field_0x14 &= ~0x4;
+    if (gPed_vtable->active_halted != NULL && !gPed_vtable->active_halted(pCharacter, object)) {
+        pCharacter->field_0x14 |= 0x4;
+        return 0;
+    }
+    object->disable_move_rotate = 1;
+    BrVector3Copy(&pCharacter->field_0xd8, &object->v);
+    PHILSetObjectProperty(object, 3, 1);
+    PHILSetObjectProperty(object, 4, 1);
+    PHILSetObjectProperty(object, 5, 1);
+    return 1;
 }
 
 #ifdef REC2_MATCHING
