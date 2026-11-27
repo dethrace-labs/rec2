@@ -18,13 +18,12 @@ extern undefined4 gCrush_array_0067a190[10];
 extern int gCount_net_crush_reattach_bit_list;
 extern tCrush_net_reattach_bit_list_item gNet_crush_reattach_bit_list[8];
 extern undefined4 gDAT_00679440;
+extern tU16 gUnique_id;
 extern tCrush_info_buffer gDetached_bit_crush_info_buffer;
 extern tPhysics_object* gDetached_bit_collision_infos;
-extern tDriver gDetached_bit_driver;
 extern tPhysics_joint* gTrack_crush_joints[32];
 extern tCrush_info_buffer gSplit_car_crush_info_buffer;
 extern tPhysics_object* gSplit_car_collision_infos;
-extern tDriver gSplit_car_driver;
 extern tPhysics_shape* gGonad_sphere_collision_shape;
 extern int gCount_toggled_doors;
 extern tCrush_list_item gCrush_lists[8];
@@ -202,23 +201,23 @@ extern void C2_HOOK_FASTCALL SetBitForDetachment(br_actor* pActor, tCar_spec* pC
 
 extern void C2_HOOK_FASTCALL SetFlappage(br_actor* pActor, tCar_spec* pCar, int pFlags, float pScalar);
 
-// GetUniqueID
+extern tU16 C2_HOOK_FASTCALL GetUniqueID(void);
 
-// InitializeCollisionInfo
+extern void C2_HOOK_FASTCALL InitializeCollisionInfo(tNon_car_spec* pNon_car, br_actor* pActor, tCar_spec* pCar);
 
-// RemoveBit
+extern void C2_HOOK_FASTCALL RemoveBit(br_actor* pActor, tCar_spec* pCar);
 
-// RemoveNonCarChildren
+extern void C2_HOOK_FASTCALL RemoveNonCarChildren(tNon_car_spec* pNon_car);
 
-// RemoveNonCar
+extern void C2_HOOK_FASTCALL RemoveNonCar(tNon_car_spec* pNon_car);
 
-// GetNonCar
+extern tNon_car_spec* C2_HOOK_FASTCALL GetNonCar(tCrush_info_buffer* pBuffer, br_actor* pActor, tCar_spec* pCar);
 
 // GetNonCarObject
 
-// SetRelationsDoingNothingFlags
+extern void C2_HOOK_FASTCALL SetRelationsDoingNothingFlags(tPhysics_object* pObject, int pFlag);
 
-// SetUpDetachedBitObject
+extern void C2_HOOK_FASTCALL SetUpDetachedBitObject(tPhysics_object* pObject, br_actor* pActor, br_model* pModel, tCar_crush_detach_data* pDetach_data, tCar_crush_spec* pCar_crush, br_bounds3* pBounds, tPhysics_object* pCar_object);
 
 // SetUpSemiDetachedBitJoint
 
@@ -228,15 +227,15 @@ extern void C2_HOOK_FASTCALL SetFlappage(br_actor* pActor, tCar_spec* pCar, int 
 
 extern void C2_HOOK_FASTCALL MakeModelMaterialsDoubleSided(br_model* pModel);
 
-// CheckFlapAngles
+extern intptr_t C2_HOOK_CDECL CheckFlapAngles(br_actor* pActor, void* pContext);
 
 extern void C2_HOOK_FASTCALL MakeModelMaterialsSingleSided(br_model* pModel);
 
 extern void C2_HOOK_FASTCALL ReAttachBit(tCar_spec* pCar_spec, br_actor* pActor_arg2, br_actor* pActor_arg3, tPhysics_object* pObject);
 
-// CentreModelOnPoint
+extern void C2_HOOK_FASTCALL CentreModelOnPoint(br_model* pModel, const br_vector3* pPoint);
 
-// SemiDetachBit
+extern tPhysics_object* C2_HOOK_FASTCALL SemiDetachBit(tCar_spec* pCar, br_actor* pActor, float pArg3, int* pArg4, br_vector3* pP1, br_bounds3* pBounds, br_vector3* pP2, br_vector3* pP3);
 
 extern int C2_HOOK_FASTCALL GetSDBJointPosAndBounds(br_vector3* pP1, br_vector3* pP2, br_vector3* pP3, br_bounds3* pBounds, br_actor* pActor);
 
@@ -248,7 +247,7 @@ extern void C2_HOOK_FASTCALL SendAllSemiDetachedBits(tNet_game_player_info* pPla
 
 extern void C2_HOOK_FASTCALL AddNonCar(tNon_car_spec* pNon_car, const tDriver* pDriver);
 
-// DetachBit
+extern tPhysics_object* C2_HOOK_FASTCALL DetachBit(tCar_spec* pCar, br_actor* pActor, br_bounds3* pBounds);
 
 // DoDetaching
 
@@ -278,9 +277,9 @@ extern int C2_HOOK_FASTCALL BitObjectIsSufficientlyOutsideCarObjectToDetach(tPhy
 
 extern void C2_HOOK_FASTCALL FullyDetachBit(tCar_spec* pCar, tPhysics_object* pObject);
 
-// SendFullyDetachBit
+extern void C2_HOOK_FASTCALL SendFullyDetachBit(tCar_spec* pCar, tPhysics_object* pObject);
 
-// DoFullyDetaching
+extern void C2_HOOK_FASTCALL DoFullyDetaching(void);
 
 // CalculateCollisionObjectStuffForSplitHalves
 
@@ -344,7 +343,7 @@ extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor
 
 // MoveCarToSensiblePlace
 
-// SwapShapesIfPossible
+extern int C2_HOOK_FASTCALL SwapShapesIfPossible(tCar_spec* pCar_spec);
 
 // DoShapeSwapping
 
@@ -410,15 +409,15 @@ extern int C2_HOOK_FASTCALL BattenDownTheObjects(tPhysics_object* pCollision_inf
 
 extern void C2_HOOK_FASTCALL CompletelyUnBendCollisionShape(tCar_crush_shape_info* pShape);
 
-// CompletelyUnBendCollisionShapes
+extern void C2_HOOK_FASTCALL CompletelyUnBendCollisionShapes(tCar_spec* pCar_spec);
 
 extern void C2_HOOK_FASTCALL CompletelyUnBendWheels(tCar_spec* pCar_spec);
 
-// CompletelyUnBendOtherThings
+extern void C2_HOOK_FASTCALL CompletelyUnBendOtherThings(tCar_spec* pCar_spec);
 
 extern intptr_t C2_HOOK_CDECL EnableGroovers(br_actor* pActor, void* pData);
 
-// DoCompletelyUnBentThings
+extern void C2_HOOK_FASTCALL DoCompletelyUnBentThings(tCar_spec* pCar_spec);
 
 extern void C2_HOOK_FASTCALL TotallyRepairCarCollisionShapes(tCar_spec* pCar_spec);
 
@@ -474,9 +473,9 @@ extern void C2_HOOK_FASTCALL RepairCarCollisionShapes(tCar_spec* pCar, float pSt
 
 // RepairCar
 
-// RestoreVitalBitsOfObject
+extern void C2_HOOK_FASTCALL RestoreVitalBitsOfObject(tPhysics_object* pObject, const tCar_vital_bits* pVital_bits);
 
-// WeldCar
+extern void C2_HOOK_FASTCALL WeldCar(tCar_spec* pCar_spec);
 
 // ARCompressCrush
 
@@ -498,27 +497,27 @@ extern void C2_HOOK_FASTCALL ARUndoSplitWeld(tCar_spec* pCar);
 
 // ReceivedCrush
 
-// FindBitWithID
+extern intptr_t C2_HOOK_CDECL FindBitWithID(br_actor* pActor, void* pContext);
 
-// AttachedBitFromID
+extern br_actor* C2_HOOK_FASTCALL AttachedBitFromID(tCar_spec* pCar, tU8 pID);
 
-// ReceivedSemiDetachBit
+extern void C2_HOOK_FASTCALL ReceivedSemiDetachBit(tNet_message_chunk* pContents);
 
 // ReceivedDetachBit
 
-// SemiDetachedBitObjectFromID
+extern tPhysics_object* C2_HOOK_FASTCALL SemiDetachedBitObjectFromID(tCar_spec* pCar, tU8 pID);
 
-// ReceivedFullyDetachBit
+extern void C2_HOOK_FASTCALL ReceivedFullyDetachBit(tNet_message_chunk* pContents);
 
-// DetachedBitFromID
+extern br_actor* C2_HOOK_FASTCALL DetachedBitFromID(tCar_spec* pCar, tU8 pID);
 
-// SemiDetachedBitFromID
+extern br_actor* C2_HOOK_FASTCALL SemiDetachedBitFromID(tCar_spec* pCar, tU8 pID);
 
-// ReceivedReAttachBit
+extern void C2_HOOK_FASTCALL ReceivedReAttachBit(tNet_message_chunk* pContents);
 
 extern void C2_HOOK_FASTCALL ReceivedReAttachAllBits(tNet_message_chunk* pContents);
 
-// DoQueuedNetDetaching
+extern void C2_HOOK_FASTCALL DoQueuedNetDetaching(void);
 
 // DBNonCarOwner
 
