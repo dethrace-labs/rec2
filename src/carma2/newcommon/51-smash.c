@@ -15,6 +15,7 @@
 #include "17-world2.h"
 #include "20-skidmark.h"
 #include "23-piping.h"
+#include "27-powerup.h"
 #include "28-world3.h"
 #include "32-spark.h"
 #include "33-depth.h"
@@ -43,6 +44,16 @@ int gAllow_material_adapt;
 // GLOBAL: CARMA2_HW 0x006a3340
 // GLOBAL: CARMA2_CHEAT 0x006aaeb8
 br_material* gMaterials_to_adapt[200];
+
+// GLOBAL: CARMA2_HW 0x006a3940
+// GLOBAL: CARMA2_SW 0x0069d9a0
+// GLOBAL: CARMA2_CHEAT 0x006ab4b8
+tQueued_net_smash gQueued_net_smashes[50] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x006a4430
+// GLOBAL: CARMA2_SW 0x0069e490
+// GLOBAL: CARMA2_CHEAT 0x006abfa8
+tPowerup_queue_item gPowerup_queue[50] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x006a3334
 // GLOBAL: CARMA2_SW 0x0069d394
@@ -102,6 +113,11 @@ int gCount_track_smashable_environment_specs;
 // GLOBAL: CARMA2_CHEAT 0x006ad130
 const char* gSmashable_track_environment_path;
 
+// GLOBAL: CARMA2_HW 0x006a55bc
+// GLOBAL: CARMA2_SW 0x0069f61c
+// GLOBAL: CARMA2_CHEAT 0x006ad134
+int gSize_powerup_queue;
+
 // GLOBAL: CARMA2_HW 0x006a55c0
 // GLOBAL: CARMA2_SW 0x0069f620
 // GLOBAL: CARMA2_CHEAT 0x006ad138
@@ -148,10 +164,17 @@ int gINT_006a80f4 = 0;
 // GLOBAL: CARMA2_CHEAT 0x006afc70
 tDecal gDecals[50] = { 0 };
 
+#ifdef REC2_MATCHING
+// GLOBAL: CARMA2_HW 0x006a8288
+// GLOBAL: CARMA2_SW 0x006a22e8
+// GLOBAL: CARMA2_CHEAT 0x006afe00
+undefined4 gDAT_006a8288 = 0;
+#endif
+
 // GLOBAL: CARMA2_HW 0x006a828c
 // GLOBAL: CARMA2_SW 0x006a22ec
 // GLOBAL: CARMA2_CHEAT 0x006afe04
-int gCount_queued_smashes;
+int gCount_queued_smashes = 0;
 
 // GLOBAL: CARMA2_HW 0x006abee8
 // GLOBAL: CARMA2_SW 0x006a5438
@@ -1954,7 +1977,36 @@ void C2_HOOK_FASTCALL SendNetSmash(tPhysics_object* pObject, undefined4 pArg2, f
 
 // SendAllSmashes
 
-// HitPowerup
+// FUNCTION: CARMA2_HW 0x004f1030
+// FUNCTION: CARMA2_SW 0x004ecc90
+// FUNCTION: CARMA2_CHEAT 0x004f6cd0
+void C2_HOOK_FASTCALL HitPowerup(tPhysics_object* pObject, int pPowerup_index, br_actor* pActor) {
+    tCar_spec* car;
+
+    car = pObject->owner;
+    if (pPowerup_index == 14) {
+        if (pObject != NULL && car != NULL && pObject->flags_0x238 == 1
+                && !(car != NULL && car->driver != eDriver_non_car_unused_slot && (car->driver == eDriver_detached_bit || car->driver == eDriver_split_car))
+                && gSize_powerup_queue < (int)REC2_ASIZE(gPowerup_queue) && car != NULL && car->driver > eDriver_5) {
+            gPowerup_queue[gSize_powerup_queue].actor = pActor;
+            gPowerup_queue[gSize_powerup_queue].car = pObject->owner;
+            gPowerup_queue[gSize_powerup_queue].powerup_index = 14;
+            gSize_powerup_queue++;
+        } else {
+            ThisObjectHitAMineSoSpamItUpUsingThisPowerupsSettings(pObject, 14);
+        }
+    } else {
+        if ((pObject != NULL && car != NULL && pObject->flags_0x238 == 1
+                && !(car != NULL && car->driver != eDriver_non_car_unused_slot && (car->driver == eDriver_detached_bit || car->driver == eDriver_split_car))
+                && gSize_powerup_queue < (int)REC2_ASIZE(gPowerup_queue) && car != NULL && car->driver == eDriver_local_human)
+            || (pObject->flags_0x238 == 0x20 && (gMutant_tail_state == 2 || GetTotalTime() - gDAT_00705b70 < 7500))) {
+            gPowerup_queue[gSize_powerup_queue].actor = pActor;
+            gPowerup_queue[gSize_powerup_queue].car = &gProgram_state.current_car;
+            gPowerup_queue[gSize_powerup_queue].powerup_index = pPowerup_index;
+            gSize_powerup_queue++;
+        }
+    }
+}
 
 // SmashEnvironment
 
@@ -2094,7 +2146,27 @@ void C2_HOOK_FASTCALL MungeMaterial(br_actor* pActor, int pRecursive, br_materia
     *pCount_vertices = munge_material_cb_ctx.count_vertices;
 }
 
-// ReinitSmashing
+// FUNCTION: CARMA2_HW 0x004f5750
+// FUNCTION: CARMA2_SW 0x004f13b0
+// FUNCTION: CARMA2_CHEAT 0x004fb3f0
+void C2_HOOK_FASTCALL ReinitSmashing(void) {
+    int i;
+
+    for (i = 0; i < (int)REC2_ASIZE(gSmash_glass_fragments); i++) {
+        gSmash_glass_fragments[i].end_time = 0;
+    }
+    for (i = 0; i < (int)REC2_ASIZE(gDecals); i++) {
+        gDecals[i].time = 0;
+    }
+    for (i = 0; i < (int)REC2_ASIZE(gQueued_net_smashes); i++) {
+        gQueued_net_smashes[i].field_0x4 = 0;
+    }
+    gSize_powerup_queue = 0;
+    gCount_host_smashes = 0;
+    if (gNet_mode == eNet_mode_host) {
+        gNet_host_smashes = BrMemAllocate(1000 * sizeof(tStored_smash), kMem_stored_smash);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004f57c0
 // FUNCTION: CARMA2_SW 0x004f1420
