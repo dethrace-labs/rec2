@@ -148,6 +148,7 @@ void C2_HOOK_FASTCALL ViewOpponent(void) {
 
     // GLOBAL: CARMA2_HW 0x0058f628
     // GLOBAL: CARMA2_SW 0x0058a628
+    // GLOBAL: CARMA2_CHEAT 0x005946b8
     static int n = -1;
 
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tNet_message_chunk_view_car, player, 0x4);
