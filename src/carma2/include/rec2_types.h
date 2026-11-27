@@ -5714,7 +5714,7 @@ typedef struct {
     undefined4 field_0xc;
     undefined4 field_0x10;
 #ifdef REC2_V101A
-    undefined4 field_extra_v101a; /* FIXME: unknown location (<0x14) */
+    tU32 checksum;
 #endif
     undefined2 field_0x14;
     undefined2 field_0x16;
@@ -6099,6 +6099,7 @@ enum {
     kFatalError_CantOpen_S = 0x6b,
     kFatalError_CannotLoadAGeneratedShadeTable = 0x6d,
     kFatalError_NetworkCodeSelfCheck = 0x6e,
+    kFatalError_NetworkMessageCorrupt = 0x6f,
     kFatalError_RanOutOfFunkGrooveSlotBunches = 0x71,
     kFatalError_FileIsCorrupted_S = 0x73,
     kFatalError_CantFindFile_S = 0x75,
