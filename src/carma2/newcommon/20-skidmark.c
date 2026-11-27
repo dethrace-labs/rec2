@@ -8,6 +8,7 @@
 
 #include "20-skidmark.h"
 
+#include "23-piping.h"
 #include "41-utility.h"
 #include "52-errors.h"
 #include "63-loading3.h"
@@ -59,7 +60,8 @@ int gINT_006a32e0 = 0;
 
 // GLOBAL: CARMA2_HW 0x006a27e8
 // GLOBAL: CARMA2_SW 0x0069c840
-int gCurrent_skid;
+// GLOBAL: CARMA2_CHEAT 0x006aa360
+tU16 gCurrent_skid = 0;
 
 // FUNCTION: CARMA2_HW 0x004ea2c0
 // FUNCTION: CARMA2_SW 0x004e6060
@@ -107,9 +109,39 @@ void C2_HOOK_FASTCALL AdjustSkid(int pSkid_num, br_matrix34* pMatrix, br_materia
     gSkids[pSkid_num].actor->render_style = BR_RSTYLE_DEFAULT;
 }
 
-// FarFromLine2D
+inline int C2_HOOK_FASTCALL FarFromLine2D(br_vector3* pPt, br_vector3* pL1, br_vector3* pL2) {
+    br_vector2 line;
+    br_vector2 to_pt;
+    br_scalar line_len;
+    br_scalar cross;
 
-// Reflex2D
+    line.v[0] = pL2->v[0] - pL1->v[0];
+    line.v[1] = pL2->v[2] - pL1->v[2];
+    to_pt.v[0] = pPt->v[0] - pL2->v[0];
+    to_pt.v[1] = pPt->v[2] - pL2->v[2];
+    cross = (-line.v[0]) * to_pt.v[1] + to_pt.v[0] * line.v[1];
+    line_len = BrVector2Length(&line);
+    if (fabs(cross) > line_len * 0.05f) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+inline int C2_HOOK_FASTCALL Reflex2D(br_vector3* pPt, br_vector3* pL1, br_vector3* pL2) {
+    br_vector2 line;
+    br_vector2 to_pt;
+
+    line.v[0] = pL2->v[0] - pL1->v[0];
+    line.v[1] = pL2->v[2] - pL1->v[2];
+    to_pt.v[0] = pPt->v[0] - pL2->v[0];
+    to_pt.v[1] = pPt->v[2] - pL2->v[2];
+    if (BrVector2Dot(&to_pt, &line) < 0.0f) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004e9c40
 // FUNCTION: CARMA2_SW 0x004e5a00
@@ -211,9 +243,20 @@ void C2_HOOK_FASTCALL HideSkids(void) {
     }
 }
 
-// SkidLen
+inline br_scalar C2_HOOK_FASTCALL SkidLen(int pSkid) {
+    return BrVector3Length((br_vector3*)gSkids[pSkid].actor->t.t.mat.m[0]);
+}
 
-// UglyWidthChange
+inline int C2_HOOK_FASTCALL UglyWidthChange(int pSkid, br_scalar pWidth) {
+    br_scalar old_width_sq;
+
+    old_width_sq = BrVector3LengthSquared((br_vector3*)gSkids[pSkid].actor->t.t.mat.m[2]);
+    if (old_width_sq < 2.0f * (pWidth * pWidth) && pWidth * pWidth <= 2.0f * old_width_sq) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
 
 // GenericSkidSection
 
@@ -221,11 +264,35 @@ void C2_HOOK_FASTCALL HideSkids(void) {
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x004e9f20
-// STUB: CARMA2_SW 0x004e5cc0
-int C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_start, br_vector3* pSkid_end, br_material* pMaterial, br_vector3* pPos, br_vector3* pNorm, br_vector3* pPrev_pos, br_vector3* pPrev_norm, br_scalar pTexture_start, br_scalar pTexture_step) {
+// FUNCTION: CARMA2_HW 0x004e9f20
+// FUNCTION: CARMA2_SW 0x004e5cc0
+// FUNCTION: CARMA2_CHEAT 0x004efbc0
+int C2_HOOK_FASTCALL SkidSection(tU16* pSkid_id, br_vector3* pSkid_start, br_vector3* pSkid_end, br_material* pMaterial, br_vector3* pPos, br_vector3* pNorm, br_vector3* pPrev_pos, br_vector3* pPrev_norm, br_scalar pTexture_start, br_scalar pTexture_step) {
 
-    NOT_IMPLEMENTED();
+    if (BrVector3Dot(pNorm, pPrev_norm) < 0.997f || fabs(BrVector3Dot(pNorm, pPos) - BrVector3Dot(pPrev_pos, pNorm)) > 0.01f) {
+        *pSkid_id = -1;
+        return 1;
+    }
+    if (*pSkid_id >= REC2_ASIZE(gSkids)
+        || pMaterial != gSkids[*pSkid_id].actor->material
+        || UglyWidthChange(*pSkid_id, pTexture_step)
+        || SkidLen(*pSkid_id) > 0.5f
+        || FarFromLine2D(pPos, pSkid_start, pSkid_end)
+        || Reflex2D(pPos, pSkid_start, pPrev_pos)) {
+        *pSkid_start = *pPrev_pos;
+        *pSkid_end = *pPos;
+        gSkids[gCurrent_skid].actor->render_style = BR_RSTYLE_DEFAULT;
+        gSkids[gCurrent_skid].actor->material = pMaterial;
+        gSkids[gCurrent_skid].normal = *pNorm;
+        StretchMark(&gSkids[gCurrent_skid], pPrev_pos, pPos, pTexture_start, pTexture_step);
+        PipeSingleSkidAdjustment(gCurrent_skid, &gSkids[gCurrent_skid].actor->t.t.mat, pMaterial);
+        *pSkid_id = gCurrent_skid;
+        gCurrent_skid = (gCurrent_skid + 1) % 100;
+    } else {
+        StretchMark(&gSkids[*pSkid_id], pSkid_start, pPos, pTexture_start, pTexture_step);
+        PipeSingleSkidAdjustment(*pSkid_id, &gSkids[*pSkid_id].actor->t.t.mat, pMaterial);
+    }
+    return 0;
 }
 
 #ifdef REC2_MATCHING

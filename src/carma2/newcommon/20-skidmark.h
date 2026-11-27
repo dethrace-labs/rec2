@@ -20,7 +20,7 @@ extern const char* gInitial_position_sphere_where[2];
 extern const char* gExplosion_rotate_names[2];
 extern br_material* gMaterial[2];
 extern tSkid gSkids[100];
-extern int gCurrent_skid;
+extern tU16 gCurrent_skid;
 
 extern void C2_HOOK_FASTCALL StretchMark(tSkid* pMark, br_vector3* pFrom, br_vector3* pTo, br_scalar pTexture_start, br_scalar pTexture_step);
 
@@ -28,9 +28,9 @@ extern void C2_HOOK_FASTCALL StretchMark(tSkid* pMark, br_vector3* pFrom, br_vec
 
 extern void C2_HOOK_FASTCALL AdjustSkid(int pSkid_num, br_matrix34* pMatrix, br_material* pMaterial);
 
-// FarFromLine2D
+extern int C2_HOOK_FASTCALL FarFromLine2D(br_vector3* pPt, br_vector3* pL1, br_vector3* pL2);
 
-// Reflex2D
+extern int C2_HOOK_FASTCALL Reflex2D(br_vector3* pPt, br_vector3* pL1, br_vector3* pL2);
 
 extern void C2_HOOK_FASTCALL InitSkids(void);
 
@@ -38,13 +38,13 @@ extern void C2_HOOK_FASTCALL HideSkid(int pSkid_num);
 
 extern void C2_HOOK_FASTCALL HideSkids(void);
 
-// SkidLen
+extern br_scalar C2_HOOK_FASTCALL SkidLen(int pSkid);
 
-// UglyWidthChange
+extern int C2_HOOK_FASTCALL UglyWidthChange(int pSkid, br_scalar pWidth);
 
 // GenericSkidSection
 
-extern int C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_start, br_vector3* pSkid_end, br_material* pMaterial, br_vector3* pPos, br_vector3* pNorm, br_vector3* pPrev_pos, br_vector3* pPrev_norm, br_scalar pTexture_start, br_scalar pTexture_step);
+extern int C2_HOOK_FASTCALL SkidSection(tU16* pSkid_id, br_vector3* pSkid_start, br_vector3* pSkid_end, br_material* pMaterial, br_vector3* pPos, br_vector3* pNorm, br_vector3* pPrev_pos, br_vector3* pPrev_norm, br_scalar pTexture_start, br_scalar pTexture_step);
 
 extern void C2_HOOK_FASTCALL SkidMark(tCar_spec* pCar_spec, int pWheel_num);
 
