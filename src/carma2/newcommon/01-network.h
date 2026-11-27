@@ -74,15 +74,15 @@ extern void C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game);
 
 extern void C2_HOOK_FASTCALL FillInThisPlayer(tNet_game_details* pGame, tNet_game_player_info* pPlayer, int pCar_index, int pHost);
 
-// LoadCarN
+extern void C2_HOOK_FASTCALL LoadCarN(int pIndex, tNet_game_player_info* pPlayer);
 
-// DisposeCarN
+extern void C2_HOOK_FASTCALL DisposeCarN(int pIndex);
 
-// PlayerHasLeft
+extern void C2_HOOK_FASTCALL PlayerHasLeft(int pIndex);
 
-// RemoveReferencesToCar
+extern void C2_HOOK_FASTCALL RemoveReferencesToCar(tCar_spec* pCar);
 
-// NetPlayersChanged
+extern void C2_HOOK_FASTCALL NetPlayersChanged(int pNew_count, tNet_game_player_info* pNew_players);
 
 // NetHostGame
 
@@ -142,11 +142,11 @@ extern tNet_message* C2_HOOK_FASTCALL NetGetNextMessage(tNet_game_details* pDeta
 
 // ReceivedDetails
 
-// SendOutPlayerList
+extern void C2_HOOK_FASTCALL SendOutPlayerList(void);
 
 // ReceivedJoin
 
-// KickPlayerOut
+extern void C2_HOOK_FASTCALL KickPlayerOut(tPlayer_ID pID);
 
 // ReceivedLeave
 
