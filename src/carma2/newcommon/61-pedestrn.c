@@ -1309,6 +1309,7 @@ int C2_HOOK_FASTCALL SetCharacterBoneModel(tPed_character_instance* pCharacter, 
 
 // FUNCTION: CARMA2_HW 0x0040b500
 // FUNCTION: CARMA2_SW 0x0040b4f0
+// FUNCTION: CARMA2_CHEAT 0x0040b570
 void C2_HOOK_FASTCALL SetCharacterBoneModelP(tPed_character_instance* pCharacter, int pBone_index, br_model* pModel, int pArg4) {
     if (pCharacter->field_0x4 >= 0) {
         pCharacter->field_0xa = (tS8)pArg4;
