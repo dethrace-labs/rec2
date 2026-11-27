@@ -26,17 +26,17 @@ br_clip_result C2_HOOK_CDECL PixelmapPointClip(br_point* out, br_point* in, br_p
 // FUNCTION: CARMA2_SW 0x005390a0
 // FUNCTION: CARMA2_CHEAT 0x005435f0
 br_clip_result C2_HOOK_CDECL PixelmapLineClip(br_point* s_out, br_point* e_out, br_point* s_in, br_point* e_in, br_pixelmap* pm) {
-    int temp;
-    br_int_32 w;
     br_int_32 h;
-    br_int_32 x1;
+    br_int_32 w;
     br_int_32 x2;
-    br_int_32 y1;
+    br_int_32 x1;
     br_int_32 y2;
+    int temp;
+    br_int_32 y1;
 
-#define USCALE(arg,num,den) (((br_uint_32)(arg) * (br_uint_32)(num)) / (br_uint_32)(den))
+#define USCALE(arg,num,den) (((br_uint_32)(num) * (br_uint_32)(arg)) / (br_uint_32)(den))
 
-    x1 = s_in->x + pm->origin_x;
+    x1 = pm->origin_x + s_in->x;
     y1 = s_in->y + pm->origin_y;
 
     x2 = e_in->x + pm->origin_x;
@@ -62,7 +62,7 @@ br_clip_result C2_HOOK_CDECL PixelmapLineClip(br_point* s_out, br_point* e_out, 
         if (y2 < 0 || y1 > h) {
             return BR_CLIP_REJECT;
         }
-        if (y1 < 0) {
+        if (0 > y1) {
             temp = USCALE(x2 - x1, 0 - y1, y2 - y1);
             x1 += temp;
             if (x1 > w) {
@@ -78,9 +78,9 @@ br_clip_result C2_HOOK_CDECL PixelmapLineClip(br_point* s_out, br_point* e_out, 
             }
             y2 = h;
         }
-        if (x1 < 0) {
+        if (0 > x1) {
             temp = USCALE(y2 - y1, 0 - x1, x2 - x1);
-            y1 += temp;
+            y1 = temp + y1;
             x1 = 0;
         }
         if (x2 > w) {
@@ -89,12 +89,12 @@ br_clip_result C2_HOOK_CDECL PixelmapLineClip(br_point* s_out, br_point* e_out, 
             x2 = w;
         }
     } else {
-        if (y1 < 0 || y2 > h) {
+        if (0 > y1 || y2 > h) {
             return BR_CLIP_REJECT;
         }
         if (y1 > h) {
             temp = USCALE(x2 - x1, y1 - h, y1 - y2);
-            x1 += temp;
+            x1 = temp + x1;
             if (x1 > w) {
                 return BR_CLIP_REJECT;
             }
@@ -115,7 +115,7 @@ br_clip_result C2_HOOK_CDECL PixelmapLineClip(br_point* s_out, br_point* e_out, 
         }
         if (x2 > w) {
             temp = USCALE(y1 - y2, x2 - w, x2 - x1);
-            y2 += temp;
+            y2 = y2 + temp;
             x2 = w;
         }
     }
