@@ -3944,7 +3944,8 @@ typedef struct {
 } tPed_form_actor_set;
 
 typedef struct {
-    tPed_form_collision_detection_type type;
+    tU8 field_0x0;
+    undefined field_0x1[3];
     tPhysics_object* collision_info;
 } tPed_form_simple_phys;
 
@@ -4028,7 +4029,7 @@ typedef struct tPed_morph {
 
 typedef struct {
     undefined4 (C2_HOOK_FASTCALL * passive_collision)(undefined4*, undefined4, undefined4*);
-    int (C2_HOOK_FASTCALL * active_halted)(undefined4*, undefined4*);
+    int (C2_HOOK_FASTCALL * active_halted)(tPed_character_instance*, tPhysics_object*);
     void (C2_HOOK_FASTCALL * moved_by_physics)(undefined4*, undefined4*, undefined4);
     int (C2_HOOK_FASTCALL * move_completed)(undefined4*);
     void (C2_HOOK_FASTCALL * fill_in_object)(tPhysics_object*, undefined4);
