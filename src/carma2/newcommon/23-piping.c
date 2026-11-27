@@ -2878,9 +2878,39 @@ void C2_HOOK_FASTCALL UndoPedPos(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk)
 
 // UndoPedModelChange
 
-// UndoGibShower
+// FUNCTION: CARMA2_HW 0x004ca270
+// FUNCTION: CARMA2_SW 0x004c69a0
+// FUNCTION: CARMA2_CHEAT 0x004cfdb0
+void C2_HOOK_FASTCALL UndoGibShower(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
 
-// UndoBloodSpurt
+    if (pPrev_chunk != NULL) {
+        PedUndoGibShower((*pChunk)->data.gib_shower.time,
+            pPrev_chunk->subject_index,
+            pPrev_chunk->data.gib_shower.time,
+            pPrev_chunk->data.gib_shower.uid,
+            pPrev_chunk->data.gib_shower.force,
+            pPrev_chunk->data.gib_shower.field_0x0,
+            &pPrev_chunk->data.gib_shower.p1,
+            &pPrev_chunk->data.gib_shower.p2,
+            &pPrev_chunk->data.gib_shower.v);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004ca2a0
+// FUNCTION: CARMA2_SW 0x004c69d0
+// FUNCTION: CARMA2_CHEAT 0x004cfde0
+void C2_HOOK_FASTCALL UndoBloodSpurt(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
+
+    if (pPrev_chunk != NULL) {
+        PedUndoBloodSpurt((*pChunk)->data.blood_spurt.time,
+            pPrev_chunk->subject_index,
+            pPrev_chunk->data.blood_spurt.time,
+            pPrev_chunk->data.blood_spurt.seed,
+            &pPrev_chunk->data.blood_spurt.position,
+            &pPrev_chunk->data.blood_spurt.impactee_velocity,
+            &pPrev_chunk->data.blood_spurt.normal);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004ca2d0
 // FUNCTION: CARMA2_SW 0x004c6a00

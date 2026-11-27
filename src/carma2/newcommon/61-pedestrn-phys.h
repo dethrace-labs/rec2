@@ -155,7 +155,7 @@ extern void C2_HOOK_FASTCALL DoGibShower(tU32 pId, tU32 pTime, unsigned int pSee
 
 extern void C2_HOOK_FASTCALL PedApplyGibShower(tU32 pId, tU32 pTime, unsigned int pSeed, float pForce, int pStart_size, br_vector3* pPosition, br_vector3* pAlternate_position, br_vector3* pImpactee_velocity);
 
-// PedUndoGibShower
+extern void C2_HOOK_FASTCALL PedUndoGibShower(tU32 pCurrent_time, tU32 pId, tU32 pTime, unsigned int pSeed, float pForce, int pStart_size, br_vector3* pPosition, br_vector3* pAlternate_position, br_vector3* pImpactee_velocity);
 
 // DoGiblets
 
