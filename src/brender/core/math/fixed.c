@@ -234,7 +234,12 @@ static uint16_t fast_rsqrt_table[192] = {
     0x820c, 0x81c9, 0x8186, 0x8144, 0x8103, 0x80c1, 0x8080, 0x8040,
 };
 
+#ifdef _MSC_VER
+#pragma optimize("y", off)
+#endif
 // FUNCTION: CARMA2_HW 0x00537110
+// FUNCTION: CARMA2_SW 0x005327b0
+// FUNCTION: CARMA2_CHEAT 0x0053cd00
 br_fixed_ls C2_HOOK_CDECL BrFixedAbs(br_fixed_ls a) {
 
     if (a < 0) {
@@ -243,12 +248,24 @@ br_fixed_ls C2_HOOK_CDECL BrFixedAbs(br_fixed_ls a) {
     return a;
 }
 
+#ifdef _MSC_VER
+#pragma optimize("y", on)
+#endif
+
+#ifdef _MSC_VER
+#pragma optimize("y", off)
+#endif
 // FUNCTION: CARMA2_HW 0x00537120
+// FUNCTION: CARMA2_SW 0x005327c0
 // FUNCTION: CARMA2_CHEAT 0x0053cd10
-br_fixed_ls C2_HOOK_FASTCALL BrFixedMul(br_fixed_ls a, br_fixed_ls b) {
+br_fixed_ls C2_HOOK_CDECL BrFixedMul(br_fixed_ls a, br_fixed_ls b) {
 
     return ((br_int_64)a * (br_int_64)b) >> 16;
 }
+
+#ifdef _MSC_VER
+#pragma optimize("y", on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x00537131
 br_fixed_ls BR_NAKED C2_HOOK_CDECL BrFixedMac2(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d) {
