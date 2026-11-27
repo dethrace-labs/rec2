@@ -4669,7 +4669,9 @@ typedef struct tPhysics_object {
     tU32 message_time; // 0x268
     undefined field_0x26c[0x278 - 0x26c];
     tS16 field_0x278;
-    undefined field_0x27a[0x294 - 0x27a];
+    undefined field_0x27a[0x27c - 0x27a];
+    tU32 field_0x27c;
+    undefined field_0x280[0x294 - 0x280];
     tU8 field_0x294[0x49c - 0x294];
     undefined4 field_0x49c; /* tU32 last_car_car_collision: */
     undefined field_0x4a0[52];
@@ -5673,6 +5675,15 @@ typedef struct {
 
 typedef struct {
     tNet_message_chunk_header header;
+    br_angle yaw;
+    tPlayer_ID player;
+    tCompressed_vector3 pos;
+    undefined field_0xe[2];
+    tU32 repair_time;
+} tNet_message_chunk_simple_car_pos;
+
+typedef struct {
+    tNet_message_chunk_header header;
     undefined field_0x2[0x4-0x2];
     tPlayer_ID player;
     int powerup_index;
@@ -5703,6 +5714,7 @@ typedef union {
     tNet_message_chunk_toggle_doors toggle_doors; /* type = 0x2c */
     tNet_message_chunk_view_car view_car; /* type = 0x2f */
     tNet_message_chunk_mine_explode mine_explode; /* type = 0x31 */
+    tNet_message_chunk_simple_car_pos simple_car_pos;
     tNet_message_chunk_recover recover;
     tNet_message_chunk_detach_bit detach_bit; /* type = 0x33 */
 } tNet_message_chunk;
