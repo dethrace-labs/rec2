@@ -1260,10 +1260,6 @@ void C2_HOOK_FASTCALL DisposeAllBonerData(void) {
     NOT_IMPLEMENTED();
 }
 
-#ifdef REC2_MATCHING
-#pragma auto_inline(on)
-#endif
-
 // FUNCTION: CARMA2_HW 0x0040b420
 // FUNCTION: CARMA2_SW 0x0040b410
 // FUNCTION: CARMA2_CHEAT 0x0040b490
@@ -1343,6 +1339,10 @@ int C2_HOOK_FASTCALL GetCharacterModelSet(tPed_character_instance* pCharacter) {
 
     return pCharacter->field_0xa;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // BonerPassiveCollision
 
