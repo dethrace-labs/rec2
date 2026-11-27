@@ -12,6 +12,7 @@
 #include "01-network.h"
 #include "08-loading1.h"
 #include "09-funks.h"
+#include "15-displays.h"
 #include "18-graphics2.h"
 #include "23-piping.h"
 #include "30-opponent.h"
@@ -1547,7 +1548,12 @@ void C2_HOOK_FASTCALL MakeModelMaterialsDoubleSided(br_model* pModel) {
     }
 }
 
-// CheckFlapAngles
+// STUB: CARMA2_HW 0x00434320
+// STUB: CARMA2_SW 0x00434350
+// STUB: CARMA2_CHEAT 0x00434510
+intptr_t C2_HOOK_CDECL CheckFlapAngles(br_actor* pActor, void* pContext) {
+    NOT_IMPLEMENTED();
+}
 
 // FUNCTION: CARMA2_HW 0x0042d9b0
 // FUNCTION: CARMA2_SW 0x0042da20
@@ -2032,7 +2038,12 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsDoubleSided(br_actor* pActor, void*
     return 0;
 }
 
-// SwapCarShapes
+inline void C2_HOOK_FASTCALL SwapCarShapes(tCar_spec* pCar, tPhysics_shape* pShape) {
+
+    pCar->collision_info->shape = pShape;
+    UpdateCollisionObject(pCar->collision_info);
+    pCar->collision_info->bb2.min.v[1] = GetCarOverallBoundsMinY(pCar);
+}
 
 // IsAWheelOrPivotActor
 
@@ -2074,17 +2085,177 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor, void*
 
 // DoJointSnapping
 
-// PointIsOutsideShape
+inline int C2_HOOK_FASTCALL PointIsOutsideShape(const br_vector3* pPoint, const tCollision_shape_polyhedron_data* pPolyhedron) {
+    int i;
 
-// PointIsOutsideLimits
+    for (i = 0; i < pPolyhedron->count_planes; i++) {
+        if (BrVector3Dot(&pPolyhedron->planes[i], pPoint) + pPolyhedron->planes[i].v[3] < -1e-5) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
-// ClipPointToPolyhedron
+inline int C2_HOOK_FASTCALL PointIsOutsideLimits(const tCar_crush_shape_info* pShape, int pPoint_index, const tCar_crush_limits* pLimits) {
+    int i;
+    int bits;
 
-// QuantizeVector3
+    bits = pShape->field_0x18[pPoint_index].field_0x28;
+    for (i = 0; i < 3; i++) {
+        if (pShape->field_0x18[pPoint_index].field_0x18.v[i] < pLimits->limits[i][0].values[bits & 0x3]) {
+            return 1;
+        }
+        bits >>= 2;
+        if (pShape->field_0x18[pPoint_index].field_0x18.v[i] > pLimits->limits[i][1].values[bits & 0x3]) {
+            return 1;
+        }
+        bits >>= 2;
+    }
+    return 0;
+}
 
-// MoveCarToSensiblePlace
+inline void C2_HOOK_FASTCALL ClipPointToPolyhedron(br_vector3* pPoint, const tCollision_shape_polyhedron_data* pPolyhedron) {
+    int i;
+    br_scalar distance;
+    br_vector3 offset;
 
-// SwapShapesIfPossible
+    for (i = 0; i < pPolyhedron->count_planes; i++) {
+        distance = BrVector3Dot(&pPolyhedron->planes[i], pPoint) + pPolyhedron->planes[i].v[3];
+        if (distance < 0.0f) {
+            BrVector3Scale(&offset, &pPolyhedron->planes[i], -distance);
+            BrVector3Accumulate(pPoint, &offset);
+        }
+    }
+}
+
+inline void C2_HOOK_FASTCALL QuantizeVector3(br_vector3* pV) {
+    tCompressed_vector3 compressed;
+
+    CompressVector3(&compressed, pV, -2.5f, 2.5f);
+    ExpandVector3(pV, &compressed, -2.5f, 2.5f);
+}
+
+inline int C2_HOOK_FASTCALL MoveCarToSensiblePlace(tCar_spec* pCar) {
+    br_vector3 original_pos;
+    br_vector3 last_direction;
+    br_vector3 direction;
+    br_scalar step;
+    int i;
+
+    step = 0.007246377f;
+    BrVector3Set(&last_direction, 0.0f, 0.0f, 0.0f);
+    BrVector3Copy(&original_pos, (br_vector3*)pCar->collision_info->transform_matrix.m[3]);
+    for (i = 0; i < 10; i++) {
+        if (TestForCarInSensiblePlace(pCar, &direction)) {
+            return 1;
+        }
+        if (BrVector3Dot(&direction, &last_direction) > 0.707107f) {
+            step *= 2.0f;
+        } else {
+            BrVector3Copy(&last_direction, &direction);
+            step = 0.007246377f;
+        }
+        BrVector3Scale(&direction, &direction, step);
+        BrVector3Accumulate((br_vector3*)pCar->collision_info->transform_matrix.m[3], &direction);
+    }
+    BrVector3Copy((br_vector3*)pCar->collision_info->transform_matrix.m[3], &original_pos);
+    return 0;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004349c0
+// FUNCTION: CARMA2_SW 0x004349f0
+// FUNCTION: CARMA2_CHEAT 0x00434bb0
+int C2_HOOK_FASTCALL SwapShapesIfPossible(tCar_spec* pCar_spec) {
+    tCar_crush_spec* car_crush;
+    tCar_crush_shape_info* shape;
+    tCollision_shape_polyhedron* first_poly;
+    tCollision_shape_polyhedron* last_poly;
+    tCollision_shape_polyhedron* poly;
+    tPhysics_shape* original_shape;
+    int i;
+    int j;
+
+    car_crush = pCar_spec->car_crush_spec;
+    if (car_crush == NULL || car_crush->count_shapes == 0 || car_crush->field_0x4 == NULL) {
+        return 0;
+    }
+    if (!car_crush->version_le_100) {
+        car_crush->expand_bounding_box = 0;
+        return 0;
+    }
+    first_poly = NULL;
+    last_poly = NULL;
+    for (i = 0; i < car_crush->count_shapes; i++) {
+        shape = &car_crush->field_0x4[i];
+        if (shape->field_0x8) {
+            continue;
+        }
+        if (car_crush->expand_bounding_box & 0x4) {
+            for (j = 0; j < shape->count_points; j++) {
+                ClipPointToPolyhedron(&shape->field_0x18[j].field_0x18, &shape->field_0x0->polyhedron);
+                if (PointIsOutsideShape(&shape->field_0x18[j].field_0x18, &shape->field_0x0->polyhedron)
+                    || PointIsOutsideLimits(shape, j, &car_crush->field_0xbc)) {
+                    BrVector3Copy(&shape->field_0x18[j].field_0x18, &shape->field_0x18[j].field_0xc);
+                }
+                if (DRVector3TestForNan(&shape->field_0x18[j].field_0x18)) {
+                    PDEnterDebugger("NaN");
+                }
+            }
+        }
+        if (car_crush->expand_bounding_box & 0x2) {
+            shape->field_0x4->polyhedron.count_points = shape->count_points;
+            for (j = 0; j < shape->count_points; j++) {
+                if (gNet_mode != eNet_mode_none) {
+                    QuantizeVector3(&shape->field_0x18[j].field_0x18);
+                }
+                BrVector3Copy(&shape->field_0x4->polyhedron.points[j], &shape->field_0x18[j].field_0x18);
+            }
+            FillInShape((tPhysics_shape*)shape->field_0x4);
+        }
+        if (first_poly == NULL) {
+            first_poly = shape->field_0x4;
+        }
+        if (last_poly != NULL) {
+            last_poly->common.next = (tPhysics_shape*)shape->field_0x4;
+        }
+        last_poly = shape->field_0x4;
+    }
+    if (first_poly == NULL) {
+        return 0;
+    }
+    original_shape = pCar_spec->collision_info->shape;
+    SwapCarShapes(pCar_spec, (tPhysics_shape*)first_poly);
+    if (!(car_crush->expand_bounding_box & 0x4) && !MoveCarToSensiblePlace(pCar_spec)) {
+        SwapCarShapes(pCar_spec, original_shape);
+        return 1;
+    }
+    if (car_crush->expand_bounding_box & 0x8) {
+        BrVector3Copy(&pCar_spec->collision_info->cmpos, &car_crush->field_0x10);
+    }
+    car_crush->expand_bounding_box = 0;
+    for (i = 0; i < car_crush->count_shapes; i++) {
+        shape = &car_crush->field_0x4[i];
+        if (!shape->field_0x8) {
+            poly = shape->field_0x0;
+            shape->field_0x0 = shape->field_0x4;
+            shape->field_0x4 = poly;
+            for (j = 0; j < shape->count_points; j++) {
+                BrVector3Copy(&shape->field_0x18[j].field_0xc, &shape->field_0x18[j].field_0x18);
+            }
+        }
+    }
+    car_crush->field_0x28 = 1;
+    SetHierarchyDoingNothingFlag(pCar_spec->collision_info, 0);
+    return 0;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // DoShapeSwapping
 
@@ -2442,13 +2613,172 @@ void C2_HOOK_FASTCALL TotallyRepairCar(void) {
     }
 }
 
-// AddTotalDeflectionOfModel
+typedef struct {
+    tCar_spec* car;
+    float repair_step;
+    float* total_deflection;
+    float repaired_amount;
+} tRepair_context;
 
-// AddTotalDeflection
+inline void C2_HOOK_FASTCALL AddTotalDeflectionOfModel(br_model* pModel, float* pDeflection) {
+    tUser_detail_level_model* user_detail_model;
+    tModel_detail_vertex_data* vertex_data;
+    float deflection;
+    br_vector3 pos;
+    int i;
+    int j;
 
-// RepairModel
+    if (pModel == NULL) {
+        return;
+    }
+    user_detail_model = pModel->user;
+    if (user_detail_model == NULL) {
+        return;
+    }
+    vertex_data = user_detail_model->field_0x4;
+    if (vertex_data == NULL) {
+        return;
+    }
+    deflection = 0.0f;
+    for (i = 0; i < pModel->nvertices; i++) {
+        ExpandVector3(&pos, &vertex_data[i].p, -10.0f, 10.0f);
+        for (j = 0; j < 3; j++) {
+            deflection += (float)fabs(pos.v[j] - pModel->vertices[i].p.v[j]);
+        }
+    }
+    *pDeflection += deflection;
+}
 
-// RepairModels
+// FUNCTION: CARMA2_HW 0x0043b2e0
+// FUNCTION: CARMA2_SW 0x0043b330
+// FUNCTION: CARMA2_CHEAT 0x0043b510
+intptr_t C2_HOOK_CDECL AddTotalDeflection(br_actor* pActor, void* pContext) {
+    tUser_crush_data* user_crush;
+    tRepair_context* context;
+    int i;
+
+    user_crush = pActor->user;
+    if (user_crush == NULL || user_crush->crush_data == NULL || !user_crush->crush_data->field_0x2c) {
+        return 0;
+    }
+    context = pContext;
+    for (i = 0; i < context->car->count_detail_levels; i++) {
+        AddTotalDeflectionOfModel(user_crush->models[i], context->total_deflection);
+    }
+    return 0;
+}
+
+typedef struct {
+    tCar_spec* car;
+    float repair_step;
+    float repaired_amount;
+    float* total_deflection;
+} tRepair_model_context;
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x0043b510
+// FUNCTION: CARMA2_SW 0x0043b560
+// FUNCTION: CARMA2_CHEAT 0x0043b740
+int C2_HOOK_FASTCALL RepairModel(br_model* pModel, tRepair_model_context* pContext) {
+    tUser_detail_level_model* user_detail_model;
+    tModel_detail_vertex_data* vertex_data;
+    br_vector3 mash[1024];
+    br_vector3 pos;
+    br_vector3 old_pos;
+    float repaired;
+    float deflection;
+    float delta;
+    int i;
+    int j;
+
+    if (pModel == NULL || (user_detail_model = pModel->user) == NULL || (vertex_data = user_detail_model->field_0x4) == NULL) {
+        return 0;
+    }
+    if (pModel->nvertices > REC2_ASIZE(mash)) {
+        PDFatalError("Dog gone it, there's a lot of vertices on that model.");
+    }
+    repaired = 0.0f;
+    for (i = 0; i < pModel->nvertices; i++) {
+        ExpandVector3(&pos, &vertex_data[i].p, -10.0f, 10.0f);
+        BrVector3Copy(&old_pos, &pModel->vertices[i].p);
+        for (j = 0; j < 3; j++) {
+            deflection = (float)fabs(pos.v[j] - old_pos.v[j]);
+            if (deflection <= 0.0f) {
+                mash[i].v[j] = 0.0f;
+            } else {
+                *pContext->total_deflection += deflection;
+                if (old_pos.v[j] <= pos.v[j]) {
+                    pModel->vertices[i].p.v[j] += pContext->repair_step;
+                    if (pModel->vertices[i].p.v[j] > pos.v[j]) {
+                        pModel->vertices[i].p.v[j] = pos.v[j];
+                    }
+                    delta = pModel->vertices[i].p.v[j] - old_pos.v[j];
+                    repaired += delta;
+                } else {
+                    pModel->vertices[i].p.v[j] -= pContext->repair_step;
+                    if (pModel->vertices[i].p.v[j] < pos.v[j]) {
+                        pModel->vertices[i].p.v[j] = pos.v[j];
+                    }
+                    delta = pModel->vertices[i].p.v[j] - old_pos.v[j];
+                    repaired -= delta;
+                }
+                mash[i].v[j] = delta;
+                vertex_data[i].flags &= ~0x4;
+            }
+        }
+    }
+    if (repaired == 0.0f) {
+        return 1;
+    }
+    SetModelForUpdate(pModel);
+    AddModelMashToPipingSession(pModel, mash);
+    pContext->repaired_amount += repaired;
+    return 0;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+// FUNCTION: CARMA2_HW 0x0043b470
+// FUNCTION: CARMA2_SW 0x0043b4c0
+// FUNCTION: CARMA2_CHEAT 0x0043b6a0
+intptr_t C2_HOOK_CDECL RepairModels2(br_actor* pActor, void* pContext) {
+    tRepair_model_context* context;
+    tUser_crush_data* user_crush;
+    tCar_crush_buffer_entry* crush_data;
+    int i;
+
+    context = pContext;
+    user_crush = pActor->user;
+    if (user_crush == NULL) {
+        return 0;
+    }
+    crush_data = user_crush->crush_data;
+    if (crush_data == NULL) {
+        return 0;
+    }
+    if (RepairModel(user_crush->models[0], context)) {
+        RepairSmash(context->car, user_crush->crush_data);
+        crush_data->field_0x2c = 0;
+        if (crush_data->flap_data != NULL && !crush_data->flap_data->kev_o_flap) {
+            crush_data->flap_data->field_0x15 = 0;
+            crush_data->flap_data->field_0x14 = 1;
+            crush_data->flap_data->field_0x18 = 0.0f;
+        }
+        if (crush_data->detach_data != NULL) {
+            crush_data->detach_data->field_0x0 = 0.0f;
+        }
+    } else {
+        for (i = 1; i < context->car->count_detail_levels; i++) {
+            RepairModel(user_crush->models[i], context);
+        }
+    }
+    return 0;
+}
 
 // UnBendModel
 
@@ -2511,9 +2841,88 @@ void C2_HOOK_FASTCALL CompletelyUnBendCar(tCar_spec* pCar_spec) {
     UnBendCar(pCar_spec, 2000, &original_amount);
 }
 
-// ReAttachBits
+inline void C2_HOOK_FASTCALL ReAttachBits(tCar_spec* pCar) {
+    tCar_crush_spec* crush;
+    tCar_bit_spec* bit;
+    tCar_crush_detach_data* detach_data; /* FIXME: tCar_bit_spec::field_0xc is a tCar_crush_detach_data* */
+    tUser_crush_data* user_crush;
+    br_vertex* vertices;
+    int i;
+    int j;
+    int found;
 
-// RepairObject
+    crush = pCar->car_crush_spec;
+    for (i = 0; i < crush->field_0x2b0; i++) {
+        bit = &crush->field_0x2b4[i];
+        detach_data = (tCar_crush_detach_data*)bit->field_0xc;
+        if (detach_data == NULL || bit->field_0x4 == NULL) {
+            continue;
+        }
+        user_crush = bit->field_0x4->user;
+        if (user_crush == NULL || user_crush->models[0] == NULL) {
+            continue;
+        }
+        vertices = user_crush->models[0]->vertices;
+        if (Vector3DistanceSquared(&vertices[detach_data->min_vertex].p, &detach_data->field_0xc) < (0.1f / WORLD_SCALE) * (0.1f / WORLD_SCALE)
+            && Vector3DistanceSquared(&vertices[detach_data->max_vertex].p, &detach_data->field_0x18) < (0.1f / WORLD_SCALE) * (0.1f / WORLD_SCALE)) {
+            if (gNet_mode == eNet_mode_none) {
+                ReAttachBit(pCar, bit->field_0x4, bit->field_0x0, NULL);
+            } else {
+                found = 0;
+                for (j = 0; j < gCount_net_crush_reattach_bit_list; j++) {
+                    if (gNet_crush_reattach_bit_list[j].actor == bit->field_0x0) {
+                        found = 1;
+                        break;
+                    }
+                }
+                if (!found) {
+                    SendReAttachBit(pCar, bit->field_0x8);
+                }
+            }
+        }
+    }
+    for (i = 0; i < crush->field_0x270; i++) {
+        bit = &crush->field_0x274[i];
+        detach_data = (tCar_crush_detach_data*)bit->field_0xc;
+        if (detach_data == NULL || bit->field_0x4 == NULL) {
+            continue;
+        }
+        user_crush = bit->field_0x4->user;
+        if (user_crush == NULL || user_crush->models[0] == NULL) {
+            continue;
+        }
+        vertices = user_crush->models[0]->vertices;
+        if (Vector3DistanceSquared(&vertices[detach_data->min_vertex].p, &detach_data->field_0xc) < (0.1f / WORLD_SCALE) * (0.1f / WORLD_SCALE)
+            && Vector3DistanceSquared(&vertices[detach_data->max_vertex].p, &detach_data->field_0x18) < (0.1f / WORLD_SCALE) * (0.1f / WORLD_SCALE)) {
+            if (gNet_mode == eNet_mode_none) {
+                ReAttachBit(pCar, bit->field_0x4, bit->field_0x0, bit->field_0x8);
+            } else {
+                SendReAttachBit(pCar, bit->field_0x8);
+            }
+        }
+    }
+    MungeDetachLists(pCar->car_crush_spec);
+}
+
+// FUNCTION: CARMA2_HW 0x0043b400
+// FUNCTION: CARMA2_SW 0x0043b450
+// FUNCTION: CARMA2_CHEAT 0x0043b630
+int C2_HOOK_FASTCALL RepairObject(tPhysics_object* pObject, void* pContext) {
+    tRepair_context* context;
+    tRepair_model_context model_context;
+
+    context = pContext;
+    model_context.repaired_amount = 0.0f;
+    model_context.car = context->car;
+    model_context.repair_step = context->repair_step;
+    model_context.total_deflection = context->total_deflection;
+    ARStartPipingSession(ePipe_chunk_model_mash);
+    DRActorEnumRecurse(pObject->actor, RepairModels2, &model_context);
+    AREndPipingSession();
+    DRActorEnumRecurse(pObject->actor, CheckFlapAngles, NULL);
+    context->repaired_amount += model_context.repaired_amount;
+    return 0;
+}
 
 // FUNCTION: CARMA2_HW 0x0043b740
 // FUNCTION: CARMA2_SW 0x0043b790
@@ -2555,9 +2964,97 @@ void C2_HOOK_FASTCALL RepairCarCollisionShapes(tCar_spec* pCar, float pStep) {
     pCar->car_crush_spec->expand_bounding_box = 3;
 }
 
-// RepairCar2
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// RepairCar
+// FUNCTION: CARMA2_HW 0x0043ace0
+// FUNCTION: CARMA2_SW 0x0043ad30
+// FUNCTION: CARMA2_CHEAT 0x0043af00
+float C2_HOOK_FASTCALL RepairCar2(tCar_spec* pCar, tU32 pFrame_period, br_scalar* pTotal_deflection) {
+    tCar_crush_spec* crush;
+    tRepair_context context;
+    br_scalar amount;
+    int i;
+
+    pCar->repair_time += pFrame_period;
+    if (pCar->use_shell_model || pCar == NULL || pCar->driver < eDriver_net_human) {
+        return 0.0f;
+    }
+    crush = pCar->car_crush_spec;
+    if (crush == NULL || crush->field_0x4b8 || gAusterity_mode) {
+        return 0.0f;
+    }
+    if (crush->field_0x144) {
+        amount = UnBendCar(pCar, pFrame_period, pTotal_deflection);
+    } else {
+        if (gNet_mode == eNet_mode_none || gNet_mode == eNet_mode_host) {
+            ReAttachBits(pCar);
+        }
+        *pTotal_deflection = 0.0f;
+        context.car = pCar;
+        context.repair_step = pFrame_period * 0.00005f;
+        context.total_deflection = pTotal_deflection;
+        context.repaired_amount = 0.0f;
+        PhysicsObjectRecurse(pCar->collision_info, RepairObject, &context);
+        RepairCarCollisionShapes(pCar, context.repair_step);
+        for (i = 0; i < crush->field_0x2b0; i++) {
+            DRActorEnumRecurse(crush->field_0x2b4[i].field_0x0, AddTotalDeflection, &context);
+        }
+        amount = context.repaired_amount;
+        if (context.repaired_amount == 0.0f) {
+            RepairAllSmashes(pCar);
+            TotallyRepairCarCollisionShapes(pCar);
+            if (gNet_mode == eNet_mode_none) {
+                for (i = 0; i < crush->field_0x2b0; i++) {
+                    ReAttachBit(pCar, crush->field_0x2b4[i].field_0x4, crush->field_0x2b4[i].field_0x0, NULL);
+                }
+                crush->field_0x2b0 = 0;
+                for (i = 0; i < crush->field_0x270; i++) {
+                    ReAttachBit(pCar, crush->field_0x274[i].field_0x4, crush->field_0x274[i].field_0x0, crush->field_0x274[i].field_0x8);
+                }
+                crush->field_0x270 = 0;
+            } else if (gNet_mode == eNet_mode_host) {
+                SendReAttachAllBits(pCar);
+            }
+            DRActorEnumRecurse(pCar->car_model_actor, MakeCarModelsMaterialsSingleSided, pCar);
+            PipeSingleDSModel(0, pCar);
+            gCount_toggled_doors = 0;
+            gCount_crush_detach_list = 0;
+            if (*pTotal_deflection == 0.0f && (gNet_mode == eNet_mode_none || (crush->field_0x270 <= 0 && crush->field_0x2b0 <= 0))) {
+                PhysicsObjectRecurse(pCar->collision_info, BattenDownTheObjects, pCar);
+                if (pCar != NULL && pCar->driver == eDriver_local_human) {
+                    pCar->repair_time += 100000;
+                }
+                pCar->use_shell_model = 1;
+            } else {
+                amount = 1.1920929e-07f;
+            }
+        }
+    }
+    if (SwapShapesIfPossible(pCar) && pCar != NULL && pCar->driver == eDriver_local_human) {
+        NewTextHeadupSlot(4, 0, 1000, -4, GetMiscString(6));
+    }
+    return amount;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+// FUNCTION: CARMA2_HW 0x0043b840
+// FUNCTION: CARMA2_SW 0x0043b890
+// FUNCTION: CARMA2_CHEAT 0x0043ba70
+float C2_HOOK_FASTCALL RepairCar(tU16 pCar_ID, tU32 pFrame_period, br_scalar* pTotal_deflection) {
+    tCar_spec* car;
+
+    if (VEHICLE_TYPE_FROM_ID(pCar_ID) == eVehicle_self) {
+        car = &gProgram_state.current_car;
+    } else {
+        car = GetCarSpec(VEHICLE_TYPE_FROM_ID(pCar_ID), pCar_ID & 0xff);
+    }
+    return RepairCar2(car, pFrame_period, pTotal_deflection);
+}
 
 // RestoreVitalBitsOfObject
 

@@ -228,7 +228,7 @@ extern void C2_HOOK_FASTCALL SetFlappage(br_actor* pActor, tCar_spec* pCar, int 
 
 extern void C2_HOOK_FASTCALL MakeModelMaterialsDoubleSided(br_model* pModel);
 
-// CheckFlapAngles
+extern intptr_t C2_HOOK_CDECL CheckFlapAngles(br_actor* pActor, void* pContext);
 
 extern void C2_HOOK_FASTCALL MakeModelMaterialsSingleSided(br_model* pModel);
 
@@ -308,7 +308,7 @@ extern void C2_HOOK_FASTCALL FullyDetachBit(tCar_spec* pCar, tPhysics_object* pO
 
 extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsDoubleSided(br_actor* pActor, void* pArg);
 
-// SwapCarShapes
+extern void C2_HOOK_FASTCALL SwapCarShapes(tCar_spec* pCar, tPhysics_shape* pShape);
 
 // IsAWheelOrPivotActor
 
@@ -334,17 +334,17 @@ extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor
 
 // DoJointSnapping
 
-// PointIsOutsideShape
+extern int C2_HOOK_FASTCALL PointIsOutsideShape(const br_vector3* pPoint, const tCollision_shape_polyhedron_data* pPolyhedron);
 
-// PointIsOutsideLimits
+extern int C2_HOOK_FASTCALL PointIsOutsideLimits(const tCar_crush_shape_info* pShape, int pPoint_index, const tCar_crush_limits* pLimits);
 
-// ClipPointToPolyhedron
+extern void C2_HOOK_FASTCALL ClipPointToPolyhedron(br_vector3* pPoint, const tCollision_shape_polyhedron_data* pPolyhedron);
 
-// QuantizeVector3
+extern void C2_HOOK_FASTCALL QuantizeVector3(br_vector3* pV);
 
-// MoveCarToSensiblePlace
+extern int C2_HOOK_FASTCALL MoveCarToSensiblePlace(tCar_spec* pCar);
 
-// SwapShapesIfPossible
+extern int C2_HOOK_FASTCALL SwapShapesIfPossible(tCar_spec* pCar_spec);
 
 // DoShapeSwapping
 
@@ -434,13 +434,13 @@ extern void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec);
 
 extern void C2_HOOK_FASTCALL TotallyRepairCar(void);
 
-// AddTotalDeflectionOfModel
+extern void C2_HOOK_FASTCALL AddTotalDeflectionOfModel(br_model* pModel, float* pDeflection);
 
-// AddTotalDeflection
+extern intptr_t C2_HOOK_CDECL AddTotalDeflection(br_actor* pActor, void* pContext);
 
 // RepairModel
 
-// RepairModels
+extern intptr_t C2_HOOK_CDECL RepairModels2(br_actor* pActor, void* pContext);
 
 // UnBendModel
 
@@ -464,15 +464,15 @@ extern br_scalar C2_HOOK_FASTCALL UnBendCar(tCar_spec* pCar_spec, tU32 pDelta_ti
 
 extern void C2_HOOK_FASTCALL CompletelyUnBendCar(tCar_spec* pCar_spec);
 
-// ReAttachBits
+extern void C2_HOOK_FASTCALL ReAttachBits(tCar_spec* pCar);
 
-// RepairObject
+extern int C2_HOOK_FASTCALL RepairObject(tPhysics_object* pObject, void* pContext);
 
 extern void C2_HOOK_FASTCALL RepairCarCollisionShapes(tCar_spec* pCar, float pStep);
 
-// RepairCar2
+extern float C2_HOOK_FASTCALL RepairCar2(tCar_spec* pCar, tU32 pFrame_period, br_scalar* pTotal_deflection);
 
-// RepairCar
+extern float C2_HOOK_FASTCALL RepairCar(tU16 pCar_ID, tU32 pFrame_period, br_scalar* pTotal_deflection);
 
 // RestoreVitalBitsOfObject
 
