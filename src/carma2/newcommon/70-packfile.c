@@ -229,7 +229,7 @@ int C2_HOOK_FASTCALL PFungetc(int ch, FILE* pFile) {
         return ungetc(ch, pFile);
     }
     twtFile = &gTwatVfsFiles[(intptr_t)pFile];
-    if (twtFile->pos > twtFile->start && ch != -1) {
+    if (twtFile->pos > gTwatVfsFiles[(intptr_t)pFile].start && ch != -1) {
         twtFile->pos--;
         *twtFile->pos = ch;
         twtFile->error = 0;
@@ -298,13 +298,15 @@ int C2_HOOK_FASTCALL PFfgetpos(FILE* pF, fpos_t* pPos) {
 // FUNCTION: CARMA2_SW 0x004b0c70
 // FUNCTION: CARMA2_CHEAT 0x004ba3d0
 int C2_HOOK_FASTCALL PFftell(FILE* pF) {
+    tTwatVfsFile* twtFile;
     int pos;
 
     if ((uintptr_t)pF >= REC2_ASIZE(gTwatVfsFiles)) {
         return ftell(pF);
     }
-    pos = gTwatVfsFiles[(uintptr_t)pF].pos - gTwatVfsFiles[(uintptr_t)pF].start;
-    gTwatVfsFiles[(uintptr_t)pF].error = 0;
+    twtFile = &gTwatVfsFiles[(uintptr_t)pF];
+    pos = twtFile->pos - gTwatVfsFiles[(uintptr_t)pF].start;
+    twtFile->error = 0;
     return pos;
 }
 
