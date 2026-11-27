@@ -60,12 +60,8 @@ int gJoystick_deadzone;
 
 // GLOBAL: CARMA2_HW 0x00686158
 // GLOBAL: CARMA2_SW 0x00680898
+// GLOBAL: CARMA2_CHEAT 0x0068da00
 IDirectInputA* gDirectInputJoystickHandle;
-
-// GLOBAL: CARMA2_HW 0x0079e060
-// GLOBAL: CARMA2_SW 0x007945c0
-// GLOBAL: CARMA2_CHEAT 0x007a5700
-IDirectInputDevice2A* gDirectInputJoystickDevices[MAX_COUNT_JOYSTICKS];
 
 // GLOBAL: CARMA2_HW 0x0068615c
 // GLOBAL: CARMA2_SW 0x0068089c
@@ -77,19 +73,37 @@ int gJoystickFFB;
 // GLOBAL: CARMA2_CHEAT 0x0068da08
 int gCountEnumeratedJoystickDinputDevices;
 
-// GLOBAL: CARMA2_HW 0x0079e0a0
-// GLOBAL: CARMA2_SW 0x00794600
-// GLOBAL: CARMA2_CHEAT 0x007a5740
-IDirectInputEffect* gDirectInputEffects[MAX_COUNT_EFFECTS];
-
 // GLOBAL: CARMA2_HW 0x00686170
 // GLOBAL: CARMA2_SW 0x006808b0
+// GLOBAL: CARMA2_CHEAT 0x0068da18
 int gDirectInputJoystickEnumerated;
 
 // GLOBAL: CARMA2_HW 0x0079d9c0
 // GLOBAL: CARMA2_SW 0x00793f20
 // GLOBAL: CARMA2_CHEAT 0x007a5060
-tDirectInputJoystickInfo gDirectInputJoystickInfos[MAX_COUNT_JOYSTICKS];
+tDirectInputJoystickInfo gDirectInputJoystickInfos[MAX_COUNT_JOYSTICKS] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x0079e040
+// GLOBAL: CARMA2_SW 0x007945a0
+// GLOBAL: CARMA2_CHEAT 0x007a56e0
+IFR_Project * gIfr_project = NULL;
+
+#ifdef REC2_MATCHING
+// GLOBAL: CARMA2_HW 0x0079e044
+// GLOBAL: CARMA2_SW 0x007945a4
+// GLOBAL: CARMA2_CHEAT 0x007a56e4
+undefined4 gDAT_0079e044 = 0;
+#endif
+
+// GLOBAL: CARMA2_HW 0x0079e060
+// GLOBAL: CARMA2_SW 0x007945c0
+// GLOBAL: CARMA2_CHEAT 0x007a5700
+IDirectInputDevice2A* gDirectInputJoystickDevices[MAX_COUNT_JOYSTICKS] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x0079e0a0
+// GLOBAL: CARMA2_SW 0x00794600
+// GLOBAL: CARMA2_CHEAT 0x007a5740
+IDirectInputEffect* gDirectInputEffects[MAX_COUNT_EFFECTS] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x00684628
 // GLOBAL: CARMA2_SW 0x0067ed68
@@ -115,11 +129,6 @@ int gBasic_force_joystick_effect_index = -1;
 // GLOBAL: CARMA2_SW 0x00590ee0
 // GLOBAL: CARMA2_CHEAT 0x0059c800
 int gCollision_force_joystick_effect_index = -1;
-
-// GLOBAL: CARMA2_HW 0x0079e040
-// GLOBAL: CARMA2_SW 0x007945a0
-// GLOBAL: CARMA2_CHEAT 0x007a56e0
-IFR_Project * gIfr_project;
 
 // GLOBAL: CARMA2_HW 0x00686164
 // GLOBAL: CARMA2_SW 0x006808a4
@@ -257,6 +266,7 @@ static int C2_HOOK_FASTCALL AcquireDInputJoystickDevice(int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x004589d0
 // FUNCTION: CARMA2_SW 0x00458760
+// FUNCTION: CARMA2_CHEAT 0x00458e50
 tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJoystickIndex, tU32* pButtonMask, tU32* pAxisMask) {
     IDirectInputDevice2A* device;
     tDirectInputJoystickInfo* info;
@@ -652,7 +662,7 @@ int C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_effect_des
     // GLOBAL: CARMA2_SW 0x0067ed60
     static DWORD axis[2];
 
-    C2_HOOK_BUG_ON(sizeof(tJoystick_effect_description) != 0x50);
+    C2_HOOK_BUG_ON(sizeof(tJoystick_effect_description) != 0x60);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tJoystick_effect_description, type, 0x0);
     C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tJoystick_effect_description, type_specific_params, 0x4);
     C2_HOOK_BUG_ON(sizeof(description->type_specific_params) != 0x18);
@@ -1619,6 +1629,7 @@ int C2_HOOK_FASTCALL PDGetJoy2Y(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004575b0
+// FUNCTION: CARMA2_SW 0x00457340
 // FUNCTION: CARMA2_CHEAT 0x00457a30
 void C2_HOOK_FASTCALL PDInitJoysticks(void) {
 
