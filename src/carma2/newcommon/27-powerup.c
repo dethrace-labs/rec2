@@ -211,6 +211,11 @@ tHeadup_icon gPickedup_powerups[20] = { 0 };
 // GLOBAL: CARMA2_CHEAT 0x0070cbe0
 int gMutant_tail_state;
 
+// GLOBAL: CARMA2_HW 0x00705b70
+// GLOBAL: CARMA2_SW 0x006fc630
+// GLOBAL: CARMA2_CHEAT 0x0070d210
+tU32 gMutant_tail_cut_off_time; /* FIXME: name is a guess */
+
 // GLOBAL: CARMA2_HW 0x00705b78
 // GLOBAL: CARMA2_SW 0x006fc638
 // GLOBAL: CARMA2_CHEAT 0x0070d218
@@ -305,11 +310,43 @@ void C2_HOOK_FASTCALL QueueIconComing(tPowerup* pPowerup, tHeadup_icon* pHeadup_
     }
 }
 
-// LosePowerupX
+inline void C2_HOOK_FASTCALL LosePowerupX(tPowerup* pPowerup, int pTell_net_players) {
+    tNet_message* the_message;
 
-// LosePowerup
+    if (pPowerup->got_time != 0 && pPowerup->lose_proc != NULL) {
+        pPowerup->lose_proc(pPowerup, pPowerup->car);
+    }
+    if (pPowerup->net_type & 0x80) {
+        PipeSinglePowerupLose(pPowerup, pPowerup->car);
+    }
+    if (gNet_mode != eNet_mode_none) {
+        the_message = NetBuildGuaranteedMessage(eNet_message_chunk_type_powerup, 0);
+        the_message->contents.powerup.event = 2;
+        the_message->contents.powerup.player = gLocal_net_ID;
+        the_message->contents.powerup.powerup_index = pPowerup - gPowerup_array;
+        NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, the_message, NULL);
+    }
+    gProgram_state.current_car.powerups[pPowerup - gPowerup_array] = 0;
+    if (pPowerup->initial_value == 0) {
+        QueueIconComing(pPowerup, gPickedup_powerups, &gNumber_of_icons);
+    }
+    pPowerup->got_time = 0;
+}
 
-// LoseKeyboardPowerupN
+inline void C2_HOOK_FASTCALL LosePowerup(tPowerup* pPowerup) {
+
+    LosePowerupX(pPowerup, 1);
+}
+
+inline void C2_HOOK_FASTCALL LoseKeyboardPowerupN(int pPowerup_index) {
+    int i;
+
+    for (i = 0; i < (int)REC2_ASIZE(gInventory); i++) {
+        if (gInventory[i] == pPowerup_index) {
+            gInventory[i] = -1;
+        }
+    }
+}
 
 // KeyboardPowerupFinished
 
@@ -2195,11 +2232,19 @@ void C2_HOOK_FASTCALL SendCurrentPowerups(void) {
     }
 }
 
-// STUB: CARMA2_HW 0x004def00
-// STUB: CARMA2_SW 0x004db400
-// STUB: CARMA2_CHEAT 0x004e4ac0
+// FUNCTION: CARMA2_HW 0x004def00
+// FUNCTION: CARMA2_SW 0x004db400
+// FUNCTION: CARMA2_CHEAT 0x004e4ac0
 void C2_HOOK_FASTCALL LoseAllLocalPowerups(tCar_spec* pCar) {
-    NOT_IMPLEMENTED();
+    int i;
+
+    if (pCar != NULL && pCar->driver == eDriver_local_human) {
+        for (i = 0; i < gNumber_of_powerups; i++) {
+            if (pCar->powerups[i] != 0 && !(gPowerup_array[i].net_type & eNet_powerup_global)) {
+                LosePowerup(&gPowerup_array[i]);
+            }
+        }
+    }
 }
 
 // LoseDodgyPowerups
@@ -2500,7 +2545,36 @@ int C2_HOOK_FASTCALL PedValium(tPowerup* pPowerup, tCar_spec* pCar) {
     }
 }
 
-// PowerupCancel
+// FUNCTION: CARMA2_HW 0x004dff30
+// FUNCTION: CARMA2_SW 0x004dc430
+// FUNCTION: CARMA2_CHEAT 0x004e5b10
+int C2_HOOK_FASTCALL PowerupCancel(tPowerup* pPowerup, tCar_spec* pCar) {
+    int i;
+    int cancelled;
+    tPowerup* the_powerup;
+
+    cancelled = 0;
+    if (pCar == NULL || pCar->driver != eDriver_local_human) {
+        return -1;
+    }
+    for (i = 0, the_powerup = gPowerup_array; i < gNumber_of_powerups; i++, the_powerup++) {
+        if (the_powerup->got_time != 0) {
+            LosePowerup(the_powerup);
+            cancelled = 1;
+        }
+    }
+    if (gMutant_tail_state == 2) {
+        LoseKeyboardPowerupN(95);
+        CutOffTail(&gPowerup_array[94], pCar);
+        cancelled = 1;
+    }
+    if (!cancelled) {
+        return -1;
+    }
+    NewTextHeadupSlot(4, 0, 3000, -4, GetMiscString(0x113));
+    DRS3StartSound2(gCar_outlet, 3802, 1, 255, 255, -1, -1);
+    return pPowerup - gPowerup_array;
+}
 
 // FUNCTION: CARMA2_HW 0x004e02b0
 // FUNCTION: CARMA2_SW 0x004dc7b0
@@ -2548,7 +2622,26 @@ int C2_HOOK_FASTCALL GrowATail(tPowerup* pPowerup, tCar_spec* pCar) {
     return pPowerup - gPowerup_array;
 }
 
-// CutOffTail
+// FUNCTION: CARMA2_HW 0x004e04c0
+// FUNCTION: CARMA2_SW 0x004dc9c0
+// FUNCTION: CARMA2_CHEAT 0x004e60a0
+int C2_HOOK_FASTCALL CutOffTail(tPowerup* pPowerup, tCar_spec* pCar) {
+
+    if (gMutant_tail_state == 2) {
+        PhysicsRemoveObject(gMutant_tail_object);
+        gMutant_tail_object->physics_joint1 = NULL;
+        PHILAddActiveObject(gMutant_tail_object, NULL, NULL, NULL);
+        PHILSetObjectProperty(gMutant_tail_object, 0, 1.0);
+        PHILSetObjectProperty(gMutant_tail_object, 1, 1);
+        PHILSetObjectProperty(gMutant_tail_object, 7, 1);
+        PHILSetObjectProperty(gMutant_tail_object, 6, 1);
+        LosePowerup(&gPowerup_array[94]);
+        gMutant_tail_state = 1;
+        DRS3StartSound2(gCar_outlet, 3902, 1, 255, 255, -1, -1);
+        gMutant_tail_cut_off_time = GetTotalTime();
+    }
+    return pPowerup - gPowerup_array;
+}
 
 // FUNCTION: CARMA2_HW 0x004e06a0
 // FUNCTION: CARMA2_SW 0x004dcba0
