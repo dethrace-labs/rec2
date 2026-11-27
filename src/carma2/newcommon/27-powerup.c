@@ -10,6 +10,7 @@
 
 #include "00-car.h"
 #include "01-network.h"
+#include "02-init.h"
 #include "08-loading1.h"
 #include "13-crush1.h"
 #include "15-displays.h"
@@ -44,6 +45,8 @@
 #include "c2_stdio.h"
 #include "c2_string.h"
 
+#include <math.h>
+
 // GLOBAL: CARMA2_HW 0x006a0a70
 // GLOBAL: CARMA2_SW 0x0069aac8
 // GLOBAL: CARMA2_CHEAT 0x006a85e8
@@ -53,6 +56,11 @@ int gInventory[20];
 // GLOBAL: CARMA2_SW 0x0069aac4
 // GLOBAL: CARMA2_CHEAT 0x006a85e4
 int gINT_006a0a6c;
+
+// GLOBAL: CARMA2_HW 0x006a0a68
+// GLOBAL: CARMA2_SW 0x0069aac0
+// GLOBAL: CARMA2_CHEAT 0x006a85e0
+tU32 gNext_pissed_sound_time; /* FIXME: name is a guess */
 
 // GLOBAL: CARMA2_HW 0x006a0960
 // GLOBAL: CARMA2_SW 0x0069a9b8
@@ -2239,7 +2247,30 @@ void C2_HOOK_FASTCALL ARPowerupLose(tPowerup* pPowerup, tCar_spec* pCar) {
     }
 }
 
-// SetPissed
+// FUNCTION: CARMA2_HW 0x004df220
+// FUNCTION: CARMA2_SW 0x004db720
+// FUNCTION: CARMA2_CHEAT 0x004e4de0
+int C2_HOOK_FASTCALL SetPissed(tPowerup* pPowerup, tCar_spec* pCar) {
+    int i;
+    int j;
+    float period;
+
+    if (pCar != NULL && pCar->driver == eDriver_local_human) {
+        DRS3StartSound2(gCar_outlet, 3601, 1, 255, 255, -1, -1);
+        gNext_pissed_sound_time = IRandomBetween(1500, 3000) + GetTotalTime();
+        gPissed_info.credit_multiplier = pPowerup->integer_params[0];
+        gPissed_info.field_0x94 = pPowerup->float_params[3];
+        for (i = 0; i < 1; i++) {
+            for (j = 0; j < 1; j++) {
+                gPissed_info.amplitude[i][j] = pPowerup->float_params[0];
+                period = FRandomBetween(pPowerup->float_params[1], pPowerup->float_params[2]);
+                gPissed_info.period[i][j] = period;
+                gPissed_info.phase[i][j] = FRandomBetween(0.0f, period);
+            }
+        }
+    }
+    return pPowerup - gPowerup_array;
+}
 
 // FUNCTION: CARMA2_HW 0x004df300
 // FUNCTION: CARMA2_SW 0x004db800
@@ -2247,7 +2278,7 @@ void C2_HOOK_FASTCALL ARPowerupLose(tPowerup* pPowerup, tCar_spec* pCar) {
 void C2_HOOK_FASTCALL ResetPissed(tPowerup* pPowerup, tCar_spec* pCar) {
     br_vector3 p;
 
-    gCredit_multiplier = 0;
+    gPissed_info.credit_multiplier = 0;
     BrVector3Copy(&p, &gCamera->t.t.translate.t);
     BrMatrix34Identity(&gCamera->t.t.mat);
     BrVector3Copy(&gCamera->t.t.translate.t, &p);
@@ -2256,7 +2287,43 @@ void C2_HOOK_FASTCALL ResetPissed(tPowerup* pPowerup, tCar_spec* pCar) {
     BrVector3Copy(&gRearview_camera->t.t.translate.t, &p);
 }
 
-// PissedEffect
+// FUNCTION: CARMA2_HW 0x004df3b0
+// FUNCTION: CARMA2_SW 0x004db8b0
+// FUNCTION: CARMA2_CHEAT 0x004e4f70
+void C2_HOOK_FASTCALL PissedEffect(tPowerup* pPowerup, tU32 pPeriod) {
+    int i;
+    int j;
+    tU32 the_time;
+    float amplitude;
+    double angle;
+    float cosine;
+
+    the_time = GetTotalTime();
+    if (gPissed_info.credit_multiplier != 0) {
+        for (i = 0; i < 1; i++) {
+            for (j = 0; j < 1; j++) {
+                amplitude = gPissed_info.amplitude[i][j];
+                if (amplitude != 0.0f) {
+                    angle = fmod(the_time + gPissed_info.phase[i][j], gPissed_info.period[i][j]) / gPissed_info.period[i][j] * REC2_TAU;
+                    if (angle > REC2_3PI_OVER_2) {
+                        cosine = gCosine_array[(int)((REC2_TAU - angle) * (128.0 / REC2_PI))];
+                    } else if (angle > REC2_PI) {
+                        cosine = -gCosine_array[(int)((angle - REC2_PI) * (128.0 / REC2_PI))];
+                    } else if (angle > REC2_PI_OVER_2) {
+                        cosine = -gCosine_array[(int)((REC2_PI - angle) * (128.0 / REC2_PI))];
+                    } else {
+                        cosine = gCosine_array[(int)(angle * (128.0 / REC2_PI))];
+                    }
+                    ((br_camera*)gCamera->type_data)->field_of_view = BrDegreeToAngle((cosine * amplitude + 1.0f) * gCamera_angle);
+                }
+            }
+        }
+        if (GetTotalTime() > gNext_pissed_sound_time) {
+            DRS3StartSound2(gCar_outlet, PercentageChance(50) ? 3602 : 3603, 1, 255, 255, IRandomBetween(0xc000, 0x14000), -1);
+            gNext_pissed_sound_time = IRandomBetween(1500, 3000) + GetTotalTime();
+        }
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004df650
 // FUNCTION: CARMA2_SW 0x004dbb50
