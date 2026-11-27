@@ -2349,7 +2349,13 @@ void C2_HOOK_FASTCALL ApplyPedDir(tPipe_chunk** pChunk) {
 
 // ApplyPedMove
 
-// ApplyPedPhysics
+// FUNCTION: CARMA2_HW 0x004c9b10
+// FUNCTION: CARMA2_SW 0x004c6240
+// FUNCTION: CARMA2_CHEAT 0x004cf640
+void C2_HOOK_FASTCALL ApplyPedPhysics(tPipe_chunk** pChunk) {
+
+    PedApplyPedPhysics((*pChunk)->subject_index, &(*pChunk)->data.ped_physics.matrix);
+}
 
 // ApplyPedDismember
 
