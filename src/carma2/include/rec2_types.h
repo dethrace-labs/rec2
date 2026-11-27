@@ -4022,13 +4022,13 @@ typedef struct tPed_morph {
     br_vector3 field_0x14;
     br_vector3 field_0x20;
     undefined field_0x2c;
-    undefined field_0x2d[0x10][6];
+    tS8 field_0x2d[0x10][6];
     undefined field_0x8d[0xcf];
 } tPed_morph;
 
 typedef struct {
     undefined4 (C2_HOOK_FASTCALL * passive_collision)(undefined4*, undefined4, undefined4*);
-    int (C2_HOOK_FASTCALL * active_halted)(undefined4*, undefined4*);
+    int (C2_HOOK_FASTCALL * active_halted)(tPed_character_instance*, tPhysics_object*);
     void (C2_HOOK_FASTCALL * moved_by_physics)(undefined4*, undefined4*, undefined4);
     int (C2_HOOK_FASTCALL * move_completed)(undefined4*);
     void (C2_HOOK_FASTCALL * fill_in_object)(tPhysics_object*, undefined4);

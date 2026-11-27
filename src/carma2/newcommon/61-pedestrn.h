@@ -33,6 +33,7 @@ extern tPedForms_vtable* gPed_vtable;
 extern int gPed_retain_root_mode;
 
 extern br_material* gPedestrian_character_cloned_materials[50];
+extern tPed_morph gPed_morphs[20];
 extern int gCount_pedestrian_personality_cloned_materials;
 
 extern tPed_remap* gPed_remaps[10];
@@ -174,17 +175,17 @@ extern int C2_HOOK_FASTCALL MakeCharacterCollideworthy(tPed_character_instance* 
 
 extern tPhysics_object* C2_HOOK_FASTCALL GetRootObject(tPed_character_instance* pPed);
 
-// CharacterNoLongerCollideworthy
+extern int C2_HOOK_FASTCALL CharacterNoLongerCollideworthy(tPed_character_instance* pCharacter);
 
 extern void C2_HOOK_FASTCALL SetObjectV(tPhysics_object* pObject, const br_vector3* pV);
 
 // SetObjectOmega
 
-// MakePartPhysicallyActive
+extern void C2_HOOK_FASTCALL MakePartPhysicallyActive(tPhysics_object* pObject, const br_vector3* pV);
 
-// TurnPhysicsOn
+extern void C2_HOOK_FASTCALL TurnPhysicsOn(tPed_character_instance* pCharacter);
 
-// MakeCharacterPhysicworthy
+extern int C2_HOOK_FASTCALL MakeCharacterPhysicworthy(tPed_character_instance* pCharacter);
 
 extern void C2_HOOK_FASTCALL RecalculateOrientationOfRoot(tPed_character_instance* pCharacter);
 
@@ -192,7 +193,7 @@ extern int C2_HOOK_FASTCALL BonerActiveHalted2(tPed_character_instance* pCharact
 
 extern int C2_HOOK_FASTCALL CharacterNoLongerPhysicworthy(tPed_character_instance* pCharacter);
 
-extern void C2_HOOK_CDECL SetCharacterPhysicsLevel(tPed_character_instance* pCharacter, tU32 pLevel, ...);
+extern int C2_HOOK_CDECL SetCharacterPhysicsLevel(tPed_character_instance* pCharacter, tU32 pLevel, ...);
 
 extern void C2_HOOK_FASTCALL StopCharacterMorphing(tPed_character_instance* pCharacter);
 
@@ -202,9 +203,9 @@ extern void C2_HOOK_FASTCALL StopCharacterMorphing(tPed_character_instance* pCha
 
 // MungeCharacterAnimation
 
-// SetOnGroundVector
+extern void C2_HOOK_FASTCALL SetOnGroundVector(tPed_character_instance* pCharacter, br_vector3* pPos, br_vector3* pNew_pos);
 
-// ResetAnimation
+extern void C2_HOOK_FASTCALL ResetAnimation(tPed_character_instance* pCharacter);
 
 extern int C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pPed, int pMove_action, float pSpeed, int pArg4, int pArg5, tU32 pTime);
 
