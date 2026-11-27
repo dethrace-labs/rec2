@@ -302,13 +302,14 @@ void C2_HOOK_CDECL Vertex_SurfaceComponentsTwoSidedGeom(br_geometry* self, br_so
 }
 
 // FUNCTION: CARMA2_HW 0x00548bd0
+// FUNCTION: CARMA2_SW 0x00544270
+// FUNCTION: CARMA2_CHEAT 0x0054e7c0
 void C2_HOOK_CDECL Vertex_ForceFront(br_geometry* self, br_soft_renderer* renderer) {
     brp_vertex* tvp;
     int v;
 
-    for (v = 0; v < rend.nvertices; v++) {
-        tvp = &rend.temp_vertices[v];
-
+    tvp = rend.temp_vertices;
+    for (v = 0; v < rend.nvertices; v++, tvp++) {
         if (rend.vertex_counts[v] == 0) {
             continue;
         }
