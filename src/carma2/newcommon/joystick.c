@@ -9,13 +9,18 @@
 #include "joystick.h"
 
 #include "08-loading1.h"
+#include "15-displays.h"
 #include "41-utility.h"
 #include "globvars.h"
+#include "globvrbm.h"
 #include "platform.h"
+#include "rec2_macros.h"
 
 #include "c2_stdio.h"
 #include "c2_stdlib.h"
 #include "c2_string.h"
+
+#include <ctype.h>
 
 // GLOBAL: CARMA2_HW 0x00595f84
 // GLOBAL: CARMA2_SW 0x00590ee4
@@ -39,13 +44,49 @@ float gJoystick_y_throttle = 1.f;
 // GLOBAL: CARMA2_CHEAT 0x0059cb90
 int gINT_00596310 = 50;
 
+#ifdef REC2_HW
+// GLOBAL: CARMA2_HW 0x00686174
+// GLOBAL: CARMA2_CHEAT 0x0068da1c
+br_actor* gAcc_poly_actor;
+
+// GLOBAL: CARMA2_HW 0x00686178
+// GLOBAL: CARMA2_CHEAT 0x0068da20
+br_material* gAcc_poly_material;
+
+// GLOBAL: CARMA2_HW 0x0068617c
+// GLOBAL: CARMA2_CHEAT 0x0068da24
+br_model* gAcc_poly_model;
+
+// GLOBAL: CARMA2_HW 0x00686180
+// GLOBAL: CARMA2_CHEAT 0x0068da28
+int gRender_acc_poly_actor;
+
+// GLOBAL: CARMA2_HW 0x005962f8
+// GLOBAL: CARMA2_CHEAT 0x0059cb78
+br_token_value gAccent_poly_prims[] = {
+    { BRT_BLEND_B, { 1 } },
+    { BRT_OPACITY_X, { 0x4b0000 } },
+    { BR_NULL_TOKEN, { 0 } },
+};
+#endif
+
 // GLOBAL: CARMA2_HW 0x00686184
 // GLOBAL: CARMA2_SW 0x006808c4
 int gJoystick_preferences_backup_valid;
 
+// GLOBAL: CARMA2_HW 0x0079d860
+// GLOBAL: CARMA2_SW 0x00793dc0
+// GLOBAL: CARMA2_CHEAT 0x007a4f00
+tHeadup_text_buffer gPath_headup_buffer;
+
 // GLOBAL: CARMA2_HW 0x0079d8c0
 // GLOBAL: CARMA2_SW 0x00793e20
 tButtonJoystickInfo gJoystick_preferences_backup;
+
+typedef struct {
+    tHeadup_text_buffer* buffer;
+    const char* name;
+} tHeadup_text_buffer_filter;
 
 typedef struct tJoystick_preference_node {
     tButtonJoystickInfo* info;
@@ -83,6 +124,226 @@ int C2_HOOK_FASTCALL ReadUntilCharacter(FILE* pF, char* pBuffer, int pBuffer_siz
         return 1;
     } else {
         return 0;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0045a670
+// FUNCTION: CARMA2_SW 0x0045a400
+// FUNCTION: CARMA2_CHEAT 0x0045aaf0
+void C2_HOOK_FASTCALL FUN_0045a670(void) {
+    int i;
+    const char* ext;
+    char name[16];
+    tHeadup_text_buffer_filter filter;
+    tPath_name the_path;
+
+    if (gINT_0068b8e4) {
+        gINT_0068b8e4 = 0;
+#ifdef REC2_HW
+        if (gAcc_poly_actor != NULL && gRender_acc_poly_actor) {
+            BrActorRemove(gAcc_poly_actor);
+            gRender_acc_poly_actor = 0;
+        }
+#endif
+        return;
+    }
+    gINT_0068b8e4 = 1;
+    MoveHeadupTo(gProgram_state.frame_rate_headup, 10, 350);
+    for (i = 0; i < (int)REC2_ASIZE(gRace_head_ups); i++) {
+        MoveHeadupTo(gRace_head_ups[i], 10, 120 + 10 * i);
+        ChangeHeadupFont(gRace_head_ups[i], -2);
+    }
+#ifdef REC2_HW
+    CreateAccentPolyActor(8.0f, 118.0f, 130.0f, 224.0f);
+#endif
+    ext = ".ACT";
+    if (gPath_headup_buffer.count == 0) {
+        PathCat(the_path, gRace_path, "");
+        if (gPath_headup_buffer.field_0x14 < 5) {
+            gPath_headup_buffer.field_0x14 = 10;
+        }
+        gPath_headup_buffer.texts = NULL;
+        gPath_headup_buffer.count = 0;
+        strcpy(name, ext);
+        gPath_headup_buffer.pos_last_add = 0;
+        gPath_headup_buffer.text_last_add = NULL;
+        gPath_headup_buffer.field_0x4 = NULL;
+        gPath_headup_buffer.field_0x10 = 22;
+        filter.buffer = &gPath_headup_buffer;
+        DRstrupr(name);
+        filter.name = name;
+        PDEnumPath(the_path, AddToTextBufferCallback, &filter);
+        gPath_headup_buffer.pos_last_add = 0;
+        gPath_headup_buffer.text_last_add = gPath_headup_buffer.texts;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0045a7f0
+// FUNCTION: CARMA2_SW 0x0045a540
+// FUNCTION: CARMA2_CHEAT 0x0045ac70
+int C2_HOOK_FASTCALL AddToTextBufferCallback(const char* pPath, void* pContext) {
+    char buffer[256];
+    tHeadup_text_buffer* text_buffer;
+    const char* name;
+    tHeadup_text* text;
+
+    text_buffer = ((tHeadup_text_buffer_filter*)pContext)->buffer;
+    name = ((tHeadup_text_buffer_filter*)pContext)->name;
+    strcpy(buffer, pPath);
+    DRstrupr(buffer);
+    if (strstr(buffer, "POWERUP") != NULL || strstr(buffer, "CPOINT") != NULL || strstr(buffer, "TRACKX") != NULL) {
+        return 0;
+    }
+    if (strstr(buffer, name) == NULL && strcmp(name, ".*") != 0) {
+        return 0;
+    }
+    text = malloc(sizeof(tHeadup_text));
+    if (text != NULL) {
+        text->next = NULL;
+        strncpy(text->text, buffer, sizeof(text->text));
+        DRstrlwr(text->text);
+        text->text[0] = toupper(text->text[0]);
+        StoreTextHeadup(text_buffer, text, 1);
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0045a920
+// FUNCTION: CARMA2_SW 0x0045a670
+// FUNCTION: CARMA2_CHEAT 0x0045ada0
+int C2_HOOK_FASTCALL StoreTextHeadup(tHeadup_text_buffer* pTexts, tHeadup_text* pNew, int pSorted) {
+    tHeadup_text* last;
+    tHeadup_text* current;
+    tHeadup_text* next;
+    int found;
+    int count;
+
+    current = pTexts->texts;
+    found = 0;
+    count = 0;
+    if (current == NULL) {
+        pTexts->texts = pNew;
+        pNew->next = NULL;
+        pTexts->count = 1;
+        pTexts->pos_last_add = 0;
+        pTexts->text_last_add = pNew;
+        return 0;
+    }
+    last = current;
+    if (!pSorted) {
+        while (last->next != NULL) {
+            last = last->next;
+            count++;
+        }
+        pNew->next = NULL;
+        last->next = pNew;
+    } else if (strcmp(last->text, pNew->text) > 0) {
+        pTexts->texts = pNew;
+        pNew->next = last;
+    } else {
+        next = NULL;
+        current = last->next;
+        while (current != NULL && !found) {
+            if (strcmp(current->text, pNew->text) > 0) {
+                found = 1;
+                next = current;
+            } else {
+                last = current;
+            }
+            current = last->next;
+            count++;
+        }
+        pNew->next = next;
+        last->next = pNew;
+    }
+    pTexts->count++;
+    pTexts->pos_last_add = count;
+    pTexts->text_last_add = last;
+    return count;
+}
+
+#ifdef REC2_HW
+// FUNCTION: CARMA2_HW 0x0045aa60
+// FUNCTION: CARMA2_CHEAT 0x0045aee0
+void C2_HOOK_FASTCALL CreateAccentPolyActor(float pX, float pY, float pWidth, float pHeight) {
+
+    if (gAcc_poly_material == NULL) {
+        gAcc_poly_material = BrMaterialAllocate("Acc Poly Mat");
+        gAcc_poly_material->colour = 0x80;
+        gAcc_poly_material->flags = BR_MATF_ALWAYS_VISIBLE;
+        BrMaterialAdd(gAcc_poly_material);
+        gAcc_poly_material->extra_prim = gAccent_poly_prims;
+        gAcc_poly_material->extra_prim[1].v.x = 0x800000;
+        BrMaterialUpdate(gAcc_poly_material, BR_MATU_EXTRA_PRIM);
+    }
+    if (gAcc_poly_actor == NULL) {
+        gAcc_poly_model = BrModelAllocate("Tint Poly", 6, 2);
+        BrVector3Set(&gAcc_poly_model->vertices[0].p, pX, -pY, -1.01f);
+        BrVector3Set(&gAcc_poly_model->vertices[1].p, pX + pWidth, -pY, -1.01f);
+        BrVector3Set(&gAcc_poly_model->vertices[2].p, pX, -(pY + pHeight), -1.01f);
+        BrVector3Set(&gAcc_poly_model->vertices[3].p, pX + pWidth, -pY, -1.01f);
+        BrVector3Set(&gAcc_poly_model->vertices[4].p, pX + pWidth, -(pY + pHeight), -1.01f);
+        BrVector3Set(&gAcc_poly_model->vertices[5].p, pX, -(pY + pHeight), -1.01f);
+        gAcc_poly_model->faces[0].vertices[0] = 0;
+        gAcc_poly_model->faces[0].vertices[1] = 1;
+        gAcc_poly_model->faces[0].vertices[2] = 2;
+        gAcc_poly_model->faces[1].vertices[0] = 3;
+        gAcc_poly_model->faces[1].vertices[1] = 4;
+        gAcc_poly_model->faces[1].vertices[2] = 5;
+        gAcc_poly_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+        gAcc_poly_actor->material = gAcc_poly_material;
+        gAcc_poly_model->faces[0].material = gAcc_poly_material;
+        gAcc_poly_model->faces[1].material = gAcc_poly_material;
+        gAcc_poly_actor->model = gAcc_poly_model;
+        BrModelAdd(gAcc_poly_model);
+    }
+    if (!gRender_acc_poly_actor) {
+        gRender_acc_poly_actor = 1;
+        BrActorAdd(g2d_camera, gAcc_poly_actor);
+    }
+}
+#endif
+
+// FUNCTION: CARMA2_HW 0x0045b0a0
+// FUNCTION: CARMA2_SW 0x0045ab20
+// FUNCTION: CARMA2_CHEAT 0x0045b520
+void C2_HOOK_FASTCALL FUN_0045b0a0(tHeadup_text_buffer* pText_buffer) {
+    tHeadup_text* t;
+    int i;
+    int pos;
+
+    if (pText_buffer->texts == NULL) {
+        return;
+    }
+    if (pText_buffer->field_0x4 == NULL) {
+        pText_buffer->field_0x4 = pText_buffer->texts;
+        if (pText_buffer->count - pText_buffer->pos_last_add < pText_buffer->field_0x10) {
+            t = pText_buffer->texts;
+            for (i = pText_buffer->count - pText_buffer->field_0x10; i > 0; i--) {
+                t = t->next;
+            }
+            pText_buffer->field_0x4 = t;
+            return;
+        }
+    }
+    pos = 0;
+    for (t = pText_buffer->texts; t != pText_buffer->field_0x4; t = t->next) {
+        pos++;
+    }
+    if (pos + pText_buffer->field_0x10 <= pText_buffer->pos_last_add || pText_buffer->pos_last_add <= pos) {
+        if (pText_buffer->pos_last_add == pos + pText_buffer->field_0x10) {
+            if (pText_buffer->count - pos >= pText_buffer->field_0x10) {
+                pText_buffer->field_0x4 = pText_buffer->field_0x4->next;
+            }
+        } else if (pText_buffer->count - pText_buffer->pos_last_add < pText_buffer->field_0x10) {
+            t = pText_buffer->texts;
+            for (i = pText_buffer->count - pText_buffer->field_0x10; i > 0; i--) {
+                t = t->next;
+            }
+            pText_buffer->field_0x4 = t;
+        } else {
+            pText_buffer->field_0x4 = pText_buffer->text_last_add;
+        }
     }
 }
 
