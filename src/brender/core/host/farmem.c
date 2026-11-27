@@ -9,8 +9,14 @@
 #include "farmem.h"
 
 #include "c2_stdlib.h"
+#include "c2_string.h"
 
 // Win32 uses protected mode. No need to support segmented memory.
+
+#ifndef REC2_MATCHING
+/* Win32 is a flat memory model: a far pointer's offset is the address itself, the selector is not needed */
+#define FAR_POINTER(OFFSET, SEL) ((br_uint_8*)(uintptr_t)(OFFSET))
+#endif
 
 
 #ifdef REC2_MATCHING
@@ -39,7 +45,8 @@ C2_MATCHING_NAKED void C2_HOOK_CDECL HostFarBlockWrite(br_uint_32 offset, br_uin
 }
 #else
 void C2_HOOK_CDECL HostFarBlockWrite(br_uint_32 offset, br_uint_16 sel, void *block, br_uint_32 count) {
-    NOT_IMPLEMENTED();
+
+    memcpy(FAR_POINTER(offset, sel), block, count);
 }
 #endif
 
@@ -71,7 +78,7 @@ C2_MATCHING_NAKED void C2_HOOK_CDECL HostFarBlockFill(br_uint_32 offset, br_uint
 #else
 void C2_HOOK_CDECL HostFarBlockFill(br_uint_32 offset, br_uint_16 sel, br_uint_8 value, br_uint_32 count) {
 
-    NOT_IMPLEMENTED();
+    memset(FAR_POINTER(offset, sel), value, count);
 }
 #endif
 
@@ -101,7 +108,8 @@ C2_MATCHING_NAKED void C2_HOOK_CDECL HostFarBlockRead(br_uint_32 offset, br_uint
 }
 #else
 void C2_HOOK_CDECL HostFarBlockRead(br_uint_32 offset, br_uint_16 sel, void *block, br_uint_32 count) {
-    NOT_IMPLEMENTED();
+
+    memcpy(block, FAR_POINTER(offset, sel), count);
 }
 #endif
 
@@ -142,8 +150,19 @@ C2_MATCHING_NAKED br_uint_32 C2_HOOK_CDECL HostFarStringWrite(br_uint_32 offset,
 }
 #else
 br_uint_32 C2_HOOK_CDECL HostFarStringWrite(br_uint_32 offset, br_uint_16 sel, br_uint_8 *string, br_uint_32 max) {
-    NOT_IMPLEMENTED();
-    return 0;
+    br_uint_8* far_string = FAR_POINTER(offset, sel);
+    br_uint_32 i;
+
+    for (i = 0; i < max; i++) {
+        far_string[i] = string[i];
+        if (string[i] == '\0') {
+            return i + 1;
+        }
+    }
+    if (max != 0) {
+        far_string[max - 1] = '\0';
+    }
+    return max;
 }
 #endif
 
@@ -184,8 +203,19 @@ C2_MATCHING_NAKED br_uint_32 C2_HOOK_CDECL HostFarStringRead(br_uint_32 offset, 
 }
 #else
 br_uint_32 C2_HOOK_CDECL HostFarStringRead(br_uint_32 offset, br_uint_16 sel, br_uint_8 *string, br_uint_32 max) {
-    NOT_IMPLEMENTED();
-    return 0;
+    br_uint_8* far_string = FAR_POINTER(offset, sel);
+    br_uint_32 i;
+
+    for (i = 0; i < max; i++) {
+        string[i] = far_string[i];
+        if (far_string[i] == '\0') {
+            return i + 1;
+        }
+    }
+    if (max != 0) {
+        string[max - 1] = '\0';
+    }
+    return max;
 }
 #endif
 
