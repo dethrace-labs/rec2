@@ -19,6 +19,7 @@
 #include "49-physics.h"
 #include "51-smash.h"
 #include "53-controls.h"
+#include "57-drone.h"
 #include "60-phil.h"
 #include "69-sound.h"
 #include "globvars.h"
@@ -1339,7 +1340,54 @@ void C2_HOOK_FASTCALL ClipPointToLimits(br_vector3* pPoint, tU16 pLimit_bits, co
 
 // CrushCollisionShapes
 
-// SimpleCrushCarModelsCB
+typedef struct {
+    int count;
+    br_vector3 points[4];
+    undefined field_0x34[0x44 - 0x34];
+    br_vector3 direction;
+} tSpam_points; /* FIXME: name is a guess */
+
+typedef struct {
+    tCar_spec* car;
+    tSpam_points* points;
+    float scale;
+} tSpam_userdata; /* FIXME: name from Ghidra, field types from the use here */
+
+// FUNCTION: CARMA2_HW 0x00433260
+// FUNCTION: CARMA2_SW 0x00433290
+// FUNCTION: CARMA2_CHEAT 0x00433430
+intptr_t C2_HOOK_FASTCALL SimpleCrushCarModelsCB(br_actor* pActor, br_matrix34* pMat, void* pContext) {
+    tSpam_userdata* context;
+    tUser_crush_data* user_crush;
+    tCar_crush_buffer_entry* crush_data;
+    br_vector3 points[4];
+    br_vector3 direction;
+    float scale;
+    int i;
+
+    context = pContext;
+    if (pActor->type != BR_ACTOR_MODEL) {
+        return 0;
+    }
+    user_crush = pActor->user;
+    if (user_crush == NULL) {
+        return 0;
+    }
+    crush_data = user_crush->crush_data;
+    if (crush_data == NULL) {
+        return 0;
+    }
+    for (i = 0; i < context->points->count; i++) {
+        DrMatrix34ApplyLPInverse(&points[i], &context->points->points[i], pMat);
+    }
+    BrMatrix34TApplyV(&direction, &context->points->direction, pMat);
+    scale = context->scale * crush_data->softness_factor;
+    BrVector3Scale(&direction, &direction, scale);
+    for (i = 0; i < context->car->count_detail_levels; i++) {
+        SimpleCrushModel(user_crush->models[i], context->points->count, points, &direction, &context->car->car_crush_spec->field_0x11c);
+    }
+    return 0;
+}
 
 // SimpleCrushCar
 
@@ -1381,13 +1429,119 @@ void C2_HOOK_FASTCALL ExpandCrush(tCar_crush* pDest, const tCompressed_car_crush
     pDest->field_0x50 = pSrc->field_0x24;
 }
 
-// RemoveDuplicatePoints
+inline void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pUnique_count, br_vector3* pUnique, int pCount, const br_vector3* pPoints) {
+    int i;
+    int j;
+    int unique;
 
-// SimpleCrushModel
+    BrVector3Copy(&pUnique[0], &pPoints[0]);
+    *pUnique_count = 1;
+    for (i = 1; i < pCount; i++) {
+        unique = 1;
+        for (j = 0; j < *pUnique_count; j++) {
+            if ((float)fabs(pUnique[j].v[0] - pPoints[i].v[0]) < 0.005f
+                && (float)fabs(pUnique[j].v[1] - pPoints[i].v[1]) < 0.005f
+                && (float)fabs(pUnique[j].v[2] - pPoints[i].v[2]) < 0.005f) {
+                unique = 0;
+                break;
+            }
+        }
+        if (unique) {
+            BrVector3Copy(&pUnique[*pUnique_count], &pPoints[i]);
+            *pUnique_count += 1;
+        }
+    }
+}
 
-// CrushDrone
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// CrushDroneObject
+// FUNCTION: CARMA2_HW 0x0042c540
+// FUNCTION: CARMA2_SW 0x0042c5d0
+// FUNCTION: CARMA2_CHEAT 0x0042c6e0
+void C2_HOOK_FASTCALL SimpleCrushModel(br_model* pModel, int pCount, const br_vector3* pPoints, const br_vector3* pForce, const br_bounds3* pBounds) {
+    int count;
+    br_vector3 points[4];
+    br_vector3 direction;
+    br_vector3 tv;
+    br_vertex* vertex;
+    br_scalar scale;
+    br_scalar limit;
+    br_scalar limit_max;
+    int axis;
+    tU16 i;
+    float scales[1024];
+
+    if (pModel == NULL) {
+        return;
+    }
+    if (pModel->nvertices > REC2_ASIZE(scales)) {
+        PDFatalError("SimpleCrushModel can't cope with that many vertices");
+    }
+    if (pCount < 1) {
+        return;
+    }
+    if (pCount > (int)REC2_ASIZE(points)) {
+        pCount = REC2_ASIZE(points);
+    }
+    RemoveDuplicatePoints(&count, points, pCount, pPoints);
+    if (TooFarToCrush(pModel, count, points, gMax_crush_dist_sq)) {
+        return;
+    }
+    BrVector3Normalise(&direction, pForce);
+    axis = NearestAxis(&direction);
+    for (i = 0; i < pModel->nvertices; i++) {
+        vertex = &pModel->vertices[i];
+        scale = GetImpactScale(&vertex->p, count, points, (1.0f / WORLD_SCALE) * (1.0f / WORLD_SCALE));
+        scales[i] = scale;
+        if (scales[i] != 0.0f) {
+            limit = (pBounds->min.v[axis] - vertex->p.v[axis]) / pForce->v[axis];
+            limit_max = (pBounds->max.v[axis] - vertex->p.v[axis]) / pForce->v[axis];
+            if (limit_max < limit) {
+                limit = limit_max;
+            }
+            if (limit > 0.0f) {
+                if (scale > limit) {
+                    scales[i] = limit;
+                }
+            } else {
+                scales[i] = 0.0f;
+            }
+            if (scales[i] != 0.0f) {
+                BrVector3Scale(&tv, pForce, scales[i]);
+                BrVector3Accumulate(&vertex->p, &tv);
+            }
+        }
+    }
+    PipeSingleCrush(pModel, pForce, scales);
+    SetModelForUpdate(pModel);
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+inline void C2_HOOK_FASTCALL CrushDrone(tDrone_crush_data* pCrush_data, int pCount, const br_vector3* pPoints, const br_vector3* pForce) {
+    br_vector3 force;
+
+    if (pCount >= 1) {
+        BrVector3Scale(&force, pForce, pCrush_data->crushability);
+        SimpleCrushModel(pCrush_data->model, pCount, pPoints, &force, &pCrush_data->bounds);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0042d180
+// FUNCTION: CARMA2_SW 0x0042d1f0
+// FUNCTION: CARMA2_CHEAT 0x0042d320
+void C2_HOOK_FASTCALL CrushDroneObject(tPhysics_object* pObject, int pCount, const br_vector3* pPoints, const br_vector3* pForce) {
+    tDrone_crush_data* crush_data;
+
+    crush_data = GetDroneCrushData(pObject);
+    if (crush_data != NULL) {
+        CrushDrone(crush_data, pCount, pPoints, pForce);
+    }
+}
 
 // DoDroneCrushing
 
@@ -2563,11 +2717,61 @@ void C2_HOOK_FASTCALL RepairCarCollisionShapes(tCar_spec* pCar, float pStep) {
 
 // WeldCar
 
-// ARCompressCrush
+// FUNCTION: CARMA2_HW 0x0043bca0
+// FUNCTION: CARMA2_SW 0x0043bcf0
+// FUNCTION: CARMA2_CHEAT 0x0043bee0
+void C2_HOOK_FASTCALL ARCompressCrush(tCompressed_vector3* pDirection, tU16* pDest, br_model* pModel, const br_vector3* pVector, const float* pValues) {
+    float length;
+    br_vector3 direction;
+    tU16 i;
 
-// ARApplyCrush
+    length = BrVector3Length(pVector);
+    BrVector3Set(&direction, pVector->v[0] / length, pVector->v[1] / length, pVector->v[2] / length);
+    CompressVector3(pDirection, &direction, -1.0f, 1.0f);
+    for (i = 0; i < pModel->nvertices; i++) {
+        pDest[i] = DRScalarToU16(pValues[i] * length, 0.0f, 10.0f);
+    }
+}
 
-// ARUndoCrush
+// FUNCTION: CARMA2_HW 0x0043bd70
+// FUNCTION: CARMA2_SW 0x0043bdc0
+// FUNCTION: CARMA2_CHEAT 0x0043bfb0
+void C2_HOOK_FASTCALL ARApplyCrush(br_model* pModel, const tCompressed_vector3* pDirection, const tU16* pValues) {
+    br_vector3 direction;
+    br_vector3 delta;
+    float scale;
+    int i;
+
+    ExpandVector3(&direction, pDirection, -1.0f, 1.0f);
+    for (i = 0; i < pModel->nvertices; i++) {
+        if (pValues[i] != 0) {
+            scale = DRU16ToScalar(pValues[i], 0.0f, 10.0f);
+            BrVector3Set(&delta, direction.v[0] * scale, direction.v[1] * scale, direction.v[2] * scale);
+            BrVector3Accumulate(&pModel->vertices[i].p, &delta);
+        }
+    }
+    SetModelForUpdate(pModel);
+}
+
+// FUNCTION: CARMA2_HW 0x0043be50
+// FUNCTION: CARMA2_SW 0x0043bea0
+// FUNCTION: CARMA2_CHEAT 0x0043c0a0
+void C2_HOOK_FASTCALL ARUndoCrush(br_model* pModel, const tCompressed_vector3* pDirection, const tU16* pValues) {
+    br_vector3 direction;
+    br_vector3 delta;
+    float scale;
+    int i;
+
+    ExpandVector3(&direction, pDirection, -1.0f, 1.0f);
+    for (i = 0; i < pModel->nvertices; i++) {
+        if (pValues[i] != 0) {
+            scale = DRU16ToScalar(pValues[i], 0.0f, 10.0f);
+            BrVector3Scale(&delta, &direction, -scale);
+            BrVector3Accumulate(&pModel->vertices[i].p, &delta);
+        }
+    }
+    SetModelForUpdate(pModel);
+}
 
 // FUNCTION: CARMA2_HW 0x0043bf30
 // FUNCTION: CARMA2_SW 0x0043bf80

@@ -34,7 +34,7 @@ extern tU32 gPipe_sound_start_time;
 extern tU32 gPipe_sound_time_window;
 extern int gDisable_advance;
 extern int gPipe_count_callbacks;
-extern tPipe_smudge_data* gCrush_space;
+extern void* gCrush_space;
 extern tU8* gEnd_of_session;
 
 extern int C2_HOOK_FASTCALL ARReplayForwards(void);
@@ -207,7 +207,7 @@ extern void C2_HOOK_FASTCALL AddRepulseRayToPipingSession(int pIndex, br_vector3
 
 extern void C2_HOOK_FASTCALL AddNapalmBoltToPipingSession(int pIndex, tPedestrian* pPed, br_vector3* pPositions);
 
-// PipeSingleCrush
+extern void C2_HOOK_FASTCALL PipeSingleCrush(br_model* pModel, const br_vector3* pVector, const float* pValues);
 
 extern void C2_HOOK_FASTCALL PipeSingleScreenWobble(int pWobble_x, int pWobble_y);
 

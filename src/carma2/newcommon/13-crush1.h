@@ -166,7 +166,7 @@ extern void C2_HOOK_FASTCALL ClipPointToLimits(br_vector3* pPoint, tU16 pLimit_b
 
 // CrushCollisionShapes
 
-// SimpleCrushCarModelsCB
+extern intptr_t C2_HOOK_FASTCALL SimpleCrushCarModelsCB(br_actor* pActor, br_matrix34* pMat, void* pContext);
 
 // SimpleCrushCar
 
@@ -178,13 +178,13 @@ extern void C2_HOOK_FASTCALL CompressCrush(tCompressed_car_crush* pDest, const t
 
 extern void C2_HOOK_FASTCALL ExpandCrush(tCar_crush* pDest, const tCompressed_car_crush* pSrc);
 
-// RemoveDuplicatePoints
+extern void C2_HOOK_FASTCALL RemoveDuplicatePoints(int* pUnique_count, br_vector3* pUnique, int pCount, const br_vector3* pPoints);
 
-// SimpleCrushModel
+extern void C2_HOOK_FASTCALL SimpleCrushModel(br_model* pModel, int pCount, const br_vector3* pPoints, const br_vector3* pForce, const br_bounds3* pBounds);
 
-// CrushDrone
+extern void C2_HOOK_FASTCALL CrushDrone(tDrone_crush_data* pCrush_data, int pCount, const br_vector3* pPoints, const br_vector3* pForce);
 
-// CrushDroneObject
+extern void C2_HOOK_FASTCALL CrushDroneObject(tPhysics_object* pObject, int pCount, const br_vector3* pPoints, const br_vector3* pForce);
 
 // DoDroneCrushing
 
@@ -478,11 +478,11 @@ extern void C2_HOOK_FASTCALL RepairCarCollisionShapes(tCar_spec* pCar, float pSt
 
 // WeldCar
 
-// ARCompressCrush
+extern void C2_HOOK_FASTCALL ARCompressCrush(tCompressed_vector3* pDirection, tU16* pDest, br_model* pModel, const br_vector3* pVector, const float* pValues);
 
-// ARApplyCrush
+extern void C2_HOOK_FASTCALL ARApplyCrush(br_model* pModel, const tCompressed_vector3* pDirection, const tU16* pValues);
 
-// ARUndoCrush
+extern void C2_HOOK_FASTCALL ARUndoCrush(br_model* pModel, const tCompressed_vector3* pDirection, const tU16* pValues);
 
 extern void C2_HOOK_FASTCALL ARCompressModelMash(tCompressed_vector3* pDest, br_model* pModel, br_vector3* pSrc);
 
