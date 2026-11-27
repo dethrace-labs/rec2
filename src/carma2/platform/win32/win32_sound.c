@@ -11,6 +11,7 @@
 #include "platform.h"
 #include "s3/internal/audio.h"
 #include "s3/internal/resource.h"
+#include "s3/internal/sample.h"
 #include "rec2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x006aaa1c
@@ -345,6 +346,32 @@ int C2_HOOK_FASTCALL PDS3StopCDAChannel(tS3_channel* pChannel) {
     return 0;
 }
 
+// FUNCTION: CARMA2_HW 0x00569752
+// FUNCTION: CARMA2_SW 0x00564df2
+// FUNCTION: CARMA2_CHEAT 0x0056f328
+int C2_HOOK_FASTCALL S3ServiceChannel(tS3_channel* pChannel) {
+    LPDIRECTSOUNDBUFFER buffer;
+    DWORD status;
+
+    if (pChannel->type == 0) {
+        if (pChannel->descriptor != NULL && pChannel->descriptor->type == pChannel->type) {
+            buffer = pChannel->descriptor->pd_handle;
+            if (buffer != NULL) {
+                if (!FAILED(IDirectSoundBuffer_GetStatus(buffer, &status)) && (status & DSBSTATUS_PLAYING)) {
+                    return 1;
+                }
+            }
+        }
+        PDS3StopSampleChannel(pChannel);
+        return 0;
+    } else if (pChannel->type == 1) {
+        return !PDS3IsMIDIStopped(pChannel);
+    } else if (pChannel->type == 2) {
+        return PDS3IsCDAPlaying();
+    }
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x005697ef
 // FUNCTION: CARMA2_SW 0x00564e8f
 // FUNCTION: CARMA2_CHEAT 0x0056f3c5
@@ -473,25 +500,6 @@ int C2_HOOK_FASTCALL PDS3IsCDAPlaying(void) {
     return 0;
 }
 
-int C2_HOOK_FASTCALL PDS3IsSamplePlaying(tS3_channel* pChannel) {
-    DWORD status;
-
-    if (pChannel->descriptor != NULL && pChannel->descriptor->type == pChannel->type) {
-        LPDIRECTSOUNDBUFFER buffer;
-
-        buffer = pChannel->descriptor->pd_handle;
-        if (buffer != NULL) {
-            if (!FAILED(IDirectSoundBuffer_GetStatus(buffer, &status))) {
-                if (status & DSBSTATUS_PLAYING) {
-                    return 1;
-                }
-            }
-        }
-    }
-    PDS3StopSampleChannel(pChannel);
-    return 0;
-}
-
 // FUNCTION: CARMA2_HW 0x0056967e
 // FUNCTION: CARMA2_SW 0x00564d1e
 // FUNCTION: CARMA2_CHEAT 0x0056f254
@@ -506,20 +514,36 @@ int C2_HOOK_FASTCALL PDS3UpdateChannelFrequency(tS3_channel* pChannel) {
     return 1;
 }
 
-int C2_HOOK_FASTCALL PDS3PlaySample(tS3_channel* pChannel) {
+// FUNCTION: CARMA2_HW 0x00569865
+// FUNCTION: CARMA2_SW 0x00564f05
+// FUNCTION: CARMA2_CHEAT 0x0056f43b
+int C2_HOOK_FASTCALL S3PlaySample(tS3_channel* pChannel, tS3_descriptor* pDesc) {
+    LPDIRECTSOUNDBUFFER snd_buffer;
+    HRESULT hr;
+    DWORD mode;
 
+    hr = 0;
+    mode = 0;
     if (pChannel->descriptor != NULL && pChannel->descriptor->type == pChannel->type) {
-        IDirectSoundBuffer *sound_buffer = pChannel->descriptor->pd_handle;
-        if (sound_buffer != NULL) {
-            int looping = pChannel->repetitions == 0;
-            IDirectSoundBuffer_Play(sound_buffer, 0, 0, looping ? DSBPLAY_LOOPING : 0);
-            if (!looping) {
-                IDirectSoundBuffer_SetCurrentPosition(sound_buffer, 0);
+        snd_buffer = pChannel->descriptor->pd_handle;
+        if (snd_buffer != NULL) {
+            if (pChannel->repetitions == 0) {
+                mode = DSBPLAY_LOOPING;
+            }
+#ifdef REC2_CHEAT
+            if (gS3_callbacks.field_0x0 != NULL && pChannel->repetitions) {
+                gS3_callbacks.field_0x0(pChannel);
+            }
+#endif
+            IDirectSoundBuffer_Play(snd_buffer, 0, 0, mode);
+            if (mode == 0) {
+                IDirectSoundBuffer_SetCurrentPosition(snd_buffer, 0);
             }
         }
-        PDS3UpdateChannelVolume(pChannel);
-        PDS3UpdateChannelFrequency(pChannel);
     }
+    PDS3UpdateChannelVolume(pChannel);
+    PDS3UpdateChannelFrequency(pChannel);
+    (void)hr;
     return 1;
 }
 

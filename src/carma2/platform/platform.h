@@ -184,8 +184,6 @@ extern void C2_HOOK_FASTCALL PDS3ReleaseSound(tS3_descriptor* pSound_descriptor)
 
 extern int C2_HOOK_FASTCALL PDS3UpdateChannelFrequency(tS3_channel* pChannel);
 
-extern int C2_HOOK_FASTCALL PDS3PlaySample(tS3_channel* pChannel);
-
 extern tS3_error_codes C2_HOOK_FASTCALL PDS3StartMidiChannel(tS3_channel* pChannel);
 
 extern const char* C2_HOOK_FASTCALL PDS3GetWorkingDirectory(void);
@@ -210,7 +208,7 @@ extern void C2_HOOK_FASTCALL PDS3UpdateCDAVolume(tS3_channel* pChannel, int pVol
 
 extern void C2_HOOK_FASTCALL PDS3ServiceCDA(tS32 pDelta_time);
 
-extern int C2_HOOK_FASTCALL PDS3IsSamplePlaying(tS3_channel* pChannel);
+extern int C2_HOOK_FASTCALL S3ServiceChannel(tS3_channel* pChannel);
 
 extern void C2_HOOK_FASTCALL PDPageInProcessMemory(void);
 
