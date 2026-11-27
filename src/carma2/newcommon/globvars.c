@@ -510,6 +510,7 @@ int gTyping;
 int gCount_opponents;
 
 // GLOBAL: CARMA2_HW 0x0076350c
+// GLOBAL: CARMA2_SW 0x00759a6c
 // GLOBAL: CARMA2_CHEAT 0x0076abac
 br_actor* gPlayer_car_master_actor;
 
@@ -632,6 +633,7 @@ float gOpponent_speed_factor;
 //float gCar_crush_softness;
 
 // GLOBAL: CARMA2_HW 0x007634b0
+// GLOBAL: CARMA2_SW 0x00759a10
 // GLOBAL: CARMA2_CHEAT 0x0076ab50
 br_vector3* gOur_pos;
 
@@ -849,7 +851,7 @@ int gCheckpoint;
 // GLOBAL: CARMA2_HW 0x00761ee8
 // GLOBAL: CARMA2_SW 0x00758448
 // GLOBAL: CARMA2_CHEAT 0x00769588
-tU32 gTimer;
+int gTimer;
 
 // GLOBAL: CARMA2_HW 0x00761ce8
 // GLOBAL: CARMA2_SW 0x00758248
@@ -862,6 +864,8 @@ int gCheckpoint_count;
 int gCountdown;
 
 // GLOBAL: CARMA2_HW 0x00761ee0
+// GLOBAL: CARMA2_SW 0x00758440
+// GLOBAL: CARMA2_CHEAT 0x00769580
 int gFrame_rate;
 //int gNumber_of_racers;
 
