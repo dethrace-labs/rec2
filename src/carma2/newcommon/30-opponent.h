@@ -112,9 +112,9 @@ extern void C2_HOOK_FASTCALL StartRecordingTrail(tCar_spec* pPursuee);
 
 extern void C2_HOOK_FASTCALL ProcessWaitForSomeHaplessSod(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
 
-// ProcessReturnToStart
+extern void C2_HOOK_FASTCALL ProcessReturnToStart(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
 
-// ProcessLevitate
+extern void C2_HOOK_FASTCALL ProcessLevitate(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
 
 extern void C2_HOOK_FASTCALL ProcessGetNearPlayer(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
 
@@ -158,7 +158,7 @@ extern void C2_HOOK_FASTCALL PossiblyRepairOpponent(tOpponent_spec* pOpponent_sp
 
 // OiStopCheating
 
-// TeleportCopToStart
+extern int C2_HOOK_FASTCALL TeleportCopToStart(tOpponent_spec* pOpponent_spec);
 
 extern void C2_HOOK_FASTCALL CalcDistanceFromHome(tOpponent_spec* pOpponent_spec);
 
@@ -184,9 +184,9 @@ extern void C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF);
 
 extern void C2_HOOK_FASTCALL DisposeOpponentPaths(void);
 
-// MungeOpponents
+extern void C2_HOOK_FASTCALL MungeOpponents(tU32 pFrame_period);
 
-// InitOpponents
+extern void C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info);
 
 extern void C2_HOOK_FASTCALL DisposeOpponents(void);
 
