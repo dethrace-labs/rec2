@@ -2711,6 +2711,7 @@ typedef struct {
 
 typedef enum tDriver {
     eDriver_non_car_unused_slot = 0,
+    eDriver_non_car = 1,
     eDriver_detached_bit = 2,
     eDriver_split_car = 3,
     eDriver_4 = 4,
@@ -4212,7 +4213,8 @@ typedef struct  {
     float force;
     tU16 min_vertex;
     tU16 max_vertex;
-    undefined field_0xc[24];
+    br_vector3 field_0xc;
+    br_vector3 field_0x18;
     tDetach_type type;
     undefined4 field_0x28;
     tCar_spec* field_0x2c;
@@ -4221,7 +4223,9 @@ typedef struct  {
     tU8 field_0x33;
     int count_shape_points; /* >0 if shape is poly, ==0 if box */
     int shape_points[16];
-    undefined field_0x78[16];
+    int field_0x78;
+    tCompressed_vector3 field_0x7c;
+    tCompressed_vector3 field_0x82;
 } tCar_crush_detach_data;
 
 typedef struct {
@@ -4322,8 +4326,9 @@ typedef struct tCar_crush_spec {
     int field_0x270;
     tCar_bit_spec field_0x274[3];
     int field_0x2b0;
-    tCar_bit_spec field_0x2b4[3];
-    undefined field_0x2f0[456];
+    tCar_bit_spec field_0x2b4[24];
+    int field_0x494;
+    br_actor* field_0x498[8];
     tU8 field_0x4b8;
     undefined field_0x4b9[3];
     float snappability_factor;
@@ -4343,19 +4348,25 @@ typedef struct tCar_crush_spec {
 typedef struct tCrush_net_detach_list_item {
     br_actor* actor;
     tCar_spec* car;
-    undefined field_0x8[28];
+    tU32 time;
+    br_bounds3 bounds;
 } tCrush_net_detach_list_item;
 
 typedef struct tCrush_net_semi_detach_bit_list_item {
     br_actor* actor;
     tCar_spec* car;
-    undefined field_0x8[68];
+    tU32 time;
+    br_vector3 point_1;
+    br_vector3 point_2;
+    br_vector3 point_3;
+    br_bounds3 bounds;
+    float value;
 } tCrush_net_semi_detach_bit_list_item;
 
 typedef struct tCrush_net_full_detach_bit_list_item {
     tCar_spec* car;
     tPhysics_object* object;
-    undefined field_0x8[0xc - 0x8];
+    tU32 time;
 } tCrush_net_full_detach_bit_list_item;
 
 typedef struct tCrush_net_reattach_bit_list_item {
@@ -4737,18 +4748,10 @@ typedef struct {
 } tQueued_object_info;
 
 typedef struct {
-    undefined field_0x0[0x8];
-    tPhysics_object* collision_object;
-    undefined field_0xc[0xd0];
-    float field_0xdc;
-    float field_0xe0;
-    undefined field_0xe4[0x20];
-} tCrush_info;
-
-typedef struct {
-    tCrush_info* crush_infos;
+    tNon_car_spec* crush_infos;
     int capacity;
-    undefined4 field_0x8;
+    int field_0x8;
+    tDriver driver;
 } tCrush_info_buffer;
 
 typedef struct {
@@ -4953,7 +4956,7 @@ typedef struct {
 
 typedef struct tNon_car_spec {
     int index;
-    undefined field_0x4[4];
+    int field_0x4;
     tPhysics_object* collision_info;
     tDriver driver;
     br_actor* car_master_actor;
@@ -4970,7 +4973,7 @@ typedef struct tNon_car_spec {
     br_material* shrapnel_materials[3];
     undefined field_0x90[0xc4 - 0x90];
     float field_0xc4;
-    undefined field_0xc8[0xcc - 0xc8];
+    tCar_spec* field_0xc8;
     float free_mass;
     float attached_mass;
     float min_torque_squared;
@@ -5460,6 +5463,7 @@ typedef enum {
     eNet_message_chunk_type_oil_spill = 0x1f,
     eNet_message_chunk_type_car_crush = 0x20,
     eNet_message_chunk_type_semi_detach_bit = 0x24,
+    eNet_message_chunk_type_fully_detach_bit = 0x25,
     eNet_message_chunk_type_reattach_bit = 0x26,
     eNet_message_chunk_type_reattach_all_bits = 0x2b,
     eNet_message_chunk_type_toggle_doors = 0x2c,
@@ -5530,10 +5534,10 @@ typedef struct {
 } tNet_message_chunk_semi_detach_bit;
 
 typedef struct {
-    int ID;
-    tU8 field_0x4;
-    undefined field_0x5[0x8 - 0x5];
-    tU32 field_0x8;
+    tNet_message_chunk_header header;
+    tPlayer_ID player;
+    tU8 id;
+    tU32 time;
     tCompressed_vector3 bounds_min;
     tCompressed_vector3 bounds_max;
 } tNet_message_chunk_detach_bit;
@@ -5698,6 +5702,7 @@ typedef union {
     tNet_message_chunk_oil_spill oil_spill; /* type = 0x1f*/
     tNet_message_car_crush car_crush; /* type = 0x20 */
     tNet_message_chunk_semi_detach_bit semi_detach_bit; /* type = 0x24 */
+    tNet_message_chunk_semi_detach_bit fully_detach_bit; /* type = 0x25, value unused */
     tNet_message_chunk_reattach_bit reattach_bit; /* type = 0x26 */
     tNet_message_chunk_reattach_all_bits reattach_all_bits; /* type = 0x2b */
     tNet_message_chunk_toggle_doors toggle_doors; /* type = 0x2c */
