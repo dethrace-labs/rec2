@@ -16,6 +16,7 @@ extern int gAllow_material_adapt;
 extern br_material* gMaterials_to_adapt[200];
 extern int gMaterials_to_adapt_count;
 extern int gShrapnel_child_count;
+extern br_vector3 gVector3_006b78a0[4];
 
 extern tSmashable_item_spec* gTrack_smashable_environment_specs;
 extern tSmashable_item_spec* gSmashable_track_indexable_triggers[100];
@@ -110,7 +111,7 @@ extern br_scalar C2_HOOK_FASTCALL SetInitPosition(br_actor* pActor, tSmashable_i
 
 // DoNonCarShrapnel
 
-// DoShrapnel
+extern void C2_HOOK_FASTCALL DoShrapnel(int pArg1, tShrapnel_spec* pShrapnel, int pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, undefined4 pArg7, tU32 pTime, uintptr_t pId, br_matrix34* pMat, br_bounds3* pBounds, br_vector3* pArg12, float pArg13, br_vector3* pArg14, int pArg15);
 
 // DoAward
 
@@ -228,7 +229,7 @@ extern void C2_HOOK_FASTCALL ReadPowerupSmash(FILE* pF);
 
 extern void C2_HOOK_FASTCALL InitSmashing(void);
 
-// VerySimpleRotate
+extern void C2_HOOK_FASTCALL VerySimpleRotate(br_scalar pDt, br_matrix34* pMatrix, br_vector3* pOmega);
 
 extern void C2_HOOK_FASTCALL DoFragMovement(tSmash_vertex* pFragment, tU32 pTime, float pDelta_time);
 
@@ -244,7 +245,7 @@ extern void C2_HOOK_FASTCALL CleanUpSmashStuff(void);
 
 extern void C2_HOOK_FASTCALL DisposeSmashData(tCar_crush_buffer_entry* pCrush_data);
 
-// DoBackwardShrapnel
+extern void C2_HOOK_FASTCALL DoBackwardShrapnel(tU32 pTime_now, int pArg1, tShrapnel_spec* pShrapnel, int pArg3, br_vector3* pArg4, br_vector3* pArg5, br_vector3* pArg6, undefined4 pArg7, tU32 pTime, uintptr_t pId, br_matrix34* pMat, br_bounds3* pBounds, br_vector3* pArg12, float pArg13, br_vector3* pArg14);
 
 extern void C2_HOOK_FASTCALL InitRepairAnimations(void);
 
