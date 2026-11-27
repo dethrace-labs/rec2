@@ -64,7 +64,7 @@ int gPHIL_count_queued_objects_for_removal;
 
 // GLOBAL: CARMA2_HW 0x00692dc0
 // GLOBAL: CARMA2_SW 0x0068ce18
-// GLOBAL: CARMA2_cHEAT 0x0069a938
+// GLOBAL: CARMA2_CHEAT 0x0069a938
 int gPHIL_count_queued_objects;
 
 // FUNCTION: CARMA2_HW 0x0049c5e0
@@ -762,6 +762,8 @@ float C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object* pObject, int pProp
 // ProcessDrag
 
 // FUNCTION: CARMA2_HW 0x004b6e90
+// FUNCTION: CARMA2_SW 0x004b35b0
+// FUNCTION: CARMA2_CHEAT 0x004bc9c0
 void C2_HOOK_FASTCALL MarkObjectAndChildrenAsPassive(tPhysics_object* pObject) {
     tPhysics_object* child;
 
