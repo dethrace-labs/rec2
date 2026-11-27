@@ -19,6 +19,7 @@
 #include "19-font.h"
 #include "23-piping.h"
 #include "25-grafdata.h"
+#include "28-world3.h"
 #include "30-opponent.h"
 #include "32-spark.h"
 #include "39-oil.h"
@@ -27,6 +28,7 @@
 #include "43-pratcam.h"
 #include "49-physics.h"
 #include "51-smash.h"
+#include "52-errors.h"
 #include "53-controls.h"
 #include "58-crush2.h"
 #include "60-phil.h"
@@ -367,7 +369,63 @@ void C2_HOOK_FASTCALL LoadPowerups(void) {
     NOT_IMPLEMENTED();
 }
 
-// InitRepulseEffects
+inline void C2_HOOK_FASTCALL InitRepulseEffects(void) {
+    int i;
+    int j;
+    br_pixelmap* repulse;
+    br_model* model;
+    br_material* material;
+    br_face* face;
+    br_vertex* vertex;
+
+    repulse = LoadPixelmap("REPULSE.PIX");
+    if (repulse == NULL) {
+        FatalError(kFatalError_CantFindFile_S, "REPULSE.PIX");
+    }
+    BrMapAdd(repulse);
+    for (i = 0; i < (int)REC2_ASIZE(gRepulse_links); i++) {
+        gRepulse_links[i].actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+        model = BrModelAllocate(NULL, 102, 100);
+        model->flags |= BR_MODF_UPDATEABLE;
+        material = BrMaterialAllocate("");
+        material->colour_map = repulse;
+        material->flags &= ~BR_MATF_LIGHT;
+        material->flags |= BR_MATF_TWO_SIDED;
+        BrMaterialAdd(material);
+        BlendifyMaterial(material, 100);
+        BrMaterialUpdate(material, BR_MATU_ALL);
+        face = model->faces;
+        for (j = 0; j < model->nfaces / 2; j++, face++) {
+            face->material = material;
+            face->vertices[0] = j;
+            face->vertices[1] = j + 1;
+            face->vertices[2] = j + 1 + model->nvertices / 2;
+        }
+        face = &model->faces[model->nfaces / 2];
+        for (j = model->nfaces / 2; j < model->nfaces; j++, face++) {
+            face->material = material;
+            face->vertices[0] = j + 1;
+            face->vertices[1] = j + 2;
+            face->vertices[2] = j + 1 - model->nvertices / 2;
+        }
+        vertex = model->vertices;
+        for (j = 0; j < model->nvertices / 2; j++, vertex++) {
+            BrVector2Set(&vertex->map, (float)(j & 0x1), 0.0f);
+        }
+#ifdef REC2_FIX_BUGS
+        vertex = &model->vertices[model->nvertices / 2];
+#else
+        vertex = &model->vertices[model->nfaces / 2];
+#endif
+        for (j = model->nvertices / 2; j < model->nvertices; j++, vertex++) {
+            BrVector2Set(&vertex->map, (float)(j & 0x1), 1.0f);
+        }
+        gRepulse_links[i].actor->model = model;
+        gRepulse_links[i].actor->render_style = BR_RSTYLE_FACES;
+        gRepulse_links[i].material = material;
+        BrModelAdd(model);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004da290
 // FUNCTION: CARMA2_SW 0x004d6760
@@ -430,7 +488,52 @@ tPhysics_object* C2_HOOK_FASTCALL MungeShereObject(br_model* pModel, float pWeig
     return collision_info;
 }
 
-// InitTail
+inline void C2_HOOK_FASTCALL InitTail(void) {
+    int i;
+    int is_ball;
+    tTWTVFS twt;
+    br_model* model;
+    tPhysics_object* collision_info;
+    tPhysics_object* parent_collision_info;
+    tPath_name the_path;
+
+    parent_collision_info = NULL;
+    PathCat(the_path, gApplication_path, "TAIL");
+    twt = OpenPackFileAndSetTiffLoading(the_path);
+    LoadAllStuffInDirectory(&gMisc_storage_space, the_path, kRendererShadingType_Specular);
+    ClosePackFileAndSetTiffLoading(twt);
+    for (i = 0; i < gCount_mutant_tail_parts; i++) {
+        is_ball = i == gCount_mutant_tail_parts - 1;
+        if (is_ball) {
+            model = BrModelFind("TAILBALL");
+            collision_info = MungeShereObject(model, gMass_mutant_tail_ball);
+        } else {
+            model = BrModelFind("TAILLINK");
+            collision_info = MungeBoxObject(model, gMass_mutant_tail_link);
+        }
+        collision_info->flags_0x238 = 0x20;
+        collision_info->physics_joint1 = AllocatePhysicsJoint(1, kMem_physics_joint);
+        collision_info->physics_joint1->type = eJoint_ball_n_socket;
+        BrVector3SetFloat(&collision_info->physics_joint1->field_0x08, 0.0f, 0.0f, (br_scalar)((is_ball ? 0.45 : 0.99) * model->bounds.min.v[2]));
+        if (i != 0) {
+            BrVector3SetFloat(&collision_info->physics_joint1->field_0x14, 0.0f, 0.0f, (br_scalar)((is_ball ? 0.45 : 0.99) * model->bounds.max.v[2]));
+            PhysicsAddObject(parent_collision_info, collision_info);
+        } else {
+            gMutant_tail_first_joint = collision_info->physics_joint1;
+            gMutant_tail_object = collision_info;
+            collision_info->physics_joint1->count_limits = 1;
+            BrVector3SetFloat(&collision_info->physics_joint1->limits[0].child, 0.0f, 0.0f, 1.0f);
+            BrVector3SetFloat(&collision_info->physics_joint1->limits[0].parent, 0.0f, 0.0f, 1.0f);
+        }
+        BrVector3SetFloat(&collision_info->physics_joint1->hinge_axis2, 0.0f, 0.0f, 1.0f);
+        BrVector3SetFloat(&collision_info->physics_joint1->hinge_axis3, 0.0f, 1.0f, 0.0f);
+        BrVector3SetFloat(&collision_info->physics_joint1->hinge_axis, 1.0f, 0.0f, 0.0f);
+        BrMatrix34Translate(&collision_info->transform_matrix, 0.0f, 0.0f, 0.0f);
+        BrMatrix34Translate(&collision_info->actor->t.t.mat, 0.0f, 0.0f, 0.0f);
+        parent_collision_info = collision_info;
+    }
+    gMutant_tail_state = 0;
+}
 
 // FUNCTION: CARMA2_HW 0x004d9d00
 // FUNCTION: CARMA2_SW 0x004d61d0
@@ -470,13 +573,41 @@ void C2_HOOK_FASTCALL ThisObjectHitAMineSoSpamItUpUsingThisPowerupsSettings(tPhy
     }
 }
 
-// InitMineShit
+// FUNCTION: CARMA2_HW 0x004da530
+// FUNCTION: CARMA2_SW 0x004d6a00
+// FUNCTION: CARMA2_CHEAT 0x004e00f0
+void C2_HOOK_FASTCALL InitMineShit(void) {
+    tPath_name the_path;
+    tTWTVFS twt;
+    int i;
+    br_model* model;
 
-// STUB: CARMA2_HW 0x004d9ea0
-// STUB: CARMA2_SW 0x004d6370
-// STUB: CARMA2_CHEAT 0x004dfa60
+    PathCat(the_path, gApplication_path, "MINE");
+    twt = OpenPackFileAndSetTiffLoading(the_path);
+    LoadAllStuffInDirectory(&gMisc_storage_space, the_path, kRendererShadingType_Specular);
+    ClosePackFileAndSetTiffLoading(twt);
+
+    for (i = 0; i < (int)REC2_ASIZE(gShit_mines); i++) {
+        gShit_mines[i].flags = 0x4;
+        gShit_mines[i].field_0x35 = 0;
+        model = BrModelFind("SHITMINE.ACT");
+        gShit_mines[i].collision_info = MungeShereObject(model, gMass_mine);
+        gShit_mines[i].collision_info->uid = i;
+        gShit_mines[i].collision_info->flags_0x238 = 0x40;
+        gShit_mines[i].collision_info->owner = &gShit_mines[i];
+        BrMatrix34Translate(&gShit_mines[i].collision_info->transform_matrix, 0.0f, 0.0f, 0.0f);
+        BrMatrix34Translate(&gShit_mines[i].collision_info->actor->t.t.mat, 0.0f, 0.0f, 0.0f);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004d9ea0
+// FUNCTION: CARMA2_SW 0x004d6370
+// FUNCTION: CARMA2_CHEAT 0x004dfa60
 void C2_HOOK_FASTCALL InitPowerups(void) {
-    NOT_IMPLEMENTED();
+
+    InitRepulseEffects();
+    InitTail();
+    InitMineShit();
 }
 
 // RemoveRepulseEffect

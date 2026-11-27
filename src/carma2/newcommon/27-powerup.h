@@ -88,17 +88,17 @@ extern void C2_HOOK_FASTCALL GotPowerup(tCar_spec* pCar, int pIndex);
 
 extern void C2_HOOK_FASTCALL LoadPowerups(void);
 
-// InitRepulseEffects
+extern void C2_HOOK_FASTCALL InitRepulseEffects(void);
 
 extern tPhysics_object* C2_HOOK_FASTCALL MungeBoxObject(br_model* pModel, float pMass);
 
 extern tPhysics_object* C2_HOOK_FASTCALL MungeShereObject(br_model* pModel, float pWeight);
 
-// InitTail
+extern void C2_HOOK_FASTCALL InitTail(void);
 
 extern void C2_HOOK_FASTCALL ThisObjectHitAMineSoSpamItUpUsingThisPowerupsSettings(tPhysics_object* pObject, int pPowerup_index);
 
-// InitMineShit
+extern void C2_HOOK_FASTCALL InitMineShit(void);
 
 extern void C2_HOOK_FASTCALL InitPowerups(void);
 
