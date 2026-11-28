@@ -347,7 +347,7 @@ typedef struct tPed_cache_006944c0 {
     undefined field_0x1a;
     undefined field_0x1b[0x1b-0x1a];
     const tPed_anim_seq* field_0x1c;
-    undefined field_0x20[1];
+    tU8 field_0x20;
     undefined field_0x21;
     undefined field_0x22[1];
     undefined field_0x23[10];
@@ -4805,8 +4805,8 @@ typedef struct {
 typedef struct tPed_movement_spec{
     tU32 min_time_between;
     tU32 max_time_between;
-    float min_walk_speed_factor;
-    float max_walk_speed_factor;
+    int min_walk_speed_factor;
+    int max_walk_speed_factor;
     br_angle max_random_angle;
     tU8 padding_0x12[2];
 } tPed_movement_spec;
@@ -4908,10 +4908,12 @@ typedef struct {
 } tPed_personality_move;
 
 typedef struct {
-    struct {
-        tU16 count_sounds;
-        tU16 sounds[5];
-    } sounds[11];
+    tU16 count_sounds;
+    tU16 sounds[5];
+} tPed_personality_sound;
+
+typedef struct {
+    tPed_personality_sound sounds[11];
 } tPed_personality_sounds;
 
 typedef struct tPed_personality {
