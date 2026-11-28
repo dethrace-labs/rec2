@@ -22,6 +22,19 @@ extern int gCount_drone_forms;
 extern int gCount_drone_path_nodes;
 extern tDrone_spec* gDrone_specs;
 extern tDrone_path_node* gDrone_path_nodes;
+extern br_model* gStatic_drone_path_model;
+extern br_model* gElasticatey_drone_path_model;
+extern br_actor* gStatic_drone_path_model_actor;
+extern br_actor* gDrone_path_model_actor;
+extern int gDrone_paths_elasticating;
+extern int gStatic_drone_path_model_max_vertices;
+extern int gStatic_drone_path_model_max_faces;
+extern int gSelected_edit_drone_path;
+extern int gSelected_drone_path_node_index;
+extern int gSelected_drone_form_index;
+extern char gDrone_edit_message[256];
+extern int gSelected_drone_path_index;
+extern int gShow_drone_paths;
 extern int gCount_drones;
 extern int gCurrent_selected_drone;
 
@@ -203,12 +216,82 @@ extern void C2_HOOK_FASTCALL ApplyDroneCornerPos2(int pDrone_id, tU16 pSpeed, tU
 
 extern void C2_HOOK_FASTCALL ReallocModelFacesAndVertices(br_model* pModel, int pCount_faces, int pCount_vertices);
 
-// CalcNFacesAndVerticesInEditModel
+extern void C2_HOOK_FASTCALL CalcNFacesAndVerticesInEditModel(int* pCount_faces, int* pCount_vertices);
 
-// InitialiseEditModelsEtc
+extern int C2_HOOK_FASTCALL InitialiseEditModelsEtc(void);
 
 // UpdateEditModels
 
-// WriteOutDronePaths
+extern void C2_HOOK_FASTCALL WriteOutDronePaths(void);
+
+extern void C2_HOOK_FASTCALL SelectClosestDrone(void);
+
+// FUN_00453460
+
+extern void C2_HOOK_FASTCALL ToggleDronePaths(void);
+
+extern void C2_HOOK_FASTCALL FUN_00453720(void);
+
+extern int C2_HOOK_FASTCALL FindNearestNodeDrone(const br_vector3* pPosition, br_scalar pMax_distance);
+
+extern int C2_HOOK_FASTCALL FUN_004538a0(int pReport);
+
+// FUN_00453940
+
+// FUN_00453ab0
+
+// FUN_00453b80
+
+extern void C2_HOOK_FASTCALL FUN_00453d60(void);
+
+// FUN_00453d80
+
+extern void C2_HOOK_FASTCALL FUN_00453ed0(void);
+
+extern void C2_HOOK_FASTCALL FUN_00453ee0(void);
+
+extern void C2_HOOK_FASTCALL FUN_00453ef0(void);
+
+extern void C2_HOOK_FASTCALL FUN_00453f00(void);
+
+extern void C2_HOOK_FASTCALL FUN_00453f10(void);
+
+extern void C2_HOOK_FASTCALL FUN_00453f20(void);
+
+extern void C2_HOOK_FASTCALL FUN_00453f30(void);
+
+// FUN_00453f40
+
+// FUN_00454360
+
+// FUN_004543d0
+
+// FUN_00454470
+
+extern void C2_HOOK_FASTCALL FUN_00454640(void);
+
+extern void C2_HOOK_FASTCALL FUN_00454650(void);
+
+extern void C2_HOOK_FASTCALL FUN_00454660(void);
+
+extern void C2_HOOK_FASTCALL FUN_00454670(void);
+
+extern void C2_HOOK_FASTCALL FUN_00454680(void);
+
+// FUN_00454690
+
+// FUN_00454710
+
+// DeleteNodeSectionsAndOrphan
+
+// DeleteNodeAndSections
+
+// FUN_00454bb0
+
+// SelectNextDroneForm
+
+// SelectPreviousDroneForm
+
+// CreateNewDrone
 
 #endif // GUARD_57_DRONE_H
