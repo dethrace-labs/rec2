@@ -5380,7 +5380,7 @@ typedef enum {
 } tFunk_groove_speed_control;
 
 typedef struct {
-    tS8 type; /* tFunk_groove_type */
+    tU8 type; /* tFunk_groove_type */
     br_actor* actor;
     union {
         struct {
@@ -6137,7 +6137,7 @@ enum {
     kFatalError_CannotFindGibletModel_S = 0xa9,
     kFatalError_WrongCrushDataFileVersion_SDD = 0xab,
     kFatalError_ShapeDataIsWrong = 0xad,
-    kFatalError_UnknownNonCarCommand = 0xad,
+    kFatalError_UnknownNonCarCommand = 0xae,
     kFatalError_UnableToOpenDroneFileOrFileCorrupted_S = 0xaf,
     kFatalError_DuplicatePixelmap_S = 0xb5,
     kFatalError_FileMustStartWith_SS = 0xb0,
