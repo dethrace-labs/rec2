@@ -18,6 +18,7 @@
 #include "41-utility.h"
 #include "49-physics.h"
 #include "51-smash.h"
+#include "52-errors.h"
 #include "53-controls.h"
 #include "60-phil.h"
 #include "69-sound.h"
@@ -2056,7 +2057,20 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor, void*
 
 // IsOnNonCarHalf
 
-// SplitCar
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0042e2e0
+// STUB: CARMA2_SW 0x0042e350
+// STUB: CARMA2_CHEAT 0x0042e480
+void C2_HOOK_FASTCALL SplitCar(tCar_spec* pCar, const tSplit_info* pSplit_info, int pArg3) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // QuantizePlane
 
@@ -2092,11 +2106,45 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor, void*
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x00434f60
-// STUB: CARMA2_SW 0x00434f90
-// STUB: CARMA2_CHEAT 0x00435150
+// FUNCTION: CARMA2_HW 0x00434f60
+// FUNCTION: CARMA2_SW 0x00434f90
+// FUNCTION: CARMA2_CHEAT 0x00435150
 void C2_HOOK_FASTCALL BendPoint(br_vector3* pPoint, const tBend_point_context* pContext) {
-    NOT_IMPLEMENTED();
+    br_vector3 tv;
+    br_scalar x;
+    br_scalar y;
+    br_scalar z;
+    br_scalar xy;
+    br_scalar sx;
+    br_scalar sy;
+    br_scalar sz;
+    int flag;
+
+    flag = pContext->field_0x34->field_0x74;
+    z = pPoint->v[2] - pContext->field_0x34->field_0x20;
+    if ((flag && z <= 0.0f) || (!flag && z >= 0.0f)) {
+        BrMatrix34ApplyP(&tv, pPoint, &pContext->field_0x4);
+        BrVector3Copy(pPoint, &tv);
+        return;
+    }
+    BrVector3Sub(&tv, pPoint, &pContext->field_0x34->field_0x24);
+    if ((flag && tv.v[2] <= 0.0f) || (!flag && tv.v[2] >= 0.0f)) {
+        sx = pContext->field_0x34->field_0x30.v[0];
+        sy = pContext->field_0x34->field_0x30.v[1];
+        sz = pContext->field_0x34->field_0x30.v[2];
+        x = tv.v[0] / sx;
+        y = tv.v[1] / sy;
+        z = tv.v[2] / sz;
+        xy = y * x;
+        tv.v[0] = pContext->field_0x34->field_0x44.v[0] * xy + pContext->field_0x34->field_0x50.v[0] * x + pContext->field_0x34->field_0x5c.v[0] * y;
+        tv.v[1] = pContext->field_0x34->field_0x44.v[1] * xy + pContext->field_0x34->field_0x50.v[1] * x + pContext->field_0x34->field_0x5c.v[1] * y;
+        tv.v[2] = pContext->field_0x34->field_0x44.v[2] * xy + pContext->field_0x34->field_0x50.v[2] * x + pContext->field_0x34->field_0x5c.v[2] * y;
+        BrVector3Accumulate(&tv, &pContext->field_0x34->field_0x68);
+        tv.v[0] = z * tv.v[0];
+        tv.v[1] = z * tv.v[1];
+        tv.v[2] = z * tv.v[2];
+        BrVector3Accumulate(pPoint, &tv);
+    }
 }
 
 #ifdef REC2_MATCHING
@@ -2123,7 +2171,20 @@ void C2_HOOK_FASTCALL BendPoint(br_vector3* pPoint, const tBend_point_context* p
 
 // ReAttachOrFullyDetachDifficultBits
 
-// BendCar
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x00433c70
+// STUB: CARMA2_SW 0x00433ca0
+// STUB: CARMA2_CHEAT 0x00433e50
+void C2_HOOK_FASTCALL BendCar(tCar_spec* pCar, br_angle pAngle_x, br_angle pAngle_y, br_angle pAngle_z, const br_vector3* pPivot, br_scalar pZ, int pArg7) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // QuantizeAngle
 
@@ -2561,7 +2622,20 @@ void C2_HOOK_FASTCALL RepairCarCollisionShapes(tCar_spec* pCar, float pStep) {
 
 // RestoreVitalBitsOfObject
 
-// WeldCar
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0043b8a0
+// STUB: CARMA2_SW 0x0043b8f0
+// STUB: CARMA2_CHEAT 0x0043bad0
+void C2_HOOK_FASTCALL WeldCar(tCar_spec* pCar_spec) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // ARCompressCrush
 
@@ -2721,9 +2795,70 @@ void C2_HOOK_FASTCALL ReceivedToggleFlaps(tNet_message_chunk* pContents) {
     }
 }
 
-// SHNonCarOwner
+inline tCar_spec* C2_HOOK_FASTCALL SHNonCarOwner(tNon_car_spec* pNon_car) {
 
-// SendSHNonCar
+    if (pNon_car->car_master_actor != NULL) {
+        return pNon_car->car_master_actor->user;
+    } else {
+        return NULL;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0043d690
+// FUNCTION: CARMA2_SW 0x0043d6e0
+// FUNCTION: CARMA2_CHEAT 0x0043d910
+void C2_HOOK_FASTCALL SendSHNonCar(tNon_car_spec* pNon_car, tU32 pTime, tNet_game_player_info* pPlayer) {
+    tNet_message* message;
+    tNet_message_chunk* contents;
+    tCar_spec* car;
+    tNet_game_player_info* player;
+    int size;
+    int contents_size;
+
+    message = NULL;
+    size = GetHierarchyNetworkSize(pNon_car->collision_info);
+    contents_size = size + offsetof(tNet_message_chunk_sh_non_car, object_hierarchy);
+    if (pPlayer == NULL) {
+        if (pNon_car->collision_info->disable_move_rotate && (pNon_car->flags & 0x100000)) {
+            message = NetBuildGuaranteedMessage(eNet_message_chunk_type_sh_non_car, contents_size);
+            contents = &message->contents;
+            pNon_car->flags &= ~0x100000;
+        } else {
+            contents = NetStartBroadcastContents(eNet_message_chunk_type_sh_non_car, contents_size);
+        }
+    } else {
+        contents = NetGetToPlayerContents(eNet_message_chunk_type_sh_non_car, contents_size, pPlayer->ID);
+    }
+    if (contents == NULL) {
+        return;
+    }
+    car = SHNonCarOwner(pNon_car);
+#ifdef REC2_CHEAT
+    if (car == NULL) {
+        PDFatalError("Can't find split half's owner");
+    }
+#endif
+    player = NetPlayerFromCar(car);
+#ifdef REC2_CHEAT
+    if (player == NULL) {
+        PDFatalError("Can't find player for split half's car");
+    }
+#endif
+    contents->sh_non_car.player = player->ID;
+    contents->sh_non_car.time = pTime;
+    contents->sh_non_car.flags = pNon_car->collision_info->disable_move_rotate << 1;
+    CompressPlane(&contents->sh_non_car.plane, &car->car_crush_spec->field_0x548);
+    if (GetHierarchyNetworkStuff(pNon_car->collision_info, contents->sh_non_car.object_hierarchy, NET_OBJECT_HIERARCHY_DEFAULT_SIZE) != size) {
+        FatalError(kFatalError_NetContentsTooBig_S, "in split half non_car object data");
+    }
+    if (pPlayer == NULL) {
+        if (message == NULL) {
+            NetBroadcastContents(contents);
+        } else {
+            NetGuaranteedSendMessageToEverybody(gCurrent_net_game, message, NULL);
+        }
+    }
+}
 
 // SendAllSHNonCars
 
@@ -2830,11 +2965,132 @@ void C2_HOOK_FASTCALL EncodeNetShapeData(tU8* pData, tCar_spec* pCar) {
     }
 }
 
-// DecodeNetShapeData
+// FUNCTION: CARMA2_HW 0x0043db00
+// FUNCTION: CARMA2_SW 0x0043db50
+// FUNCTION: CARMA2_CHEAT 0x0043ddb0
+void C2_HOOK_FASTCALL DecodeNetShapeData(tCar_spec* pCar, tU8* pData) {
+    int i;
+    int j;
+    int count;
+    tCar_crush_shape_info* shape_info;
+    tPhysics_shape* shape;
 
-// CopyBendInMessage
+    if (pCar->car_crush_spec->field_0x4b8) {
+        count = *pData++;
+        for (shape = pCar->collision_info->shape; shape != NULL && count > 0; shape = shape->common.next) {
+            if (shape->common.type == kCollisionShapeType_Polyhedron || shape->common.type == kCollisionShapeType_Wireframe_Polyhedron) {
+                shape->polyhedron.polyhedron.count_points = *pData++;
+                for (j = 0; j < shape->polyhedron.polyhedron.count_points; j++) {
+                    ExpandVector3(&shape->polyhedron.polyhedron.points[j], (tCompressed_vector3*)pData, -2.5f, 2.5f);
+                    pData += sizeof(tCompressed_vector3);
+                }
+                count--;
+            }
+        }
+    } else {
+        pData++;
+        for (i = 0; i < pCar->car_crush_spec->count_shapes; i++) {
+            shape_info = &pCar->car_crush_spec->field_0x4[i];
+            for (j = 0; j < shape_info->count_points; j++) {
+                ExpandVector3(&shape_info->field_0x18[j].field_0x18, (tCompressed_vector3*)pData, -2.5f, 2.5f);
+                pData += sizeof(tCompressed_vector3);
+                BrVector3Copy(&shape_info->field_0x18[j].field_0xc, &shape_info->field_0x18[j].field_0x18);
+                BrVector3Copy(&shape_info->field_0x0->polyhedron.points[j], &shape_info->field_0x18[j].field_0xc);
+            }
+            FillInShape((tPhysics_shape*)shape_info->field_0x0);
+        }
+    }
+    UpdateCollisionObject(pCar->collision_info);
+    pCar->collision_info->bb2.min.v[1] = GetCarOverallBoundsMinY(pCar);
+    pCar->car_crush_spec->field_0x26 = pCar->collision_info->field_0x290;
+    pCar->car_crush_spec->field_0x24 = pCar->car_crush_spec->field_0x26;
+    pCar->car_crush_spec->expand_bounding_box = 0;
+}
 
-// Vector4Equal
+// FUNCTION: CARMA2_HW 0x0043dce0
+// FUNCTION: CARMA2_SW 0x0043dd30
+// FUNCTION: CARMA2_CHEAT 0x0043df90
+void C2_HOOK_FASTCALL CopyBendInMessage(tCar_spec* pCar) {
+    tCar_crush_spec* crush;
+    tPhysics_object* object;
+    int positive;
+    int same_z;
+    int same_angle;
+    br_angle angle_x;
+    br_angle angle_y;
+    br_angle angle_z;
+    br_scalar z;
+    br_vector3 pos;
+
+    crush = pCar->car_crush_spec;
+    if (crush->field_0x144) {
+        object = pCar->collision_info;
+        if (((object->field_0x481 & 0x1) && crush->field_0x154.field_0x20 == crush->bend_z_min)
+                || (!(object->field_0x481 & 0x1) && crush->field_0x154.field_0x20 == crush->bend_z_max)) {
+            same_z = 1;
+        } else {
+            same_z = 0;
+        }
+        if (((object->field_0x481 & 0x2) && crush->field_0x154.field_0x3c[0] == object->field_0x482)
+                || ((object->field_0x481 & 0x4) && crush->field_0x154.field_0x3c[1] == object->field_0x482)
+                || ((object->field_0x481 & 0x8) && crush->field_0x154.field_0x3c[2] == object->field_0x482)) {
+            same_angle = 1;
+        } else {
+            same_angle = 0;
+        }
+        if (same_z & same_angle) {
+            return;
+        }
+        CompletelyUnBendCar(pCar);
+    }
+    angle_x = 0;
+    angle_y = 0;
+    angle_z = 0;
+    BrVector3Set(&pos, 0.0f, 0.0f, 0.0f);
+    object = pCar->collision_info;
+    if (object->field_0x481 & 0x1) {
+        pos.v[2] = crush->bend_z_min;
+        positive = 1;
+        z = object->bb1.max.v[2];
+    } else {
+        pos.v[2] = crush->bend_z_max;
+        positive = 0;
+        z = object->bb1.min.v[2];
+    }
+    switch (pCar->collision_info->field_0x481 >> 1) {
+    case 1:
+        angle_x = pCar->collision_info->field_0x482;
+        if ((angle_x < 0x7ff8 && positive) || (angle_x > 0x7ff8 && !positive)) {
+            pos.v[1] = object->bb1.min.v[1];
+        } else {
+            pos.v[1] = object->bb1.max.v[1];
+        }
+        break;
+    case 2:
+        angle_y = pCar->collision_info->field_0x482;
+        if ((angle_y > 0x7ff8 && positive) || (angle_y < 0x7ff8 && !positive)) {
+            pos.v[0] = object->bb1.min.v[0];
+        } else {
+            pos.v[0] = object->bb1.max.v[0];
+        }
+        break;
+    case 4:
+        angle_z = pCar->collision_info->field_0x482;
+        pos.v[0] = (object->bb1.min.v[0] + object->bb1.max.v[0]) * 0.5f;
+        pos.v[1] = (object->bb1.min.v[1] + object->bb1.max.v[1]) * 0.5f;
+        break;
+    }
+    BendCar(pCar, angle_x, angle_y, angle_z, &pos, z, 0);
+}
+
+inline int C2_HOOK_FASTCALL Vector4Equal(const br_vector4* pV1, const br_vector4* pV2) {
+
+    if (pV1->v[0] == pV2->v[0] && pV1->v[1] == pV2->v[1] && pV1->v[2] == pV2->v[2] && pV1->v[3] == pV2->v[3]) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x0043deb0
 // FUNCTION: CARMA2_SW 0x0043df00
@@ -2854,7 +3110,26 @@ void C2_HOOK_FASTCALL ExpandPlane(br_vector4* pDest, const tCompressed_vector4* 
     pDest->v[3] = DRU16ToScalar(pSrc->v[3], -2.5f, 2.5f);
 }
 
-// CopySplitInMessage
+// FUNCTION: CARMA2_HW 0x0043df10
+// FUNCTION: CARMA2_SW 0x0043df60
+// FUNCTION: CARMA2_CHEAT 0x0043e1c0
+void C2_HOOK_FASTCALL CopySplitInMessage(tCar_spec* pCar) {
+    tCar_crush_spec* crush;
+    br_vector4 plane;
+
+    crush = pCar->car_crush_spec;
+    if (crush == NULL) {
+        return;
+    }
+    ExpandPlane(&plane, &pCar->collision_info->field_0x484);
+    if (crush->field_0x4b8) {
+        if (Vector4Equal(&crush->field_0x548, &plane)) {
+            return;
+        }
+        WeldCar(pCar);
+    }
+    SplitCar(pCar, (tSplit_info*)&plane, 0); /* FIXME: ExpandPlane writes the plane as a br_vector4 */
+}
 
 // FUNCTION: CARMA2_HW 0x0043dfd0
 // FUNCTION: CARMA2_SW 0x0043e020
