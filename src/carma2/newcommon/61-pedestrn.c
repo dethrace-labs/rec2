@@ -61,6 +61,71 @@ tSmashable_initial_position_spec gGiblet_initial_position;
 // GLOBAL: CARMA2_CHEAT 0x0069bc94
 float gGiblet_scrape_start;
 
+// GLOBAL: CARMA2_HW 0x00694118
+// GLOBAL: CARMA2_SW 0x0068e170
+// GLOBAL: CARMA2_CHEAT 0x0069bc90
+float gPed_process_distance;
+
+// GLOBAL: CARMA2_HW 0x0069bc1c
+// GLOBAL: CARMA2_SW 0x00695c74
+// GLOBAL: CARMA2_CHEAT 0x006a3794
+float gPed_process_distance_inner;
+
+// GLOBAL: CARMA2_HW 0x006944bc
+// GLOBAL: CARMA2_SW 0x0068e514
+// GLOBAL: CARMA2_CHEAT 0x0069c034
+float gPed_popup_distance;
+
+// GLOBAL: CARMA2_HW 0x00694128
+// GLOBAL: CARMA2_SW 0x0068e180
+// GLOBAL: CARMA2_CHEAT 0x0069bca0
+float gPed_popup_distance_inner;
+
+// GLOBAL: CARMA2_HW 0x00694464
+// GLOBAL: CARMA2_SW 0x0068e4bc
+// GLOBAL: CARMA2_CHEAT 0x0069bfdc
+float gPed_cos_max_slope;
+
+// GLOBAL: CARMA2_HW 0x0069413c
+// GLOBAL: CARMA2_SW 0x0068e194
+// GLOBAL: CARMA2_CHEAT 0x0069bcb4
+float gPed_reach_squared;
+
+// GLOBAL: CARMA2_HW 0x00694300
+// GLOBAL: CARMA2_SW 0x0068e358
+// GLOBAL: CARMA2_CHEAT 0x0069be78
+float gPed_min_dist_avoid_collisions_squared;
+
+// GLOBAL: CARMA2_HW 0x007447fc
+// GLOBAL: CARMA2_SW 0x0073b2bc
+// GLOBAL: CARMA2_CHEAT 0x0074be9c
+float gPed_buoyancy_factor;
+
+// GLOBAL: CARMA2_HW 0x0069bc20
+// GLOBAL: CARMA2_SW 0x00695c78
+// GLOBAL: CARMA2_CHEAT 0x006a3798
+float gPed_damage_per_force;
+
+// GLOBAL: CARMA2_HW 0x0069bc28
+// GLOBAL: CARMA2_SW 0x00695c80
+// GLOBAL: CARMA2_CHEAT 0x006a37a0
+tExplosion_animation gNapalmed_ped_animation;
+
+// GLOBAL: CARMA2_HW 0x0069fdb8
+// GLOBAL: CARMA2_SW 0x00699e10
+// GLOBAL: CARMA2_CHEAT 0x006a7930
+char gPed_animal_names[50][32];
+
+// GLOBAL: CARMA2_HW 0x00694230
+// GLOBAL: CARMA2_SW 0x0068e288
+// GLOBAL: CARMA2_CHEAT 0x0069bda8
+int gPed_animal_count = 0;
+
+// GLOBAL: CARMA2_HW 0x00694234
+// GLOBAL: CARMA2_SW 0x0068e28c
+// GLOBAL: CARMA2_CHEAT 0x0069bdac
+int gPed_severing_damage;
+
 // GLOBAL: CARMA2_HW 0x00694238
 // GLOBAL: CARMA2_SW 0x0068e290
 // GLOBAL: CARMA2_CHEAT 0x0069bdb0
@@ -376,10 +441,20 @@ br_vector3 gChanged_points[10];
 // GLOBAL: CARMA2_CHEAT 0x0069bfcc
 int gPed_dismember_spurting_member_count;
 
+// GLOBAL: CARMA2_HW 0x00694458
+// GLOBAL: CARMA2_SW 0x0068e4b0
+// GLOBAL: CARMA2_CHEAT 0x0069bfd0
+br_pixelmap* gProx_ray_shade_table;
+
 // GLOBAL: CARMA2_HW 0x00694490
 // GLOBAL: CARMA2_SW 0x0068e4e8
 // GLOBAL: CARMA2_CHEAT 0x0069c008
 int gPed_nearness;
+
+// GLOBAL: CARMA2_HW 0x00694494
+// GLOBAL: CARMA2_SW 0x0068e4ec
+// GLOBAL: CARMA2_CHEAT 0x0069c00c
+float gPed_max_survivable_impact;
 
 // GLOBAL: CARMA2_HW 0x00694498
 // GLOBAL: CARMA2_SW 0x0068e4f0
@@ -436,6 +511,26 @@ int gDrunk_pedestrians;
 // GLOBAL: CARMA2_CHEAT 0x006a3858
 int gPeds_already_munged;
 
+// GLOBAL: CARMA2_HW 0x0065d778
+// GLOBAL: CARMA2_SW 0x006580b0
+// GLOBAL: CARMA2_CHEAT 0x00664e30
+tPedForms_vtable gPed_forms_vtable = {
+    CBPassiveCollision,
+    CBActiveHalted,
+    CBMovedByPhysics,
+    CBMoveCompleted,
+    CBFillInObject,
+    CBLoadForm,
+    CBDisposeForm,
+    CBLoadPersonality,
+    CBDisposePersonality,
+};
+
+// GLOBAL: CARMA2_HW 0x0065d7a8
+// GLOBAL: CARMA2_SW 0x006580e0
+// GLOBAL: CARMA2_CHEAT 0x00664e60
+int gPed_cache_sizes_2[4] = { 5, 10, 40, 75 };
+
 // GLOBAL: CARMA2_HW 0x0065d7b8
 // GLOBAL: CARMA2_SW 0x006580f0
 // GLOBAL: CARMA2_CHEAT 0x00664e70
@@ -445,6 +540,11 @@ int gPed_cache_sizes_1[4] = { 40, 25, 15, 5 };
 // GLOBAL: CARMA2_SW 0x0068e178
 // GLOBAL: CARMA2_CHEAT 0x0069bc98
 tPedestrian* gPTR_00694120;
+
+// GLOBAL: CARMA2_HW 0x0069bc54
+// GLOBAL: CARMA2_SW 0x00695cac
+// GLOBAL: CARMA2_CHEAT 0x006a37cc
+tFace_ref* gPed_face_cache;
 
 // GLOBAL: CARMA2_HW 0x0069bc58
 // GLOBAL: CARMA2_SW 0x00695cb0
@@ -489,7 +589,12 @@ tPed_movement_spec* gPed_movements;
 
 // ClearOutMorphs
 
-// InitBoner
+// STUB: CARMA2_HW 0x00403ed0
+// STUB: CARMA2_SW 0x00403ed0
+// STUB: CARMA2_CHEAT 0x00403ed0
+void C2_HOOK_FASTCALL InitBoner(tPedForms_vtable* pTable) {
+    NOT_IMPLEMENTED();
+}
 
 // DRVector3SafeCross
 
@@ -1261,10 +1366,6 @@ void C2_HOOK_FASTCALL DisposeAllBonerData(void) {
     NOT_IMPLEMENTED();
 }
 
-#ifdef REC2_MATCHING
-#pragma auto_inline(on)
-#endif
-
 // FUNCTION: CARMA2_HW 0x0040b420
 // FUNCTION: CARMA2_SW 0x0040b410
 // FUNCTION: CARMA2_CHEAT 0x0040b490
@@ -1344,6 +1445,10 @@ int C2_HOOK_FASTCALL GetCharacterModelSet(tPed_character_instance* pCharacter) {
 
     return pCharacter->field_0xa;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // BonerPassiveCollision
 
@@ -1514,6 +1619,10 @@ void C2_HOOK_FASTCALL EnableOverallMovement(void) {
     gPed_overall_movement_disabled = 0;
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
 // FUNCTION: CARMA2_HW 0x0040c620
 // FUNCTION: CARMA2_SW 0x0040c610
 // FUNCTION: CARMA2_CHEAT 0x0040c6c0
@@ -1527,3 +1636,7 @@ void C2_HOOK_FASTCALL EnableRetainRootMode(void) {
 void C2_HOOK_FASTCALL DisableRetainRootMode(void) {
     gPed_retain_root_mode = 0;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
