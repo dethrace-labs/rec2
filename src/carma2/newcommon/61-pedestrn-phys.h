@@ -171,11 +171,11 @@ extern void C2_HOOK_FASTCALL OneLessPed(tPedestrian* pPed);
 
 extern void C2_HOOK_FASTCALL ScoreForKilledPedestrian(tPedestrian* pPed, float pHeight);
 
-// KillPedestrian
+extern void C2_HOOK_FASTCALL KillPedestrian(tPedestrian* pPed, tPhysics_object* pCollision_info);
 
 extern int C2_HOOK_FASTCALL DismemberPed(tPedestrian* pPed, int pBone_index);
 
-extern void C2_HOOK_FASTCALL DamagePedestrian(tPedestrian* pPed, int pDamage, int pArg3, int pArg4, tPhysics_object* pObject);
+extern int C2_HOOK_FASTCALL DamagePedestrian(tPedestrian* pPed, int pDamage, int pArg3, int pArg4, tPhysics_object* pObject);
 
 // SetLastHitter
 
@@ -189,7 +189,7 @@ extern void C2_HOOK_FASTCALL DamagePedestrian(tPedestrian* pPed, int pDamage, in
 
 // DoToPeds
 
-// DoPedAnnihilator
+extern int C2_HOOK_FASTCALL DoPedAnnihilator(tCar_spec* pCar, float pRange);
 
 // RepulseIt
 
@@ -201,7 +201,7 @@ extern void C2_HOOK_FASTCALL DamagePedestrian(tPedestrian* pPed, int pDamage, in
 
 // ChoosePedToNapalm
 
-// DoPedNapalm
+extern int C2_HOOK_FASTCALL DoPedNapalm(tCar_spec* pCar);
 
 // KillNapalmBolt
 
