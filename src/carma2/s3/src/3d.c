@@ -643,80 +643,91 @@ int C2_HOOK_FASTCALL S3UpdateSourceVectors(void) {
 
 // FUNCTION: CARMA2_HW 0x0056711c
 // FUNCTION: CARMA2_SW 0x005627bc
+// FUNCTION: CARMA2_CHEAT 0x0056cd0c
 int C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient) {
-    float dist_squared;
-    float dist;
-    float sound_volume_factor;
-    br_vector3 dir_pos_listener;
-    br_vector3 dir_left;
+    float pitch = 1.0f;
+    float velocity;
+    float attenuation;
+    float the_pan_value;
+    br_vector3 dir_to_listener;
+    br_vector3 ear_v;
+    tS3_sound_source* src;
+    float sqr_dist;
+    float len;
+    br_vector3 up = { { 0.0f, -1.0f, 0.0f } };
 
-    if (pChannel->sound_source_ptr != NULL) {
-        tS3_sound_source* sound_source = pChannel->sound_source_ptr;
-
-        if (sound_source->position_ptr != NULL) {
-            S3CopyVector3(&pChannel->position, sound_source->position_ptr, sound_source->brender_vector);
+    src = pChannel->sound_source_ptr;
+    if (src != NULL) {
+        if (src->position_ptr != NULL) {
+            S3CopyVector3(&pChannel->position, src->position_ptr, src->brender_vector);
         }
-        if (sound_source->velocity_ptr != NULL) {
-            S3CopyVector3(&pChannel->velocity, sound_source->velocity_ptr, sound_source->brender_vector);
+        if (src->velocity_ptr != NULL) {
+            S3CopyVector3(&pChannel->velocity, src->velocity_ptr, src->brender_vector);
         } else {
-            pChannel->velocity.x = (pChannel->position.x - pChannel->prev_position.x) * (float)gS3_delta_time / 1000.f;
-            pChannel->velocity.y = (pChannel->position.y - pChannel->prev_position.y) * (float)gS3_delta_time / 1000.f;
-            pChannel->velocity.z = (pChannel->position.z - pChannel->prev_position.z) * (float)gS3_delta_time / 1000.f;
+#ifdef REC2_CHEAT
+            pChannel->velocity.x = (pChannel->position.x - pChannel->prev_position.x) / 1000.0f * gS3_delta_time;
+            pChannel->velocity.y = (pChannel->position.y - pChannel->prev_position.y) / 1000.0f * gS3_delta_time;
+            pChannel->velocity.z = (pChannel->position.z - pChannel->prev_position.z) / 1000.0f * gS3_delta_time;
+#else
+            pChannel->velocity.x = (pChannel->position.x - pChannel->prev_position.x) * gS3_delta_time / 1000.0f;
+            pChannel->velocity.y = (pChannel->position.y - pChannel->prev_position.y) * gS3_delta_time / 1000.0f;
+            pChannel->velocity.z = (pChannel->position.z - pChannel->prev_position.z) * gS3_delta_time / 1000.0f;
+#endif
             pChannel->prev_position.x = pChannel->position.x;
             pChannel->prev_position.y = pChannel->position.y;
             pChannel->prev_position.z = pChannel->position.z;
         }
     }
-    dist_squared =
-              (pChannel->position.x - gS3_listener_position_now.v[0]) * (pChannel->position.x - gS3_listener_position_now.v[0])
+    if ((sqr_dist = (pChannel->position.x - gS3_listener_position_now.v[0]) * (pChannel->position.x - gS3_listener_position_now.v[0])
             + (pChannel->position.y - gS3_listener_position_now.v[1]) * (pChannel->position.y - gS3_listener_position_now.v[1])
-            + (pChannel->position.z - gS3_listener_position_now.v[2]) * (pChannel->position.z - gS3_listener_position_now.v[2]);
-
-    if (dist_squared < 0.f) {
-        dist_squared = -dist_squared;
+            + (pChannel->position.z - gS3_listener_position_now.v[2]) * (pChannel->position.z - gS3_listener_position_now.v[2])) < 0.0f) {
+        sqr_dist = -sqr_dist;
     }
-    if (dist_squared > pChannel->max_distance_squared) {
+    if (sqr_dist > pChannel->max_distance_squared) {
         return 0;
     }
-    dist = dist_squared != 0.f ? (float)sqrt(dist_squared) : 0.f;
-    if (pAmbient && dist != 0.f) {
-        float doppler;
-
-        doppler = 1.f -
-                ( (pChannel->velocity.x - gS3_listener_vel_now.v[0]) * (pChannel->position.x - gS3_listener_position_now.v[0])
-                + (pChannel->velocity.y - gS3_listener_vel_now.v[1]) * (pChannel->position.y - gS3_listener_position_now.v[1])
-                + (pChannel->velocity.z - gS3_listener_vel_now.v[2]) * (pChannel->position.z - gS3_listener_position_now.v[2])) / dist / gFLOAT_006b2c68;
-        if (doppler > 2.f) {
-            doppler = 2.f;
-        } else if (doppler < .5f) {
-            doppler = .5f;
+    if (sqr_dist != 0.0) {
+        len = (float)sqrt(sqr_dist);
+    } else {
+        len = 0.0f;
+    }
+    if (pAmbient && len != 0.0f) {
+        if ((pitch = 1.0 - (velocity = ((pChannel->position.x - gS3_listener_position_now.v[0]) * (pChannel->velocity.x - gS3_listener_vel_now.v[0])
+                + (pChannel->position.y - gS3_listener_position_now.v[1]) * (pChannel->velocity.y - gS3_listener_vel_now.v[1])
+                + (pChannel->position.z - gS3_listener_position_now.v[2]) * (pChannel->velocity.z - gS3_listener_vel_now.v[2])) / len) / gFLOAT_006b2c68) > 2.0f) {
+            pitch = 2.0f;
+        } else if (pitch < 0.5) {
+            pitch = 0.5f;
         }
-        pChannel->rate = (int)((float)pChannel->source_rate * doppler);
+        pChannel->rate = (int)(pChannel->source_rate * pitch);
     } else {
         pChannel->rate = pChannel->source_rate;
     }
-    sound_volume_factor = 1.f / (1.f + dist / 6.f);
+    attenuation = 1.0f / (len / 6.0f + 1.0f);
     if (!gS3_inside_cockpit) {
-        sound_volume_factor *= 1.3f;
+        attenuation *= 1.3f;
     }
-    dir_pos_listener.v[0] = pChannel->position.x - gS3_listener_position_now.v[0];
-    dir_pos_listener.v[1] = pChannel->position.y - gS3_listener_position_now.v[1];
-    dir_pos_listener.v[2] = pChannel->position.z - gS3_listener_position_now.v[2];
-    dir_left.v[0] = gS3_listener_left_now.v[0];
-    dir_left.v[1] = gS3_listener_left_now.v[1];
-    dir_left.v[2] = gS3_listener_left_now.v[2];
-    BrVector3Normalise(&dir_left, &dir_left);
-    BrVector3Normalise(&dir_pos_listener, &dir_pos_listener);
-    pChannel->field_0x28 = -BrVector3Dot(&dir_left, &dir_pos_listener);
-    pChannel->volume_multiplier = (int)((float)pChannel->source_volume * sound_volume_factor);
+    dir_to_listener.v[0] = pChannel->position.x - gS3_listener_position_now.v[0];
+    dir_to_listener.v[1] = pChannel->position.y - gS3_listener_position_now.v[1];
+    dir_to_listener.v[2] = pChannel->position.z - gS3_listener_position_now.v[2];
+    ear_v.v[0] = gS3_listener_left_now.v[0];
+    ear_v.v[1] = gS3_listener_left_now.v[1];
+    ear_v.v[2] = gS3_listener_left_now.v[2];
+    BrVector3Normalise(&ear_v, &ear_v);
+    BrVector3Normalise(&dir_to_listener, &dir_to_listener);
+    the_pan_value = -BrVector3Dot(&ear_v, &dir_to_listener);
+    pChannel->field_0x28 = the_pan_value;
+    pChannel->volume_multiplier = (int)(pChannel->source_volume * attenuation);
     if (pChannel->volume_multiplier < 0) {
         pChannel->volume_multiplier = 0;
     }
     if (pChannel->volume_multiplier > 255) {
         pChannel->volume_multiplier = 255;
     }
+    (void)up;
     return 1;
 }
+
 
 // FUNCTION: CARMA2_HW 0x00567575
 // FUNCTION: CARMA2_SW 0x00562c15
