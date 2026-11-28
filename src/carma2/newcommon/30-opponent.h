@@ -19,6 +19,20 @@ extern float gOpponent_nastyness_frigger;
 extern int gMinTimeOpponentRepair;
 extern int gMaxTimeOpponentRepair;
 extern int gActive_car_list_rebuild_required;
+extern br_material* gMat_dk_yel;
+extern br_material* gMat_md_yel;
+extern br_material* gMat_lt_yel;
+extern br_material* gMat_dk_red;
+extern br_material* gMat_md_red;
+extern br_material* gMat_lt_red;
+extern br_material* gMat_dk_grn;
+extern br_material* gMat_md_grn;
+extern br_material* gMat_lt_grn;
+extern br_material* gMat_dk_blu;
+extern br_material* gMat_lt_blu;
+extern br_material* gMat_dk_turq;
+extern br_material* gMat_lt_turq;
+extern br_material* gMat_dk_gry;
 extern int gNumber_of_cops_before_faffage;
 extern int gNum_of_opponents_completing_race;
 extern int gNum_of_opponents_getting_near;
@@ -184,9 +198,9 @@ extern void C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF);
 
 extern void C2_HOOK_FASTCALL DisposeOpponentPaths(void);
 
-// MungeOpponents
+extern void C2_HOOK_FASTCALL MungeOpponents(tU32 pFrame_period);
 
-// InitOpponents
+extern void C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info);
 
 extern void C2_HOOK_FASTCALL DisposeOpponents(void);
 
