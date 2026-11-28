@@ -5380,7 +5380,7 @@ typedef enum {
 } tFunk_groove_speed_control;
 
 typedef struct {
-    tS8 type; /* tFunk_groove_type */
+    tU8 type; /* tFunk_groove_type */
     br_actor* actor;
     union {
         struct {
@@ -5403,8 +5403,8 @@ typedef struct {
 typedef struct tDrone_spec {
     int id;
     tDrone_form* form;
-    tU16 field_0x8_pathnode_id;
-    tU16 field_0xa_pathnode_id;
+    tS16 field_0x8_pathnode_id;
+    tS16 field_0xa_pathnode_id;
     tS16 field_0xc;
     tS16 field_0xe;
     undefined4 field_0x10;
