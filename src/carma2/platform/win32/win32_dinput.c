@@ -14,6 +14,7 @@
 #include "52-errors.h"
 #include "globvars.h"
 #include "02-init.h"
+#include "15-displays.h"
 #include "42-input.h"
 #include "joystick.h"
 #include "41-utility.h"
@@ -174,6 +175,7 @@ int gINT_00595f9c = 1;
 
 // GLOBAL: CARMA2_HW 0x00595f8c
 // GLOBAL: CARMA2_SW 0x00590eec
+// GLOBAL: CARMA2_CHEAT 0x0059c80c
 int gLast_joystick_index = -1;
 
 // GLOBAL: CARMA2_HW 0x006ad094
@@ -323,6 +325,36 @@ tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJoystickIn
         }
     }
     return info;
+}
+
+// FUNCTION: CARMA2_HW 0x004599f0
+// FUNCTION: CARMA2_SW 0x00459780
+// FUNCTION: CARMA2_CHEAT 0x00459e70
+void C2_HOOK_FASTCALL ShowCurrentJoystickName(void) {
+    char s[256];
+
+    if (gJoystick_index != -1 && gDirectInputJoystickDevices[gJoystick_index] != NULL) {
+        sprintf(s, "Joystick %d: %s %d", gJoystick_index, gDirectInputJoystickInfos[gJoystick_index].productName, (gJoystickFFB & (1 << gJoystick_index)) != 0);
+        NewTextHeadupSlot(4, 0, 3000, -1, s);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00459a70
+// FUNCTION: CARMA2_SW 0x00459800
+// FUNCTION: CARMA2_CHEAT 0x00459ef0
+void C2_HOOK_FASTCALL PDCycleJoystick(void) {
+
+    if (gJoystick_index != -1 && gDirectInputJoystickDevices[gJoystick_index] != NULL) {
+        if (gJoystickFFB & (1 << gJoystick_index)) {
+            ResetDInputJoystickFFB(gJoystick_index);
+        }
+        gJoystick_index++;
+        if (gJoystick_index > gCountEnumeratedJoystickDinputDevices - 1 || gJoystick_index > 15) {
+            gJoystick_index = 0;
+        }
+        JoystickDInputGetInfo(gJoystick_index, NULL, NULL);
+        ShowCurrentJoystickName();
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x00459c70
@@ -1671,6 +1703,7 @@ void C2_HOOK_FASTCALL StopDinputEffect(int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x0045a070
 // FUNCTION: CARMA2_SW 0x00459e00
+// FUNCTION: CARMA2_CHEAT 0x0045a4f0
 int C2_HOOK_FASTCALL PDEnableJoysticks(void) {
     int count;
 
@@ -1687,6 +1720,7 @@ int C2_HOOK_FASTCALL PDEnableJoysticks(void) {
 
 // FUNCTION: CARMA2_HW 0x0045a0c0
 // FUNCTION: CARMA2_SW 0x00459e50
+// FUNCTION: CARMA2_CHEAT 0x0045a540
 int C2_HOOK_FASTCALL PDDisableJoysticks(void) {
 
     gLast_joystick_index = gJoystick_index;
