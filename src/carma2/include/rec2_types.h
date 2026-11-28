@@ -2287,6 +2287,16 @@ typedef struct {
 } tQueued_headup;
 
 typedef struct {
+    float min_speed;
+    float max_speed;
+    float impactee_velocity_factor;
+    float random_velocity_max;
+    float random_up_velocity_max;
+    float random_normal_velocity_max;
+    float random_spin_rate_max;
+} tMovement_spec;
+
+typedef struct {
     br_actor* actor;
     tU32 time;
 } tDelayed_non_car_actor_item;
@@ -2294,10 +2304,22 @@ typedef struct {
 typedef struct {
     br_vector3 field_0x0;
     br_vector3 field_0xc;
-    undefined4* field_0x18;
+    tMovement_spec* field_0x18;
     int count_actions;
     tDelayed_non_car_actor_item actor_time_actions[20];
 } tDelayed_non_car;
+
+typedef struct tFace_ref {
+    br_material* material;
+    br_vector3 v[3];
+    br_vector2* map[3];
+    br_vector3 normal;
+    int flags;
+    br_scalar d;
+    br_actor* a;
+    tS16 g;
+    tS16 f;
+} tFace_ref;
 
 typedef struct {
     br_vector3 field_0x0;
@@ -2305,10 +2327,7 @@ typedef struct {
     tU32 field_0x18;
     br_vector3 field_0x1c;
     undefined field_0x28[0x38 - 0x28];
-    undefined4 field_0x38;
-    undefined field_0x3c[0x80 - 0x3c];
-    br_actor *field_0x80;
-    undefined field_0x84[0x88 - 0x84];
+    tFace_ref field_0x38;
     undefined4 field_0x88;
     float field_0x8c;
     tPhysics_object* field_0x90;
@@ -3550,16 +3569,6 @@ typedef struct {
     } position;
 } tSmashable_initial_position_spec;
 
-typedef struct {
-    float min_speed;
-    float max_speed;
-    float impactee_velocity_factor;
-    float random_velocity_max;
-    float random_up_velocity_max;
-    float random_normal_velocity_max;
-    float random_spin_rate_max;
-} tMovement_spec;
-
 typedef struct tSmoke_fire_chance {
     int probability_fire;
     int count_fire_columns;
@@ -3638,11 +3647,16 @@ typedef struct {
 typedef struct {
     undefined4 field_0x0;
     undefined4 field_0x4;
-    undefined4 field_0x8[12];
+    int coll_obj_id;
+    float magnitude;
+    br_vector3 position;
+    br_vector3 normal;
+    br_vector3 force;
+    tU32 flags;
 } tQueued_net_smash;
 
-typedef struct { /* FIXME: maybe equal to tQueued_net_smash */
-    undefined4 field_0x0[14];
+typedef struct {
+    tQueued_net_smash smash;
 } tStored_smash;
 
 typedef struct {
@@ -5299,18 +5313,6 @@ typedef struct tDrone_path_node {
     undefined field_0x132[2];
 } tDrone_path_node;
 
-typedef struct tFace_ref {
-    br_material* material;
-    br_vector3 v[3];
-    br_vector2* map[3];
-    br_vector3 normal;
-    int flags;
-    br_scalar d;
-    br_actor* a;
-    tS16 g;
-    tS16 f;
-} tFace_ref;
-
 typedef struct {
     tSmoke_column_core core;
     int time;
@@ -5459,6 +5461,7 @@ typedef enum {
     eNet_message_chunk_type_gameplay = 0x1b,
     eNet_message_chunk_type_oil_spill = 0x1f,
     eNet_message_chunk_type_car_crush = 0x20,
+    eNet_message_chunk_type_smash = 0x21,
     eNet_message_chunk_type_semi_detach_bit = 0x24,
     eNet_message_chunk_type_reattach_bit = 0x26,
     eNet_message_chunk_type_reattach_all_bits = 0x2b,
@@ -5687,6 +5690,18 @@ typedef struct {
     tU32 time;
 } tNet_message_chunk_recover;
 
+typedef struct {
+    tNet_message_chunk_header header;
+    undefined field_0x2[2];
+    tU32 seed;
+    tU16 index;
+    char shrapnel_id[2];
+    br_vector3 v;
+    br_vector3 omega;
+    br_matrix34 mat;
+    tSmoke_fire_chance smoke_fire_chance;
+} tNet_message_chunk_smash_shraps;
+
 typedef union {
     tNet_message_chunk_raw raw;
     tNet_message_chunk_race_over race_over; /* type = 0xa */
@@ -5697,6 +5712,8 @@ typedef union {
     tNet_message_chunk_gameplay gameplay; /* type = 0x1b */
     tNet_message_chunk_oil_spill oil_spill; /* type = 0x1f*/
     tNet_message_car_crush car_crush; /* type = 0x20 */
+    tQueued_net_smash smash; /* type = 0x21 */
+    tNet_message_chunk_smash_shraps smash_shraps;
     tNet_message_chunk_semi_detach_bit semi_detach_bit; /* type = 0x24 */
     tNet_message_chunk_reattach_bit reattach_bit; /* type = 0x26 */
     tNet_message_chunk_reattach_all_bits reattach_all_bits; /* type = 0x2b */

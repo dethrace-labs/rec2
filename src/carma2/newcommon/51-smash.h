@@ -24,6 +24,9 @@ extern int gCount_smashable_noncar_shrapnel_actors;
 extern const char* gSmashable_track_environment_path;
 extern int gCount_track_smashable_environment_specs;
 extern tStored_smash* gNet_host_smashes;
+extern tQueued_net_smash gQueued_net_smashes[50];
+extern tPowerup_queue_item gPowerup_queue[50];
+extern int gSize_powerup_queue;
 
 extern tExplosion gExplosions[50];
 extern tRepair_animation gRepair_animations[25];
@@ -100,7 +103,7 @@ extern void C2_HOOK_FASTCALL ActuallySmashPart(tCar_spec* pCar_spec, tCar_crush_
 
 extern void C2_HOOK_FASTCALL MakeSmashSound(tConnotations* pConnotations, br_vector3* pPos);
 
-// MungeSmokeFire
+extern void C2_HOOK_FASTCALL MungeSmokeFire(br_actor* pActor, tNon_car_spec* pNon_car, tSmoke_fire_chance* pSmoke_fire_chance);
 
 // Random34Matrix
 
@@ -122,11 +125,11 @@ extern void C2_HOOK_FASTCALL DoSpecial(tSpecial_effects_spec* pSpecial, br_actor
 
 // QueueDelayedSideEffect
 
-// DoDelayedNonCar
+extern void C2_HOOK_FASTCALL DoDelayedNonCar(tU32 pTime, tDelayed_non_car* pDelayed_non_car);
 
-// DoDelayedSmash
+extern void C2_HOOK_FASTCALL DoDelayedSmash(tDelayed_smash* pDelayed_smash);
 
-// MungeDelayedSideEffects
+extern void C2_HOOK_FASTCALL MungeDelayedSideEffects(void);
 
 // ActivateNonCarSideEffects
 
@@ -288,7 +291,7 @@ extern int C2_HOOK_FASTCALL InsertQuad(tSmash_quad_mapping* pMapping, br_actor* 
 
 // PointInFace
 
-// FindFaceWithPoint
+extern int C2_HOOK_FASTCALL FindFaceWithPoint(tFace_ref* pFace, br_vector3* pPoint, tFace_ref* pNew_face, int pInclude_same_face);
 
 // ProcessTexture
 
@@ -298,13 +301,21 @@ extern int C2_HOOK_FASTCALL InsertQuad(tSmash_quad_mapping* pMapping, br_actor* 
 
 extern float C2_HOOK_FASTCALL BashModel(tSmashable_item_spec* pSpec, tPhysics_object* pObject, br_actor* pActor, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int* pSmashed, int pNetwork);
 
-extern void C2_HOOK_FASTCALL SendNetSmash(tPhysics_object* pObject, undefined4 pArg2, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pArg7);
+extern int C2_HOOK_FASTCALL CalcCollObjIDFromCarSpec(tCar_spec* pCar);
 
-// SendAllSmashes
+extern int C2_HOOK_FASTCALL CalcCollObjID(tPhysics_object* pObject);
+
+extern tCar_spec* C2_HOOK_FASTCALL GetCarSpecFromCollObjID(int pID);
+
+extern tPhysics_object* C2_HOOK_FASTCALL GetCollObjFromID(int pID);
+
+extern void C2_HOOK_FASTCALL SendNetSmash(tPhysics_object* pObject, tFace_ref* pFace, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pSnap);
+
+extern void C2_HOOK_FASTCALL SendAllSmashes(tNet_game_player_info* pPlayer);
 
 // HitPowerup
 
-// SmashEnvironment
+extern float C2_HOOK_FASTCALL SmashEnvironment(tPhysics_object* pObject, tFace_ref* pFace, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pSnap, int pNetwork);
 
 extern float C2_HOOK_FASTCALL BashObject(tPhysics_object* pObject, br_actor* pActor, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pSnap, int pNetwork);
 
@@ -316,7 +327,7 @@ extern intptr_t C2_HOOK_CDECL MungeMaterialCB(br_actor* pActor, void* pData);
 
 extern void C2_HOOK_FASTCALL MungeMaterial(br_actor* pActor, int pRecursive, br_material* pMaterial_1, br_material* pMaterial_2, int pCapacity_indices, tU16* pIndices, int* pCount_indices, int pCapacity_vertices, tCar_crush_vertex_data* pVertices, int* pCount_vertices, br_vector3* pNormal);
 
-// ReinitSmashing
+extern void C2_HOOK_FASTCALL ReinitSmashing(void);
 
 extern void C2_HOOK_FASTCALL LinkSmashies(br_actor* pActor, tCar_crush_buffer_entry* pCrush_data, tModel_detail_vertex_data* pVertex_data);
 
@@ -356,11 +367,11 @@ extern void C2_HOOK_FASTCALL ChangeSmashTexture(br_material* pMaterial, tCar_spe
 
 // ReceivedSmashEnvironment
 
-// DoQueuedNetSmashes
+extern void C2_HOOK_FASTCALL DoQueuedNetSmashes(void);
 
-// FindTheBastard
+extern br_actor* C2_HOOK_FASTCALL FindTheBastard(const char* pShrapnel_id);
 
-// ReceivedSmashShraps
+extern void C2_HOOK_FASTCALL ReceivedSmashShraps(tNet_message_chunk_smash_shraps* pContents);
 
 // MungeSmashEdgeTriggers
 
