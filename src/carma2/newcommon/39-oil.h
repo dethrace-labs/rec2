@@ -26,7 +26,7 @@ extern void C2_HOOK_FASTCALL QueueOilSpill2(tCar_spec* pCar, br_actor* pCar_acto
 
 extern void C2_HOOK_FASTCALL QueueOilSpill(tCar_spec* pCar);
 
-// OKToSpillOil
+extern int C2_HOOK_FASTCALL OKToSpillOil(tOil_spill_info* pOil);
 
 extern void C2_HOOK_FASTCALL MungeOilsHeightAboveGround(tOil_spill_info* pOil);
 
@@ -34,7 +34,7 @@ extern void C2_HOOK_FASTCALL MungeIndexedOilsHeightAboveGround(int pIndex);
 
 extern void C2_HOOK_FASTCALL SetInitialOilStuff(tOil_spill_info* pOil, br_model* pModel);
 
-// ProcessOilSpills
+extern void C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period);
 
 extern int C2_HOOK_FASTCALL GetOilSpillCount(void);
 
