@@ -81,6 +81,7 @@ int gSmoke_flags;
 
 // GLOBAL: CARMA2_HW 0x006aa594
 // GLOBAL: CARMA2_SW 0x006a3fe4
+// GLOBAL: CARMA2_CHEAT 0x006b210c
 int gSmoke_num;
 
 // GLOBAL: CARMA2_HW 0x006a8760
@@ -106,6 +107,7 @@ tReplay_splash gReplay_splashes[10] = { 0 };
 int gDust_rotate = 0;
 
 // GLOBAL: CARMA2_HW 0x006aa56c
+// GLOBAL: CARMA2_CHEAT 0x006b20e4
 int gN_BR_smoke_structs;
 
 // GLOBAL: CARMA2_HW 0x006aa574
@@ -195,6 +197,7 @@ tCar_spec* gCar_of_material;
 
 // GLOBAL: CARMA2_HW 0x00660118
 // GLOBAL: CARMA2_SW 0x0065aa60
+// GLOBAL: CARMA2_CHEAT 0x00667960
 static tU8 gFlame_frame_size[20][2] = {
     { 20, 25 }, { 24, 32 }, { 24, 34 }, { 28, 44 }, { 28, 49 },
     { 32, 53 }, { 28, 61 }, { 28, 69 }, { 24, 61 }, { 28, 64 },
@@ -758,6 +761,7 @@ void C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar_spec) {
 // DrMatrix34Rotate
 
 // FUNCTION: CARMA2_HW 0x004fb2f0
+// FUNCTION: CARMA2_CHEAT 0x00500f90
 int C2_HOOK_CDECL CmpSmokeZ(const void* p1, const void* p2) {
     tBRender_smoke* const* a;
     tBRender_smoke* const* b;
@@ -872,7 +876,7 @@ void C2_HOOK_FASTCALL InitSmokeStuff(void) {
 
 // FUNCTION: CARMA2_HW 0x004fa8d0
 // FUNCTION: CARMA2_SW 0x004f5960
-// FUNCTION: CARMA2_CHEAET 0x00500570
+// FUNCTION: CARMA2_CHEAT 0x00500570
 void C2_HOOK_FASTCALL DustRotate(void) {
 
     gDust_rotate += 1;
@@ -883,6 +887,7 @@ void C2_HOOK_FASTCALL DustRotate(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004fb1b0
+// FUNCTION: CARMA2_CHEAT 0x00500e50
 void C2_HOOK_FASTCALL RenderRecordedSmokeCircles(void) {
     int i;
     int j;
@@ -1197,7 +1202,7 @@ void C2_HOOK_FASTCALL GenerateSmokeShades(void) {
 
 // FUNCTION: CARMA2_HW 0x004fb9c0
 // FUNCTION: CARMA2_SW 0x004f6f20
-// FUNCTION: CARMA2_cHEAT 0x00501660
+// FUNCTION: CARMA2_CHEAT 0x00501660
 void C2_HOOK_FASTCALL GenerateItFoxShadeTable(void) {
     if (gIt_shade_table == NULL) {
         gIt_shade_table = GenerateDarkenedShadeTable(16, gRender_palette, 0, 255, 254, .25f, .5f, .75f, .6f);
@@ -1244,6 +1249,7 @@ inline void C2_HOOK_FASTCALL ReplayFlame(tSmoke_column* pColumn, br_actor* pActo
 
 // FUNCTION: CARMA2_HW 0x004fbdd0
 // FUNCTION: CARMA2_SW 0x004f7330
+// FUNCTION: CARMA2_CHEAT 0x00501a70
 void C2_HOOK_FASTCALL FlameAnimate(int pColumn, const br_vector3* pPos, tU32 pTime) {
     tSmoke_column* col;
     br_actor* actor;
@@ -1270,8 +1276,13 @@ void C2_HOOK_FASTCALL FlameAnimate(int pColumn, const br_vector3* pPos, tU32 pTi
             AddFlameToPipingSession(i + 16 * pColumn, col->frame_count[i] + 1, col->scale_x[i], col->scale_y[i], col->offset_x[i], col->offset_z[i]);
             AREndPipingSession();
             col->frame_count[i] = IRandomBetween(-5, -1);
+#ifdef REC2_SW
+            scale = (float)(2 * IRandomBetween(0, 1) - 1);
+            col->scale_x[i] = scale * (SRandomBetween(1.0f, 1.5f) * 0.003f);
+#else
             scale = SRandomBetween(1.0f, 1.5f) * 0.003f;
             col->scale_x[i] = (2 * IRandomBetween(0, 1) - 1) * scale;
+#endif
             col->scale_y[i] = SRandomBetween(0.5f, 1.0f) * 0.003f;
             col->offset_x[i] = SRandomPosNeg(0.03f);
             col->offset_z[i] = SRandomBetween(-0.03f, 0.0f);
@@ -1604,6 +1615,8 @@ void C2_HOOK_FASTCALL ConditionalSmokeColumn(tCar_spec* pCar, int pFire_point, i
 #endif
 
 // STUB: CARMA2_HW 0x004fcbb0
+// STUB: CARMA2_SW 0x004f8110
+// STUB: CARMA2_CHEAT 0x00502850
 void C2_HOOK_FASTCALL GeneralCreateSplash(tPhysics_object* pObject, const br_vector3* pVelocity, const br_vector3* pOmega, const br_vector3* pNormal, br_scalar pWater_distance, const br_bounds3* pBounds, const br_matrix34* pMatrix, tU32 pTime) {
     NOT_IMPLEMENTED();
 }
@@ -1614,6 +1627,7 @@ void C2_HOOK_FASTCALL GeneralCreateSplash(tPhysics_object* pObject, const br_vec
 
 // FUNCTION: CARMA2_HW 0x004fda40
 // FUNCTION: CARMA2_SW 0x004f8fa0
+// FUNCTION: CARMA2_CHEAT 0x005036e0
 void C2_HOOK_FASTCALL CreateSplash(tPhysics_object* pObject, tU32 pTime) {
     GeneralCreateSplash(pObject, &pObject->v, &pObject->omega, &pObject->water_normal,
         pObject->water_d, &pObject->bb1, &pObject->actor->t.t.mat, pTime);
