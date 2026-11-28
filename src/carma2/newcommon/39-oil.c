@@ -209,6 +209,7 @@ void C2_HOOK_FASTCALL MungeIndexedOilsHeightAboveGround(int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x004a7460
 // FUNCTION: CARMA2_SW 0x004a35d0
+// FUNCTION: CARMA2_CHEAT 0x004a8770
 void C2_HOOK_FASTCALL SetInitialOilStuff(tOil_spill_info* pOil, br_model* pModel) {
     /* Resize the spill in the ground plane without changing vertex heights. */
     pModel->vertices[0].p.v[0] = -pOil->field_0x20;
@@ -228,6 +229,7 @@ void C2_HOOK_FASTCALL SetInitialOilStuff(tOil_spill_info* pOil, br_model* pModel
 
 // FUNCTION: CARMA2_HW 0x004a74e0
 // FUNCTION: CARMA2_SW 0x004a3650
+// FUNCTION: CARMA2_CHEAT 0x004a87f0
 int C2_HOOK_FASTCALL GetOilSpillCount(void) {
     return (int)REC2_ASIZE(gOily_spills);
 }
@@ -250,6 +252,7 @@ void C2_HOOK_FASTCALL GetOilSpillDetails(int pIndex, br_actor** pActor, br_scala
 
 // STUB: CARMA2_HW 0x004a77d0
 // STUB: CARMA2_SW 0x004a3940
+// STUB: CARMA2_CHEAT 0x004a8ae0
 int C2_HOOK_FASTCALL PointInSpill(const br_vector3* pPoint, int pIndex) {
 
     NOT_IMPLEMENTED();
@@ -261,6 +264,7 @@ int C2_HOOK_FASTCALL PointInSpill(const br_vector3* pPoint, int pIndex) {
 
 // FUNCTION: CARMA2_HW 0x004a7530
 // FUNCTION: CARMA2_SW 0x004a36a0
+// FUNCTION: CARMA2_CHEAT 0x004a8840
 void C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar* pFl_factor, br_scalar* pFr_factor, br_scalar* pRl_factor, br_scalar* pRr_factor) {
     int i;
     br_vector3 wheel_world;
