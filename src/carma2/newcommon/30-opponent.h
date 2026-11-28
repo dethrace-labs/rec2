@@ -15,10 +15,29 @@ extern const char* gCop_name;
 extern const char* gDrone_name;
 
 extern int gBIG_APC_index;
+extern int gChallenger_index__opponent;
 extern float gOpponent_nastyness_frigger;
 extern int gMinTimeOpponentRepair;
 extern int gMaxTimeOpponentRepair;
+extern tU32 gNext_grudge_reduction;
+extern int gGrudge_reduction_per_period;
+extern br_scalar gMinimum_yness_before_knackerisation;
+extern tU32 gAcme_frame_count;
 extern int gActive_car_list_rebuild_required;
+extern br_material* gMat_dk_yel;
+extern br_material* gMat_md_yel;
+extern br_material* gMat_lt_yel;
+extern br_material* gMat_dk_red;
+extern br_material* gMat_md_red;
+extern br_material* gMat_lt_red;
+extern br_material* gMat_dk_grn;
+extern br_material* gMat_md_grn;
+extern br_material* gMat_lt_grn;
+extern br_material* gMat_dk_blu;
+extern br_material* gMat_lt_blu;
+extern br_material* gMat_dk_turq;
+extern br_material* gMat_lt_turq;
+extern br_material* gMat_dk_gry;
 extern int gNumber_of_cops_before_faffage;
 extern int gNum_of_opponents_completing_race;
 extern int gNum_of_opponents_getting_near;
@@ -43,18 +62,25 @@ extern float gDefinite_no_cop_pursuit_speed;
 extern int gFirst_frame;
 extern float gCop_pursuit_speed_percentage_multiplier;
 extern float gHead_on_cos_value;
+#ifdef REC2_CHEAT
+extern int gProcessing_opponents;
+extern tU32 gNext_elastication;
+extern tU32 gNext_write_during_elastication;
+extern br_actor* gOppo_path_actor;
+extern br_model* gOppo_path_model;
+#endif
 
 extern void C2_HOOK_CDECL DoNotDprintf(const char* pMessage, ...);
 
 extern void C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
 
-// ReallocExtraPathNodes
+extern tS16 C2_HOOK_FASTCALL ReallocExtraPathNodes(int pHow_many_then);
 
-// ReallocExtraPathSections
+extern tS16 C2_HOOK_FASTCALL ReallocExtraPathSections(int pHow_many_then);
 
 extern int C2_HOOK_FASTCALL PointVisibleFromHere(br_vector3* pFrom, br_vector3* pTo);
 
-// WeightedFindNearestNodeAndSection
+extern void C2_HOOK_FASTCALL WeightedFindNearestNodeAndSection(tCar_spec* pCar, const br_vector3* pActor_coords, int* pNearest_node_section_no, int* pNearest_node, br_scalar* pT, br_scalar pWeight);
 
 extern tS16 C2_HOOK_FASTCALL FindNearestGeneralSection(tCar_spec* pCar, const br_vector3* pActor_coords, br_vector3* pPath_direction, br_vector3* pIntersect, br_scalar* pDistance);
 
@@ -100,13 +126,13 @@ extern void C2_HOOK_FASTCALL UnStunTheBugger(tOpponent_spec* pOpponent);
 
 extern void C2_HOOK_FASTCALL StartRecordingTrail(tCar_spec* pPursuee);
 
-// RecordNextTrailNode
+extern void C2_HOOK_FASTCALL RecordNextTrailNode(tCar_spec* pPursuee);
 
-// FindNearestTrailSection
+extern tS16 C2_HOOK_FASTCALL FindNearestTrailSection(tOpponent_spec* pOpponent_spec, tCar_spec* pPursuee, br_vector3* pSection_v, br_vector3* pIntersect, br_scalar* pDistance);
 
 // CalcNextTrailSection
 
-// ProcessPursueAndTwat
+extern void C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
 
 // ProcessRunAway
 
@@ -134,7 +160,7 @@ extern void C2_HOOK_FASTCALL TeleportOpponentToNearestSafeLocation(tOpponent_spe
 
 extern void C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one);
 
-// ProcessThisOpponent
+extern void C2_HOOK_FASTCALL ProcessThisOpponent(tOpponent_spec* pOpponent_spec);
 
 // IsNetCarActive
 
@@ -152,11 +178,11 @@ extern int C2_HOOK_FASTCALL OpponentRepairNecessary(tOpponent_spec* pOpponent_sp
 
 extern void C2_HOOK_FASTCALL PossiblyRepairOpponent(tOpponent_spec* pOpponent_spec);
 
-// DisplayOpponentRecoveringHeadup
+extern void C2_HOOK_FASTCALL DisplayOpponentRecoveringHeadup(tOpponent_spec* pOpponent_spec);
 
-// StartToCheat
+extern void C2_HOOK_FASTCALL StartToCheat(tOpponent_spec* pOpponent_spec);
 
-// OiStopCheating
+extern void C2_HOOK_FASTCALL OiStopCheating(tOpponent_spec* pOpponent_spec);
 
 // TeleportCopToStart
 
@@ -170,13 +196,47 @@ extern int C2_HOOK_FASTCALL RematerialiseOpponentOnNearestSection(tOpponent_spec
 
 extern int C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_spec, br_scalar pSpeed);
 
-// CalcPlayerConspicuousness
+extern void C2_HOOK_FASTCALL CalcPlayerConspicuousness(tOpponent_spec* pOpponent_spec);
 
 // CalcOpponentConspicuousnessWithAViewToCheatingLikeFuck
 
 // NumberOfOpponentsStillRunning
 
-// ResetPredominantJobbies
+extern void C2_HOOK_FASTCALL ResetPredominantJobbies(void);
+
+#ifdef REC2_CHEAT
+extern char gOppo_path_filename[256];
+
+extern void C2_HOOK_FASTCALL DeleteSection(tS16 pSection_to_delete);
+
+extern void C2_HOOK_FASTCALL DeleteNode(tS16 pNode_to_delete, int pAnd_sections);
+
+extern void C2_HOOK_FASTCALL MakeSection(br_uint_16 pFirst_vertex, br_uint_16 pFirst_face, const br_vector3* pStart, const br_vector3* pFinish, br_scalar pWidth, br_material* pMaterial_centre_lt, br_material* pMaterial_centre_dk, br_material* pMaterial_edges_start_lt, br_material* pMaterial_edges_start_dk, br_material* pMaterial_edges_finish_lt, br_material* pMaterial_edges_finish_dk);
+
+extern void C2_HOOK_FASTCALL CalcNumberOfFacesAndVerticesForOppoPathModel(br_uint_16* pFace_index_ptr, br_uint_16* pVertex_index_ptr);
+
+extern void C2_HOOK_FASTCALL CopyVertex__opponent(br_vertex* pDest_vertex, const br_vertex* pSrc_vertex);
+
+extern void C2_HOOK_FASTCALL CopyFace__opponent(br_face* pDest_face, const br_face* pSrc_face);
+
+extern void C2_HOOK_FASTCALL ReallocModelFacesAndVertices__opponent(br_model* pModel, int pNum_faces, int pNum_vertices);
+
+extern void C2_HOOK_FASTCALL RebuildOppoPathModel(void);
+
+extern void C2_HOOK_FASTCALL MakeVertexAndOffsetIt__opponent(br_scalar pX, br_scalar pY, br_scalar pZ, br_model* pModel, int pVertex_num, const br_vector3* pOffset);
+
+extern void C2_HOOK_FASTCALL MakeFaceAndTextureIt__opponent(br_model* pModel, int pFace_num, br_uint_16 pV0, br_uint_16 pV1, br_uint_16 pV2, br_material* pMaterial);
+
+extern void C2_HOOK_FASTCALL MakeCube(br_uint_16 pFirst_vertex, br_uint_16 pFirst_face, const br_vector3* pPoint, br_material* pMaterial_1, br_material* pMaterial_2, br_material* pMaterial_3);
+
+extern void C2_HOOK_FASTCALL DeleteOrphanNodes(void);
+
+extern int C2_HOOK_FASTCALL ConsistencyCheck(void);
+
+extern void C2_HOOK_FASTCALL WriteOutOppoPaths(void);
+
+extern void C2_HOOK_FASTCALL TrackElasticateyPath(void);
+#endif
 
 extern void C2_HOOK_FASTCALL LoadCopCars(tRace_info* pRace_info);
 
@@ -184,9 +244,9 @@ extern void C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF);
 
 extern void C2_HOOK_FASTCALL DisposeOpponentPaths(void);
 
-// MungeOpponents
+extern void C2_HOOK_FASTCALL MungeOpponents(tU32 pFrame_period);
 
-// InitOpponents
+extern void C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info);
 
 extern void C2_HOOK_FASTCALL DisposeOpponents(void);
 
@@ -222,11 +282,11 @@ extern int C2_HOOK_FASTCALL GetOpponentsSectionMaxSpeed(tOpponent_spec* pOpponen
 
 extern void C2_HOOK_FASTCALL InitOpponentPsyche(int pOpponent_index);
 
-// ClearTwattageOccurrenceVariables
+extern void C2_HOOK_FASTCALL ClearTwattageOccurrenceVariables(tOpponent_spec* pOpponent_spec);
 
 extern void C2_HOOK_FASTCALL TwoCarsHitEachOther(tCar_spec* pA_car, tCar_spec* pAnother_car);
 
-// RecordOpponentTwattageOccurrence
+extern void C2_HOOK_FASTCALL RecordOpponentTwattageOccurrence(tCar_spec* pTwatter, tCar_spec* pTwattee);
 
 // GetOpponentMood
 
