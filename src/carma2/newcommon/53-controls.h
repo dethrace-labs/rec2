@@ -32,10 +32,18 @@ extern int gRecovery_voucher_count;
 extern int gToo_late;
 extern int gRecover_timer;
 extern int gHad_auto_recover;
+
+extern int gRepair_last_time;
+
+extern tU32 gLast_repair_time;
+
+extern int gAuto_repair;
 extern int gCancel_recover;
 extern tRace_over_reason gRace_over_reason;
 extern tU32 gPalette_fade_time;
 extern tEdit_func* gEdit_funcs[eEdit_mode_count][18][8];
+extern tToggle_element gToggle_array[44];
+extern char* gEdit_mode_names[12];
 
 extern void C2_HOOK_FASTCALL CompleteRace(void);
 
@@ -121,27 +129,27 @@ extern void C2_HOOK_FASTCALL TDamageRRWheel(void);
 
 extern void C2_HOOK_FASTCALL ToggleMiniMap(void);
 
-// CheckToggles
+extern void C2_HOOK_FASTCALL CheckToggles(int pRacing);
 
 extern int C2_HOOK_FASTCALL CarWorldOffFallenCheckThingy(tCar_spec* pCar, int pCheck_around);
 
 extern int C2_HOOK_FASTCALL HasCarFallenOffWorld(tCar_spec* pCar);
 
-// CheckForBeingOutOfThisWorld
+extern void C2_HOOK_FASTCALL CheckForBeingOutOfThisWorld(void);
 
-// CheckHornLocal
+extern void C2_HOOK_FASTCALL CheckHornLocal(tCar_spec* pCar);
 
 extern void C2_HOOK_FASTCALL CheckHorn3D(tCar_spec* pCar);
 
-// CheckHorns
+extern void C2_HOOK_FASTCALL CheckHorns(void);
 
-// SetQuickRecovery
+extern void C2_HOOK_FASTCALL SetQuickRecovery(void);
 
 extern void C2_HOOK_FASTCALL SetRecovery(void);
 
-// RecoverCar
+extern void C2_HOOK_FASTCALL RecoverCar(void);
 
-// CheckMapRenderMove
+extern void C2_HOOK_FASTCALL CheckMapRenderMove(void);
 
 // ExplodeCar
 
@@ -149,11 +157,11 @@ extern void C2_HOOK_FASTCALL SetRecovery(void);
 
 extern int C2_HOOK_FASTCALL TradeInAPO(int pCost);
 
-// CheckOtherRacingKeys
+extern void C2_HOOK_FASTCALL CheckOtherRacingKeys(void);
 
 extern int C2_HOOK_FASTCALL CheckRecoverCost(void);
 
-// SortOutRecover
+extern void C2_HOOK_FASTCALL SortOutRecover(tCar_spec* pCar);
 
 extern void C2_HOOK_FASTCALL SetFlipUpCar(tCar_spec* pCar);
 
