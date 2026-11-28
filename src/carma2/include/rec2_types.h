@@ -2287,6 +2287,16 @@ typedef struct {
 } tQueued_headup;
 
 typedef struct {
+    float min_speed;
+    float max_speed;
+    float impactee_velocity_factor;
+    float random_velocity_max;
+    float random_up_velocity_max;
+    float random_normal_velocity_max;
+    float random_spin_rate_max;
+} tMovement_spec;
+
+typedef struct {
     br_actor* actor;
     tU32 time;
 } tDelayed_non_car_actor_item;
@@ -2294,10 +2304,22 @@ typedef struct {
 typedef struct {
     br_vector3 field_0x0;
     br_vector3 field_0xc;
-    undefined4* field_0x18;
+    tMovement_spec* field_0x18;
     int count_actions;
     tDelayed_non_car_actor_item actor_time_actions[20];
 } tDelayed_non_car;
+
+typedef struct tFace_ref {
+    br_material* material;
+    br_vector3 v[3];
+    br_vector2* map[3];
+    br_vector3 normal;
+    int flags;
+    br_scalar d;
+    br_actor* a;
+    tS16 g;
+    tS16 f;
+} tFace_ref;
 
 typedef struct {
     br_vector3 field_0x0;
@@ -2305,10 +2327,7 @@ typedef struct {
     tU32 field_0x18;
     br_vector3 field_0x1c;
     undefined field_0x28[0x38 - 0x28];
-    undefined4 field_0x38;
-    undefined field_0x3c[0x80 - 0x3c];
-    br_actor *field_0x80;
-    undefined field_0x84[0x88 - 0x84];
+    tFace_ref field_0x38;
     undefined4 field_0x88;
     float field_0x8c;
     tPhysics_object* field_0x90;
@@ -3550,16 +3569,6 @@ typedef struct {
     } position;
 } tSmashable_initial_position_spec;
 
-typedef struct {
-    float min_speed;
-    float max_speed;
-    float impactee_velocity_factor;
-    float random_velocity_max;
-    float random_up_velocity_max;
-    float random_normal_velocity_max;
-    float random_spin_rate_max;
-} tMovement_spec;
-
 typedef struct tSmoke_fire_chance {
     int probability_fire;
     int count_fire_columns;
@@ -3638,11 +3647,16 @@ typedef struct {
 typedef struct {
     undefined4 field_0x0;
     undefined4 field_0x4;
-    undefined4 field_0x8[12];
+    int coll_obj_id;
+    float magnitude;
+    br_vector3 position;
+    br_vector3 normal;
+    br_vector3 force;
+    tU32 flags;
 } tQueued_net_smash;
 
-typedef struct { /* FIXME: maybe equal to tQueued_net_smash */
-    undefined4 field_0x0[14];
+typedef struct {
+    tQueued_net_smash smash;
 } tStored_smash;
 
 typedef struct {
@@ -5298,18 +5312,6 @@ typedef struct tDrone_path_node {
     tS16 type;
     undefined field_0x132[2];
 } tDrone_path_node;
-
-typedef struct tFace_ref {
-    br_material* material;
-    br_vector3 v[3];
-    br_vector2* map[3];
-    br_vector3 normal;
-    int flags;
-    br_scalar d;
-    br_actor* a;
-    tS16 g;
-    tS16 f;
-} tFace_ref;
 
 typedef struct {
     tSmoke_column_core core;

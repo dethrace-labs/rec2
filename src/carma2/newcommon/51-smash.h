@@ -24,6 +24,10 @@ extern int gCount_smashable_noncar_shrapnel_actors;
 extern const char* gSmashable_track_environment_path;
 extern int gCount_track_smashable_environment_specs;
 extern tStored_smash* gNet_host_smashes;
+extern tQueued_net_smash gQueued_net_smashes[50];
+extern int gDoing_net_smash;
+extern tPowerup_queue_item gPowerup_queue[50];
+extern int gSize_powerup_queue;
 
 extern tExplosion gExplosions[50];
 extern tRepair_animation gRepair_animations[25];
@@ -122,11 +126,11 @@ extern void C2_HOOK_FASTCALL DoSpecial(tSpecial_effects_spec* pSpecial, br_actor
 
 // QueueDelayedSideEffect
 
-// DoDelayedNonCar
+extern void C2_HOOK_FASTCALL DoDelayedNonCar(tU32 pTime, tDelayed_non_car* pDelayed_non_car);
 
-// DoDelayedSmash
+extern void C2_HOOK_FASTCALL DoDelayedSmash(tDelayed_smash* pDelayed_smash);
 
-// MungeDelayedSideEffects
+extern void C2_HOOK_FASTCALL MungeDelayedSideEffects(void);
 
 // ActivateNonCarSideEffects
 
@@ -304,7 +308,7 @@ extern void C2_HOOK_FASTCALL SendNetSmash(tPhysics_object* pObject, undefined4 p
 
 // HitPowerup
 
-// SmashEnvironment
+extern float C2_HOOK_FASTCALL SmashEnvironment(tPhysics_object* pObject, tFace_ref* pFace, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pSnap, int pNetwork);
 
 extern float C2_HOOK_FASTCALL BashObject(tPhysics_object* pObject, br_actor* pActor, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pSnap, int pNetwork);
 
@@ -316,7 +320,7 @@ extern intptr_t C2_HOOK_CDECL MungeMaterialCB(br_actor* pActor, void* pData);
 
 extern void C2_HOOK_FASTCALL MungeMaterial(br_actor* pActor, int pRecursive, br_material* pMaterial_1, br_material* pMaterial_2, int pCapacity_indices, tU16* pIndices, int* pCount_indices, int pCapacity_vertices, tCar_crush_vertex_data* pVertices, int* pCount_vertices, br_vector3* pNormal);
 
-// ReinitSmashing
+extern void C2_HOOK_FASTCALL ReinitSmashing(void);
 
 extern void C2_HOOK_FASTCALL LinkSmashies(br_actor* pActor, tCar_crush_buffer_entry* pCrush_data, tModel_detail_vertex_data* pVertex_data);
 
@@ -352,11 +356,15 @@ extern void C2_HOOK_FASTCALL TurnOffSmashDecal(int pIndex);
 
 extern void C2_HOOK_FASTCALL ChangeSmashTexture(br_material* pMaterial, tCar_spec* pCar_spec, br_pixelmap* pOld_texture, br_pixelmap* pNew_texture);
 
-// DoNetSmash
+extern tCar_spec* C2_HOOK_FASTCALL GetCarSpecFromCollObjID(int pID);
+
+extern tPhysics_object* C2_HOOK_FASTCALL GetCollObjFromID(int pID);
+
+extern void C2_HOOK_FASTCALL DoNetSmash(tQueued_net_smash* pSmash);
 
 // ReceivedSmashEnvironment
 
-// DoQueuedNetSmashes
+extern void C2_HOOK_FASTCALL DoQueuedNetSmashes(void);
 
 // FindTheBastard
 
