@@ -19,6 +19,7 @@
 #include "49-physics.h"
 #include "51-smash.h"
 #include "53-controls.h"
+#include "57-drone.h"
 #include "60-phil.h"
 #include "69-sound.h"
 #include "globvars.h"
@@ -28,6 +29,7 @@
 #include "rec2_macros.h"
 
 #include "c2_math.h"
+#include "c2_stdlib.h"
 #include "c2_string.h"
 
 // GLOBAL: CARMA2_HW 0x0058f808
@@ -1119,7 +1121,178 @@ void C2_HOOK_FASTCALL DisposeVertexData(tModel_detail_vertex_data* pVertex_data)
     }
 }
 
-// BuckleTheBugger
+// FUNCTION: CARMA2_HW 0x004321d0
+// FUNCTION: CARMA2_SW 0x00432200
+// FUNCTION: CARMA2_CHEAT 0x004323a0
+void C2_HOOK_FASTCALL BuckleTheBugger(tCar_spec* pCar, br_actor* pActor, const br_vector3* pDirection, br_scalar pForce, tU16 pVertex, int pSeed) {
+    tUser_crush_data* user_crush;
+    tUser_crush_data* parent_user_crush;
+    tUser_detail_level_model* detail_model;
+    br_model* model;
+    br_model* parent_model;
+    tModel_detail_vertex_data* vertex_data;
+    tCar_crush_flap_data* flap_data;
+    br_vertex* vertices;
+    br_vector3* hinge;
+    br_vector3* origin;
+    br_vector3 hinge_axis;
+    br_vector3 other_axis;
+    br_vector3 up;
+    br_vector3 side;
+    br_vector3 tv;
+    br_scalar proj;
+    br_scalar dist;
+    br_scalar buckle;
+    br_scalar overshoot;
+    br_scalar range;
+    br_scalar d;
+    br_scalar e;
+    br_scalar x;
+    br_angle angle;
+    br_angle a;
+    br_angle min_angle;
+    br_angle max_angle;
+    tU16 i;
+    tU8 rotated;
+    float scales[1024];
+
+    user_crush = pActor->user;
+    if (user_crush == NULL || user_crush->models[0] == NULL) {
+        return;
+    }
+    model = user_crush->models[0];
+    detail_model = model->user;
+    if (detail_model == NULL) {
+        return;
+    }
+    vertex_data = detail_model->field_0x4;
+    if (vertex_data == NULL || user_crush->crush_data == NULL) {
+        return;
+    }
+    flap_data = user_crush->crush_data->flap_data;
+    if (flap_data == NULL || !flap_data->field_0x14) {
+        return;
+    }
+    if (model->nvertices > REC2_ASIZE(scales)) {
+        PDFatalError("Oh my goodness, there's a lot of vertices on that model.");
+    }
+    vertices = model->vertices;
+    hinge = &vertices[flap_data->hinge0].p;
+    BrVector3Sub(&hinge_axis, &vertices[flap_data->hinge1].p, hinge);
+    BrVector3Normalise(&hinge_axis, &hinge_axis);
+    BrVector3Sub(&other_axis, &vertices[flap_data->hinge2].p, hinge);
+    BrVector3Normalise(&other_axis, &other_axis);
+    BrVector3Cross(&up, &hinge_axis, &other_axis);
+    BrVector3Normalise(&up, &up);
+    d = BrVector3Dot(&other_axis, &hinge_axis);
+    BrVector3Scale(&side, &hinge_axis, d);
+    BrVector3Sub(&side, &side, &other_axis);
+    BrVector3Normalise(&side, &side);
+    parent_user_crush = pActor->parent->user;
+    parent_model = parent_user_crush->models[0];
+    DrMatrix34ApplyLPInverse(&tv, &parent_model->vertices[flap_data->field_0x12].p, &pActor->t.t.mat);
+    BrVector3Sub(&tv, &tv, hinge);
+    x = -BrVector3Dot(&tv, &side);
+    if (x == 0.0f) {
+        angle = 0;
+    } else {
+        angle = BrRadianToAngle(atan2(BrVector3Dot(&tv, &up), x));
+    }
+    proj = BrVector3Dot(pDirection, &side);
+    if (proj <= 0.2f) {
+        return;
+    }
+    origin = &vertices[pVertex].p;
+    BrVector3Sub(&tv, hinge, origin);
+    dist = BrVector3Dot(&tv, &side) / proj;
+    if (dist <= 0.0f || pForce <= 0.0f) {
+        return;
+    }
+    buckle = (br_scalar)sqrt((dist + pForce) * (dist + pForce) - dist * dist) * 0.5f;
+    srand(pSeed);
+    if (PercentageChance((int)gChance_of_inverse_buckle)) {
+        buckle = -buckle;
+    }
+    flap_data->field_0x18 += buckle;
+    overshoot = (br_scalar)fabs(flap_data->field_0x18) - flap_data->field_0x1c;
+    if (overshoot > 0.0f) {
+        flap_data->field_0x14 = 0;
+        if (buckle > 0.0f) {
+            buckle -= overshoot;
+        } else {
+            buckle += overshoot;
+        }
+    }
+    range = SRandomBetween(0.3f, 0.7f) * dist;
+    max_angle = 0x3ffc;
+    min_angle = 0xc004;
+    for (i = 0; i < model->nvertices; i++) {
+        BrVector3Sub(&tv, &vertices[i].p, origin);
+        d = BrVector3Dot(&tv, pDirection);
+        if (d <= 0.0f) {
+            scales[i] = 0.0f;
+        } else {
+            e = d - range;
+            if (e <= 0.0f) {
+                scales[i] = d * buckle / range;
+            } else {
+                BrVector3Sub(&tv, hinge, &vertices[i].p);
+                d = BrVector3Dot(&tv, &side) / proj;
+                if (d <= 0.0f) {
+                    scales[i] = 0.0f;
+                } else if (d + e == 0.0f) {
+                    scales[i] = 0.0f;
+                } else {
+                    scales[i] = d * buckle / (d + e);
+                }
+            }
+            BrVector3Scale(&tv, &up, scales[i]);
+            BrVector3Accumulate(&vertices[i].p, &tv);
+        }
+        if (vertex_data[i].flags & 0x2) {
+            BrVector3Sub(&tv, &vertices[i].p, hinge);
+            x = -BrVector3Dot(&tv, &side);
+            if (x != 0.0f) {
+                a = BrRadianToAngle(atan2(BrVector3Dot(&tv, &up), x));
+                if ((br_angle)(a - min_angle) < 0x7ff8) {
+                    min_angle = a;
+                }
+                if ((br_angle)(max_angle - a) < 0x7ff8) {
+                    max_angle = a;
+                }
+            }
+        }
+    }
+    flap_data->field_0x2 = flap_data->field_0x4 + angle - max_angle;
+    flap_data->field_0x6 = flap_data->field_0x4 + angle + 0x3ffc - min_angle;
+    flap_data->field_0x8 = flap_data->field_0x6 - flap_data->field_0x2;
+    rotated = 0;
+    if ((br_angle)(flap_data->field_0x4 - flap_data->field_0x2) > flap_data->field_0x8) {
+        if ((br_angle)(flap_data->field_0x4 - flap_data->field_0x6) < 0x7ff8) {
+            PipeSingleFlap(pActor, flap_data->field_0x6 - flap_data->field_0x4);
+            flap_data->field_0x4 = flap_data->field_0x6;
+        } else {
+            PipeSingleFlap(pActor, flap_data->field_0x2 - flap_data->field_0x4);
+            flap_data->field_0x4 = flap_data->field_0x2;
+        }
+        rotated = 1;
+    }
+    if (rotated) {
+        BrMatrix34Translate(&pActor->t.t.mat, -hinge->v[0], -hinge->v[1], -hinge->v[2]);
+        BrMatrix34PostRotate(&pActor->t.t.mat, flap_data->field_0x4, &hinge_axis);
+        parent_user_crush = pActor->parent->user;
+        parent_model = parent_user_crush->models[0];
+        BrMatrix34PostTranslate(&pActor->t.t.mat,
+            parent_model->vertices[flap_data->field_0xc].p.v[0],
+            parent_model->vertices[flap_data->field_0xc].p.v[1],
+            parent_model->vertices[flap_data->field_0xc].p.v[2]);
+    }
+    flap_data->field_0x15 = 1;
+    if (!flap_data->field_0x0) {
+        SetFlappage(pActor, pCar, 0x1, 0.0f);
+    }
+    AddCrushToPipingSession(model, &up, scales);
+}
 
 // FUNCTION: CARMA2_HW 0x0042cc40
 // FUNCTION: CARMA2_SW 0x0042ccc0
@@ -1262,7 +1435,27 @@ float C2_HOOK_FASTCALL DistSq(const br_vector3* pP, int pCount, const br_vector3
     return closest_distance;
 }
 
-// LimitImpactScale
+// FUNCTION: CARMA2_HW 0x004367a0
+// FUNCTION: CARMA2_SW 0x004367d0
+// FUNCTION: CARMA2_CHEAT 0x004369a0
+void C2_HOOK_FASTCALL LimitImpactScale(float* pScale, int pAxis, float pPos, float pDirection, tU16 pLimit_number, const tCar_crush_limits* pLimits, int pMax_index) {
+    int index;
+    int shift;
+    float scale;
+
+    shift = ((pDirection > 0.0f) + pAxis * 2) * 2;
+    index = (pLimit_number >> shift) & 0x3;
+    if (index > pMax_index) {
+        *pScale = 0.0f;
+    } else {
+        scale = (pLimits->limits[pAxis][pDirection > 0.0f].values[index] - pPos) / pDirection;
+        if (scale < 0.0f) {
+            *pScale = 0.0f;
+        } else if (scale < *pScale) {
+            *pScale = scale;
+        }
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x00436850
 // FUNCTION: CARMA2_SW 0x00436880
@@ -1309,18 +1502,195 @@ int C2_HOOK_FASTCALL NearestAxis(const br_vector3* pVector) {
     }
 }
 
-// CrushModel
+// FUNCTION: CARMA2_HW 0x00432b80
+// FUNCTION: CARMA2_SW 0x00432bb0
+// FUNCTION: CARMA2_CHEAT 0x00432d50
+void C2_HOOK_FASTCALL CrushModel(br_model* pModel, int pCount, const br_vector3* pVertices, br_vector3* pEnergy, br_scalar pForce, const tCar_crush_limits* pLimits, int pAxis, int pMax_level, br_scalar* pMax_scale, br_scalar* pScale, tU16* pIndex) {
+    tU16 j;
+    br_vector3* vertex;
+    float scales[1024];
+    tUser_detail_level_model* user_detail_model;
+    br_vector3 movement;
+    tModel_detail_vertex_data* vertex_data;
+    tU16 i;
+    br_scalar force;
 
-// PossibleShockSmash
+    *pMax_scale = 0.0f;
+    *pScale = 0.0f;
+    *pIndex = 0;
+    if (pModel == NULL) {
+        return;
+    }
+    user_detail_model = pModel->user;
+    if (user_detail_model == NULL) {
+        return;
+    }
+    vertex_data = user_detail_model->field_0x4;
+    if (vertex_data == NULL) {
+        return;
+    }
+    if (pModel->nvertices > REC2_ASIZE(scales)) {
+        PDFatalError("Well stone the crows, there's a lot of vertices on that model.");
+    }
+    for (i = 0; i < pModel->nvertices; i++) {
+        scales[i] = GetImpactScale(&pModel->vertices[i].p, pCount, pVertices, gMax_crush_dist_sq);
+        if (scales[i] > *pMax_scale) {
+            *pMax_scale = scales[i];
+            *pIndex = i;
+        }
+    }
+    if (pForce == 0.0f || *pMax_scale == 0.0f) {
+        return;
+    }
+    force = gForce_to_movement_factor * pForce;
+    for (j = 0; j < pModel->nvertices; j++) {
+        vertex = &pModel->vertices[j].p;
+        if (scales[j] != 0.0f) {
+            scales[j] *= force;
+            LimitImpactScale(&scales[j], pAxis, vertex->v[pAxis], pEnergy->v[pAxis], vertex_data[j].limit_number, pLimits, pMax_level);
+            BrVector3Scale(&movement, pEnergy, scales[j]);
+            BrVector3Accumulate(vertex, &movement);
+        }
+    }
+    *pScale = scales[*pIndex];
+    AddCrushToPipingSession(pModel, pEnergy, scales);
+    SetModelForUpdate(pModel);
+}
 
-// CrushModels
+inline void C2_HOOK_FASTCALL PossibleShockSmash(tCar_spec* pCar, br_actor* pActor, int pCount, tCar_crush_smashable_part* pSmashables, const br_vector3* pPoint, br_scalar pForce) {
+    br_scalar dist_sq;
+    int i;
 
-// CrushPoint
+    for (i = 0; i < pCount; i++) {
+        dist_sq = Vector3DistanceSquared(&pSmashables[i].field_0x54, pPoint);
+        if (dist_sq < 0.0014492754f) {
+            dist_sq = 0.0014492754f;
+        }
+        QueueSmashIfNecessary2(pCar, pCar->collision_info, &pCar->pos, NULL, pActor, 0, &pSmashables[i], pForce * gDistortion_factor / (br_scalar)sqrt(dist_sq), 0);
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x00431e20
+// FUNCTION: CARMA2_SW 0x00431e50
+// FUNCTION: CARMA2_CHEAT 0x00431ff0
+intptr_t C2_HOOK_FASTCALL CrushModels(br_actor* pActor, br_matrix34* pMat, void* pContext) {
+    tSpam_userdata* context;
+    tUser_crush_data* user_crush;
+    tCar_crush_buffer_entry* crush_data;
+    tCar_crush_spec* car_crush;
+    br_vector3 vertices[4];
+    br_vector3 centre;
+    br_vector3 direction;
+    br_scalar force;
+    br_scalar max_scale;
+    br_scalar scale;
+    tU16 index;
+    int axis;
+    int positive;
+    int count;
+    int max_level;
+    int i;
+
+    if (pActor->type != BR_ACTOR_MODEL) {
+        return 0;
+    }
+    user_crush = pActor->user;
+    if (user_crush == NULL) {
+        return 0;
+    }
+    crush_data = user_crush->crush_data;
+    if (crush_data == NULL) {
+        return 0;
+    }
+    context = pContext;
+    if (context->crush->count > (int)REC2_ASIZE(vertices)) {
+        context->crush->count = REC2_ASIZE(vertices);
+    }
+    BrVector3Set(&centre, 0.0f, 0.0f, 0.0f);
+    for (i = 0; i < context->crush->count; i++) {
+        DrMatrix34ApplyLPInverse(&vertices[i], &context->crush->vectors[i], pMat);
+        BrVector3Accumulate(&centre, &vertices[i]);
+    }
+    DrMatrix34ApplyLPInverse(&centre, &context->crush->field_0x34, pMat);
+    BrMatrix34TApplyV(&direction, &context->crush->field_0x44, pMat);
+    force = crush_data->softness_factor * context->scale;
+    if (TooFarToCrush(user_crush->models[0], context->crush->count, vertices, gMax_crush_dist_sq)) {
+        return 0;
+    }
+    axis = NearestAxis(&direction);
+    if (direction.v[axis] > 0.0f) {
+        positive = 1;
+    } else {
+        positive = 0;
+    }
+    car_crush = context->car->car_crush_spec;
+    count = car_crush->count_limits.counts[axis][positive];
+    max_level = 0;
+    for (i = 0; i < count; i++) {
+        if (positive) {
+            if (car_crush->limits.limits[axis][1].values[i] > centre.v[axis]) {
+                max_level = i;
+                break;
+            }
+        } else {
+            if (car_crush->limits.limits[axis][0].values[i] < centre.v[axis]) {
+                max_level = i;
+                break;
+            }
+        }
+    }
+    CrushModel(user_crush->models[0], context->crush->count, vertices, &direction, force, &car_crush->limits, axis, max_level, &max_scale, &scale, &index);
+    PossibleShockSmash(context->car, pActor, crush_data->count_smashables, crush_data->smashables, &context->crush->field_0x34, force);
+    if (crush_data->detach_data != NULL) {
+        crush_data->detach_data->field_0x0 += context->scale * max_scale;
+        if (crush_data->detach_data->field_0x0 > crush_data->detach_data->force) {
+            SetBitForDetachment(pActor, context->car, 0.0f, 0);
+        }
+    }
+    if (crush_data->flap_data != NULL && !crush_data->flap_data->kev_o_flap && scale > 0.0f) {
+        BuckleTheBugger(context->car, pActor, &direction, scale, index, context->crush->field_0x50);
+    }
+    if (max_scale != 0.0f) {
+        crush_data->field_0x2c = 1;
+    }
+    for (i = 1; i < context->car->count_detail_levels; i++) {
+        CrushModel(user_crush->models[i], context->crush->count, vertices, &direction, force, &car_crush->limits, axis, max_level, &max_scale, &scale, &index);
+    }
+    return 0;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+inline void C2_HOOK_FASTCALL CrushPoint(br_vector3* pPoint, int pCount, const br_vector3* pVertices, const br_vector3* pDirection, br_scalar pForce, tU16 pLimit_number, const tCar_crush_limits* pLimits, int pMax_index) {
+    br_scalar scale;
+    int axis;
+
+    scale = GetImpactScale(pPoint, pCount, pVertices, gMax_crush_dist_sq);
+    if (scale != 0.0f) {
+        scale *= pForce * gForce_to_movement_factor;
+        axis = NearestAxis(pDirection);
+        LimitImpactScale(&scale, axis, pPoint->v[axis], pDirection->v[axis], pLimit_number, pLimits, pMax_index);
+        if (scale != 0.0f) {
+            pPoint->v[0] += pDirection->v[0] * scale;
+            pPoint->v[1] += pDirection->v[1] * scale;
+            pPoint->v[2] += pDirection->v[2] * scale;
+        }
+    }
+    if (DRVector3TestForNan(pPoint)) {
+        PDEnterDebugger("NaN");
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004368d0
 // FUNCTION: CARMA2_SW 0x00436900
 // FUNCTION: CARMA2_CHEAT 0x00436ad0
-void C2_HOOK_FASTCALL ClipPointToLimits(br_vector3* pPoint, tU16 pLimit_bits, const tCar_crush_limits* pLimits) {
+inline void C2_HOOK_FASTCALL ClipPointToLimits(br_vector3* pPoint, tU16 pLimit_bits, const tCar_crush_limits* pLimits) {
     int i;
 
     for (i = 0; i < (int)REC2_ASIZE(pPoint->v); i++) {
@@ -1337,13 +1707,144 @@ void C2_HOOK_FASTCALL ClipPointToLimits(br_vector3* pPoint, tU16 pLimit_bits, co
     }
 }
 
-// CrushCollisionShapes
+// FUNCTION: CARMA2_HW 0x00432e70
+// FUNCTION: CARMA2_SW 0x00432ea0
+// FUNCTION: CARMA2_CHEAT 0x00433040
+inline void C2_HOOK_FASTCALL CrushCollisionShapes(tCar_spec* pCar, tSpam_userdata* pContext) {
+    tCar_crush_spec* crush_spec;
+    tCar_crush_shape_info* shape_info;
+    tCar_crush_reordered_shape_info* point;
+    br_vector3 direction;
+    br_scalar length;
+    int axis;
+    int positive;
+    int max_index;
+    int i;
+    int j;
 
-// SimpleCrushCarModelsCB
+    direction.v[1] = pContext->crush->field_0x44.v[1] * pContext->scale;
+    direction.v[2] = pContext->crush->field_0x44.v[2] * pContext->scale;
+    direction.v[0] = 0.0f;
+    if (direction.v[1] > 0.0f) {
+        direction.v[1] = 0.0f;
+    }
+    length = BrVector3Length(&direction);
+    if (length < 1e-5f) {
+        return;
+    }
+    BrVector3InvScale(&direction, &direction, length);
+    crush_spec = pCar->car_crush_spec;
+    axis = NearestAxis(&direction);
+    if (direction.v[axis] > 0.0f) {
+        positive = 1;
+    } else {
+        positive = 0;
+    }
+    max_index = 0;
+    for (i = 0; i < crush_spec->field_0xa4.counts[axis][positive]; i++) {
+        if (positive) {
+            if (crush_spec->field_0xbc.limits[axis][1].values[i] > pContext->crush->field_0x34.v[axis]) {
+                max_index = i;
+                break;
+            }
+        } else {
+            if (crush_spec->field_0xbc.limits[axis][0].values[i] < pContext->crush->field_0x34.v[axis]) {
+                max_index = i;
+                break;
+            }
+        }
+    }
+    for (i = 0; i < crush_spec->count_shapes; i++) {
+        shape_info = &crush_spec->field_0x4[i];
+        if (shape_info->field_0x8 == 0) {
+            for (j = 0; j < shape_info->count_points; j++) {
+                point = &shape_info->field_0x18[j];
+                CrushPoint(&point->field_0x18, pContext->crush->count, pContext->crush->vectors, &direction,
+                    length * point->field_0x24, point->field_0x28, &crush_spec->field_0xbc, max_index);
+                ClipPointToLimits(&shape_info->field_0x18[j].field_0x18, shape_info->field_0x18[j].field_0x28, &crush_spec->field_0xbc);
+            }
+        }
+    }
+    crush_spec->expand_bounding_box = 7;
+}
 
-// SimpleCrushCar
+// FUNCTION: CARMA2_HW 0x00433260
+// FUNCTION: CARMA2_SW 0x00433290
+// FUNCTION: CARMA2_CHEAT 0x00433430
+intptr_t C2_HOOK_FASTCALL SimpleCrushCarModelsCB(br_actor* pActor, br_matrix34* pMat, void* pContext) {
+    tSpam_userdata* context;
+    tUser_crush_data* user_crush;
+    tCar_crush_buffer_entry* crush_data;
+    br_vector3 points[4];
+    br_vector3 direction;
+    float scale;
+    int i;
 
-// CrushCar
+    context = pContext;
+    if (pActor->type != BR_ACTOR_MODEL) {
+        return 0;
+    }
+    user_crush = pActor->user;
+    if (user_crush == NULL) {
+        return 0;
+    }
+    crush_data = user_crush->crush_data;
+    if (crush_data == NULL) {
+        return 0;
+    }
+    for (i = 0; i < context->crush->count; i++) {
+        DrMatrix34ApplyLPInverse(&points[i], &context->crush->vectors[i], pMat);
+    }
+    BrMatrix34TApplyV(&direction, &context->crush->field_0x44, pMat);
+    scale = context->scale * crush_data->softness_factor;
+    BrVector3Scale(&direction, &direction, scale);
+    for (i = 0; i < context->car->count_detail_levels; i++) {
+        SimpleCrushModel(user_crush->models[i], context->crush->count, points, &direction, &context->car->car_crush_spec->field_0x11c);
+    }
+    return 0;
+}
+
+inline void C2_HOOK_FASTCALL SimpleCrushCar(tCar_spec* pCar, tSpam_userdata* pContext) {
+
+    ARStartPipingSession(ePipe_chunk_crush);
+    DRActorEnumRecurseWithSnart(pCar->car_model_actor, NULL, SimpleCrushCarModelsCB, pContext);
+    AREndPipingSession();
+}
+
+// FUNCTION: CARMA2_HW 0x004363f0
+// FUNCTION: CARMA2_SW 0x00436420
+// FUNCTION: CARMA2_CHEAT 0x004365e0
+void C2_HOOK_FASTCALL CrushCar(tCar_spec* pCar, br_actor* pActor, tCar_crush* pCrush) {
+    tSpam_userdata context;
+    br_scalar force;
+
+#ifdef REC2_CHEAT
+    if (gArrow_mode) {
+        return;
+    }
+#endif
+    if (pCar->car_crush_spec == NULL || pCar->invulnerable_no_crushage || pCar->car_crush_spec->field_0x4b8) {
+        return;
+    }
+    context.car = pCar;
+    context.crush = pCrush;
+    force = pCrush->field_0x40;
+    if (force > gMax_crush_force) {
+        force = gMax_crush_force;
+    }
+    context.scale = force / pCrush->count;
+    if (pCar->car_crush_spec->field_0x144) {
+        SimpleCrushCar(pCar, &context);
+        return;
+    }
+    if (pActor == pCar->car_master_actor) {
+        CrushCollisionShapes(pCar, &context);
+    }
+    ARStartPipingSession(ePipe_chunk_crush);
+    DRActorEnumRecurseWithSnart(pActor, NULL, CrushModels, &context);
+    AREndPipingSession();
+    pCar->use_shell_model = 0;
+}
 
 // SendCrush
 
@@ -1383,11 +1884,41 @@ void C2_HOOK_FASTCALL ExpandCrush(tCar_crush* pDest, const tCompressed_car_crush
 
 // RemoveDuplicatePoints
 
-// SimpleCrushModel
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// CrushDrone
+// STUB: CARMA2_HW 0x0042c540
+// STUB: CARMA2_SW 0x0042c5d0
+// STUB: CARMA2_CHEAT 0x0042c6e0
+void C2_HOOK_FASTCALL SimpleCrushModel(br_model* pModel, int pCount, const br_vector3* pPoints, const br_vector3* pForce, const br_bounds3* pBounds) {
+    NOT_IMPLEMENTED();
+}
 
-// CrushDroneObject
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+inline void C2_HOOK_FASTCALL CrushDrone(tDrone_crush_data* pCrush_data, int pCount, const br_vector3* pPoints, const br_vector3* pForce) {
+    br_vector3 force;
+
+    if (pCount >= 1) {
+        BrVector3Scale(&force, pForce, pCrush_data->crushability);
+        SimpleCrushModel(pCrush_data->model, pCount, pPoints, &force, &pCrush_data->bounds);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0042d180
+// FUNCTION: CARMA2_SW 0x0042d1f0
+// FUNCTION: CARMA2_CHEAT 0x0042d320
+void C2_HOOK_FASTCALL CrushDroneObject(tPhysics_object* pObject, int pCount, const br_vector3* pPoints, const br_vector3* pForce) {
+    tDrone_crush_data* crush_data;
+
+    crush_data = GetDroneCrushData(pObject);
+    if (crush_data != NULL) {
+        CrushDrone(crush_data, pCount, pPoints, pForce);
+    }
+}
 
 // DoDroneCrushing
 
@@ -2563,11 +3094,61 @@ void C2_HOOK_FASTCALL RepairCarCollisionShapes(tCar_spec* pCar, float pStep) {
 
 // WeldCar
 
-// ARCompressCrush
+// FUNCTION: CARMA2_HW 0x0043bca0
+// FUNCTION: CARMA2_SW 0x0043bcf0
+// FUNCTION: CARMA2_CHEAT 0x0043bee0
+void C2_HOOK_FASTCALL ARCompressCrush(tCompressed_vector3* pDirection, tU16* pDest, br_model* pModel, const br_vector3* pVector, const float* pValues) {
+    float length;
+    br_vector3 direction;
+    tU16 i;
 
-// ARApplyCrush
+    length = BrVector3Length(pVector);
+    BrVector3Set(&direction, pVector->v[0] / length, pVector->v[1] / length, pVector->v[2] / length);
+    CompressVector3(pDirection, &direction, -1.0f, 1.0f);
+    for (i = 0; i < pModel->nvertices; i++) {
+        pDest[i] = DRScalarToU16(pValues[i] * length, 0.0f, 10.0f);
+    }
+}
 
-// ARUndoCrush
+// FUNCTION: CARMA2_HW 0x0043bd70
+// FUNCTION: CARMA2_SW 0x0043bdc0
+// FUNCTION: CARMA2_CHEAT 0x0043bfb0
+void C2_HOOK_FASTCALL ARApplyCrush(br_model* pModel, const tCompressed_vector3* pDirection, const tU16* pValues) {
+    br_vector3 direction;
+    br_vector3 delta;
+    float scale;
+    int i;
+
+    ExpandVector3(&direction, pDirection, -1.0f, 1.0f);
+    for (i = 0; i < pModel->nvertices; i++) {
+        if (pValues[i] != 0) {
+            scale = DRU16ToScalar(pValues[i], 0.0f, 10.0f);
+            BrVector3Set(&delta, direction.v[0] * scale, direction.v[1] * scale, direction.v[2] * scale);
+            BrVector3Accumulate(&pModel->vertices[i].p, &delta);
+        }
+    }
+    SetModelForUpdate(pModel);
+}
+
+// FUNCTION: CARMA2_HW 0x0043be50
+// FUNCTION: CARMA2_SW 0x0043bea0
+// FUNCTION: CARMA2_CHEAT 0x0043c0a0
+void C2_HOOK_FASTCALL ARUndoCrush(br_model* pModel, const tCompressed_vector3* pDirection, const tU16* pValues) {
+    br_vector3 direction;
+    br_vector3 delta;
+    float scale;
+    int i;
+
+    ExpandVector3(&direction, pDirection, -1.0f, 1.0f);
+    for (i = 0; i < pModel->nvertices; i++) {
+        if (pValues[i] != 0) {
+            scale = DRU16ToScalar(pValues[i], 0.0f, 10.0f);
+            BrVector3Scale(&delta, &direction, -scale);
+            BrVector3Accumulate(&pModel->vertices[i].p, &delta);
+        }
+    }
+    SetModelForUpdate(pModel);
+}
 
 // FUNCTION: CARMA2_HW 0x0043bf30
 // FUNCTION: CARMA2_SW 0x0043bf80
@@ -2658,7 +3239,20 @@ void C2_HOOK_FASTCALL ARUndoSplitWeld(tCar_spec* pCar) {
     NOT_IMPLEMENTED();
 }
 
-// ReceivedCrush
+// FUNCTION: CARMA2_HW 0x0043c480
+// FUNCTION: CARMA2_SW 0x0043c4d0
+// FUNCTION: CARMA2_CHEAT 0x0043c6d0
+void C2_HOOK_FASTCALL ReceivedCrush(tNet_message_chunk* pContents) {
+    tCar_spec* car;
+    tCar_crush crush;
+
+    car = NetCarFromPlayerID(pContents->car_crush.car_id);
+    if (car == NULL || gNet_mode == eNet_mode_host || car->active || gArrow_mode) {
+        return;
+    }
+    ExpandCrush(&crush, &pContents->car_crush.car_crush);
+    CrushCar(car, car->car_master_actor, &crush);
+}
 
 // FindBitWithID
 
