@@ -9,6 +9,7 @@
 #include "28-world3.h"
 
 #include "08-loading1.h"
+#include "17-world2.h"
 #include "37-brucetrk.h"
 #include "41-utility.h"
 #include "51-smash.h"
@@ -39,6 +40,7 @@ int gDisallow_duplicates;
 
 // GLOBAL: CARMA2_HW 0x006aaa20
 // GLOBAL: CARMA2_SW 0x006a4470
+// GLOBAL: CARMA2_CHEAT 0x006b2598
 br_pixelmap* gDuplicate_pixelmap;
 
 // GLOBAL: CARMA2_HW 0x006aaa28
@@ -46,6 +48,7 @@ br_pixelmap* gDuplicate_pixelmap;
 br_material* gDuplicate_material;
 
 // GLOBAL: CARMA2_HW 0x006aaa24
+// GLOBAL: CARMA2_SW 0x006a4474
 // GLOBAL: CARMA2_CHEAT 0x006b259c
 br_model* gDuplicate_model;
 
@@ -247,6 +250,7 @@ void C2_HOOK_FASTCALL ClearOutStorageSpace(tBrender_storage* pStorage_space) {
 
 // FUNCTION: CARMA2_HW 0x00501020
 // FUNCTION: CARMA2_SW 0x004fc980
+// FUNCTION: CARMA2_CHEAT 0x00506cd0
 tAdd_to_storage_result C2_HOOK_FASTCALL AddPixelmapToStorage(tBrender_storage* pStorage_space, br_pixelmap* pThe_pm) {
     int i;
 
@@ -270,6 +274,7 @@ tAdd_to_storage_result C2_HOOK_FASTCALL AddPixelmapToStorage(tBrender_storage* p
 
 // FUNCTION: CARMA2_HW 0x005010e0
 // FUNCTION: CARMA2_SW 0x004fca40
+// FUNCTION: CARMA2_CHEAT 0x00506d90
 tAdd_to_storage_result C2_HOOK_FASTCALL AddShadeTableToStorage(tBrender_storage* pStorage_space, br_pixelmap* pThe_st) {
     int i;
 
@@ -317,7 +322,7 @@ tAdd_to_storage_result C2_HOOK_FASTCALL AddMaterialToStorage(tBrender_storage* p
 // FUNCTION: CARMA2_HW 0x00501260
 // FUNCTION: CARMA2_SW 0x004fcbc0
 // FUNCTION: CARMA2_CHEAT 0x00506f10
-tAdd_to_storage_result C2_HOOK_FASTCALL AddModelToStorage(tBrender_storage* pStorage_space, br_model* pThe_mod) {
+inline tAdd_to_storage_result C2_HOOK_FASTCALL AddModelToStorage(tBrender_storage* pStorage_space, br_model* pThe_mod) {
     int i;
 
     gDuplicate_model = NULL;
@@ -343,6 +348,7 @@ tAdd_to_storage_result C2_HOOK_FASTCALL AddModelToStorage(tBrender_storage* pSto
 
 // FUNCTION: CARMA2_HW 0x00501330
 // FUNCTION: CARMA2_SW 0x004fcc90
+// FUNCTION: CARMA2_CHEAT 0x00506fe0
 tAdd_to_storage_result C2_HOOK_FASTCALL AddSoundToStorage(tBrender_storage* pStorage_space, int pSound_id) {
     int i;
 
@@ -407,6 +413,7 @@ int C2_HOOK_FASTCALL AddPixelmaps(tBrender_storage* pStorage_space, const char* 
 
 // FUNCTION: CARMA2_HW 0x00501560
 // FUNCTION: CARMA2_SW 0x004fcec0
+// FUNCTION: CARMA2_CHEAT 0x00507210
 br_pixelmap* C2_HOOK_FASTCALL LoadSinglePixelmap(tBrender_storage* pStorage, const char* pName) {
     br_pixelmap* map;
     tAdd_to_storage_result addResult;
@@ -467,6 +474,7 @@ br_pixelmap* C2_HOOK_FASTCALL LoadSingleShadeTable(tBrender_storage* pStorage_sp
 
 // FUNCTION: CARMA2_HW 0x005017e0
 // FUNCTION: CARMA2_SW 0x004fd140
+// FUNCTION: CARMA2_CHEAT 0x00507490
 br_material* C2_HOOK_FASTCALL LoadSingleMaterial(tBrender_storage* pStorage_space, const char* pName) {
     br_material* material;
 
@@ -553,6 +561,7 @@ int C2_HOOK_FASTCALL AddShadeTables(tBrender_storage* pStorage_space, const char
 
 // FUNCTION: CARMA2_HW 0x00501dd0
 // FUNCTION: CARMA2_SW 0x004fd730
+// FUNCTION: CARMA2_CHEAT 0x00507a80
 void C2_HOOK_FASTCALL LoadModelsFromLineInto(tBrender_storage* pStorage_space, FILE* pF) {
     tPath_name the_path;
     char s[256];
@@ -568,6 +577,7 @@ void C2_HOOK_FASTCALL LoadModelsFromLineInto(tBrender_storage* pStorage_space, F
 
 // FUNCTION: CARMA2_HW 0x00501e40
 // FUNCTION: CARMA2_SW 0x004fd7a0
+// FUNCTION: CARMA2_CHEAT 0x00507af0
 int C2_HOOK_FASTCALL AddModels(tBrender_storage* pStorage_space, const char* pPath) {
     int i;
     int new_ones;
@@ -576,7 +586,9 @@ int C2_HOOK_FASTCALL AddModels(tBrender_storage* pStorage_space, const char* pPa
 
     new_ones = 0;
     total = BrModelLoadMany(pPath, temp_array, REC2_ASIZE(temp_array));
+#ifdef REC2_HW
     WhitenVertexRGB(temp_array, total);
+#endif
     if (total == 0) {
         FatalError(kFatalError_CannotLoadModelFileOrItIsEmpty_S, pPath);
     }
@@ -587,6 +599,7 @@ int C2_HOOK_FASTCALL AddModels(tBrender_storage* pStorage_space, const char* pPa
         switch (AddModelToStorage(pStorage_space, temp_array[i])) {
         case eStorage_allocated:
             temp_array[i]->flags |= BR_MODF_UPDATEABLE;
+            temp_array[i]->flags &= ~BR_MODF_DONT_WELD;
             BrModelAdd(temp_array[i]);
             new_ones++;
             break;
@@ -607,6 +620,7 @@ int C2_HOOK_FASTCALL AddModels(tBrender_storage* pStorage_space, const char* pPa
 
 // FUNCTION: CARMA2_HW 0x00501fe0
 // FUNCTION: CARMA2_SW 0x004fd930
+// FUNCTION: CARMA2_CHEAT 0x00507c90
 void C2_HOOK_FASTCALL LoadSomeMaterials(tBrender_storage* pStorage, FILE* pFile, tRendererShadingType pShading) {
     tPath_name the_path;
     char s[256];
@@ -660,6 +674,7 @@ int C2_HOOK_FASTCALL AddMaterials(tBrender_storage* pStorage_space, const char* 
 
 // FUNCTION: CARMA2_HW 0x00502210
 // FUNCTION: CARMA2_SW 0x004fdb60
+// FUNCTION: CARMA2_CHEAT 0x00507ec0
 void C2_HOOK_FASTCALL DodgyModelUpdate(br_model* pM) {
 
     BrResFree(pM->faces);
@@ -668,6 +683,63 @@ void C2_HOOK_FASTCALL DodgyModelUpdate(br_model* pM) {
     pM->nvertices = 0;
     pM->faces = NULL;
     pM->vertices = NULL;
+}
+
+// FUNCTION: CARMA2_HW 0x00502240
+// FUNCTION: CARMA2_SW 0x004fdb90
+// FUNCTION: CARMA2_CHEAT 0x00507ef0
+int C2_HOOK_FASTCALL LoadNTrackModels(tBrender_storage* pStorage_space, FILE* pF, int pCount) {
+    tPath_name the_path;
+    int i;
+    int j;
+    int new_ones;
+    int total;
+    char s[256];
+    char* str;
+    br_model* temp_array[2000];
+
+    total = 0;
+    for (i = 0; i < pCount; i++) {
+        GetALineAndDontArgue(pF, s);
+        str = strtok(s, "\t ,/");
+        PathCat(the_path, gApplication_path, "MODELS");
+        PathCat(the_path, the_path, str);
+        new_ones = BrModelLoadMany(the_path, temp_array, REC2_ASIZE(temp_array));
+        if (new_ones == 0) {
+            FatalError(kFatalError_CannotLoadModelFileOrItIsEmpty_S, str);
+        }
+        for (j = 0; j < new_ones; j++) {
+            if (temp_array[j] != NULL) {
+                switch (AddModelToStorage(pStorage_space, temp_array[j])) {
+                case eStorage_allocated:
+                    temp_array[j]->flags |= BR_MODF_UPDATEABLE;
+                    if (gRoad_texturing_level == eRTL_none) {
+                        ProcessModelFaceMaterials(temp_array[j], RoadPerspToUntex);
+                    }
+                    if (gWall_texturing_level == eWTL_linear) {
+                        ProcessModelFaceMaterials(temp_array[j], WallPerspToLinear);
+                    }
+                    if (gWall_texturing_level == eWTL_none) {
+                        ProcessModelFaceMaterials(temp_array[j], WallPerspToUntex);
+                    }
+                    BrModelAdd(temp_array[j]);
+                    total++;
+                    break;
+                case eStorage_duplicate:
+                    if (gDisallow_duplicates) {
+                        FatalError(kFatalError_DuplicateModel_S, temp_array[j]->identifier);
+                    } else {
+                        BrModelFree(temp_array[j]);
+                    }
+                    break;
+                case eStorage_not_enough_room:
+                    FatalError(kFatalError_InsufficientModelSlots);
+                    break;
+                }
+            }
+        }
+    }
+    return total;
 }
 
 // FUNCTION: CARMA2_HW 0x005024b0
@@ -683,6 +755,7 @@ void C2_HOOK_FASTCALL LoadIfItsAPixelmap(const char* pPath) {
 
 // FUNCTION: CARMA2_HW 0x00502490
 // FUNCTION: CARMA2_SW 0x004fdde0
+// FUNCTION: CARMA2_CHEAT 0x00508140
 void C2_HOOK_FASTCALL LoadAllPixelmapsInDirectory(tBrender_storage* pStorage, const char* pPath) {
 
     gStorage_for_callbacks = pStorage;
@@ -810,6 +883,7 @@ void C2_HOOK_FASTCALL LoadIfItsAMaterial(const char* pPath) {
 
 // FUNCTION: CARMA2_HW 0x00502ad0
 // FUNCTION: CARMA2_SW 0x004fe420
+// FUNCTION: CARMA2_CHEAT 0x00508770
 void C2_HOOK_FASTCALL LoadAllMaterialsInDirectory(tBrender_storage* pStorage, const char* pPath, tRendererShadingType pShading) {
 
     gMaterial_shading_for_callback = pShading;
