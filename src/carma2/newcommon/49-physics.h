@@ -420,11 +420,11 @@ extern float C2_HOOK_FASTCALL GetFrictionFromFace(const tFace_ref* pFace);
 
 extern void C2_HOOK_FASTCALL DoPhysicsError(tPhysicsError pError, const char* pMessage);
 
-// ResetMan2
+extern void C2_HOOK_FASTCALL ResetMan2(void);
 
 extern void C2_HOOK_FASTCALL SetUpTestObjects(void);
 
-// ResetObjectList
+extern void C2_HOOK_FASTCALL ResetObjectList_test(tPhysics_object* pObject);
 
 // ResetMan
 
