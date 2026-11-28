@@ -2092,20 +2092,111 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor, void*
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x00434f60
-// STUB: CARMA2_SW 0x00434f90
-// STUB: CARMA2_CHEAT 0x00435150
+// FUNCTION: CARMA2_HW 0x00434f60
+// FUNCTION: CARMA2_SW 0x00434f90
+// FUNCTION: CARMA2_CHEAT 0x00435150
 void C2_HOOK_FASTCALL BendPoint(br_vector3* pPoint, const tBend_point_context* pContext) {
-    NOT_IMPLEMENTED();
+    br_vector3 tv;
+    br_scalar x;
+    br_scalar y;
+    br_scalar z;
+    br_scalar xy;
+    br_scalar sx;
+    br_scalar sy;
+    br_scalar sz;
+    int flag;
+
+    flag = pContext->field_0x34->field_0x74;
+    z = pPoint->v[2] - pContext->field_0x34->field_0x20;
+    if ((flag && z <= 0.0f) || (!flag && z >= 0.0f)) {
+        BrMatrix34ApplyP(&tv, pPoint, &pContext->field_0x4);
+        BrVector3Copy(pPoint, &tv);
+        return;
+    }
+    BrVector3Sub(&tv, pPoint, &pContext->field_0x34->field_0x24);
+    if ((flag && tv.v[2] <= 0.0f) || (!flag && tv.v[2] >= 0.0f)) {
+        sx = pContext->field_0x34->field_0x30.v[0];
+        sy = pContext->field_0x34->field_0x30.v[1];
+        sz = pContext->field_0x34->field_0x30.v[2];
+        x = tv.v[0] / sx;
+        y = tv.v[1] / sy;
+        z = tv.v[2] / sz;
+        xy = y * x;
+        tv.v[0] = pContext->field_0x34->field_0x44.v[0] * xy + pContext->field_0x34->field_0x50.v[0] * x + pContext->field_0x34->field_0x5c.v[0] * y;
+        tv.v[1] = pContext->field_0x34->field_0x44.v[1] * xy + pContext->field_0x34->field_0x50.v[1] * x + pContext->field_0x34->field_0x5c.v[1] * y;
+        tv.v[2] = pContext->field_0x34->field_0x44.v[2] * xy + pContext->field_0x34->field_0x50.v[2] * x + pContext->field_0x34->field_0x5c.v[2] * y;
+        BrVector3Accumulate(&tv, &pContext->field_0x34->field_0x68);
+        tv.v[0] = z * tv.v[0];
+        tv.v[1] = z * tv.v[1];
+        tv.v[2] = z * tv.v[2];
+        BrVector3Accumulate(pPoint, &tv);
+    }
 }
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
 #endif
 
-// EdgeCrossesZPlane
+inline int C2_HOOK_FASTCALL EdgeCrossesZPlane(br_scalar pZ, const br_vector3* pP1, const br_vector3* pP2) {
 
-// BendCollisionShape
+    if (pP1->v[2] < pZ) {
+        return pP2->v[2] > pZ;
+    } else {
+        return pP2->v[2] < pZ;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00435110
+// FUNCTION: CARMA2_SW 0x00435140
+// FUNCTION: CARMA2_CHEAT 0x00435300
+void C2_HOOK_FASTCALL BendCollisionShape(tCar_crush_shape_info* pShape, const tBend_point_context* pContext) {
+    int i;
+    int count;
+    int j;
+    tCollision_shape_polyhedron_data* data;
+    br_scalar z;
+    br_scalar t;
+    br_vector3* p1;
+    br_vector3* p2;
+    br_vector3 new_points[8];
+
+    if (pShape->count_points == pShape->count_points_add_8) {
+        return;
+    }
+    count = 0;
+    data = &pShape->field_0x0->polyhedron;
+    z = pContext->field_0x34->field_0x20;
+    for (i = 0; i < data->count_edges; i++) {
+        if (EdgeCrossesZPlane(z, &data->points[data->edges[i].index2], &data->points[data->edges[i].index1])) {
+            p1 = &data->points[data->edges[i].index1];
+            p2 = &data->points[data->edges[i].index2];
+            if ((br_scalar)fabs(p1->v[2] - z) >= 0.2f / WORLD_SCALE && (br_scalar)fabs(p2->v[2] - z) >= 0.2f / WORLD_SCALE) {
+                t = (z - p1->v[2]) / (p1->v[2] - p2->v[2]);
+                new_points[count].v[0] = t * (p1->v[0] - p2->v[0]) + p1->v[0];
+                new_points[count].v[1] = t * (p1->v[1] - p2->v[1]) + p1->v[1];
+                new_points[count].v[2] = z;
+                count++;
+                if (count == REC2_ASIZE(new_points)) {
+                    break;
+                }
+            }
+        }
+    }
+    if (pShape->count_points + count > pShape->count_points_add_8) {
+        count = pShape->count_points_add_8 - pShape->count_points;
+    }
+    for (i = 0, j = pShape->count_points; i < count; i++, j++) {
+        BrVector3Copy(&pShape->field_0x18[j].field_0x18, &new_points[i]);
+    }
+    pShape->original_count_points = pShape->count_points;
+    pShape->count_points += count;
+    for (i = 0; i < pShape->count_points; i++) {
+        BrVector3Copy(&pShape->field_0x18[i].field_0x2c, &pShape->field_0x18[i].field_0x18);
+    }
+    for (i = 0; i < pShape->count_points; i++) {
+        BendPoint(&pShape->field_0x18[i].field_0x18, pContext);
+    }
+}
 
 // BendCollisionShapes
 
