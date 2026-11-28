@@ -66,6 +66,7 @@ extern tSmashable_initial_position_spec gPed_spurt_initial_position;
 extern int gDancing_peds;
 extern int gDrunk_pedestrians;
 extern int gPeds_already_munged;
+extern int gPed_cache_sizes_2[4];
 extern int gPed_cache_sizes_1[4];
 extern tPed_face_cache_0x34* gPed_face_cache_heads[4];
 extern int gPed_cache_notify_flags;
@@ -79,6 +80,8 @@ extern br_vector3 gPed_scale;
 extern float gAverage_ped_scale;
 extern tPed_cache_006944c0 gPed_cache_006944c0[100];
 extern tPed_face_cache_0x34* gPed_face_caches[4];
+extern br_matrix34 gPed_identity_matrix;
+extern tFace_ref* gPed_face_cache;
 extern int gPipe_halted_ped_status;
 extern int gPed_valium_left;
 

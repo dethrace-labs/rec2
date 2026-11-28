@@ -436,6 +436,18 @@ int gDrunk_pedestrians;
 // GLOBAL: CARMA2_CHEAT 0x006a3858
 int gPeds_already_munged;
 
+// GLOBAL: CARMA2_HW 0x0065d7a8
+// GLOBAL: CARMA2_SW 0x006580e0
+// GLOBAL: CARMA2_CHEAT 0x00664e60
+int gPed_cache_sizes_2[4] = { 5, 10, 40, 75 };
+
+// GLOBAL: CARMA2_HW 0x0065e568
+// GLOBAL: CARMA2_SW 0x00658ea0
+// GLOBAL: CARMA2_CHEAT 0x00665c20
+br_matrix34 gPed_identity_matrix = {
+    { { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 0.0f } }
+};
+
 // GLOBAL: CARMA2_HW 0x0065d7b8
 // GLOBAL: CARMA2_SW 0x006580f0
 // GLOBAL: CARMA2_CHEAT 0x00664e70
@@ -445,6 +457,11 @@ int gPed_cache_sizes_1[4] = { 40, 25, 15, 5 };
 // GLOBAL: CARMA2_SW 0x0068e178
 // GLOBAL: CARMA2_CHEAT 0x0069bc98
 tPedestrian* gPTR_00694120;
+
+// GLOBAL: CARMA2_HW 0x0069bc54
+// GLOBAL: CARMA2_SW 0x00695cac
+// GLOBAL: CARMA2_CHEAT 0x006a37cc
+tFace_ref* gPed_face_cache;
 
 // GLOBAL: CARMA2_HW 0x0069bc58
 // GLOBAL: CARMA2_SW 0x00695cb0
