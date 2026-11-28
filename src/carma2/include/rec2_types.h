@@ -615,7 +615,7 @@ typedef struct {
     tU32 length;
     int (C2_HOOK_FASTCALL * calc_length)(tPipe_chunk* pChunk);
     void (C2_HOOK_FASTCALL * apply)(tPipe_chunk** pChunk);
-    undefined4 flags;
+    int flags;
     void (C2_HOOK_FASTCALL * undo)(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk);
 } tReplay_callback;
 
@@ -872,6 +872,7 @@ typedef struct tPipe_chunk {
     uintptr_t subject_index;
     union {
         tPipe_chunk_car_incident car_incident;
+        tPipe_shunk_single_sound sound;
         tPipe_chunk_frame_boundary frame_boundary;
         tPipe_chunk_car car;
         tPipe_chunk_non_car non_car;

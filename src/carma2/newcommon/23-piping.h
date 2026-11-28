@@ -32,6 +32,8 @@ extern tU8* gPipe_buffer_oldest;
 extern tU8* gPipe_record_ptr;
 extern tU32 gPipe_sound_start_time;
 extern tU32 gPipe_sound_time_window;
+extern tU32 gOldest_time;
+extern int gMax_rewind_chunks;
 extern int gDisable_advance;
 extern int gPipe_count_callbacks;
 extern tPipe_smudge_data* gCrush_space;
@@ -63,7 +65,7 @@ extern tU32 C2_HOOK_FASTCALL LengthOfSession(tPipe_session* pSession);
 
 extern void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tU8** pChunk, int pType);
 
-// PipingFrameReset
+extern void C2_HOOK_FASTCALL PipingFrameReset(void);
 
 extern int C2_HOOK_FASTCALL ARPipeSearchForwards(void);
 
@@ -97,23 +99,23 @@ extern tU8* C2_HOOK_FASTCALL ARGetPipePlayPtr(void);
 
 extern void C2_HOOK_FASTCALL ARSetPipePlayPtr(tU8* pPtr);
 
-// ApplyPipedSession
+extern int C2_HOOK_FASTCALL ApplyPipedSession(tU8** pPtr);
 
 extern int C2_HOOK_FASTCALL MoveSessionPointerBackOne(tU8** pPtr);
 
 extern int C2_HOOK_FASTCALL MoveSessionPointerForwardOne(tU8** pPtr);
 
-// FindPreviousChunk
+extern tPipe_chunk* C2_HOOK_FASTCALL FindPreviousChunk(tU8* pPtr, int pType, uintptr_t pIndex);
 
-// UndoPipedSession
+extern int C2_HOOK_FASTCALL UndoPipedSession(tU8** pPtr);
 
-// ARScanBuffer
+extern void C2_HOOK_FASTCALL ARScanBuffer(tU8** pPtr, tPipe_chunk_type pType, tU32 pDefault_time, tARScanBuffer_callback* pCallback, tARScanBuffer_time_check* pTime_check);
 
-// CheckSound
+extern int C2_HOOK_FASTCALL CheckSound(tPipe_chunk* pChunk_ptr, int pChunk_count, tU32 pTime);
 
 extern int C2_HOOK_FASTCALL SoundTimeout(tU32 pTime);
 
-// ScanAndPlaySoundsToBe
+extern void C2_HOOK_FASTCALL ScanAndPlaySoundsToBe(tU8* pPtr, tU32 pOldest_time, tU32 pYoungest_time);
 
 extern tU32 C2_HOOK_FASTCALL ARGetStartTime(void);
 
