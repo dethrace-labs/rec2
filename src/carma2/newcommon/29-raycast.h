@@ -25,7 +25,7 @@ extern br_matrix34 gPick_model_to_view__raycast;
 
 extern float gHighest_y_below;
 
-// DRActorToRoot
+extern int C2_HOOK_FASTCALL DRActorToRoot(br_actor* pActor, br_actor* pWorld, br_matrix34* pMat);
 
 extern void C2_HOOK_FASTCALL InitRayCasting(void);
 
@@ -37,7 +37,7 @@ extern int C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector3*
 
 extern int C2_HOOK_FASTCALL ActorPick2D(br_actor* pActor, br_model* pModel, br_material* pMaterial, dr_pick2d_cbfn* pCallback, void* pArg);
 
-// DRScenePick2DXY
+extern int C2_HOOK_FASTCALL DRScenePick2DXY(br_actor* pWorld, br_actor* pCamera, br_pixelmap* pViewport, int pPick_x, int pPick_y, dr_pick2d_cbfn* pCallback, void* pArg);
 
 // DRScenePick2D
 
