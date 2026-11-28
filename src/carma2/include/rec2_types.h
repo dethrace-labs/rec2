@@ -113,7 +113,7 @@ typedef intptr_t C2_HOOK_FASTCALL tDRActorEnumRecurseWithSnart_cbfn(br_actor*, b
 typedef int C2_HOOK_FASTCALL tDrone_form_within_rendering_distance_cbfn(const br_vector3 *pPos);
 typedef int C2_HOOK_FASTCALL tDrone_form_within_processing_distance_cbfn(const br_vector3 *pPos);
 typedef void C2_HOOK_FASTCALL tFunk_index_cbfn(int pFunk_index);
-typedef void C2_HOOK_FASTCALL tWorld_callback_active_passive_cbfn(tPhysics_object*);
+typedef void C2_HOOK_FASTCALL tWorld_callback_active_passive_cbfn(tPhysics_object*, void*);
 typedef intptr_t C2_HOOK_FASTCALL tNearbyActors_cbfn(br_actor*, void*);
 typedef void C2_HOOK_FASTCALL tDoSomethingsToCheckpoints_cbfn(br_pixelmap* pMap, int pCheckPoint, tU32 pTime, int pEnable);
 typedef void C2_HOOK_FASTCALL tTurn_on_AR_callback(void);
@@ -4596,6 +4596,31 @@ typedef struct {
     int type;
 } tPhysics_joint_force;
 
+typedef struct {
+    br_vector3 old_points[64];
+    br_vector3 trial_points[64];
+    int point_flags[64];
+    tU16 count_points;
+    tU16 count_edges;
+    tPolyhedron_edge_indexes* edges;
+} tPhysics_wall_workspace;
+
+typedef struct tPhysics_quick_hinge {
+    tU32 field_0x0;
+    tPhysics_object* partner;
+    br_matrix34 field_0x8;
+    br_matrix34 field_0x38;
+} tPhysics_quick_hinge;
+
+/* FIXME: name and layout are guesses. */
+typedef struct tForce_group {
+    int count;
+    tPhysics_joint_force* forces;
+    undefined field_0x8[12];
+    br_scalar* orthogonal;
+    br_scalar* matrix;
+} tForce_group;
+
 typedef struct tPhysics_object {
     br_actor* actor;
     float M;
@@ -4630,29 +4655,33 @@ typedef struct tPhysics_object {
     tPhysics_joint* physics_joint1;
     tPhysics_joint* physics_joint2;
     tU8 uid;
-    undefined field_0x191[11];
+    undefined field_0x191[3];
+    int (C2_HOOK_FASTCALL * field_0x194)(tPhysics_object*);
+    int (C2_HOOK_FASTCALL * field_0x198)(tPhysics_object*);
     int flags;
     int field_0x1a0;
     undefined4 field_0x1a4;
     br_vector3 velocity_car_space;
     br_vector3 field_0x1b4;
     br_vector3 rotate_omega;
-    undefined field_0x1cc[12];
-    undefined4 field183_0x1d8;
-    undefined field_0x1dc;
+    br_vector3 field_0x1cc;
+    tPhysics_object* field183_0x1d8;
+    tS8 field_0x1dc;
     undefined collision_flag;
     undefined field_0x1de;
     undefined field_0x1df;
-    undefined field_0x1e0[8];
+    tU8 field_0x1e0;
+    undefined field_0x1e1[3];
+    tPhysics_quick_hinge* field_0x1e4;
     br_matrix34 field_0x1e8;
-    undefined4 field_0x218;
+    tForce_group* field_0x218;
     float field_0x21c;
     tPhysics_object* next;
     tPhysics_object* child;
     tPhysics_object* parent;
     tPhysics_object* prev;
     tPhysics_object* field_0x230;
-    void* field_0x234;
+    tPhysics_object* field_0x234;
     tU8 flags_0x238;
     tU8 field_0x239;
     undefined field_0x23a[2];
@@ -5589,13 +5618,13 @@ typedef struct {
 
 typedef struct tWorld_callbacks {
     int (C2_HOOK_FASTCALL * process_forces)(void*, float*, int arg3);
-    int (C2_HOOK_FASTCALL * process_joint_forces)(void*, void*, void*);
+    int (C2_HOOK_FASTCALL * process_joint_forces)(tPhysics_joint_force** pForces, br_scalar* pImpulses, int pCount);
     void (C2_HOOK_FASTCALL * new_face_list)(tPhysics_object*, tFace_ref *);
     int (C2_HOOK_FASTCALL * find_faces_in_box)(tBounds*, tFace_ref*, int, struct tWorld_callbacks*);
     tNon_car_spec* (C2_HOOK_FASTCALL * pull_actor_from_world)(br_actor*);
     void (C2_HOOK_FASTCALL * stop_groovidelic)(br_actor*);
     float (C2_HOOK_FASTCALL * get_friction_from_face)(const tFace_ref*);
-    void (C2_HOOK_FASTCALL * activate_passive)(tPhysics_object*);
+    void (C2_HOOK_FASTCALL * activate_passive)(tPhysics_object*, void*);
 } tWorld_callbacks;
 
 typedef struct {
@@ -5604,7 +5633,7 @@ typedef struct {
     void (C2_HOOK_FASTCALL *post_collision)(void);
     void (C2_HOOK_FASTCALL *changed_objects)(tPhysics_object*, undefined4);
     int (C2_HOOK_FASTCALL *active_halted)(tPhysics_object*);
-    int (C2_HOOK_FASTCALL *passive_activated)(tPhysics_object*);
+    int (C2_HOOK_FASTCALL *passive_activated)(tPhysics_object*, void*);
     void* callback_0x18;
 } tPhysics_callbacks;
 
@@ -6036,6 +6065,7 @@ typedef enum {
     ePhysicsError_UnknownHingeType = 5,
     ePhysicsError_OutOfMemory = 6,
     ePhysicsError_error9 = 9,
+    ePhysicsError_CorruptGroup = 10,
     ePhysicsError_InsufficientSizedBuffer = 12
 } tPhysicsError;
 

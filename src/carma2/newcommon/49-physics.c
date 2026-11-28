@@ -19,6 +19,7 @@
 #include "52-errors.h"
 #include "65-hull.h"
 #include "globvars.h"
+#include "globvrpb.h"
 #include "platform.h"
 #include "rec2_macros.h"
 #include "c2_math.h"
@@ -30,10 +31,80 @@
 #define PHYSICS_BUFFER_PART_SIZE 40000
 #define PHYSICS_BUFFER_OTHER_SIZE 50000
 
+// GLOBAL: CARMA2_HW 0x00679430
+// GLOBAL: CARMA2_SW 0x00673ba0
+// GLOBAL: CARMA2_CHEAT 0x00680ce0
+tU32 gUINT_00679430;
+
+// GLOBAL: CARMA2_HW 0x00679434
+// GLOBAL: CARMA2_SW 0x00673ba4
+// GLOBAL: CARMA2_CHEAT 0x00680ce4
+undefined4 gDAT_00679434;
+
+// GLOBAL: CARMA2_HW 0x00679438
+// GLOBAL: CARMA2_SW 0x00673ba8
+// GLOBAL: CARMA2_CHEAT 0x00680ce8
+int gTesting_sensible_place;
+
 // GLOBAL: CARMA2_HW 0x00692dc8
 // GLOBAL: CARMA2_SW 0x0068ce20
 // GLOBAL: CARMA2_CHEAT 0x0069a940
 int gINT_00692dc8;
+
+// GLOBAL: CARMA2_HW 0x00692dcc
+// GLOBAL: CARMA2_SW 0x0068ce24
+// GLOBAL: CARMA2_CHEAT 0x0069a944
+int gPrepared_objects;
+
+// GLOBAL: CARMA2_HW 0x00692dd0
+// GLOBAL: CARMA2_SW 0x0068ce28
+// GLOBAL: CARMA2_CHEAT 0x0069a948
+br_scalar gPhysics_bounds_max_x;
+
+// GLOBAL: CARMA2_HW 0x00692dd4
+// GLOBAL: CARMA2_SW 0x0068ce2c
+// GLOBAL: CARMA2_CHEAT 0x0069a94c
+br_scalar gPhysics_bounds_min_x;
+
+// GLOBAL: CARMA2_HW 0x00692dd8
+// GLOBAL: CARMA2_SW 0x0068ce30
+// GLOBAL: CARMA2_CHEAT 0x0069a950
+int gJoint_limit_10_hit;
+
+// GLOBAL: CARMA2_HW 0x00692ddc
+// GLOBAL: CARMA2_SW 0x0068ce34
+// GLOBAL: CARMA2_CHEAT 0x0069a954
+int gCount_friction_forces;
+
+// GLOBAL: CARMA2_HW 0x00692de0
+// GLOBAL: CARMA2_SW 0x0068ce38
+// GLOBAL: CARMA2_CHEAT 0x0069a958
+tPhysics_joint_force gFriction_forces[50];
+
+// GLOBAL: CARMA2_HW 0x006940a0
+// GLOBAL: CARMA2_SW 0x0068e0f8
+// GLOBAL: CARMA2_CHEAT 0x0069bc18
+int gPHIL_collision_group;
+
+// GLOBAL: CARMA2_HW 0x006940a4
+// GLOBAL: CARMA2_SW 0x0068e0fc
+// GLOBAL: CARMA2_CHEAT 0x0069bc1c
+int gInter_group_hit_count;
+
+// GLOBAL: CARMA2_HW 0x006940a8
+// GLOBAL: CARMA2_SW 0x0068e100
+// GLOBAL: CARMA2_CHEAT 0x0069bc20
+tPhysics_object** gReduced_object_list;
+
+// GLOBAL: CARMA2_HW 0x006940ac
+// GLOBAL: CARMA2_SW 0x0068e104
+// GLOBAL: CARMA2_CHEAT 0x0069bc24
+int gReduced_object_not_moving;
+
+// GLOBAL: CARMA2_HW 0x006940b8
+// GLOBAL: CARMA2_SW 0x0068e110
+// GLOBAL: CARMA2_CHEAT 0x0069bc30
+undefined4 gDAT_006940b8;
 
 // GLOBAL: CARMA2_HW 0x006940c0
 // GLOBAL: CARMA2_SW 0x0068e118
@@ -43,12 +114,12 @@ tPhysicsError_cbfn* gPhysics_error_cb;
 // GLOBAL: CARMA2_HW 0x00744818
 // GLOBAL: CARMA2_SW 0x0073b2d8
 // GLOBAL: CARMA2_CHEAT 0x0074beb8
-void* gPhysics_buffer1_ptr;
+br_scalar* gPhysics_buffer1_ptr;
 
 // GLOBAL: CARMA2_HW 0x00744814
 // GLOBAL: CARMA2_SW 0x0073b2d4
 // GLOBAL: CARMA2_CHEAT 0x0074beb4
-void* gPhysics_buffer2_ptr;
+br_scalar* gPhysics_buffer2_ptr;
 
 // GLOBAL: CARMA2_HW 0x0074480c
 // GLOBAL: CARMA2_SW 0x0073b2cc
@@ -137,12 +208,28 @@ void* gPhysics_other_buffer;
 
 // GLOBAL: CARMA2_HW 0x006940bc
 // GLOBAL: CARMA2_SW 0x0068e114
+// GLOBAL: CARMA2_CHEAT 0x0069bc34
 void* gPhysics_scratch_ptr;
 
 // GLOBAL: CARMA2_HW 0x006940b0
 // GLOBAL: CARMA2_SW 0x0068e108
 // GLOBAL: CARMA2_CHEAT 0x0069bc28
 int gFace_count;
+
+// GLOBAL: CARMA2_HW 0x00679438
+// GLOBAL: CARMA2_SW 0x00673ba8
+// GLOBAL: CARMA2_CHEAT 0x00680ce8
+int gTesting_sensible_place;
+
+// GLOBAL: CARMA2_HW 0x0079ecbc
+// GLOBAL: CARMA2_SW 0x00795248
+// GLOBAL: CARMA2_CHEAT 0x007a635c
+tPhysics_object* gObject_blocking_sensible_place;
+
+// GLOBAL: CARMA2_HW 0x0065d014
+// GLOBAL: CARMA2_SW 0x0065794c
+// GLOBAL: CARMA2_CHEAT 0x006646d0
+undefined4 gDAT_0065d014 = 1;
 
 // GLOBAL: CARMA2_HW 0x0065cf78
 // GLOBAL: CARMA2_SW 0x006578b0
@@ -170,7 +257,81 @@ void C2_HOOK_FASTCALL DrMatrix34ApplyLPInverse(br_vector3* dest, const br_vector
     BrMatrix34TApplyV(dest, &relative, matrix);
 }
 
-// AddObjectWallForce
+// FUNCTION: CARMA2_HW 0x00422fe0
+// FUNCTION: CARMA2_SW 0x00423060
+// FUNCTION: CARMA2_CHEAT 0x00423160
+int C2_HOOK_FASTCALL AddObjectWallForce(tPhysics_joint_force* pForces, const br_vector3* pPosition, br_scalar pT, const br_vector3* pNormal, br_scalar pUnused, int pCount, tPhysics_object* pObject, int pType, tFace_ref* pFace, const br_vector3* pReference_position) {
+    br_bounds3 joint_bounds;
+    br_scalar dx;
+    br_scalar dy;
+    br_scalar dz;
+    br_scalar size;
+    br_scalar d;
+    br_scalar dot;
+    int i;
+    int j;
+    tPhysics_joint_force* force;
+
+    if (pObject->parent == NULL && pObject->physics_joint2 != NULL && pObject->physics_joint2->type != eJoint_none) {
+        BrVector3Sub(&joint_bounds.max, &pObject->bb1.max, &pObject->physics_joint2->field_0x08);
+        BrVector3Sub(&joint_bounds.min, &pObject->bb1.min, &pObject->physics_joint2->field_0x08);
+        size = 0.0f;
+        for (i = 0; i < 3; i++) {
+            d = MIN((br_scalar)fabs(joint_bounds.max.v[i]), (br_scalar)fabs(joint_bounds.min.v[i]));
+            if (d > size) {
+                size = d;
+            }
+        }
+        size = (br_scalar)(size + 0.01);
+        BrVector3Sub(&joint_bounds.min, pPosition, &pObject->physics_joint2->field_0x08);
+        if (fabs(joint_bounds.min.v[0]) < size) {
+            d = (br_scalar)fabs(joint_bounds.min.v[1]);
+            if (d < size
+                && d + d < pObject->bb1.max.v[1] - pObject->bb1.min.v[1]
+                && fabs(joint_bounds.min.v[2]) < size) {
+                return pCount;
+            }
+        }
+    }
+    for (i = 0; i < pCount; i++) {
+        dx = pForces[i].point_a.v[0] - (pPosition->v[0] - pObject->cmpos.v[0]);
+        dy = pForces[i].point_a.v[1] - (pPosition->v[1] - pObject->cmpos.v[1]);
+        dz = pForces[i].point_a.v[2] - (pPosition->v[2] - pObject->cmpos.v[2]);
+        d = dx * dx + dy * dy + dz * dz;
+        if (d < 0.0045) {
+            dot = BrVector3Dot(&pForces[i].direction_a, pNormal);
+            if (dot > 0.95 && d < 0.0005) {
+                return pCount;
+            }
+            if (dot < -0.95) {
+                return pCount;
+            }
+        }
+    }
+    if (pCount < 4) {
+        pForces[pCount].field_0x0 = 2.0f;
+        pCount++;
+    }
+    for (i = 0, force = pForces; i < pCount; i++, force++) {
+        if (pT < force->field_0x0) {
+            for (j = MIN(3, pCount); j >= i; j--) {
+                pForces[j] = pForces[j - 1];
+            }
+            force->field_0x0 = pT;
+            force->object_a = pObject;
+            force->object_b = NULL;
+            force->field_0xc = pFace;
+            BrVector3Copy(&force->direction_a, pNormal);
+            BrVector3Sub(&force->point_a, pPosition, &pObject->cmpos);
+            if (pReference_position != NULL) {
+                BrVector3Copy(&force->point_b, pReference_position);
+            }
+            force->type = pType;
+            return pCount;
+        }
+    }
+    return pCount;
+}
 
 // FUNCTION: CARMA2_HW 0x004268a0
 // FUNCTION: CARMA2_SW 0x00426940
@@ -262,43 +423,861 @@ tFace_ref* C2_HOOK_FASTCALL RayCastThruFaceList2(br_vector3* pPosition, br_vecto
     }
 }
 
-// RayCastInBox
+inline tFace_ref* C2_HOOK_FASTCALL RayCastInBox(br_vector3* pPosition, br_vector3* pDirection, br_vector3* pNormal, br_scalar* pT, br_vector3* pCollision_position, tPhysics_object* pObject) {
 
-// FaceOffCount2
+    return RayCastThruFaceList(pPosition, pDirection, pNormal, pT, pCollision_position, &gFace_list__car[pObject->box_face_start], pObject->box_face_end - pObject->box_face_start);
+}
 
-// FaceOffCount
+inline void C2_HOOK_FASTCALL FaceOffCount2(void) {
+}
 
-// FaceOnCount
+inline void C2_HOOK_FASTCALL FaceOffCount(void) {
+}
 
-// EliminateFaces
+inline void C2_HOOK_FASTCALL FaceOnCount(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x00423320
+// FUNCTION: CARMA2_SW 0x004233a0
+// FUNCTION: CARMA2_CHEAT 0x004234a0
+int C2_HOOK_FASTCALL EliminateFaces(tPhysics_object* pObject, tPhysics_shape* pShape, br_matrix34* pMat) {
+    br_matrix34* mat;
+    br_bounds3* bounds;
+    br_vector3 corner;
+    br_vector3 extents[3];
+    br_vector3 tv;
+    br_scalar low;
+    br_scalar high;
+    br_scalar d;
+    br_scalar offset;
+    br_scalar limit;
+    int count;
+    int i;
+    int axis;
+    tFace_ref* face;
+
+    mat = &pObject->actor->t.t.mat;
+    bounds = &pShape->common.field_0x1c;
+    count = 0;
+    GetNewBoundingBox(bounds, &pShape->common.bb, pMat);
+    for (axis = 0; axis < 3; axis++) {
+        if (pShape->common.bb.min.v[axis] < bounds->min.v[axis]) {
+            bounds->min.v[axis] = pShape->common.bb.min.v[axis];
+        }
+        if (bounds->max.v[axis] < pShape->common.bb.max.v[axis]) {
+            bounds->max.v[axis] = pShape->common.bb.max.v[axis];
+        }
+    }
+    BrMatrix34ApplyV(&corner, &bounds->min, mat);
+    BrVector3Accumulate(&corner, (br_vector3*)mat->m[3]);
+    for (axis = 0; axis < 3; axis++) {
+        BrVector3Scale(&extents[axis], (br_vector3*)mat->m[axis], bounds->max.v[axis] - bounds->min.v[axis]);
+    }
+    face = &gFace_list__car[pObject->box_face_start];
+    for (i = 0; i < pObject->box_face_end - pObject->box_face_start; i++, face++) {
+        BrVector3Sub(&tv, &corner, &face->v[0]);
+        low = BrVector3Dot(&tv, &face->normal);
+        high = low;
+        for (axis = 0; axis < 3; axis++) {
+            d = BrVector3Dot(&extents[axis], &face->normal);
+            if (d >= 0.0f) {
+                high += d;
+            } else {
+                low += d;
+            }
+        }
+#ifdef REC2_FIX_BUGS
+        if ((high > 0.005f && low > 0.005f)
+            || (high < -0.005f && low < -0.005f)
+            || (face->material != NULL && (face->material->identifier[0] == '!' || face->material->identifier[0] == '>'))) {
+#else
+        if ((high > 0.005f && low > 0.005f)
+            || (high < -0.005f && low < -0.005f)
+            || (face->material != NULL && face->material->identifier[0] == '!')
+            || face->material->identifier[0] == '>') {
+#endif
+            face->flags |= 0x80;
+            FaceOffCount();
+        } else {
+            for (axis = 0; axis < 3; axis++) {
+                offset = BrVector3Dot((br_vector3*)mat->m[3], (br_vector3*)mat->m[axis]);
+                d = BrVector3Dot(&face->v[0], (br_vector3*)mat->m[axis]);
+                limit = bounds->min.v[axis] - 0.005f + offset;
+                if (d >= limit) {
+                    limit = bounds->max.v[axis] + offset + 0.005f;
+                    if (d > limit
+                        && BrVector3Dot(&face->v[1], (br_vector3*)mat->m[axis]) > limit
+                        && BrVector3Dot(&face->v[2], (br_vector3*)mat->m[axis]) > limit) {
+                        face->flags |= 0x80;
+                        FaceOffCount2();
+                    }
+                } else if (BrVector3Dot(&face->v[1], (br_vector3*)mat->m[axis]) < limit
+                    && BrVector3Dot(&face->v[2], (br_vector3*)mat->m[axis]) < limit) {
+                    face->flags |= 0x80;
+                    FaceOffCount2();
+                }
+            }
+            FaceOnCount();
+            count++;
+            face->flags &= ~0x80;
+        }
+    }
+    return count;
+}
 
 // GetShapePoint
 
 // GetObjectObjectEdgeIntersections
 
-// GetFaceEdgeIntersection
+// FUNCTION: CARMA2_HW 0x004236a0
+// FUNCTION: CARMA2_SW 0x00423720
+// FUNCTION: CARMA2_CHEAT 0x00423820
+int C2_HOOK_FASTCALL GetFaceEdgeIntersection(tPhysics_object* pObject, tPhysics_shape* pShape, tPhysics_joint_force* pForces, int pCount, int pMax_count, tPhysics_wall_workspace* pWorkspace, void* pUnused, int* pTouched) {
+    br_vector3 centre;
+    br_vector3 direction;
+    br_vector3 reverse;
+    br_vector3 normal;
+    br_vector3 other_normal;
+    br_vector3 intersection;
+    br_vector3 other_intersection;
+    br_vector3 tv;
+    br_vector3 local_position;
+    br_vector3 old_position;
+    br_vector3* start;
+    br_vector3* end;
+    tFace_ref* face;
+    tFace_ref* other_face;
+    br_scalar t;
+    br_scalar other_t;
+    br_scalar dot;
+    br_scalar other_dot;
+    br_scalar depth;
+    int start_index;
+    int end_index;
+    int found;
+    int i;
 
-// GetSphereToFacePoints
+    if (pShape->common.type != kCollisionShapeType_Sphere) {
+        BrMatrix34ApplyP(&centre, &pObject->cmpos, &pObject->transform_matrix);
+        for (i = 0; i < pWorkspace->count_edges; i++) {
+            start_index = pWorkspace->edges[i].index1;
+            end_index = pWorkspace->edges[i].index2;
+            start = &pWorkspace->old_points[start_index];
+            end = &pWorkspace->old_points[end_index];
+            BrVector3Sub(&direction, end, start);
+            face = RayCastInBox(start, &direction, &normal, &t, &intersection, pObject);
+            BrVector3Sub(&reverse, start, end);
+            found = 0;
+            if (face == NULL) {
+                face = RayCastInBox(end, &reverse, &normal, &t, &intersection, pObject);
+                if (face != NULL) {
+                    BrVector3Sub(&tv, &centre, &intersection);
+                    BrVector3Normalise(&tv, &tv);
+                    if (BrVector3Dot(&tv, &normal) >= 0.01f) {
+                        pWorkspace->point_flags[start_index] = 1;
+                        found = 1;
+                    }
+                }
+            } else {
+                BrVector3Sub(&tv, &centre, &intersection);
+                BrVector3Normalise(&tv, &tv);
+                dot = BrVector3Dot(&tv, &normal);
+                other_face = RayCastInBox(end, &reverse, &other_normal, &other_t, &other_intersection, pObject);
+                if (other_face == NULL) {
+                    if (dot > 0.01f) {
+                        pWorkspace->point_flags[end_index] = 1;
+                        found = 1;
+                    }
+                } else {
+                    BrVector3Sub(&tv, &centre, &other_intersection);
+                    BrVector3Normalise(&tv, &tv);
+                    other_dot = BrVector3Dot(&tv, &other_normal);
+                    if (dot >= 0.05f || other_dot >= 0.05f) {
+                        if (other_dot <= dot) {
+                            pWorkspace->point_flags[end_index] = 1;
+                        } else {
+                            BrVector3Copy(&intersection, &other_intersection);
+                            BrVector3Copy(&normal, &other_normal);
+                            pWorkspace->point_flags[start_index] = 1;
+                        }
+                        found = 1;
+                    }
+                }
+            }
+            if (found && face != NULL) {
+                DrMatrix34ApplyLPInverse(&local_position, &intersection, &pObject->transform_matrix);
+                BrMatrix34ApplyP(&old_position, &local_position, &pObject->actor->t.t.mat);
+                BrVector3Sub(&tv, &intersection, &old_position);
+                depth = BrVector3Dot(&tv, &normal);
+                if (depth > 0.0f) {
+                    BrMatrix34TApplyV(&other_normal, &normal, &pObject->transform_matrix);
+                    pCount = AddObjectWallForce(pForces, &local_position, 0.0f, &other_normal, depth, pCount, pObject, 1, face, NULL);
+                }
+                *pTouched = 1;
+            }
+        }
+    }
+    return pCount;
+}
 
-// CheckSingleEdgeWithSphere
+inline int C2_HOOK_FASTCALL GetSphereToFacePoints(tPhysics_object* pObject, tCollision_shape_sphere_data* pSphere, tPhysics_joint_force* pForces, int pCount, int pMax_count, br_vector3* pSphere_start, br_vector3* pSphere_end, br_matrix34* pMatrix) {
+    tFace_ref* face;
+    tFace_ref* best_face;
+    br_vector3 point;
+    br_vector3 normal;
+    br_vector3 best_normal;
+    br_vector3 old_normal;
+    br_scalar t;
+    br_scalar best_t;
+    int i;
 
-// GetSphereToEdgePoints
+    best_t = 2.0f;
+    for (i = pObject->box_face_start, face = &gFace_list__car[i]; i < pObject->box_face_end; i++, face++) {
+        SphereFaceCollide(face, pSphere_start, pSphere_end, pSphere->radius, &point, &normal, &t);
+        if (t < best_t) {
+            best_t = t;
+            best_face = face;
+            BrVector3Copy(&best_normal, &normal);
+        }
+    }
+    if (best_t <= 1.0f) {
+        BrMatrix34TApplyV(&normal, &best_normal, &pObject->transform_matrix);
+        BrMatrix34TApplyV(&old_normal, &best_normal, &pObject->actor->t.t.mat);
+        BrVector3Scale(&point, &old_normal, -pSphere->radius);
+        BrVector3Accumulate(&point, &pSphere->center);
+        pCount = AddObjectWallForce(pForces, &point, best_t, &normal, 0.0f, pCount, pObject, 3, best_face, NULL);
+    }
+    return pCount;
+}
 
-// GetCornerToFacePoints
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// CylinderCheck
+// FUNCTION: CARMA2_HW 0x00423ce0
+// FUNCTION: CARMA2_SW 0x00423d60
+// FUNCTION: CARMA2_CHEAT 0x00423e60
+int C2_HOOK_FASTCALL CheckSingleEdgeWithSphere(br_vector3* pEdge_start, br_vector3* pEdge_end, tPhysics_object* pObject, tCollision_shape_sphere_data* pSphere, tPhysics_joint_force* pForces, int pCount, br_vector3* pSphere_start, br_vector3* pSphere_end, tFace_ref* pFace) {
+    br_vector3 point;
+    br_vector3 normal;
+    br_vector3 trial_normal;
+    br_vector3 old_normal;
+    br_vector3 direction;
+    br_vector3 surface_point;
+    br_scalar t;
 
-// CheckTwoEdges
+    SphereEdgeCollide(pEdge_start, pEdge_end, pSphere_start, pSphere_end, pSphere, &point, &normal, &t, 0, 0);
+    if (t <= 1.0f) {
+        BrMatrix34TApplyV(&trial_normal, &normal, &pObject->transform_matrix);
+        BrMatrix34TApplyV(&old_normal, &normal, &pObject->actor->t.t.mat);
+        BrVector3Scale(&old_normal, &old_normal, t);
+        BrVector3Scale(&direction, &trial_normal, 1.0f - t);
+        BrVector3Accumulate(&direction, &old_normal);
+        BrVector3Normalise(&direction, &direction);
+        BrVector3Scale(&direction, &direction, pSphere->radius);
+        BrVector3Add(&surface_point, &pSphere->center, &direction);
+        BrVector3Negate(&trial_normal, &trial_normal);
+        return AddObjectWallForce(pForces, &surface_point, t, &trial_normal, 0.0f, pCount, pObject, 4, pFace, NULL);
+    }
+    return pCount;
+}
 
-// WorldPointCollision
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
-// CheckSingleEdgeWithObjectEdges
+// FUNCTION: CARMA2_HW 0x00423c00
+// FUNCTION: CARMA2_SW 0x00423c80
+// FUNCTION: CARMA2_CHEAT 0x00423d80
+int C2_HOOK_FASTCALL GetSphereToEdgePoints(tPhysics_object* pObject, tCollision_shape_sphere_data* pSphere, tPhysics_joint_force* pForces, int pCount, int pMax_count, br_vector3* pSphere_start, br_vector3* pSphere_end, br_matrix34* pMatrix) {
+    int i;
+    tFace_ref* face;
 
-// GetEdgeToEdgePoints
+    i = pObject->box_face_start;
+    face = &gFace_list__car[i];
+    for (; i < pObject->box_face_end; i++, face++) {
+        if (!(face->flags & 0x80)) {
+            if (!(face->flags & 0x1)) {
+                pCount = CheckSingleEdgeWithSphere(&face->v[0], &face->v[1], pObject, pSphere, pForces, pCount, pSphere_start, pSphere_end, face);
+            }
+            if (!(face->flags & 0x2)) {
+                pCount = CheckSingleEdgeWithSphere(&face->v[1], &face->v[2], pObject, pSphere, pForces, pCount, pSphere_start, pSphere_end, face);
+            }
+            if (!(face->flags & 0x4)) {
+                pCount = CheckSingleEdgeWithSphere(&face->v[2], &face->v[0], pObject, pSphere, pForces, pCount, pSphere_start, pSphere_end, face);
+            }
+        }
+    }
+    return pCount;
+}
 
-// SetUpWorkspace
+// FUNCTION: CARMA2_HW 0x00423ed0
+// FUNCTION: CARMA2_SW 0x00423f50
+// FUNCTION: CARMA2_CHEAT 0x00424050
+int C2_HOOK_FASTCALL GetCornerToFacePoints(tPhysics_object* pObject, tPhysics_shape* pShape, tPhysics_joint_force* pForces, int pCount, int pMax_count, tPhysics_wall_workspace* pWorkspace, void* pUnused) {
+    br_vector3 direction;
+    br_vector3 extension;
+    br_vector3 normal;
+    br_vector3 local_normal;
+    br_vector3 intersection;
+    br_vector3 local_position;
+    br_scalar t;
+    tFace_ref* face;
+    int i;
 
-// GetObjectWallForceInfo
+    if (pMax_count < 4) {
+        return 0;
+    }
+    gDAT_00679434 = 0;
+    for (i = 0; i < pWorkspace->count_points; i++) {
+        if (pWorkspace->point_flags[i] == 0) {
+            BrVector3Sub(&direction, &pWorkspace->trial_points[i], &pWorkspace->old_points[i]);
+            BrVector3Normalise(&extension, &direction);
+            BrVector3Scale(&extension, &extension, 0.0010434783f);
+            BrVector3Accumulate(&direction, &extension);
+            face = RayCastThruFaceList(&pWorkspace->old_points[i], &direction, &normal, &t, &intersection, &gFace_list__car[pObject->box_face_start], pObject->box_face_end - pObject->box_face_start);
+            if (face != NULL) {
+                BrMatrix34TApplyV(&local_normal, &normal, &pObject->transform_matrix);
+                BrVector3Sub(&extension, &pWorkspace->old_points[i], (br_vector3*)pObject->transform_matrix.m[3]);
+                BrMatrix34TApplyV(&local_position, &extension, &pObject->transform_matrix);
+                pCount = AddObjectWallForce(pForces, &local_position, t, &local_normal, BrVector3Dot(&normal, &direction), pCount, pObject, 1, face, NULL);
+            }
+        }
+    }
+    if (pCount > 3) {
+        pCount = 4;
+    }
+    return pCount;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+/* FIXME: pCount is never read; its type is a guess. */
+// FUNCTION: CARMA2_HW 0x00425630
+// FUNCTION: CARMA2_SW 0x004256d0
+// FUNCTION: CARMA2_CHEAT 0x004257b0
+int C2_HOOK_FASTCALL CylinderCheck(const br_vector3* pN0, const br_vector3* pN1, const br_vector3* pEdge_start, const br_vector3* pEdge_direction, const br_vector3* pOther_start, const br_vector3* pOther_direction, const br_vector3* pOther_velocity, const br_vector3* pOther_direction_change, tPhysics_joint_force* pForce, int pCount, tPhysics_object* pObject, tPhysics_object* pOther) {
+    br_vector3 normal;
+    br_vector3 delta;
+    br_vector3 speed;
+    br_vector3 cross;
+    br_vector3 point;
+    br_vector3 world;
+    br_scalar length;
+    br_scalar denominator;
+    br_scalar t;
+    br_scalar s;
+    br_scalar distance;
+
+    if (pForce->field_0x0 <= 1.0) {
+        return 0;
+    }
+    BrVector3Add(&normal, pN0, pN1);
+    length = BrVector3Length(&normal);
+    if (length <= 1e-7) {
+        return 0;
+    }
+    BrVector3Add(&delta, pOther_start, pOther_velocity);
+    BrVector3Sub(&delta, &delta, pEdge_start);
+    if (fabs(BrVector3Dot(&delta, &normal) / length) >= 0.002) {
+        return 0;
+    }
+    normal.v[0] /= length;
+    normal.v[1] /= length;
+    normal.v[2] /= length;
+    BrVector3Add(&speed, pOther_direction, pOther_direction_change);
+    BrVector3Cross(&cross, pEdge_direction, &normal);
+    denominator = BrVector3Dot(&cross, &speed);
+    if (fabs(denominator) <= 1e-7) {
+        return 0;
+    }
+    t = -(BrVector3Dot(&cross, &delta) / denominator);
+    if (t < 0.0f || t > 1.0f) {
+        return 0;
+    }
+    delta.v[0] += speed.v[0] * t;
+    delta.v[1] += speed.v[1] * t;
+    delta.v[2] += speed.v[2] * t;
+    s = BrVector3Dot(pEdge_direction, &delta) / BrVector3LengthSquared(pEdge_direction);
+    if (s < 0.0f || s > 1.0f) {
+        return 0;
+    }
+    pForce->field_0x0 = 1.0f;
+    BrVector3Sub(&delta, pOther_start, pEdge_start);
+    if (BrVector3Dot(&delta, pN0) < 0.0f) {
+        BrVector3Negate(&normal, &normal);
+    }
+    BrVector3Add(&delta, pOther_start, pOther_velocity);
+    BrVector3Sub(&delta, &delta, pEdge_start);
+    distance = BrVector3Dot(&delta, &normal);
+    if (distance < 0.0f) {
+        BrVector3Negate(&normal, &normal);
+    }
+    if (pOther != NULL) {
+        BrVector3Scale(&world, pOther_direction, t);
+        BrVector3Add(&point, pOther_start, &world);
+        BrMatrix34ApplyP(&world, &point, &pOther->transform_matrix);
+        DrMatrix34ApplyLPInverse(&pForce->point_a, &world, &pObject->transform_matrix);
+        BrMatrix34ApplyV(&pForce->direction_a, &normal, &pOther->transform_matrix);
+    } else {
+        if (fabs(distance) < 0.001) {
+            pForce->field_0x0 = 1.1f;
+        }
+        BrVector3Scale(&world, pOther_direction, t);
+        BrVector3Add(&point, pOther_start, &world);
+        DrMatrix34ApplyLPInverse(&pForce->point_a, &point, &pObject->transform_matrix);
+        BrMatrix34TApplyV(&pForce->direction_a, &normal, &pObject->transform_matrix);
+        BrVector3Copy(&pForce->direction_b, &normal);
+    }
+    BrVector3Scale(&pForce->point_b, pEdge_direction, s);
+    BrVector3Accumulate(&pForce->point_b, pEdge_start);
+    return 1;
+}
+
+/* FIXME: pCount is never read; its type is a guess. */
+// FUNCTION: CARMA2_HW 0x00424990
+// FUNCTION: CARMA2_SW 0x00424a10
+// FUNCTION: CARMA2_CHEAT 0x00424b10
+int C2_HOOK_FASTCALL CheckTwoEdges(const br_vector3* pEdge_start, const br_vector3* pEdge_direction, const br_vector3* pOther_start, const br_vector3* pOther_direction, const br_vector3* pOther_velocity, const br_vector3* pOther_direction_change, tPhysics_joint_force* pForce, int pCount, tPhysics_object* pObject, tPhysics_object* pOther) {
+    br_vector3 n0;
+    br_vector3 n1;
+    br_vector3 delta;
+    br_vector3 normal;
+    br_vector3 edge;
+    br_vector3 origin;
+    br_vector3 projection;
+    br_vector3 point;
+    br_vector3 world;
+    br_vector3 other_normal;
+    br_scalar a;
+    br_scalar b;
+    br_scalar c;
+    br_scalar ac4;
+    br_scalar b2;
+    br_scalar root;
+    br_scalar two_a;
+    br_scalar t;
+    br_scalar dot;
+    br_scalar length_squared;
+    br_scalar s;
+    br_scalar u;
+    int axis;
+
+    BrVector3Cross(&n0, pOther_direction, pEdge_direction);
+    BrVector3Cross(&n1, pOther_direction_change, pEdge_direction);
+    BrVector3Sub(&delta, pOther_start, pEdge_start);
+    a = BrVector3Dot(pOther_velocity, &n1);
+    b = BrVector3Dot(pOther_start, &n1) + BrVector3Dot(pOther_velocity, &n0)
+        - (BrVector3Dot(pEdge_start, &n1) + BrVector3Dot(pEdge_direction, &n0));
+    c = BrVector3Dot(&delta, &n0);
+    if (a < 0.0f) {
+        a = -a;
+        b = -b;
+        c = -c;
+    }
+    ac4 = c * a * 4.0f;
+    b2 = b * b;
+    if (b2 < fabs(ac4) * 1000.0f) {
+        root = b2 - ac4;
+        if (root < 0.0f) {
+            return CylinderCheck(&n0, &n1, pEdge_start, pEdge_direction, pOther_start, pOther_direction, pOther_velocity, pOther_direction_change, pForce, pCount, pObject, pOther);
+        }
+        root = (br_scalar)sqrt(root);
+        two_a = a + a;
+        t = (-b - root) / two_a;
+        if (t > 1.0f) {
+            return CylinderCheck(&n0, &n1, pEdge_start, pEdge_direction, pOther_start, pOther_direction, pOther_velocity, pOther_direction_change, pForce, pCount, pObject, pOther);
+        }
+        if (t >= 0.0f) {
+            BrVector3Scale(&normal, &n1, t);
+            BrVector3Accumulate(&normal, &n0);
+            if (BrVector3LengthSquared(&normal) < 1e-7) {
+                return CylinderCheck(&n0, &n1, pEdge_start, pEdge_direction, pOther_start, pOther_direction, pOther_velocity, pOther_direction_change, pForce, pCount, pObject, pOther);
+            }
+        }
+        if (t < 0.0f) {
+            t = (root - b) / two_a;
+        }
+    } else {
+        if (fabs(b) <= 1e-7) {
+            return CylinderCheck(&n0, &n1, pEdge_start, pEdge_direction, pOther_start, pOther_direction, pOther_velocity, pOther_direction_change, pForce, pCount, pObject, pOther);
+        }
+        t = -(c / b) - c * c * a / (b2 * b) * (-4.0f / 3.0f);
+        if (t < 0.0f || t > 1.0f || gTesting_sensible_place != 0) {
+            t = -(b / a) - t;
+        }
+    }
+    if (t < 0.0f || t > 1.0f) {
+        return CylinderCheck(&n0, &n1, pEdge_start, pEdge_direction, pOther_start, pOther_direction, pOther_velocity, pOther_direction_change, pForce, pCount, pObject, pOther);
+    }
+    BrVector3Scale(&normal, &n1, t);
+    BrVector3Accumulate(&normal, &n0);
+    if (BrVector3LengthSquared(&normal) < 1e-7) {
+        return CylinderCheck(&n0, &n1, pEdge_start, pEdge_direction, pOther_start, pOther_direction, pOther_velocity, pOther_direction_change, pForce, pCount, pObject, pOther);
+    }
+    if (t >= pForce->field_0x0) {
+        return 0;
+    }
+    BrVector3Normalise(&normal, &normal);
+    BrVector3Scale(&edge, pOther_direction_change, t);
+    BrVector3Accumulate(&edge, pOther_direction);
+    BrVector3Scale(&origin, pOther_velocity, t);
+    BrVector3Accumulate(&origin, pOther_start);
+    dot = BrVector3Dot(pEdge_direction, &edge);
+    length_squared = BrVector3LengthSquared(pEdge_direction);
+    projection.v[0] = pEdge_direction->v[0] * dot - edge.v[0] * length_squared;
+    projection.v[1] = pEdge_direction->v[1] * dot - edge.v[1] * length_squared;
+    projection.v[2] = pEdge_direction->v[2] * dot - edge.v[2] * length_squared;
+    BrVector3Sub(&delta, pEdge_start, &origin);
+    s = BrVector3Dot(&delta, &projection) / BrVector3Dot(&edge, &projection);
+    if (s < 0.0f || s > 1.0f) {
+        return CylinderCheck(&n0, &n1, pEdge_start, pEdge_direction, pOther_start, pOther_direction, pOther_velocity, pOther_direction_change, pForce, pCount, pObject, pOther);
+    }
+    if (fabs(pEdge_direction->v[0]) >= fabs(pEdge_direction->v[1])) {
+        axis = 0;
+    } else {
+        axis = 1;
+    }
+    if (fabs(pEdge_direction->v[2]) > fabs(pEdge_direction->v[axis])) {
+        axis = 2;
+    }
+    u = (edge.v[axis] * s + origin.v[axis] - pEdge_start->v[axis]) / pEdge_direction->v[axis];
+    if (u < 0.0f || u > 1.0f) {
+        return CylinderCheck(&n0, &n1, pEdge_start, pEdge_direction, pOther_start, pOther_direction, pOther_velocity, pOther_direction_change, pForce, pCount, pObject, pOther);
+    }
+    BrVector3Sub(&delta, pOther_start, pEdge_start);
+    if (BrVector3Dot(&delta, &n0) < 0.0f) {
+        BrVector3Negate(&normal, &normal);
+    }
+    if (pOther != NULL) {
+        BrMatrix34ApplyV(&pForce->direction_a, &normal, &pOther->transform_matrix);
+        BrMatrix34ApplyV(&other_normal, &normal, &pOther->actor->t.t.mat);
+        BrVector3Scale(&pForce->direction_a, &pForce->direction_a, t);
+        BrVector3Scale(&other_normal, &other_normal, 1.0f - t);
+        BrVector3Accumulate(&pForce->direction_a, &other_normal);
+        BrVector3Normalise(&pForce->direction_a, &pForce->direction_a);
+        BrVector3Scale(&pForce->point_b, pEdge_direction, u);
+        BrVector3Accumulate(&pForce->point_b, pEdge_start);
+        BrVector3Scale(&point, pOther_direction, s);
+        BrVector3Accumulate(&point, pOther_start);
+        BrMatrix34ApplyP(&world, &point, &pOther->transform_matrix);
+        DrMatrix34ApplyLPInverse(&pForce->point_a, &world, &pObject->transform_matrix);
+    } else {
+        BrMatrix34TApplyV(&pForce->direction_a, &normal, &pObject->transform_matrix);
+        BrVector3Copy(&pForce->direction_b, &normal);
+        BrVector3Scale(&point, pOther_direction, s);
+        BrVector3Accumulate(&point, pOther_start);
+        DrMatrix34ApplyLPInverse(&pForce->point_a, &point, &pObject->transform_matrix);
+        BrVector3Scale(&pForce->point_b, pEdge_direction, u);
+        BrVector3Accumulate(&pForce->point_b, pEdge_start);
+    }
+    pForce->field_0x0 = t;
+    return 1;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+inline int C2_HOOK_FASTCALL WorldPointCollision(const br_vector3* pPoint, tPhysics_object* pObject, tPhysics_shape* pShape, tPhysics_joint_force* pForces, int pCount, tFace_ref* pFace) {
+    br_vector3 start;
+    br_vector3 end;
+    br_vector3 point;
+    br_vector3 normal;
+    br_scalar t;
+    int result;
+
+    DrMatrix34ApplyLPInverse(&start, pPoint, &pObject->transform_matrix);
+    DrMatrix34ApplyLPInverse(&end, pPoint, &pObject->actor->t.t.mat);
+    result = ShapeRayCastWithSphere(&start, &end, pShape, &point, &normal, &t);
+    if (result > 0) {
+        if (result > 64) {
+            t = 1.1f;
+        }
+        pCount = AddObjectWallForce(pForces, &point, t, &normal, 0.0f, pCount, pObject, 2, pFace, NULL);
+    }
+    return pCount;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x00424270
+// FUNCTION: CARMA2_SW 0x004242f0
+// FUNCTION: CARMA2_CHEAT 0x004243f0
+int C2_HOOK_FASTCALL CheckSingleEdgeWithObjectEdges(br_vector3* pEdge_start, br_vector3* pEdge_end, tPhysics_object* pObject, tPhysics_shape* pShape, tPhysics_joint_force* pForces, int pCount, tFace_ref* pFace, tPhysics_wall_workspace* pWorkspace) {
+    tPhysics_joint_force candidates[2];
+    br_vector3 direction;
+    br_vector3 velocity;
+    br_vector3 edge_direction;
+    br_vector3 change;
+    br_vector3 start;
+    br_vector3 end;
+    br_vector3 point;
+    br_vector3* first;
+    br_vector3* second;
+    br_vector3* trial_first;
+    br_vector3* trial_second;
+    br_matrix34* mat;
+    br_scalar projected_start;
+    br_scalar projected_end;
+    br_scalar low;
+    br_scalar high;
+    br_scalar t;
+    int check_start;
+    int check_end;
+    int i;
+    int selector;
+    int best_edge;
+
+    check_start = 1;
+    check_end = 1;
+    mat = &pObject->actor->t.t.mat;
+    for (i = 0; i < 3; i++) {
+        projected_start = BrVector3Dot((br_vector3*)mat->m[i], pEdge_start);
+        projected_end = BrVector3Dot((br_vector3*)mat->m[i], pEdge_end);
+        low = (br_scalar)(pShape->common.field_0x1c.min.v[i] - 0.005);
+        check_start |= projected_start < low;
+        check_end |= projected_end < low;
+        if (projected_start < low && projected_end < low) {
+            return pCount;
+        }
+        high = (br_scalar)(pShape->common.field_0x1c.max.v[i] + 0.005);
+        check_start |= projected_start < high;
+        check_end |= projected_end < high;
+        if (projected_start > high && projected_end > high) {
+            return pCount;
+        }
+    }
+    if (pObject->field_0xed == 0) {
+        if (check_start) {
+            pCount = WorldPointCollision(pEdge_start, pObject, pShape, pForces, pCount, pFace);
+        }
+        if (check_end) {
+            pCount = WorldPointCollision(pEdge_end, pObject, pShape, pForces, pCount, pFace);
+        }
+    }
+    BrVector3Sub(&direction, pEdge_end, pEdge_start);
+    selector = 0;
+    candidates[0].field_0xc = pFace;
+    candidates[1].field_0xc = pFace;
+    candidates[0].field_0x0 = 2.0f;
+    candidates[1].field_0x0 = 2.0f;
+    best_edge = -1;
+    for (i = 0; i < pWorkspace->count_edges; i++) {
+        first = &pWorkspace->old_points[pWorkspace->edges[i].index1];
+        second = &pWorkspace->old_points[pWorkspace->edges[i].index2];
+        trial_first = &pWorkspace->trial_points[pWorkspace->edges[i].index1];
+        trial_second = &pWorkspace->trial_points[pWorkspace->edges[i].index2];
+        BrVector3Sub(&velocity, trial_first, first);
+        BrVector3Sub(&edge_direction, second, first);
+        BrVector3Sub(&change, trial_second, trial_first);
+        BrVector3Sub(&change, &change, &edge_direction);
+        if (CheckTwoEdges(pEdge_start, &direction, first, &edge_direction, &velocity, &change, &candidates[selector], pCount, pObject, NULL) != 0) {
+            best_edge = i;
+            if (candidates[selector].field_0x0 < candidates[!selector].field_0x0) {
+                selector = !selector;
+            }
+        }
+    }
+    if (candidates[0].field_0x0 >= 2.0f) {
+        return pCount;
+    }
+    if (BrVector3Dot(&pFace->normal, &candidates[0].direction_b) < 0.0f) {
+        DrMatrix34ApplyLPInverse(&start, pEdge_start, &pObject->transform_matrix);
+        DrMatrix34ApplyLPInverse(&end, pEdge_end, &pObject->transform_matrix);
+        if (ShapeRayCast(&start, &end, pShape, &point, &t, NULL) != 0) {
+            return pCount;
+        }
+    }
+    gUINT_00679430 |= 1 << best_edge;
+    pCount = AddObjectWallForce(pForces, &candidates[0].point_a, candidates[0].field_0x0, &candidates[0].direction_a, 0.0f, pCount, pObject, 0, pFace, &candidates[0].point_b);
+    if (candidates[1].field_0x0 < 2.0f) {
+        pCount = AddObjectWallForce(pForces, &candidates[1].point_a, candidates[1].field_0x0, &candidates[1].direction_a, 0.0f, pCount, pObject, 0, pFace, &candidates[1].point_b);
+    }
+    return pCount;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+/* FIXME: pMax_count and pUnused are never read; their types are guesses. */
+// FUNCTION: CARMA2_HW 0x00424140
+// FUNCTION: CARMA2_SW 0x004241c0
+// FUNCTION: CARMA2_CHEAT 0x004242c0
+int C2_HOOK_FASTCALL GetEdgeToEdgePoints(tPhysics_object* pObject, tPhysics_shape* pShape, tPhysics_joint_force* pForces, int pCount, int pMax_count, tPhysics_wall_workspace* pWorkspace, void* pUnused) {
+    int i;
+    tFace_ref* face;
+    br_vector3 tv;
+
+    gUINT_00679430 = 0;
+    BrMatrix34TApplyV(&tv, &pObject->actor->t.t.translate.t, &pObject->actor->t.t.mat);
+    BrVector3Accumulate(&pShape->common.field_0x1c.min, &tv);
+    BrVector3Accumulate(&pShape->common.field_0x1c.max, &tv);
+    i = pObject->box_face_start;
+    face = &gFace_list__car[i];
+    for (; i < pObject->box_face_end; i++, face++) {
+        if (!(face->flags & 0x80)) {
+            if (!(face->flags & 0x1)) {
+                pCount = CheckSingleEdgeWithObjectEdges(&face->v[0], &face->v[1], pObject, pShape, pForces, pCount, face, pWorkspace);
+            }
+            if (!(face->flags & 0x2)) {
+                pCount = CheckSingleEdgeWithObjectEdges(&face->v[1], &face->v[2], pObject, pShape, pForces, pCount, face, pWorkspace);
+            }
+            if (!(face->flags & 0x4)) {
+                pCount = CheckSingleEdgeWithObjectEdges(&face->v[2], &face->v[0], pObject, pShape, pForces, pCount, face, pWorkspace);
+            }
+        }
+    }
+    return pCount;
+}
+
+inline void C2_HOOK_FASTCALL SetUpWorkspace(tPhysics_object* pObject, tPhysics_shape* pShape, tPhysics_wall_workspace* pWorkspace) {
+    br_matrix34* trial_matrix;
+    br_vector3 corner;
+    int i;
+
+    if (gTesting_sensible_place != 0) {
+        trial_matrix = &pObject->transform_matrix;
+    } else {
+        trial_matrix = &pObject->actor->t.t.mat;
+    }
+    switch (pShape->common.type) {
+    case kCollisionShapeType_Box:
+        pWorkspace->count_points = 8;
+        pWorkspace->count_edges = 12;
+        for (i = 0; i < 8; i++) {
+            if (i & 0x2) {
+                corner.v[0] = pShape->common.bb.min.v[0];
+            } else {
+                corner.v[0] = pShape->common.bb.max.v[0];
+            }
+            if (i & 0x1) {
+                corner.v[1] = pShape->common.bb.min.v[1];
+            } else {
+                corner.v[1] = pShape->common.bb.max.v[1];
+            }
+            if (i & 0x4) {
+                corner.v[2] = pShape->common.bb.min.v[2];
+            } else {
+                corner.v[2] = pShape->common.bb.max.v[2];
+            }
+            BrMatrix34ApplyP(&pWorkspace->old_points[i], &corner, &pObject->transform_matrix);
+            BrMatrix34ApplyP(&pWorkspace->trial_points[i], &corner, trial_matrix);
+            pWorkspace->point_flags[i] = 0;
+        }
+        pWorkspace->edges = gDefault_box_collision_wireframe_edges;
+        break;
+    case kCollisionShapeType_Wireframe:
+        pWorkspace->count_points = pShape->wireframe.wireframe.count_points;
+        pWorkspace->count_edges = pShape->wireframe.wireframe.count_lines;
+        for (i = 0; i < pWorkspace->count_points; i++) {
+            BrMatrix34ApplyP(&pWorkspace->old_points[i], &pShape->wireframe.wireframe.points[i], &pObject->transform_matrix);
+            BrMatrix34ApplyP(&pWorkspace->trial_points[i], &pShape->wireframe.wireframe.points[i], trial_matrix);
+            pWorkspace->point_flags[i] = 0;
+        }
+        pWorkspace->edges = pShape->wireframe.wireframe.lines;
+        break;
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        pWorkspace->count_points = pShape->polyhedron.polyhedron.count_points;
+        pWorkspace->count_edges = pShape->polyhedron.polyhedron.count_edges;
+        for (i = 0; i < pWorkspace->count_points; i++) {
+            BrMatrix34ApplyP(&pWorkspace->old_points[i], &pShape->polyhedron.polyhedron.points[i], &pObject->transform_matrix);
+            BrMatrix34ApplyP(&pWorkspace->trial_points[i], &pShape->polyhedron.polyhedron.points[i], trial_matrix);
+            pWorkspace->point_flags[i] = 0;
+        }
+        pWorkspace->edges = pShape->polyhedron.polyhedron.edges;
+        break;
+    case kCollisionShapeType_Sphere:
+        pWorkspace->count_points = 1;
+        pWorkspace->count_edges = 0;
+        BrMatrix34ApplyP(&pWorkspace->old_points[0], &pShape->sphere.sphere.center, &pObject->transform_matrix);
+        BrMatrix34ApplyP(&pWorkspace->trial_points[0], &pShape->sphere.sphere.center, trial_matrix);
+        break;
+    default:
+        PhysicsError(ePhysicsError_UnknownShapeType, "");
+        break;
+    }
+    if (gTesting_sensible_place != 0) {
+        BrMatrix34ApplyP(&pWorkspace->old_points[0], &pObject->cmpos, &pObject->transform_matrix);
+        for (i = 1; i < pWorkspace->count_points; i++) {
+            BrVector3Copy(&pWorkspace->old_points[i], &pWorkspace->old_points[0]);
+        }
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004228b0
+// FUNCTION: CARMA2_SW 0x00422930
+// FUNCTION: CARMA2_CHEAT 0x00422a30
+int C2_HOOK_FASTCALL GetObjectWallForceInfo(tPhysics_object* pObject, tPhysics_joint_force* pForces, int pCount) {
+    tPhysics_wall_workspace workspace;
+    br_matrix34 inverse;
+    br_matrix34 delta;
+    tPhysics_shape* shape;
+    int count;
+    int sphere_count;
+    int touched;
+    int touched_all;
+    int i;
+
+    count = 0;
+    touched_all = 0;
+    shape = pObject->shape;
+    i = 1;
+    if (pObject->box_face_start == pObject->box_face_end) {
+        return 0;
+    }
+    if (pCount > 36) {
+        return 0;
+    }
+    BrMatrix34LPInverse(&inverse, &pObject->actor->t.t.mat);
+    BrMatrix34Mul(&delta, &pObject->transform_matrix, &inverse);
+    for (; shape != NULL; shape = shape->common.next) {
+        if (EliminateFaces(pObject, shape, &delta) != 0) {
+            SetUpWorkspace(pObject, shape, &workspace);
+            if (shape->common.type == kCollisionShapeType_Sphere) {
+                sphere_count = GetSphereToFacePoints(pObject, &shape->sphere.sphere, &pForces[pCount], count, 40 - pCount, workspace.old_points, workspace.trial_points, &delta);
+                if (GetSphereToEdgePoints(pObject, &shape->sphere.sphere, &pForces[pCount], sphere_count, 40 - pCount, workspace.old_points, workspace.trial_points, &delta) > count) {
+                    count++;
+                }
+            } else {
+                touched = 0;
+                if (pObject->field_0xed != 0) {
+                    count = GetFaceEdgeIntersection(pObject, shape, &pForces[pCount], count, 40 - pCount, &workspace, &delta, &touched);
+                }
+                touched_all |= touched;
+                count = GetCornerToFacePoints(pObject, shape, &pForces[pCount], count, 40 - pCount, &workspace, &delta);
+                if (touched == 0) {
+                    count = GetEdgeToEdgePoints(pObject, shape, &pForces[pCount], count, 40 - pCount, &workspace, &delta);
+                }
+            }
+        }
+    }
+    pObject->field_0xed = touched_all;
+    if (count == 0) {
+        return 0;
+    }
+    for (; i < count; i++) {
+        if (BrVector3Dot(&pForces[pCount].direction_a, &pForces[pCount + i].direction_a) <= 0.95) {
+            break;
+        }
+    }
+    BrVector3Copy(&pObject->omega, &pObject->rotate_omega);
+    return i;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // GetObjectCornerToObjectFacePoints
 
@@ -347,17 +1326,270 @@ int C2_HOOK_FASTCALL BoundsOverlapTest(const br_bounds3* pBounds_1, const br_bou
 
 // GetObjectObjectEdgePoints
 
-// GetSphereNonSphereForceInfo
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// GetSphereSphereForceInfo
+// STUB: CARMA2_HW 0x004269c0
+// STUB: CARMA2_SW 0x00426a60
+// STUB: CARMA2_CHEAT 0x00426b50
+int C2_HOOK_FASTCALL GetSphereNonSphereForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_shape* pShape_a, tPhysics_shape* pShape_b, br_vector3* pPoints_a, br_vector3* pPoints_b, int pCount_a, int pCount_b, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+    NOT_IMPLEMENTED();
+}
 
-// GetSphereShapeForceInfo
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
-// GetNonSphereNonSphereForceInfo
+inline int C2_HOOK_FASTCALL GetSphereSphereForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_shape* pShape_a, tPhysics_shape* pShape_b, br_vector3* pPoints_a, br_vector3* pPoints_b, int pCount_a, int pCount_b, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+    br_vector3 normal;
+    br_vector3 world_normal;
+    br_vector3 new_normal;
+    br_vector3 old_normal;
+    br_vector3 point_a;
+    br_vector3 point_b;
+    br_scalar t;
 
-// GetNonSphereShapeForceInfo
+    SphereSphereCollide(&pShape_a->sphere.sphere, &pShape_b->sphere.sphere, &pPoints_b[0], &pPoints_b[1], &normal, &t);
+    if (t <= 1.0f) {
+        BrVector3Scale(&point_a, &normal, -pShape_a->sphere.sphere.radius);
+        BrVector3Accumulate(&point_a, &pShape_a->sphere.sphere.center);
+        BrMatrix34ApplyV(&new_normal, &normal, &pObject_a->transform_matrix);
+        BrMatrix34ApplyV(&old_normal, &normal, &pObject_a->actor->t.t.mat);
+        BrVector3Scale(&new_normal, &new_normal, 1.0f - t);
+        BrVector3Scale(&old_normal, &old_normal, t);
+        BrVector3Add(&world_normal, &new_normal, &old_normal);
+        BrMatrix34TApplyV(&new_normal, &world_normal, &pObject_b->transform_matrix);
+        BrMatrix34TApplyV(&old_normal, &world_normal, &pObject_b->actor->t.t.mat);
+        BrVector3Scale(&new_normal, &new_normal, 1.0f - t);
+        BrVector3Scale(&old_normal, &old_normal, t);
+        BrVector3Accumulate(&new_normal, &old_normal);
+        BrVector3Scale(&point_b, &new_normal, pShape_b->sphere.sphere.radius);
+        BrVector3Accumulate(&point_b, &pShape_b->sphere.sphere.center);
+        pCount = AddObjectObjectForce(pForces, &point_a, t, &point_b, &world_normal, pCount, pObject_a, pObject_b, 7, NULL, 0.0f);
+    }
+    return pCount;
+}
 
-// GetObjectObjectForceInfo
+inline int C2_HOOK_FASTCALL GetSphereShapeForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_shape* pShape_a, tPhysics_shape* pShape_b, br_vector3* pPoints_a, br_vector3* pPoints_b, int pCount_a, int pCount_b, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+
+    if (pShape_b->common.type == kCollisionShapeType_Sphere) {
+        return GetSphereSphereForceInfo(pObject_a, pObject_b, pShape_a, pShape_b, pPoints_a, pPoints_b, pCount_a, pCount_b, pForces, pCount, pMax_count);
+    } else {
+        return GetSphereNonSphereForceInfo(pObject_a, pObject_b, pShape_a, pShape_b, pPoints_a, pPoints_b, pCount_a, pCount_b, pForces, pCount, pMax_count);
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x00427870
+// STUB: CARMA2_SW 0x00427900
+// STUB: CARMA2_CHEAT 0x00427a00
+int C2_HOOK_FASTCALL GetNonSphereNonSphereForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_shape* pShape_a, tPhysics_shape* pShape_b, br_vector3* pPoints_a, br_vector3* pPoints_b, int pCount_a, int pCount_b, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+inline int C2_HOOK_FASTCALL GetNonSphereShapeForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_shape* pShape_a, tPhysics_shape* pShape_b, br_vector3* pPoints_a, br_vector3* pPoints_b, int pCount_a, int pCount_b, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+
+    if (pShape_b->common.type == kCollisionShapeType_Sphere) {
+        return GetSphereNonSphereForceInfo(pObject_b, pObject_a, pShape_b, pShape_a, pPoints_b, pPoints_a, pCount_b, pCount_a, pForces, pCount, pMax_count);
+    } else {
+        return GetNonSphereNonSphereForceInfo(pObject_a, pObject_b, pShape_a, pShape_b, pPoints_a, pPoints_b, pCount_a, pCount_b, pForces, pCount, pMax_count);
+    }
+}
+
+/* FIXME: the sizes of the point and count arrays are guesses. */
+// FUNCTION: CARMA2_HW 0x00425ca0
+// FUNCTION: CARMA2_SW 0x00425d40
+// FUNCTION: CARMA2_CHEAT 0x00425e30
+int C2_HOOK_FASTCALL GetObjectObjectForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_joint_force* pForces, int pCount) {
+    br_matrix34 new_matrix;
+    br_matrix34 old_matrix;
+    br_matrix34 inverse_new;
+    br_matrix34 inverse_old;
+    tU16 counts_b[17];
+    tU16 counts_a[17];
+    br_vector3 corner;
+    br_vector3 points_b[256];
+    br_vector3 points_a[256];
+    br_vector3* points;
+    br_vector3* other_points;
+    tPhysics_shape* shape;
+    tPhysics_shape* other_shape;
+    tPhysics_joint_force* first;
+    br_scalar dot;
+    int count;
+    int i;
+    int j;
+
+    count = 0;
+    shape = pObject_b->shape;
+    other_shape = pObject_a->shape;
+    if (pCount > 36) {
+        return 0;
+    }
+    BrMatrix34LPInverse(&inverse_new, &pObject_a->transform_matrix);
+    BrMatrix34Mul(&new_matrix, &pObject_b->transform_matrix, &inverse_new);
+    BrMatrix34LPInverse(&inverse_old, &pObject_a->actor->t.t.mat);
+    BrMatrix34Mul(&old_matrix, &pObject_b->actor->t.t.mat, &inverse_old);
+    points = points_b;
+    j = 0;
+    for (; shape != NULL; shape = shape->common.next) {
+        switch (shape->common.type) {
+        case kCollisionShapeType_Box:
+            counts_b[j] = 8;
+                for (i = 0; i < 8; i++) {
+                    if (i & 0x2) {
+                        corner.v[0] = shape->common.bb.min.v[0];
+                    } else {
+                        corner.v[0] = shape->common.bb.max.v[0];
+                    }
+                    if (i & 0x1) {
+                        corner.v[1] = shape->common.bb.min.v[1];
+                    } else {
+                        corner.v[1] = shape->common.bb.max.v[1];
+                    }
+                    if (i & 0x4) {
+                        corner.v[2] = shape->common.bb.min.v[2];
+                    } else {
+                        corner.v[2] = shape->common.bb.max.v[2];
+                    }
+                        BrMatrix34ApplyP(&points[2 * i], &corner, &new_matrix);
+                        BrMatrix34ApplyP(&points[2 * i + 1], &corner, &old_matrix);
+                }
+            points += 16;
+            break;
+        case kCollisionShapeType_Wireframe:
+            counts_b[j] = shape->wireframe.wireframe.count_points;
+            for (i = 0; i < shape->wireframe.wireframe.count_points; i++) {
+                BrMatrix34ApplyP(&points[2 * i], &shape->wireframe.wireframe.points[i], &new_matrix);
+                BrMatrix34ApplyP(&points[2 * i + 1], &shape->wireframe.wireframe.points[i], &old_matrix);
+            }
+            points += 2 * shape->wireframe.wireframe.count_points;
+            break;
+        case kCollisionShapeType_Polyhedron:
+        case kCollisionShapeType_Wireframe_Polyhedron:
+            counts_b[j] = shape->polyhedron.polyhedron.count_points;
+            for (i = 0; i < shape->polyhedron.polyhedron.count_points; i++) {
+                BrMatrix34ApplyP(&points[2 * i], &shape->polyhedron.polyhedron.points[i], &new_matrix);
+                BrMatrix34ApplyP(&points[2 * i + 1], &shape->polyhedron.polyhedron.points[i], &old_matrix);
+            }
+            points += 2 * shape->polyhedron.polyhedron.count_points;
+            break;
+        case kCollisionShapeType_Sphere:
+            BrMatrix34ApplyP(&points[0], &shape->sphere.sphere.center, &new_matrix);
+            BrMatrix34ApplyP(&points[1], &shape->sphere.sphere.center, &old_matrix);
+            points += 2;
+            counts_b[j] = 1;
+            break;
+        default:
+            PhysicsError(ePhysicsError_UnknownShapeType, "");
+            break;
+        }
+        j++;
+    }
+    shape = other_shape;
+    points = points_a;
+    j = 0;
+    for (; shape != NULL; shape = shape->common.next) {
+        switch (shape->common.type) {
+        case kCollisionShapeType_Box:
+            counts_a[j] = 8;
+                for (i = 0; i < 8; i++) {
+                    if (i & 0x2) {
+                        corner.v[0] = shape->common.bb.min.v[0];
+                    } else {
+                        corner.v[0] = shape->common.bb.max.v[0];
+                    }
+                    if (i & 0x1) {
+                        corner.v[1] = shape->common.bb.min.v[1];
+                    } else {
+                        corner.v[1] = shape->common.bb.max.v[1];
+                    }
+                    if (i & 0x4) {
+                        corner.v[2] = shape->common.bb.min.v[2];
+                    } else {
+                        corner.v[2] = shape->common.bb.max.v[2];
+                    }
+                        DrMatrix34ApplyLPInverse(&points[2 * i], &corner, &new_matrix);
+                        DrMatrix34ApplyLPInverse(&points[2 * i + 1], &corner, &old_matrix);
+                }
+            points += 16;
+            break;
+        case kCollisionShapeType_Wireframe:
+            counts_a[j] = shape->wireframe.wireframe.count_points;
+            for (i = 0; i < shape->wireframe.wireframe.count_points; i++) {
+                DrMatrix34ApplyLPInverse(&points[2 * i], &shape->wireframe.wireframe.points[i], &new_matrix);
+                DrMatrix34ApplyLPInverse(&points[2 * i + 1], &shape->wireframe.wireframe.points[i], &old_matrix);
+            }
+            points += 2 * shape->wireframe.wireframe.count_points;
+            break;
+        case kCollisionShapeType_Polyhedron:
+        case kCollisionShapeType_Wireframe_Polyhedron:
+            counts_a[j] = shape->polyhedron.polyhedron.count_points;
+            for (i = 0; i < shape->polyhedron.polyhedron.count_points; i++) {
+                DrMatrix34ApplyLPInverse(&points[2 * i], &shape->polyhedron.polyhedron.points[i], &new_matrix);
+                DrMatrix34ApplyLPInverse(&points[2 * i + 1], &shape->polyhedron.polyhedron.points[i], &old_matrix);
+            }
+            points += 2 * shape->polyhedron.polyhedron.count_points;
+            break;
+        case kCollisionShapeType_Sphere:
+            DrMatrix34ApplyLPInverse(&points[0], &shape->sphere.sphere.center, &new_matrix);
+            DrMatrix34ApplyLPInverse(&points[1], &shape->sphere.sphere.center, &old_matrix);
+            points += 2;
+            counts_a[j] = 1;
+            break;
+        default:
+            PhysicsError(ePhysicsError_UnknownShapeType, "");
+            break;
+        }
+        j++;
+    }
+    points = points_a;
+    i = 0;
+    for (shape = pObject_a->shape; shape != NULL; shape = shape->common.next) {
+        other_points = points_b;
+        j = 0;
+        if (shape->common.type == kCollisionShapeType_Sphere) {
+            for (other_shape = pObject_b->shape; other_shape != NULL; other_shape = other_shape->common.next) {
+                count = GetSphereShapeForceInfo(pObject_a, pObject_b, shape, other_shape, points, other_points, counts_a[i], counts_b[j], &pForces[pCount], count, 40 - pCount);
+                other_points += 2 * counts_b[j];
+                j++;
+            }
+        } else {
+            for (other_shape = pObject_b->shape; other_shape != NULL; other_shape = other_shape->common.next) {
+                count = GetNonSphereShapeForceInfo(pObject_a, pObject_b, shape, other_shape, points, other_points, counts_a[i], counts_b[j], &pForces[pCount], count, 40 - pCount);
+                other_points += 2 * counts_b[j];
+                j++;
+            }
+        }
+        points += 2 * counts_a[i];
+        i++;
+    }
+    if (count == 0) {
+        return 0;
+    }
+    BrVector3Copy(&pObject_a->omega, &pObject_a->rotate_omega);
+    BrVector3Copy(&pObject_b->omega, &pObject_b->rotate_omega);
+    first = &pForces[pCount];
+    for (i = 1; i < count; i++) {
+        if (pForces[pCount + i].object_a == first->object_a) {
+            dot = BrVector3Dot(&first->direction_a, &pForces[pCount + i].direction_a);
+        } else {
+            dot = -BrVector3Dot(&first->direction_b, &pForces[pCount + i].direction_a);
+        }
+        if (dot < 0.707) {
+            break;
+        }
+    }
+    return i;
+}
 
 // FUNCTION: CARMA2_HW 0x00428480
 // FUNCTION: CARMA2_SW 0x00428510
@@ -381,6 +1613,10 @@ void C2_HOOK_FASTCALL GetShapePoint(br_vector3* pPoint, tPhysics_shape* pShape, 
     }
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
 // FUNCTION: CARMA2_HW 0x00428cf0
 // FUNCTION: CARMA2_SW 0x00428d80
 int C2_HOOK_FASTCALL AddOldForces(tPhysics_joint_force* pForces, int pCount, const tPhysics_joint_force* pOld_forces, int pOld_count) {
@@ -394,6 +1630,10 @@ int C2_HOOK_FASTCALL AddOldForces(tPhysics_joint_force* pForces, int pCount, con
     }
     return pCount;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x00428d40
 // FUNCTION: CARMA2_SW 0x00428dd0
@@ -490,32 +1730,423 @@ int C2_HOOK_FASTCALL TestShapeEdgeIntersection(tPhysics_object* pCollision_info_
     return 0;
 }
 
-// TestObjectOverlapIgnoreCloseRelatives
+inline int C2_HOOK_FASTCALL TestObjectOverlapIgnoreCloseRelatives(tPhysics_object* pCollision_1, tPhysics_object* pCollision_2) {
 
-// TestObjectOverlapRecurse
-
-// STUB: CARMA2_HW 0x00429070
-// STUB: CARMA2_SW 0x00429100
-// STUB: CARMA2_CHEAT 0x00429200
-int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_info_1, tPhysics_object* pCollision_info_2, br_vector3* pVec3, tWorld_callbacks* pCar_callbacks) {
-    NOT_IMPLEMENTED();
+    if (pCollision_2 == pCollision_1 || pCollision_1->parent == pCollision_2 || pCollision_2->parent == pCollision_1) {
+        return 0;
+    }
+    return TestObjectOverlap(pCollision_1, pCollision_2);
 }
 
-// HierarchyCalcEnergy
+// FUNCTION: CARMA2_HW 0x004293c0
+// FUNCTION: CARMA2_SW 0x00429450
+// FUNCTION: CARMA2_CHEAT 0x00429550
+int C2_HOOK_FASTCALL TestObjectOverlapRecurse(tPhysics_object* pCollision_1, tPhysics_object* pCollision_2) {
+    tPhysics_object* child;
 
-// CheckCollisionList
+    if (TestObjectOverlapIgnoreCloseRelatives(pCollision_1, pCollision_2)) {
+        return 1;
+    }
+    for (child = pCollision_2->child; child != NULL; child = child->next) {
+        if (TestObjectOverlapRecurse(pCollision_1, child)) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
-// MakeJointVelocitiesVector
+// FUNCTION: CARMA2_HW 0x00429070
+// FUNCTION: CARMA2_SW 0x00429100
+// FUNCTION: CARMA2_CHEAT 0x00429200
+int C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCollision_info_1, tPhysics_object* pCollision_info_2, br_vector3* pVec3, tWorld_callbacks* pCar_callbacks) {
+    tPhysics_joint_force forces[8];
+    br_vector3 normal;
+    int count;
+    int i;
+    tPhysics_object* object;
 
-// ApplySingleForce
+    gObject_blocking_sensible_place = NULL;
+    GetNewBoundingBox(&pCollision_info_1->field_0xf4, &pCollision_info_1->bb1, &pCollision_info_1->transform_matrix);
+    GetFacesNearObject(pCollision_info_1, pCar_callbacks);
+    gTesting_sensible_place = 1;
+    count = GetObjectWallForceInfo(pCollision_info_1, forces, 0);
+    gTesting_sensible_place = 0;
+    if (count != 0) {
+        BrVector3Copy(&normal, &forces[0].direction_a);
+        if (count > 1) {
+            for (i = 1; i < count; i++) {
+                BrVector3Accumulate(&normal, &forces[i].direction_a);
+            }
+            BrVector3Normalise(&normal, &normal);
+        }
+        BrMatrix34ApplyV(pVec3, &normal, &pCollision_info_1->transform_matrix);
+        return 0;
+    }
+    object = pCollision_info_2;
+    while (1) {
+        if (object == NULL) {
+            return -1;
+        }
+        if (TestObjectOverlapRecurse(pCollision_info_1, object)) {
+            BrVector3Add(pVec3, &pCollision_info_1->field_0x10c.min, &pCollision_info_1->field_0x10c.max);
+            BrVector3Sub(pVec3, pVec3, &object->field_0x10c.min);
+            BrVector3Sub(pVec3, pVec3, &object->field_0x10c.max);
+            BrVector3Normalise(pVec3, pVec3);
+            gObject_blocking_sensible_place = object;
+            return 0;
+        }
+        object = object->next;
+    }
+}
 
-// ApplyJointForces
+// FUNCTION: CARMA2_HW 0x004b7290
+// FUNCTION: CARMA2_SW 0x004b39b0
+// FUNCTION: CARMA2_CHEAT 0x004bcdc0
+br_scalar C2_HOOK_FASTCALL HierarchyCalcEnergy(tPhysics_object* pObject) {
+    br_scalar energy;
+    br_scalar object_energy;
+    int i;
 
-// SkipForces
+    energy = 0.0f;
+    for (; pObject != NULL; pObject = pObject->next) {
+        object_energy = 0.0f;
+        for (i = 0; i < 3; i++) {
+            object_energy += pObject->I.v[i] * REC2_SQR(pObject->omega.v[i]) + pObject->M * REC2_SQR(pObject->v.v[i]);
+        }
+        energy = HierarchyCalcEnergy(pObject->child) + (object_energy + energy);
+    }
+    return energy;
+}
 
-// ScaleUpObjectMI
+inline void C2_HOOK_FASTCALL CheckCollisionList(tPhysics_object* pObject) {
+    tPhysics_object* object;
+    int count;
 
-// CheckForTwang
+    count = 0;
+    object = pObject;
+    do {
+        count++;
+        if (count > 100) {
+            PhysicsError(ePhysicsError_CorruptGroup, "Corrupt group");
+        }
+        object = object->field183_0x1d8;
+    } while (object != pObject);
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004b77b0
+// FUNCTION: CARMA2_SW 0x004b3ed0
+// FUNCTION: CARMA2_CHEAT 0x004bd2e0
+void C2_HOOK_FASTCALL MakeJointVelocitiesVector(br_scalar* pVelocities, tPhysics_joint_force** pForces, int pCount) {
+    tPhysics_object* object;
+    br_vector3 v;
+    int i;
+
+    for (i = 0; i < pCount; i++) {
+        object = pForces[i]->object_a;
+        if (pForces[i]->type == 11) {
+            pVelocities[i] = -BrVector3Dot(&object->omega, &pForces[i]->direction_a);
+            object = pForces[i]->object_b;
+            if (object != NULL) {
+                pVelocities[i] += BrVector3Dot(&object->omega, &pForces[i]->direction_b);
+            }
+        } else {
+            BrVector3Cross(&v, &object->omega, &pForces[i]->point_a);
+            BrVector3Accumulate(&v, &object->velocity_car_space);
+            pVelocities[i] = -BrVector3Dot(&pForces[i]->direction_a, &v);
+            object = pForces[i]->object_b;
+            if (object != NULL) {
+                BrVector3Cross(&v, &object->omega, &pForces[i]->point_b);
+                BrVector3Accumulate(&v, &object->velocity_car_space);
+                pVelocities[i] += BrVector3Dot(&pForces[i]->direction_b, &v);
+            }
+        }
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004b7960
+// FUNCTION: CARMA2_SW 0x004b4080
+// FUNCTION: CARMA2_CHEAT 0x004bd490
+void C2_HOOK_FASTCALL ApplySingleForce(tPhysics_joint_force* pForce, br_scalar pAmount) {
+    br_vector3 angular;
+    br_vector3 linear;
+    br_vector3 partner_angular;
+    br_vector3 partner_linear;
+    br_vector3 impulse;
+    br_vector3 delta;
+    br_vector3 tv;
+    tPhysics_object* object_a;
+    tPhysics_object* object_b;
+    tPhysics_object* partner;
+
+    if (pForce->type == 9 || pAmount == 0.0f) {
+        return;
+    }
+    object_a = pForce->object_a;
+    object_b = pForce->object_b;
+    if (pForce->type == 11) {
+        partner = SetUpTorqueHingePartners(&angular, &linear, &partner_angular, &partner_linear, &pForce->direction_a, object_a);
+        BrVector3Scale(&angular, &angular, pAmount);
+        BrVector3Accumulate(&object_a->omega, &angular);
+        if (partner != NULL) {
+            BrVector3Scale(&linear, &linear, pAmount);
+            BrVector3Accumulate(&object_a->velocity_car_space, &linear);
+            BrMatrix34ApplyV(&object_a->v, &object_a->velocity_car_space, &object_a->transform_matrix);
+            BrVector3Scale(&partner_linear, &partner_linear, pAmount);
+            BrVector3Accumulate(&partner->velocity_car_space, &partner_linear);
+            BrMatrix34ApplyV(&partner->v, &partner->velocity_car_space, &partner->transform_matrix);
+            BrVector3Scale(&partner_angular, &partner_angular, pAmount);
+            BrVector3Accumulate(&partner->omega, &partner_angular);
+        }
+        if (object_b != NULL) {
+            partner = SetUpTorqueHingePartners(&angular, &linear, &partner_angular, &partner_linear, &pForce->direction_b, object_b);
+            BrVector3Scale(&angular, &angular, -pAmount);
+            BrVector3Accumulate(&object_b->omega, &angular);
+            if (partner != NULL) {
+                BrVector3Scale(&linear, &linear, -pAmount);
+                BrVector3Accumulate(&object_b->velocity_car_space, &linear);
+                BrMatrix34ApplyV(&object_b->v, &object_b->velocity_car_space, &object_b->transform_matrix);
+                BrVector3Scale(&partner_linear, &partner_linear, -pAmount);
+                BrVector3Accumulate(&partner->velocity_car_space, &partner_linear);
+                BrMatrix34ApplyV(&partner->v, &partner->velocity_car_space, &partner->transform_matrix);
+                BrVector3Scale(&partner_angular, &partner_angular, -pAmount);
+                BrVector3Accumulate(&partner->omega, &partner_angular);
+            }
+        }
+        return;
+    }
+    if (object_a->field_0x1e4 != NULL) {
+        SetUpForce(&angular, &linear, &pForce->point_a, &pForce->direction_a, object_a);
+        partner = SetUpHingePartners(&angular, &linear, &partner_angular, &partner_linear, object_a);
+        BrVector3Scale(&angular, &angular, pAmount);
+        BrVector3Accumulate(&object_a->omega, &angular);
+        BrVector3Scale(&partner_angular, &partner_angular, pAmount);
+        BrVector3Accumulate(&partner->omega, &partner_angular);
+        BrVector3Scale(&linear, &linear, pAmount);
+        BrVector3Accumulate(&object_a->velocity_car_space, &linear);
+        BrMatrix34ApplyV(&tv, &linear, &object_a->transform_matrix);
+        BrVector3Accumulate(&object_a->v, &tv);
+        BrVector3Scale(&partner_linear, &partner_linear, pAmount);
+        BrVector3Accumulate(&partner->velocity_car_space, &partner_linear);
+        BrMatrix34ApplyV(&tv, &partner_linear, &partner->transform_matrix);
+        BrVector3Accumulate(&partner->v, &tv);
+    } else {
+        BrVector3Scale(&impulse, &pForce->direction_a, pAmount);
+        BrVector3InvScale(&delta, &impulse, object_a->M);
+        BrVector3Accumulate(&object_a->velocity_car_space, &delta);
+        BrMatrix34ApplyV(&tv, &delta, &object_a->transform_matrix);
+        BrVector3Accumulate(&object_a->v, &tv);
+        if (!(object_a->flags & 0x800)) {
+            BrVector3Cross(&tv, &pForce->point_a, &impulse);
+            object_a->omega.v[0] += tv.v[0] / object_a->I.v[0];
+            object_a->omega.v[1] += tv.v[1] / object_a->I.v[1];
+            object_a->omega.v[2] += tv.v[2] / object_a->I.v[2];
+        }
+    }
+    if (object_b != NULL && pForce->type != 14) {
+        if (object_b->field_0x1e4 != NULL) {
+            SetUpForce(&angular, &linear, &pForce->point_b, &pForce->direction_b, object_b);
+            partner = SetUpHingePartners(&angular, &linear, &partner_angular, &partner_linear, object_b);
+            BrVector3Scale(&angular, &angular, -pAmount);
+            BrVector3Accumulate(&object_b->omega, &angular);
+            BrVector3Scale(&partner_angular, &partner_angular, -pAmount);
+            BrVector3Accumulate(&partner->omega, &partner_angular);
+            BrVector3Scale(&linear, &linear, -pAmount);
+            BrVector3Accumulate(&object_b->velocity_car_space, &linear);
+            BrMatrix34ApplyV(&tv, &linear, &object_b->transform_matrix);
+            BrVector3Accumulate(&object_b->v, &tv);
+            BrVector3Scale(&partner_linear, &partner_linear, -pAmount);
+            BrVector3Accumulate(&partner->velocity_car_space, &partner_linear);
+            BrMatrix34ApplyV(&tv, &partner_linear, &partner->transform_matrix);
+            BrVector3Accumulate(&partner->v, &tv);
+        } else {
+            BrVector3Scale(&impulse, &pForce->direction_b, -pAmount);
+            BrVector3InvScale(&delta, &impulse, object_b->M);
+            BrVector3Accumulate(&object_b->velocity_car_space, &delta);
+            BrMatrix34ApplyV(&tv, &delta, &object_b->transform_matrix);
+            BrVector3Accumulate(&object_b->v, &tv);
+            if (!(object_b->flags & 0x800)) {
+                BrVector3Cross(&tv, &pForce->point_b, &impulse);
+                object_b->omega.v[0] += tv.v[0] / object_b->I.v[0];
+                object_b->omega.v[1] += tv.v[1] / object_b->I.v[1];
+                object_b->omega.v[2] += tv.v[2] / object_b->I.v[2];
+            }
+        }
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+inline void C2_HOOK_FASTCALL ApplyJointForces(tPhysics_joint_force** pForces, br_scalar* pAmounts, int pCount) {
+    int i;
+
+    for (i = 0; i < pCount; i++) {
+        ApplySingleForce(pForces[i], pAmounts[i]);
+    }
+}
+
+inline void C2_HOOK_FASTCALL SkipForces(tPhysics_joint_force* pForce, int* pIndex) {
+
+    if (pForce->object_a->physics_joint1 != NULL) {
+        switch (pForce->object_a->physics_joint1->type) {
+        case eJoint_hinge:
+            *pIndex += 5;
+            break;
+        case eJoint_universal:
+            *pIndex += 4;
+            break;
+        case eJoint_ball_n_socket:
+            *pIndex += 3;
+            break;
+        case eJoint_quick_hinge:
+            *pIndex += 2;
+            break;
+        default:
+            PhysicsError(ePhysicsError_UnknownHingeType, "");
+            break;
+        }
+    }
+    if (pForce->object_a->physics_joint2 != NULL) {
+        switch (pForce->object_a->physics_joint2->type) {
+        case eJoint_hinge:
+            *pIndex += 5;
+            break;
+        case eJoint_universal:
+            *pIndex += 4;
+            break;
+        case eJoint_ball_n_socket:
+            *pIndex += 3;
+            break;
+        case eJoint_translation:
+            *pIndex += 2;
+            break;
+        default:
+            PhysicsError(ePhysicsError_UnknownHingeType, "");
+            break;
+        }
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004bc8e0
+// FUNCTION: CARMA2_SW 0x004b9000
+// FUNCTION: CARMA2_CHEAT 0x004c2410
+void C2_HOOK_FASTCALL ScaleUpObjectMI(tPhysics_object* pObject, br_scalar pFactor) {
+    tPhysics_joint_force* force_list[40];
+    tPhysics_object* partner;
+    tPhysics_object* object;
+    tForce_group* workspace;
+    int i;
+
+    BrVector3Scale(&pObject->I, &pObject->I, pFactor);
+    pObject->field_0x21c *= pFactor;
+    if (pObject->field_0x1e4 != NULL) {
+        partner = pObject->field_0x1e4->partner;
+        BrVector3Scale(&partner->I, &partner->I, pFactor);
+        partner->field_0x21c *= pFactor;
+        RedoQuickHingeVelocities(pObject);
+    }
+    object = pObject;
+    while (object->field_0x218 == NULL && object->parent != NULL) {
+        object = object->parent;
+    }
+    workspace = object->field_0x218;
+    if (workspace != NULL) {
+        for (i = 0; i < workspace->count; i++) {
+            force_list[i] = &workspace->forces[i];
+        }
+        MakeMatrix(workspace->matrix, workspace->count, force_list, workspace->count);
+        MatrixProcess(workspace->matrix, workspace->orthogonal, workspace->count);
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004bc190
+// FUNCTION: CARMA2_SW 0x004b88b0
+// FUNCTION: CARMA2_CHEAT 0x004c1cc0
+void C2_HOOK_FASTCALL CheckForTwang(tPhysics_joint_force** pForces, br_scalar* pImpulses, int pCount, tWorld_callbacks* pCallbacks) {
+    tPhysics_object* object;
+    tPhysics_object* other;
+    br_vector3 axis;
+    br_vector3 omega_axis;
+    br_vector3 rotated;
+    br_vector3 direction;
+    br_vector3 cross_before;
+    br_vector3 cross_after;
+    br_matrix34 rotation;
+    br_scalar length;
+    br_scalar cutoff;
+    int i;
+    int j;
+
+    i = 0;
+    while (i < pCount) {
+        object = pForces[i]->object_a;
+        if (object->child != NULL) {
+            j = i;
+            while (j < pCount) {
+                if (pForces[j]->object_b == object && BrVector3LengthSquared(&object->rotate_omega) < BrVector3LengthSquared(&object->omega)) {
+                    other = pForces[j]->object_a;
+                    BrVector3Sub(&axis, &object->physics_joint1->field_0x08, &other->physics_joint1->field_0x14);
+                    length = BrVector3Length(&axis);
+                    axis.v[0] /= length;
+                    axis.v[1] /= length;
+                    axis.v[2] /= length;
+                    cutoff = (br_scalar)(0.5 * object->M);
+                    if (cutoff <= axis.v[0] * pImpulses[i] + axis.v[1] * pImpulses[i + 1] + axis.v[2] * pImpulses[i + 2]) {
+                        if (cutoff <= pImpulses[j] * BrVector3Dot(&axis, &pForces[j]->direction_b)
+                                + pImpulses[j + 1] * BrVector3Dot(&axis, &pForces[j + 1]->direction_b)
+                                + pImpulses[j + 2] * BrVector3Dot(&axis, &pForces[j + 2]->direction_b)) {
+                            length = BrVector3Length(&object->omega);
+                            omega_axis.v[0] = object->omega.v[0] / length;
+                            omega_axis.v[1] = object->omega.v[1] / length;
+                            omega_axis.v[2] = object->omega.v[2] / length;
+                            BrMatrix34Rotate(&rotation, BrRadianToAngle(0.04f * length), &omega_axis);
+                            BrMatrix34ApplyV(&rotated, &axis, &rotation);
+                            BrVector3Set(&direction, pImpulses[i], pImpulses[i + 1], pImpulses[i + 2]);
+                            BrVector3Normalise(&direction, &direction);
+                            BrVector3Cross(&cross_before, &axis, &direction);
+                            BrVector3Cross(&cross_after, &rotated, &direction);
+                            if (BrVector3Dot(&cross_before, &cross_after) < 0.0f) {
+                                BrVector3InvScale(&object->omega, &object->omega, 10.0f);
+                                ScaleUpObjectMI(object, 25.0f);
+                            }
+                        }
+                    }
+                }
+                SkipForces(pForces[j], &j);
+            }
+        }
+        SkipForces(pForces[i], &i);
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004b8c20
 void C2_HOOK_FASTCALL CreateJointForce(tPhysics_object* pObject, tPhysics_object* pPartner, tPhysics_joint_force* pForce, const br_vector3* pDirection) {
@@ -558,23 +2189,510 @@ void C2_HOOK_FASTCALL CreateJointTorque(tPhysics_object* pObject, tPhysics_objec
     pForce->type = 11;
 }
 
-// AllocateObjectWorkspace
+inline tForce_group* C2_HOOK_FASTCALL AllocateObjectWorkspace(int pCount) {
+    tForce_group* workspace;
+    int size;
 
-// RedoQuickHingeVelocities
+    size = pCount * sizeof(tPhysics_joint_force) + pCount * pCount * 2 * sizeof(br_scalar) + sizeof(tForce_group);
+    workspace = GetPhysicsScratchPointer(size);
+    IncreasePhysicsScratchPointer(size);
+    workspace->forces = (tPhysics_joint_force*)((tU8*)workspace + sizeof(tForce_group));
+    workspace->count = pCount;
+    workspace->orthogonal = (br_scalar*)(workspace->forces + pCount);
+    workspace->matrix = workspace->orthogonal + pCount * pCount;
+    return workspace;
+}
 
-// GetJointForces
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// GetUniversalRotationAngle
+// FUNCTION: CARMA2_HW 0x004b8cf0
+// FUNCTION: CARMA2_SW 0x004b5410
+// FUNCTION: CARMA2_CHEAT 0x004be820
+void C2_HOOK_FASTCALL RedoQuickHingeVelocities(tPhysics_object* pObject) {
+    tPhysics_joint_force forces[3];
+    tPhysics_joint_force* force_list[3];
+    br_matrix34 matrix;
+    br_vector3 velocities;
+    br_vector3 amounts;
+    tPhysics_object* partner;
+    tPhysics_quick_hinge* hinge;
+    tPhysics_quick_hinge* partner_hinge;
+    int i;
 
-// GetObjectsParent
+    partner = pObject->field_0x230;
+    if (pObject->field_0x1e4->partner != partner) {
+        partner = pObject;
+        pObject = pObject->field_0x1e4->partner;
+    }
+    CreateJointForce(pObject, partner, &forces[0], &pObject->physics_joint1->hinge_axis);
+    CreateJointTorque(pObject, partner, &forces[1], &pObject->physics_joint1->hinge_axis2);
+    CreateJointTorque(pObject, partner, &forces[2], &pObject->physics_joint1->hinge_axis3);
+    for (i = 0; i < 3; i++) {
+        force_list[i] = &forces[i];
+    }
+    partner_hinge = partner->field_0x1e4;
+    hinge = pObject->field_0x1e4;
+    pObject->field_0x1e4 = NULL;
+    partner->field_0x1e4 = NULL;
+    MakeMatrix(matrix.m[0], 3, force_list, 3);
+    DRMatrix33Inverse(hinge->field_0x8.m[0], matrix.m[0]);
+    MakeJointVelocitiesVector(velocities.v, force_list, 3);
+    BrMatrix34ApplyV(&amounts, &velocities, &hinge->field_0x8);
+    ApplyJointForces(force_list, amounts.v, 3);
+    pObject->field_0x1e4 = hinge;
+    partner->field_0x1e4 = partner_hinge;
+}
 
-// GetJointLimits
+// FUNCTION: CARMA2_HW 0x004b8350
+// FUNCTION: CARMA2_SW 0x004b4a70
+// FUNCTION: CARMA2_CHEAT 0x004bde80
+int C2_HOOK_FASTCALL GetJointForces(tPhysics_object* pObject, tPhysics_joint_force* pForces) {
+    tPhysics_object* partner;
+    tPhysics_object* child;
+    br_vector3 tv;
+    br_vector3 tv2;
+    br_vector3 velocity;
+    br_scalar d;
+    int count;
+    int i;
 
-// GetListJointLimits
+    count = 0;
+    if (pObject->physics_joint1 != NULL && pObject->physics_joint1->type != eJoint_none && !(pObject->flags & 0x400)) {
+        partner = pObject->field_0x230;
+        if (pObject->physics_joint1->type == eJoint_quick_hinge) {
+            CreateJointForce(pObject, partner, &pForces[0], &pObject->physics_joint1->hinge_axis2);
+            CreateJointForce(pObject, partner, &pForces[1], &pObject->physics_joint1->hinge_axis3);
+            pForces += 2;
+            count = 2;
+        } else {
+            count = 3;
+            for (i = 0; i < 3; i++) {
+                BrVector3Set(&tv, 0.0f, 0.0f, 0.0f);
+                tv.v[i] = 1.0f;
+                CreateJointForce(pObject, partner, pForces, &tv);
+                pForces++;
+            }
+        }
+#define SET_UP_JOINT_TORQUE(FORCE, AXIS)                                                                  \
+    (FORCE)->field_0x0 = 0.0f;                                                                            \
+    (FORCE)->object_a = pObject;                                                                          \
+    (FORCE)->object_b = partner;                                                                          \
+    BrVector3Sub(&(FORCE)->point_a, &pObject->physics_joint1->field_0x08, &pObject->cmpos);               \
+    BrVector3Sub(&(FORCE)->point_b, &pObject->physics_joint1->field_0x14, &partner->cmpos);               \
+    BrVector3Copy(&(FORCE)->direction_a, AXIS);                                                           \
+    BrMatrix34ApplyV(&tv, &(FORCE)->direction_a, &pObject->transform_matrix);                             \
+    BrMatrix34TApplyV(&(FORCE)->direction_b, &tv, &partner->transform_matrix);                            \
+    (FORCE)->type = 11
+        switch (pObject->physics_joint1->type) {
+        case eJoint_quick_hinge:
+            InitQuickHinge(pObject);
+            CalcQuickHingeData(pObject);
+            RedoQuickHingeVelocities(pObject);
 
-// GetGroupJointLimits
+            d = BrVector3Dot(&pObject->physics_joint1->parent_bone_axis, &partner->omega);
+            BrVector3Scale(&tv, &pObject->physics_joint1->parent_bone_axis, d);
+            BrVector3Sub(&tv, &partner->omega, &tv);
+            BrMatrix34ApplyV(&tv2, &tv, &partner->transform_matrix);
+            BrMatrix34TApplyV(&tv, &tv2, &pObject->transform_matrix);
+            d = BrVector3Dot(&pObject->physics_joint1->hinge_axis, &pObject->omega);
+            BrVector3Scale(&pObject->omega, &pObject->physics_joint1->hinge_axis, d);
+            BrVector3Accumulate(&pObject->omega, &tv);
 
-// LimitOmega
+            BrVector3Sub(&tv, &pObject->physics_joint1->field_0x14, &partner->cmpos);
+            BrVector3Cross(&tv2, &partner->omega, &tv);
+            BrMatrix34ApplyV(&tv, &tv2, &partner->transform_matrix);
+            BrVector3Accumulate(&tv, &partner->v);
+            BrMatrix34TApplyV(&velocity, &tv, &pObject->transform_matrix);
+            BrVector3Sub(&tv, &pObject->physics_joint1->field_0x08, &pObject->cmpos);
+            BrVector3Cross(&tv2, &pObject->omega, &tv);
+            BrVector3Sub(&velocity, &velocity, &tv2);
+            d = BrVector3Dot(&pObject->physics_joint1->hinge_axis, &velocity) - BrVector3Dot(&pObject->physics_joint1->hinge_axis, &pObject->velocity_car_space);
+            BrVector3Scale(&tv, &pObject->physics_joint1->hinge_axis, d);
+            BrVector3Accumulate(&pObject->velocity_car_space, &tv);
+            BrMatrix34ApplyV(&pObject->v, &pObject->velocity_car_space, &pObject->transform_matrix);
+            break;
+        case eJoint_hinge:
+            SET_UP_JOINT_TORQUE(&pForces[0], &pObject->physics_joint1->hinge_axis2);
+            SET_UP_JOINT_TORQUE(&pForces[1], &pObject->physics_joint1->hinge_axis3);
+            pForces += 2;
+            count += 2;
+            break;
+        case eJoint_universal:
+            SET_UP_JOINT_TORQUE(pForces, &pObject->physics_joint1->hinge_axis2);
+            pForces++;
+            count++;
+            break;
+        case eJoint_ball_n_socket:
+            break;
+        default:
+            PhysicsError(ePhysicsError_UnknownHingeType, NULL);
+        }
+#undef SET_UP_JOINT_TORQUE
+    }
+    if (pObject->physics_joint2 != NULL) {
+        if (pObject->physics_joint2->type == eJoint_translation) {
+            pForces[0].field_0x0 = 0.0f;
+            pForces[0].object_a = pObject;
+            pForces[0].object_b = NULL;
+            pForces[0].field_0xc = NULL;
+            BrVector3Copy(&pForces[0].direction_a, &pObject->physics_joint2->hinge_axis2);
+            pForces[0].type = 10;
+            pForces[1].field_0x0 = 0.0f;
+            pForces[1].object_a = pObject;
+            pForces[1].object_b = NULL;
+            pForces[1].field_0xc = NULL;
+            BrVector3Copy(&pForces[1].direction_a, &pObject->physics_joint2->hinge_axis3);
+            pForces[1].type = 10;
+            pForces += 2;
+            count += 2;
+        } else {
+            count += 3;
+            for (i = 0; i < 3; i++) {
+                pForces->field_0x0 = 0.0f;
+                pForces->object_a = pObject;
+                pForces->object_b = NULL;
+                pForces->field_0xc = NULL;
+                BrVector3Sub(&pForces->point_a, &pObject->physics_joint2->field_0x08, &pObject->cmpos);
+                BrVector3Set(&pForces->direction_a, 0.0f, 0.0f, 0.0f);
+                pForces->direction_a.v[i] = 1.0f;
+                pForces->type = 10;
+                pForces++;
+            }
+            switch (pObject->physics_joint2->type) {
+            case eJoint_hinge:
+                break;
+            case eJoint_universal:
+                pForces->field_0x0 = 0.0f;
+                pForces->object_a = pObject;
+                pForces->object_b = NULL;
+                pForces->field_0xc = NULL;
+                BrVector3Sub(&pForces->point_a, &pObject->physics_joint2->field_0x08, &pObject->cmpos);
+                BrVector3Copy(&pForces->direction_a, &pObject->physics_joint2->hinge_axis2);
+                pForces->type = 11;
+                pForces++;
+                count++;
+                break;
+            case eJoint_ball_n_socket:
+                break;
+            default:
+                PhysicsError(ePhysicsError_UnknownHingeType, NULL);
+            }
+        }
+    }
+    for (child = pObject->child; child != NULL; child = child->next) {
+        i = GetJointForces(child, pForces);
+        count += i;
+        pForces += i;
+    }
+    return count;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004bd4f0
+// FUNCTION: CARMA2_SW 0x004b9c00
+// FUNCTION: CARMA2_CHEAT 0x004c3020
+void C2_HOOK_FASTCALL GetUniversalRotationAngle(br_matrix34* pMat_1, br_matrix34* pMat_2, br_vector3* pV1, br_vector3* pV2, br_vector3* pV3, br_vector3* pV4, br_vector3* pOut, br_vector3* pAxis) {
+    br_vector3 tv;
+    br_vector3 tv2;
+    br_scalar length;
+    br_scalar dot;
+
+    BrMatrix34ApplyV(&tv, pV1, pMat_1);
+    BrMatrix34TApplyV(&tv2, &tv, pMat_2);
+    BrVector3Add(pAxis, &tv2, pV2);
+    length = BrVector3Length(pAxis);
+    if (length > 2.3841858e-7f) {
+        BrVector3Scale(pAxis, pAxis, 1.0 / length);
+    } else {
+        BrVector3Set(pAxis, 1.0f, 0.0f, 0.0f);
+    }
+    BrMatrix34ApplyV(&tv, pV3, pMat_1);
+    BrMatrix34TApplyV(pOut, &tv, pMat_2);
+    dot = 2.0f * BrVector3Dot(pOut, pAxis);
+    BrVector3Scale(&tv, pAxis, dot);
+    BrVector3Sub(pOut, pOut, &tv);
+    dot = 2.0f * BrVector3Dot(pOut, pV2);
+    BrVector3Scale(&tv, pV2, dot);
+    BrVector3Sub(pOut, pOut, &tv);
+}
+
+inline tPhysics_object* C2_HOOK_FASTCALL GetObjectsParent(tPhysics_object* pObject) {
+    tPhysics_object* parent;
+
+    parent = pObject->field_0x230;
+    if (parent == NULL) {
+        PhysicsError(11, "");
+    }
+    return parent;
+}
+
+// FUNCTION: CARMA2_HW 0x004bca10
+// FUNCTION: CARMA2_SW 0x004b9130
+// FUNCTION: CARMA2_CHEAT 0x004c2540
+int C2_HOOK_FASTCALL GetJointLimits(tPhysics_object* pObject, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+    tPhysics_object* parent;
+    tPhysics_joint_limit* limit;
+    tPhysics_joint_force* force;
+    br_vector3 tv;
+    br_vector3 current;
+    br_vector3 trial;
+    br_vector3 cross;
+    br_scalar current_dot;
+    br_scalar trial_dot;
+    br_scalar lower;
+    br_scalar upper;
+    br_scalar length;
+    int i;
+    int j;
+    int k;
+
+    if (pObject->physics_joint1 != NULL) {
+        parent = GetObjectsParent(pObject);
+        for (i = 0; i < pObject->physics_joint1->count_limits && pCount < pMax_count; i++) {
+            limit = &pObject->physics_joint1->limits[i];
+            switch (limit->type) {
+            case eJoint_limit_plane:
+                BrMatrix34ApplyV(&tv, &limit->child, &pObject->actor->t.t.mat);
+                BrMatrix34TApplyV(&current, &tv, &parent->actor->t.t.mat);
+                current_dot = BrVector3Dot(&current, &limit->parent);
+                if (current_dot < 0.001) {
+                    BrMatrix34ApplyV(&tv, &limit->child, &pObject->transform_matrix);
+                    BrMatrix34TApplyV(&trial, &tv, &parent->transform_matrix);
+                    trial_dot = BrVector3Dot(&trial, &limit->parent);
+                    if (trial_dot >= 0.0f && (trial_dot >= 0.001 || pObject->field_0xf0 != 0)) {
+                        force = &pForces[pCount];
+                        force->field_0x0 = current_dot - trial_dot;
+                        force->type = 11;
+                        force->object_a = pObject;
+                        force->object_b = parent;
+                        BrVector3Cross(&cross, &trial, &limit->parent);
+                        length = BrVector3Length(&cross);
+                        if (length > 1e-6) {
+                            BrVector3InvScale(&force->direction_b, &cross, length);
+                        } else {
+                            BrMatrix34ApplyV(&cross, &pObject->omega, &pObject->transform_matrix);
+                            BrMatrix34TApplyV(&force->direction_b, &cross, &parent->transform_matrix);
+                            BrVector3Sub(&force->direction_b, &force->direction_b, &parent->omega);
+                            BrVector3Normalise(&force->direction_b, &force->direction_b);
+                        }
+                        BrMatrix34ApplyV(&cross, &force->direction_b, &parent->transform_matrix);
+                        BrMatrix34TApplyV(&force->direction_a, &cross, &pObject->transform_matrix);
+                        pCount++;
+                        BrVector3Copy(&force->point_a, &pObject->physics_joint1->field_0x08);
+                        BrVector3Copy(&force->point_b, &pObject->physics_joint1->field_0x14);
+                    }
+                }
+                break;
+            case eJoint_limit_universal:
+                GetUniversalRotationAngle(&pObject->actor->t.t.mat, &parent->actor->t.t.mat,
+                    &limit->child, &limit->parent,
+                    &pObject->physics_joint1->limits[i + 1].child, &pObject->physics_joint1->limits[i + 1].parent,
+                    &current, &cross);
+                current_dot = BrVector3Dot(&current, &pObject->physics_joint1->limits[i + 1].parent);
+                if (current_dot < limit->value + 0.001) {
+                    force = &pForces[pCount];
+                    GetUniversalRotationAngle(&pObject->transform_matrix, &parent->transform_matrix,
+                        &limit->child, &limit->parent,
+                        &pObject->physics_joint1->limits[i + 1].child, &pObject->physics_joint1->limits[i + 1].parent,
+                        &trial, &force->direction_b);
+                    trial_dot = BrVector3Dot(&trial, &pObject->physics_joint1->limits[i + 1].parent);
+                    if (trial_dot > limit->value) {
+                        BrVector3Cross(&cross, &current, &trial);
+                        if (BrVector3Dot(&cross, &force->direction_b) < 0.0f) {
+                            BrVector3Negate(&force->direction_b, &force->direction_b);
+                        }
+                        BrMatrix34ApplyV(&cross, &force->direction_b, &parent->transform_matrix);
+                        BrMatrix34TApplyV(&force->direction_a, &cross, &pObject->transform_matrix);
+                        pCount++;
+                        force->field_0x0 = current_dot - trial_dot;
+                        force->type = 11;
+                        force->object_a = pObject;
+                        force->object_b = parent;
+                    }
+                }
+                i++;
+                break;
+            default:
+                PhysicsError(8, "");
+            }
+        }
+    }
+    if (pObject->physics_joint2 != NULL) {
+        for (i = 0; i < pObject->physics_joint2->count_limits; i++) {
+            limit = &pObject->physics_joint2->limits[i];
+            switch (limit->type) {
+            case eJoint_limit_10:
+                if (pObject->field_0x1e0 != 0) {
+                    gJoint_limit_10_hit = 1;
+                    for (j = 0; j < pCount; j++) {
+                        force = &pForces[j];
+                        if (force->object_a == pObject) {
+                            if (force->object_b == NULL) {
+                                for (k = j; k < pCount; k++) {
+                                    pForces[k] = pForces[k + 1];
+                                }
+                                pCount--;
+                                j--;
+                            } else {
+                                BrVector3Negate(&tv, &force->direction_a);
+                                BrVector3Negate(&force->direction_a, &force->direction_b);
+                                BrVector3Copy(&force->direction_b, &tv);
+                                BrVector3Copy(&tv, &force->point_a);
+                                BrVector3Copy(&force->point_a, &force->point_b);
+                                BrVector3Copy(&force->point_b, &tv);
+                                force->object_a = force->object_b;
+                                force->object_b = pObject;
+                                force->type = 14;
+                            }
+                        } else if (force->object_b == pObject) {
+                            force->type = 14;
+                        }
+                    }
+                }
+                break;
+            case eJoint_limit_plane:
+                BrMatrix34ApplyV(&current, &limit->child, &pObject->actor->t.t.mat);
+                current_dot = BrVector3Dot(&current, &limit->parent);
+                if (current_dot < 0.001) {
+                    if (pCount == pMax_count) {
+                        return pCount;
+                    }
+                    force = &pForces[pCount];
+                    force->field_0x0 = current_dot;
+                    force->type = 11;
+                    force->object_a = pObject;
+                    force->object_b = NULL;
+                    BrVector3Cross(&cross, &current, &limit->parent);
+                    length = BrVector3Length(&cross);
+                    if (length > 1e-6) {
+                        BrVector3InvScale(&force->direction_b, &cross, length);
+                    }
+                }
+                break;
+            case eJoint_limit_11:
+                BrMatrix34ApplyV(&tv, &pObject->physics_joint2->hinge_axis, &pObject->transform_matrix);
+                lower = BrVector3Dot(&tv, &pObject->field_0x17c);
+                current_dot = BrVector3Dot(&tv, &pObject->actor->t.t.translate.t);
+                upper = lower + limit->value;
+                trial_dot = BrVector3Dot(&tv, (br_vector3*)pObject->transform_matrix.m[3]);
+                if (current_dot > upper && trial_dot < upper + 0.001) {
+                    if (pCount == pMax_count) {
+                        return pCount;
+                    }
+                    force = &pForces[pCount];
+                    force->field_0x0 = (upper - trial_dot) / (current_dot - trial_dot);
+                    force->field_0xc = NULL;
+                    force->type = 2;
+                    force->object_a = pObject;
+                    force->object_b = NULL;
+                    BrVector3Negate(&force->direction_a, &pObject->physics_joint2->hinge_axis);
+                    BrVector3SetFloat(&force->point_a, 0.0f, 0.0f, 0.0f);
+                    pCount++;
+                } else if (current_dot < lower - 0.001 && trial_dot > lower - 0.002) {
+                    if (pCount == pMax_count) {
+                        return pCount;
+                    }
+                    force = &pForces[pCount];
+                    force->field_0x0 = (lower - trial_dot) / (current_dot - trial_dot);
+                    force->field_0xc = NULL;
+                    force->type = 2;
+                    force->object_a = pObject;
+                    force->object_b = NULL;
+                    BrVector3Copy(&force->direction_a, &pObject->physics_joint2->hinge_axis);
+                    BrVector3SetFloat(&force->point_a, 0.0f, 0.0f, 0.0f);
+                    pCount++;
+                }
+                break;
+            default:
+                PhysicsError(8, "");
+            }
+        }
+    }
+    return pCount;
+}
+
+// FUNCTION: CARMA2_HW 0x004bd6d0
+// FUNCTION: CARMA2_SW 0x004b9df0
+// FUNCTION: CARMA2_CHEAT 0x004c3200
+int C2_HOOK_FASTCALL GetListJointLimits(tPhysics_object* pObject, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+
+    for (; pObject != NULL; pObject = pObject->next) {
+        pCount = GetJointLimits(pObject, pForces, pCount, pMax_count);
+        if (pObject->child != NULL) {
+            pCount = GetListJointLimits(pObject->child, pForces, pCount, pMax_count);
+        }
+    }
+    return pCount;
+}
+
+inline int C2_HOOK_FASTCALL GetGroupJointLimits(tPhysics_object* pObject, tPhysics_joint_force* pForces, int pCount, int pMax_count, tWorld_callbacks* pCallbacks) {
+    tPhysics_object* object;
+    int count;
+
+    CheckCollisionList(pObject);
+    object = pObject;
+    do {
+        if ((object->flags & 0x10) == 0) {
+            count = GetJointLimits(object, pForces, pCount, pMax_count);
+            if (object->child != NULL) {
+                count = GetListJointLimits(object->child, pForces, count, pMax_count);
+            }
+            if (count != pCount && object->field_0xf0 == 2) {
+                FillInTrialWorkspace(object, NULL, pCallbacks);
+            }
+            pCount = count;
+        }
+        object = object->field183_0x1d8;
+    } while (object != pObject);
+    return pCount;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004bd720
+// FUNCTION: CARMA2_SW 0x004b9e40
+// FUNCTION: CARMA2_CHEAT 0x004c3250
+int C2_HOOK_FASTCALL LimitOmega(tPhysics_object* pObject) {
+    br_scalar ts;
+    br_scalar scale;
+    tPhysics_object* partner;
+
+    ts = BrVector3LengthSquared(&pObject->omega) * REC2_SQR(0.04f);
+    if (ts > (br_scalar)REC2_SQR(1.57)) {
+        ts = (br_scalar)sqrt(ts) * (2.0f / 1.57f);
+        scale = 2.0f * ts;
+        pObject->omega.v[0] /= scale;
+        pObject->omega.v[1] /= scale;
+        pObject->omega.v[2] /= scale;
+        if (pObject->field_0x1e4 != NULL) {
+            partner = pObject->field_0x1e4->partner;
+            partner->omega.v[0] /= scale;
+            partner->omega.v[1] /= scale;
+            partner->omega.v[2] /= scale;
+        }
+        ScaleUpObjectMI(pObject, ts * ts);
+        if (pObject->field_0x198 != NULL) {
+            pObject->field_0x198(pObject);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004c1840
 // FUNCTION: CARMA2_SW 0x004bdf70
@@ -588,9 +2706,42 @@ void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
     }
 }
 
-// ListLimitOmega
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
-// GroupLimitOmega
+// FUNCTION: CARMA2_HW 0x004bd7f0
+// FUNCTION: CARMA2_SW 0x004b9f10
+// FUNCTION: CARMA2_CHEAT 0x004c3320
+int C2_HOOK_FASTCALL ListLimitOmega(tPhysics_object* pObject) {
+    int count;
+
+    count = 0;
+    for (; pObject != NULL; pObject = pObject->next) {
+        count += LimitOmega(pObject);
+        if (pObject->child != NULL) {
+            count += ListLimitOmega(pObject->child);
+        }
+    }
+    return count;
+}
+
+inline int C2_HOOK_FASTCALL GroupLimitOmega(tPhysics_object* pObject) {
+    tPhysics_object* object;
+    int count;
+
+    count = 0;
+    CheckCollisionList(pObject);
+    object = pObject;
+    do {
+        count += LimitOmega(object);
+        if (object->child != NULL) {
+            count += ListLimitOmega(object->child);
+        }
+        object = object->field183_0x1d8;
+    } while (object != pObject);
+    return count;
+}
 
 // FUNCTION: CARMA2_HW 0x004b8fe0
 // FUNCTION: CARMA2_SW 0x004b5700
@@ -618,21 +2769,163 @@ void C2_HOOK_FASTCALL PositionWorldJointedObject(tPhysics_object* pObject, br_sc
     }
 }
 
-// TranslateAndRotatePartialObject
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// TranslateAndRotateJointedObject
+// STUB: CARMA2_HW 0x004b9230
+// STUB: CARMA2_SW 0x004b5950
+// STUB: CARMA2_CHEAT 0x004bed60
+void C2_HOOK_FASTCALL TranslateAndRotatePartialObject(tPhysics_object* pObject, tPhysics_object** pRoot, br_scalar pDelta_time) {
+    NOT_IMPLEMENTED();
+}
 
-// CountJointForces
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x004b7510
-// STUB: CARMA2_SW 0x004b3c30
-// STUB: CARMA2_CHEAT 0x004bd040
+// FUNCTION: CARMA2_HW 0x004b8ee0
+// FUNCTION: CARMA2_SW 0x004b5600
+// FUNCTION: CARMA2_CHEAT 0x004bea10
+void C2_HOOK_FASTCALL TranslateAndRotateJointedObject(tPhysics_object* pObject, br_scalar pDelta_time) {
+    tPhysics_object* root;
+    tPhysics_object* object;
+    tPhysics_object* parent;
+    br_vector3 pos;
+    br_vector3 parent_pos;
+
+    root = NULL;
+    TranslateAndRotatePartialObject(pObject, &root, pDelta_time);
+    if (root != NULL && root->field_0x230 != NULL) {
+        object = root;
+        PositionWorldJointedObject(object, pDelta_time);
+        do {
+            parent = object->field_0x230;
+            BrMatrix34ApplyP(&pos, &object->physics_joint1->field_0x08, &object->actor->t.t.mat);
+            BrMatrix34ApplyP(&parent_pos, &object->physics_joint1->field_0x14, &parent->actor->t.t.mat);
+            BrVector3Sub(&pos, &pos, &parent_pos);
+            BrVector3Accumulate(&object->parent->actor->t.t.translate.t, &pos);
+            object = object->field_0x230;
+        } while (object->field_0x230 != NULL);
+        WriteNewPositions(pObject);
+    }
+}
+
+#if defined(REC2_MATCHING) && defined(_MSC_VER)
+#pragma inline_depth(0)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004b9650
+// FUNCTION: CARMA2_SW 0x004b5d70
+// FUNCTION: CARMA2_CHEAT 0x004bf180
+int C2_HOOK_FASTCALL CountJointForces(tPhysics_object* pObject, tPhysics_object* pParent) {
+    tPhysics_joint* joint;
+    tPhysics_object* child;
+    int count;
+
+    joint = pObject->physics_joint1;
+    pObject->field_0x230 = pParent;
+    pObject->field_0x1e4 = NULL;
+    if (joint != NULL && !(pObject->flags & 0x400)) {
+        switch (joint->type) {
+        case eJoint_none:
+            count = 0;
+            break;
+        case eJoint_universal:
+            count = 4;
+            break;
+        case eJoint_ball_n_socket:
+            count = 3;
+            break;
+        case eJoint_quick_hinge:
+            if (pParent->field_0x1e4 == NULL) {
+                count = 2;
+                pObject->field_0x1e4 = (tPhysics_quick_hinge*)-1;
+                pParent->field_0x1e4 = (tPhysics_quick_hinge*)-1;
+                break;
+            }
+            joint->type = eJoint_hinge;
+            /* fall through */
+        case eJoint_hinge:
+            count = 5;
+            break;
+        default:
+            PhysicsError(8, "");
+        }
+    } else {
+        count = 0;
+    }
+    if (pObject->physics_joint2 != NULL) {
+        switch (pObject->physics_joint2->type) {
+        case eJoint_universal:
+            count += 4;
+            break;
+        case eJoint_ball_n_socket:
+            count += 3;
+            break;
+        case eJoint_translation:
+            count += 2;
+            break;
+        default:
+            break;
+        }
+    }
+    if (!(pObject->flags & 0x400)) {
+        pParent = pObject;
+    }
+    for (child = pObject->child; child != NULL; child = child->next) {
+        count += CountJointForces(child, pParent);
+    }
+    return count;
+}
+
+#if defined(REC2_MATCHING) && defined(_MSC_VER)
+#pragma inline_depth()
+#endif
+
+// FUNCTION: CARMA2_HW 0x004b7510
+// FUNCTION: CARMA2_SW 0x004b3c30
+// FUNCTION: CARMA2_CHEAT 0x004bd040
 void C2_HOOK_FASTCALL MoveJointedObject(tPhysics_object* pObject, float pDelta_time) {
-    NOT_IMPLEMENTED();
+    tPhysics_joint_force* force_list[40];
+    br_scalar velocities[100];
+    br_scalar amounts[100];
+    tForce_group* workspace;
+    tPhysics_joint_force* forces;
+    int count;
+    int i;
+
+    count = CountJointForces(pObject, NULL);
+    if (count != 0) {
+        workspace = AllocateObjectWorkspace(count);
+        forces = workspace->forces;
+        count = GetJointForces(pObject, forces);
+        pObject->field_0x218 = workspace;
+        for (i = 0; i < count; i++) {
+            force_list[i] = forces;
+            forces++;
+        }
+        MakeMatrix(workspace->matrix, count, force_list, count);
+        MakeJointVelocitiesVector(velocities, force_list, count);
+        RQMatrixSolveWithNegatives(workspace->matrix, workspace->orthogonal, velocities, amounts, count);
+        if (pDelta_time != 0.0f) {
+            HierarchyCalcEnergy(pObject);
+            ApplyJointForces(force_list, amounts, count);
+            HierarchyCalcEnergy(pObject);
+            if (pDelta_time > 0.0f) {
+                TranslateAndRotateJointedObject(pObject, pDelta_time);
+            }
+        }
+    } else if (pObject->child != NULL) {
+        TranslateAndRotateJointedObject(pObject, pDelta_time);
+    } else {
+        TranslateObject(pObject, pDelta_time);
+        RotateObject(pObject, pDelta_time);
+    }
 }
 
 #ifdef REC2_MATCHING
@@ -649,49 +2942,264 @@ void C2_HOOK_FASTCALL TellPhysicsJointsHaveChanged(tPhysics_object* pCollision_i
     gINT_00692dc8 = 1;
 }
 
-// CombineBounds
+void C2_HOOK_FASTCALL CombineBounds(br_bounds* pBounds, br_bounds* pOther) {
+    int i;
 
-// GetWorldBoundingBoxForObjects
-
-// GetWorldBoundingBoxForObject
-
-// MatricesAreIdentical
-
-// InternalPrepareObject
-
-// PrepareObject
-
-// PrepareForCollisions
-
-// CheckPointVelocities
-
-// FUNCTION: CARMA2_HW 0x004c2a10
-// FUNCTION: CARMA2_SW 0x004bf140
-void C2_HOOK_FASTCALL WriteNewPositions(tPhysics_object* pObject) {
-    tPhysics_object* child;
-    tPhysics_object* root;
-    br_vector3 parent_point;
-    br_vector3 child_point;
-
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x1e8, 0x1e8);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x230, 0x230);
-
-    root = pObject;
-    child = pObject->child;
-    if (pObject->flags & 0x400) {
-        root = pObject->field_0x230;
-    }
-    for (; child != NULL; child = child->next) {
-        if (!(pObject->flags & 0x400)) {
-            BrMatrix34ApplyP(&parent_point, &child->physics_joint1->field_0x14, &pObject->actor->t.t.mat);
-            BrMatrix34ApplyP(&child_point, &child->physics_joint1->field_0x08, &child->actor->t.t.mat);
-            BrVector3Sub(&parent_point, &parent_point, &child_point);
-            BrVector3Accumulate((br_vector3*)child->actor->t.t.mat.m[3], &parent_point);
-        } else {
-            BrMatrix34Mul(&pObject->actor->t.t.mat, &pObject->field_0x1e8, &root->actor->t.t.mat);
+    for (i = 0; i < 3; i++) {
+        if (pOther->min.v[i] < pBounds->min.v[i]) {
+            pBounds->min.v[i] = pOther->min.v[i];
         }
-        WriteNewPositions(child);
+        if (pOther->max.v[i] > pBounds->max.v[i]) {
+            pBounds->max.v[i] = pOther->max.v[i];
+        }
     }
+}
+
+void C2_HOOK_FASTCALL GetWorldBoundingBoxForObjects(tPhysics_object* pObject, br_bounds* pBounds) {
+
+    for (; pObject != NULL; pObject = pObject->next) {
+        GetWorldBoundingBoxForObject(pObject, pBounds);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004b9ce0
+// FUNCTION: CARMA2_SW 0x004b6400
+// FUNCTION: CARMA2_CHEAT 0x004bf810
+void C2_HOOK_FASTCALL GetWorldBoundingBoxForObject(tPhysics_object* pObject, br_bounds* pBounds) {
+    br_bounds bounds;
+    br_scalar extent;
+    int i;
+
+    GetNewBoundingBox(&pObject->field_0xf4, &pObject->bb1, &pObject->transform_matrix);
+    GetNewBoundingBox(&bounds, &pObject->bb1, &pObject->actor->t.t.mat);
+    for (i = 0; i < 3; i++) {
+        if (pObject->field_0xf4.min.v[i] > bounds.min.v[i]) {
+            pObject->field_0xf4.min.v[i] = bounds.min.v[i];
+        }
+        if (pObject->field_0xf4.max.v[i] < bounds.max.v[i]) {
+            pObject->field_0xf4.max.v[i] = bounds.max.v[i];
+        }
+        pObject->field_0xf4.min.v[i] -= 0.0025;
+        pObject->field_0xf4.max.v[i] -= -0.0025;
+    }
+    pObject->field_0x10c = pObject->field_0xf4;
+    GetWorldBoundingBoxForObjects(pObject->child, &pObject->field_0x10c);
+    if (pBounds != NULL) {
+        CombineBounds(pBounds, &pObject->field_0x10c);
+    } else {
+        extent = pObject->field_0x10c.max.v[0] - pObject->transform_matrix.m[3][0];
+        if (gPhysics_bounds_max_x <= extent) {
+            gPhysics_bounds_max_x = extent;
+        }
+        extent = pObject->field_0x10c.min.v[0] - pObject->transform_matrix.m[3][0];
+        if (gPhysics_bounds_min_x >= extent) {
+            gPhysics_bounds_min_x = extent;
+        }
+    }
+}
+
+int C2_HOOK_FASTCALL MatricesAreIdentical(br_matrix34* pMat1, br_matrix34* pMat2) {
+    int i;
+    int j;
+
+    for (i = 3; i >= 0; i--) {
+        for (j = 0; j < 3; j++) {
+            if (pMat1->m[i][j] != pMat2->m[i][j]) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+// FUNCTION: CARMA2_HW 0x004b99e0
+// FUNCTION: CARMA2_SW 0x004b6100
+// FUNCTION: CARMA2_CHEAT 0x004bf510
+void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject) {
+    br_vector3 offset;
+
+    if (pObject->M == 0.0f) {
+        pObject->M = 0.01f;
+        BrVector3SetFloat(&pObject->I, 0.01f, 0.01f, 0.01f);
+    }
+    pObject->field_0x1de = 0;
+    pObject->collision_flag = 0;
+    pObject->field_0x1dc = 0;
+    pObject->field_0x1e4 = 0;
+    pObject->flags &= ~0x1200;
+    pObject->field_0x21c = 1.0f;
+    pObject->field183_0x1d8 = pObject;
+    pObject->field_0x218 = 0;
+    pObject->field_0x1e0 = pObject->disable_move_rotate;
+    BrMatrix34TApplyV(&pObject->velocity_car_space, &pObject->v, &pObject->transform_matrix);
+    BrVector3Copy(&pObject->field_0x1b4, &pObject->v);
+    BrVector3Copy(&pObject->field_0x1cc, &pObject->omega);
+    if (pObject->parent != NULL) {
+        pObject->disable_move_rotate = pObject->parent->disable_move_rotate;
+    }
+    if (!pObject->disable_move_rotate && pObject->field_0x1df) {
+        pObject->field_0x21c *= 50.0f;
+        BrVector3Scale(&pObject->I, &pObject->I, 50.0f);
+    }
+    if (pObject->disable_move_rotate & (pObject->field_0xf0 != 2)) {
+        BrMatrix34Copy(&pObject->actor->t.t.mat, &pObject->transform_matrix);
+        PrepareForCollisions(pObject->child);
+        if (pObject->parent == NULL) {
+            GetWorldBoundingBoxForObject(pObject, NULL);
+        }
+    } else if (pObject->field_0xf0 == 2) {
+        pObject->field_0x230 = pObject->parent;
+        BrVector3Sub(&offset, (br_vector3*)pObject->actor->t.t.mat.m[3], (br_vector3*)pObject->transform_matrix.m[3]);
+        if (BrVector3LengthSquared(&offset) > 1.0) {
+            PhysicsWarning("Stupid trial position");
+            BrMatrix34Copy(&pObject->transform_matrix, &pObject->actor->t.t.mat);
+        }
+        if (!MatricesAreIdentical(&pObject->transform_matrix, &pObject->actor->t.t.mat)) {
+            pObject->disable_move_rotate = 0;
+        }
+        PrepareForCollisions(pObject->child);
+        GetWorldBoundingBoxForObject(pObject, NULL);
+    } else {
+        if (pObject->field_0xf0 != 1) {
+            BrMatrix34LPNormalise(&pObject->actor->t.t.mat, &pObject->transform_matrix);
+        } else {
+            BrMatrix34Copy(&pObject->field_0xbc, &pObject->actor->t.t.mat);
+        }
+        PrepareForCollisions(pObject->child);
+        if (pObject->parent == NULL) {
+            MoveJointedObject(pObject, 0.04f);
+            GetWorldBoundingBoxForObject(pObject, NULL);
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004b9770
+// FUNCTION: CARMA2_SW 0x004b5e90
+// FUNCTION: CARMA2_CHEAT 0x004bf2a0
+void C2_HOOK_FASTCALL PrepareObject(tPhysics_object* pObject, tPhysics_object** pList) {
+
+    InternalPrepareObject(pObject);
+    gPrepared_objects = 1;
+    CheckObjectsPostionInList(pObject, pList);
+    if (gReduced_object_not_moving != 0) {
+        MakeObjectDoSomething(pObject, *pList);
+    }
+    if (gReduced_object_list != NULL) {
+        AddObjectToReducedList(pObject, gReduced_object_list);
+    }
+}
+
+void C2_HOOK_FASTCALL PrepareForCollisions(tPhysics_object* pObject) {
+
+    for (; pObject != NULL; pObject = pObject->next) {
+        InternalPrepareObject(pObject);
+    }
+}
+
+inline int CheckPointVelocities(tPhysics_object* pObject, br_scalar pMax_velocity_squared) {
+    int i;
+    br_vector3 point;
+    br_vector3 base;
+    br_vector3 velocity;
+
+    BrVector3Cross(&base, &pObject->omega, &pObject->cmpos);
+    BrVector3Accumulate(&base, &pObject->velocity_car_space);
+    for (i = 0; i < 8; i++) {
+        if (i & 0x2) {
+            point.v[0] = pObject->bb1.min.v[0];
+        } else {
+            point.v[0] = pObject->bb1.max.v[0];
+        }
+        if (i & 0x1) {
+            point.v[1] = pObject->bb1.min.v[1];
+        } else {
+            point.v[1] = pObject->bb1.max.v[1];
+        }
+        if (i & 0x4) {
+            point.v[2] = pObject->bb1.min.v[2];
+        } else {
+            point.v[2] = pObject->bb1.max.v[2];
+        }
+        BrVector3Cross(&velocity, &pObject->omega, &point);
+        BrVector3Accumulate(&velocity, &base);
+        if (BrVector3LengthSquared(&velocity) > pMax_velocity_squared) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// FUNCTION: CARMA2_HW 0x004baa00
+// FUNCTION: CARMA2_SW 0x004b7120
+// FUNCTION: CARMA2_CHEAT 0x004c0530
+int C2_HOOK_FASTCALL WriteNewPositions(tPhysics_object* pObject) {
+    int all_doing_nothing;
+    int doing_nothing;
+    br_vector3 tv;
+    br_scalar energy;
+    br_scalar v_squared;
+    br_scalar length;
+    br_scalar normal_v;
+    br_scalar normal_v2;
+
+    all_doing_nothing = 1;
+    for (; pObject != NULL; pObject = pObject->next) {
+        if (pObject->field_0x21c != 1.0f) {
+            pObject->I.v[0] /= pObject->field_0x21c;
+            pObject->I.v[1] /= pObject->field_0x21c;
+            pObject->I.v[2] /= pObject->field_0x21c;
+        }
+        if (pObject->field_0xf0) {
+            pObject->field_0xf0 = 0;
+            pObject->disable_move_rotate = ((tU32)pObject->flags >> 5) & 0x1;
+        }
+        doing_nothing = 0;
+        pObject->flags = (pObject->flags & ~0x100) | (((tU32)pObject->flags >> 1) & 0x100);
+        if (!pObject->disable_move_rotate) {
+            if (pObject->field_0x1df && pObject->field183_0x1d8 == pObject) {
+                pObject->field_0x1df = 0;
+            }
+            BrVector3Add(&tv, &pObject->field_0x1cc, &pObject->omega);
+            energy = (pObject->I.v[0] * (tv.v[0] * tv.v[0])
+                + pObject->I.v[1] * (tv.v[1] * tv.v[1])
+                + pObject->I.v[2] * (tv.v[2] * tv.v[2])) / pObject->M;
+            if (!pObject->collision_flag && pObject->field_0x1df) {
+                v_squared = 0.0f;
+            } else {
+                v_squared = BrVector3LengthSquared(&pObject->v);
+            }
+            if (v_squared < 0.001 && energy < 0.03 * 0.003) {
+                length = BrVector3Length(&pObject->field_0x54);
+                tv.v[0] = pObject->field_0x54.v[0] / length;
+                tv.v[1] = pObject->field_0x54.v[1] / length;
+                tv.v[2] = pObject->field_0x54.v[2] / length;
+                normal_v = -BrVector3Dot(&tv, &pObject->v);
+                normal_v2 = -BrVector3Dot(&tv, &pObject->field_0x1b4);
+                if (pObject->field_0x1df
+                    || (normal_v < 0.012f && length * 0.9f < normal_v - normal_v2 && CheckPointVelocities(pObject, 0.0004f))) {
+                    if (pObject->physics_joint2 == NULL || pObject->collision_flag || pObject->transform_matrix.m[1][1] > 0.999) {
+                        doing_nothing = 1;
+                        BrVector3SetFloat(&pObject->v, 0.0f, 0.0f, 0.0f);
+                        BrVector3SetFloat(&pObject->omega, 0.0f, 0.0f, 0.0f);
+                        BrVector3SetFloat(&pObject->rotate_omega, 0.0f, 0.0f, 0.0f);
+                    }
+                }
+            }
+        }
+        pObject->field_0x1df = doing_nothing;
+        BrMatrix34Copy(&pObject->transform_matrix, &pObject->actor->t.t.mat);
+        BrMatrix34ApplyP(&pObject->pos, &pObject->cmpos, &pObject->transform_matrix);
+        if (pObject->child != NULL) {
+            doing_nothing = WriteNewPositions(pObject->child);
+            if (pObject->field_0x1df) {
+                pObject->field_0x1df += doing_nothing * 2;
+            }
+        } else {
+            pObject->field_0x1df *= 3;
+        }
+        all_doing_nothing &= (pObject->field_0x1df >> 1) & 0x1;
+    }
+    return all_doing_nothing;
 }
 
 // FUNCTION: CARMA2_HW 0x004b9eb0
@@ -708,7 +3216,19 @@ void C2_HOOK_FASTCALL SetListDoingNothingFlag(tPhysics_object* pObject, int pFla
     }
 }
 
-// SetGroupDoingNothingFlag
+// FUNCTION: CARMA2_HW 0x004b9e40
+// FUNCTION: CARMA2_SW 0x004b6560
+// FUNCTION: CARMA2_CHEAT 0x004bf970
+void C2_HOOK_FASTCALL SetGroupDoingNothingFlag(tPhysics_object* pObject, int pFlag) {
+    tPhysics_object* object;
+
+    pObject->disable_move_rotate = pFlag;
+    object = pObject;
+    do {
+        SetHierarchyDoingNothingFlag(object, pFlag);
+        object = object->field183_0x1d8;
+    } while (object != NULL && object != pObject);
+}
 
 // FUNCTION: CARMA2_HW 0x004b9ef0
 // FUNCTION: CARMA2_SW 0x004b6610
@@ -721,10 +3241,26 @@ void C2_HOOK_FASTCALL SetHierarchyDoingNothingFlag(tPhysics_object* pObject, int
     }
 }
 
-// CheckDoingNothingFlag
+inline void CheckDoingNothingFlag(tPhysics_object* pObject) {
+    tPhysics_object* object;
+    tU8 flag;
+
+    for (; pObject != NULL; pObject = pObject->next) {
+        if (!pObject->disable_move_rotate && (pObject->field_0x1df & 0x2)) {
+            flag = 0x2;
+            for (object = pObject->field183_0x1d8; object != pObject; object = object->field183_0x1d8) {
+                flag &= object->field_0x1df;
+            }
+            if (flag & 0x2) {
+                SetGroupDoingNothingFlag(pObject, 1);
+            }
+        }
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004bae80
 // FUNCTION: CARMA2_SW 0x004b75a0
+// FUNCTION: CARMA2_CHEAT 0x004c09b0
 void C2_HOOK_FASTCALL SetGroup(tPhysics_object* pObject, int pGroup) {
     tPhysics_object* child;
 
@@ -737,9 +3273,73 @@ void C2_HOOK_FASTCALL SetGroup(tPhysics_object* pObject, int pGroup) {
     }
 }
 
-// GroupTogether
+// FUNCTION: CARMA2_HW 0x004bddd0
+// FUNCTION: CARMA2_SW 0x004ba4f0
+// FUNCTION: CARMA2_CHEAT 0x004c3900
+void C2_HOOK_FASTCALL GroupTogether(tPhysics_object* pObject_1, tPhysics_object* pObject_2) {
+    tPhysics_object* object;
 
-// GetPreCalculatedJointForces
+    while (pObject_1->parent != NULL && pObject_1->physics_joint1 != NULL && pObject_1->physics_joint1->type != eJoint_none) {
+        pObject_1 = pObject_1->parent;
+    }
+    while (pObject_2->parent != NULL && pObject_2->physics_joint1 != NULL && pObject_2->physics_joint1->type != eJoint_none) {
+        pObject_2 = pObject_2->parent;
+    }
+    if (pObject_1 != pObject_2) {
+        if (pObject_2 == NULL) {
+            if (pObject_1->field_0x1dc == 0) {
+                SetGroup(pObject_1, gPHIL_collision_group);
+                pObject_1->field183_0x1d8 = pObject_1;
+                gPHIL_collision_group++;
+            }
+        } else if (pObject_1->field_0x1dc == 0) {
+            if (pObject_2->field_0x1dc == 0) {
+                SetGroup(pObject_1, gPHIL_collision_group);
+                SetGroup(pObject_2, gPHIL_collision_group);
+                pObject_1->field183_0x1d8 = pObject_2;
+                pObject_2->field183_0x1d8 = pObject_1;
+                gPHIL_collision_group++;
+            } else {
+                SetGroup(pObject_1, pObject_2->field_0x1dc);
+                pObject_1->field183_0x1d8 = pObject_2->field183_0x1d8;
+                pObject_2->field183_0x1d8 = pObject_1;
+            }
+        } else if (pObject_2->field_0x1dc == 0) {
+            SetGroup(pObject_2, pObject_1->field_0x1dc);
+            pObject_2->field183_0x1d8 = pObject_1->field183_0x1d8;
+            pObject_1->field183_0x1d8 = pObject_2;
+        } else if (pObject_1->field_0x1dc != pObject_2->field_0x1dc) {
+            for (object = pObject_2; object->field183_0x1d8 != pObject_2; object = object->field183_0x1d8) {
+                SetGroup(object, pObject_1->field_0x1dc);
+            }
+            SetGroup(object, pObject_1->field_0x1dc);
+            object->field183_0x1d8 = pObject_1->field183_0x1d8;
+            pObject_1->field183_0x1d8 = pObject_2;
+        }
+    }
+}
+
+inline int C2_HOOK_FASTCALL GetPreCalculatedJointForces(tPhysics_joint_force** pForces, tPhysics_object* pObject, tForce_group** pGroups, int* pCount_groups) {
+    tPhysics_object* object;
+    int count;
+    int i;
+
+    count = 0;
+    *pCount_groups = 0;
+    object = pObject;
+    do {
+        if (object->field_0x218 != NULL) {
+            pGroups[*pCount_groups] = object->field_0x218;
+            *pCount_groups += 1;
+            for (i = 0; i < object->field_0x218->count; i++) {
+                pForces[count] = &object->field_0x218->forces[i];
+                count++;
+            }
+        }
+        object = object->field183_0x1d8;
+    } while (object != pObject);
+    return count;
+}
 
 // FUNCTION: CARMA2_HW 0x004b9f40
 // FUNCTION: CARMA2_SW 0x004b6660
@@ -757,22 +3357,154 @@ void C2_HOOK_FASTCALL MakeObjectListDoSomething(tPhysics_object* pObject) {
     }
 }
 
-// CheckForObjectTouchingAnotherObject
+// FUNCTION: CARMA2_HW 0x004b9f90
+// FUNCTION: CARMA2_SW 0x004b66b0
+// FUNCTION: CARMA2_CHEAT 0x004bfac0
+int C2_HOOK_FASTCALL CheckForObjectTouchingAnotherObject(tPhysics_object* pObject, tPhysics_object* pOther, tPhysics_object* pList) {
 
-// CheckForObjectListTouchingAnotherObject
+    if (pObject->field_0xf4.min.v[0] - pOther->field_0xf4.max.v[0] > 0.01
+            || pObject->field_0xf4.min.v[1] - pOther->field_0xf4.max.v[1] > 0.01
+            || pObject->field_0xf4.min.v[2] - pOther->field_0xf4.max.v[2] > 0.01
+            || pOther->field_0xf4.min.v[0] - pObject->field_0xf4.max.v[0] > 0.01
+            || pOther->field_0xf4.min.v[1] - pObject->field_0xf4.max.v[1] > 0.01
+            || pOther->field_0xf4.min.v[2] - pObject->field_0xf4.max.v[2] > 0.01) {
+        return 0;
+    } else {
+        MakeObjectDoSomething(pOther, pList);
+        return 1;
+    }
+}
 
-// CheckForObjectHierachyTouchingAnotherObject
+void C2_HOOK_FASTCALL CheckForObjectListTouchingAnotherObject(tPhysics_object* pObject, tPhysics_object* pOther, tPhysics_object* pList) {
 
-// CheckForObjectHierachyTouchingObjectList
+    while (pObject != NULL && !CheckForObjectTouchingAnotherObject(pObject, pOther, pList)) {
+        pObject = pObject->next;
+    }
+}
 
-// MakeObjectDoSomething
+void C2_HOOK_FASTCALL CheckForObjectHierachyTouchingAnotherObject(tPhysics_object* pObject, tPhysics_object* pOther, tPhysics_object* pList) {
 
-// GetReducedList
+    CheckForObjectTouchingAnotherObject(pObject, pOther, pList);
+    if (pObject->child != NULL && pOther->disable_move_rotate) {
+        CheckForObjectListTouchingAnotherObject(pObject->child, pOther, pList);
+    }
+}
 
-// ReduceReducedList
+// FUNCTION: CARMA2_HW 0x004ba190
+// FUNCTION: CARMA2_SW 0x004b68b0
+// FUNCTION: CARMA2_CHEAT 0x004bfcc0
+void C2_HOOK_FASTCALL CheckForObjectHierachyTouchingObjectList(tPhysics_object* pObject, tPhysics_object* pList, tPhysics_object* pList_original) {
+    tPhysics_object* list;
+
+    for (list = pList; list != NULL; list = list->next) {
+        if (list->disable_move_rotate) {
+            CheckForObjectHierachyTouchingAnotherObject(pObject, list, pList_original);
+            if (list->child != NULL) {
+                CheckForObjectHierachyTouchingObjectList(pObject, list->child, pList_original);
+            }
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004be0e0
+// FUNCTION: CARMA2_SW 0x004ba800
+// FUNCTION: CARMA2_CHEAT 0x004c3c10
+void C2_HOOK_FASTCALL MakeObjectDoSomething(tPhysics_object* pObject, tPhysics_object* pList) {
+
+    if (pObject->disable_move_rotate) {
+        while (pObject->parent != NULL && pObject->physics_joint1 != NULL && pObject->physics_joint1->type != eJoint_none) {
+            pObject = pObject->parent;
+        }
+        pObject->box_face_ref = gFace_num__car - 2;
+        pObject->disable_move_rotate = 0;
+        if (pObject->child != NULL || pObject->physics_joint1 != NULL || pObject->physics_joint2 != NULL) {
+            if (pObject->field_0x218 == 0) {
+                MoveJointedObject(pObject, 0.0f);
+            }
+            MakeObjectListDoSomething(pObject->child);
+        }
+        CheckForObjectHierachyTouchingObjectList(pObject, pList, pList);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004bd830
+// FUNCTION: CARMA2_SW 0x004b9f50
+// FUNCTION: CARMA2_CHEAT 0x004c3360
+tPhysics_object** C2_HOOK_FASTCALL GetReducedList(tPhysics_object* pObject, tPhysics_object* pList, tPhysics_object** pTail) {
+    tPhysics_object* object;
+    tPhysics_object* children;
+    tPhysics_object** children_tail;
+    tPhysics_object** tail;
+    br_scalar limit;
+
+    tail = pTail;
+    if (pList->parent != NULL) {
+        for (object = pList; object != NULL; object = object->next) {
+            if ((object == pObject && !(pObject->flags & 0x8)) || BoundsOverlapTest(&pObject->field_0x10c, &object->field_0x10c)) {
+                *tail = object;
+                tail = &object->field_0x234;
+            }
+        }
+    } else {
+        limit = pObject->field_0x10c.min.v[0] - gPhysics_bounds_max_x;
+        for (object = pObject->prev; object != NULL && object->transform_matrix.m[3][0] >= limit; object = object->prev) {
+            if (BoundsOverlapTest(&pObject->field_0x10c, &object->field_0x10c)) {
+                *tail = object;
+                tail = &object->field_0x234;
+            }
+        }
+        limit = pObject->field_0x10c.max.v[0] - gPhysics_bounds_min_x;
+        for (object = pObject->next; object != NULL && object->transform_matrix.m[3][0] <= limit; object = object->next) {
+            if (BoundsOverlapTest(&pObject->field_0x10c, &object->field_0x10c)) {
+                *tail = object;
+                tail = &object->field_0x234;
+            }
+        }
+        if (!(pObject->flags & 0x8)) {
+            *tail = pObject;
+            tail = &pObject->field_0x234;
+        }
+    }
+    *tail = NULL;
+    children = NULL;
+    object = *pTail;
+    children_tail = &children;
+    for (; object != NULL; object = object->field_0x234) {
+        if (object->child != NULL) {
+            children_tail = GetReducedList(pObject, object->child, children_tail);
+        }
+    }
+    if (children != NULL) {
+        *children_tail = NULL;
+        *tail = children;
+        return children_tail;
+    }
+    return tail;
+}
+
+inline tPhysics_object** C2_HOOK_FASTCALL ReduceReducedList(tPhysics_object* pObject, tPhysics_object** pList) {
+    tPhysics_object* reduced;
+    tPhysics_object** reduced_end;
+    tPhysics_object* current;
+
+    reduced_end = &reduced;
+    for (current = *pList; current != NULL; current = *pList) {
+        if (current == pObject || BoundsOverlapTest(&pObject->field_0x10c, &current->field_0x10c)) {
+            *pList = current->field_0x234;
+            *reduced_end = current;
+            reduced_end = &current->field_0x234;
+        } else {
+            pList = &current->field_0x234;
+        }
+    }
+    *reduced_end = NULL;
+    *pList = reduced;
+    return pList;
+}
 
 // FUNCTION: CARMA2_HW 0x004bd9b0
 // FUNCTION: CARMA2_SW 0x004ba0d0
+// FUNCTION: CARMA2_CHEAT 0x004c34e0
 void C2_HOOK_FASTCALL SetObjectTrialPositionType(tPhysics_object* pObject, int pType) {
     tPhysics_object* child;
 
@@ -783,7 +3515,19 @@ void C2_HOOK_FASTCALL SetObjectTrialPositionType(tPhysics_object* pObject, int p
     }
 }
 
-// FillInTrialWorkspace
+inline void C2_HOOK_FASTCALL FillInTrialWorkspace(tPhysics_object* pObject, tPhysics_object* pOther, tWorld_callbacks* pCallbacks) {
+
+    while (pObject->parent != NULL && pObject->physics_joint1 != NULL && pObject->physics_joint1->type != eJoint_none) {
+        pObject = pObject->parent;
+    }
+    SetObjectTrialPositionType(pObject, 0);
+    if (pCallbacks != NULL && pCallbacks->activate_passive != NULL) {
+        pCallbacks->activate_passive(pObject, pOther);
+    }
+    if ((pObject->child != NULL || pObject->physics_joint2 != NULL) && pObject->field_0x218 == 0) {
+        MoveJointedObject(pObject, 0.0f);
+    }
+}
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
@@ -806,17 +3550,303 @@ int C2_HOOK_FASTCALL FlagsAreGo(tPhysics_object* pCollision_1, tPhysics_object* 
 #pragma auto_inline(on)
 #endif
 
-// CollideObjectWithReducedObjectList
+inline int C2_HOOK_FASTCALL CollideObjectWithReducedObjectList(tPhysics_object* pObject, tPhysics_object* pList, tPhysics_joint_force* pForces, int pCount, tPhysics_object* pDo_something_list, tWorld_callbacks* pCallbacks) {
+    int count;
 
-// AddObjectToReducedList
+    for (; pList != NULL; pList = pList->field_0x234) {
+        if (pList != pObject
+            && (pObject->field_0x1dc == 0 || pList->field_0x1dc != pObject->field_0x1dc || pObject < pList)
+            && pObject->parent != pList && pList->parent != pObject
+            && FlagsAreGo(pObject, pList)) {
+            count = GetObjectObjectForceInfo(pObject, pList, pForces, pCount);
+            if (count != 0) {
+                if (pObject->field_0xf0 == 2) {
+                    FillInTrialWorkspace(pObject, pList, pCallbacks);
+                }
+                if (pList->field_0xf0 == 2) {
+                    FillInTrialWorkspace(pList, pObject, pCallbacks);
+                }
+                if (pList->disable_move_rotate != 0) {
+                    MakeObjectDoSomething(pList, pDo_something_list);
+                }
+                GroupTogether(pObject, pList);
+                pCount += count;
+            }
+        }
+    }
+    return pCount;
+}
 
-// ReducedFindObjectCollisions
+inline void C2_HOOK_FASTCALL AddObjectToReducedList(tPhysics_object* pObject, tPhysics_object** pList) {
 
-// FindObjectCollisions
+    pObject->field_0x234 = *pList;
+    *pList = pObject;
+}
 
-// DoRigidJoints
+// FUNCTION: CARMA2_HW 0x004bd9e0
+// FUNCTION: CARMA2_SW 0x004ba100
+// FUNCTION: CARMA2_CHEAT 0x004c3510
+int C2_HOOK_FASTCALL ReducedFindObjectCollisions(tPhysics_object* pObject, tPhysics_object** pList, tPhysics_joint_force* pForces, int pCount, tWorld_callbacks* pCallbacks, tPhysics_object* pDo_something_list) {
+    tPhysics_object* child;
+    int count;
 
-// DoInterGroupCollisions
+    gReduced_object_list = pList;
+    if (BrVector3LengthSquared(&pObject->field_0x1b4) == 0.0f) {
+        gReduced_object_not_moving = 1;
+    } else {
+        gReduced_object_not_moving = 0;
+    }
+    GetFacesNearObject(pObject, pCallbacks);
+    gReduced_object_list = NULL;
+    gReduced_object_not_moving = 0;
+    count = GetObjectWallForceInfo(pObject, pForces, pCount);
+    if (count != 0) {
+        if (pObject->field_0xf0 == 2) {
+            FillInTrialWorkspace(pObject, NULL, pCallbacks);
+        }
+        pCount += count;
+    }
+    pCount = CollideObjectWithReducedObjectList(pObject, *pList, pForces, pCount, pDo_something_list, pCallbacks);
+    for (child = pObject->child; child != NULL; child = child->next) {
+        if (child->physics_joint1 != NULL && child->physics_joint1->type != eJoint_none) {
+            pCount = ReducedFindObjectCollisions(child, ReduceReducedList(child, pList), pForces, pCount, pCallbacks, pDo_something_list);
+        }
+    }
+    return pCount;
+}
+
+inline int C2_HOOK_FASTCALL FindObjectCollisions(tPhysics_object* pObject, tPhysics_object* pList, tPhysics_joint_force* pForces, int pCount, tWorld_callbacks* pCallbacks) {
+    tPhysics_object* reduced_list;
+
+    GetReducedList(pObject, pList, &reduced_list);
+    return ReducedFindObjectCollisions(pObject, &reduced_list, pForces, pCount, pCallbacks, pList);
+}
+
+inline void C2_HOOK_FASTCALL DoRigidJoints(tPhysics_joint_force* pForces, int pCount) {
+    br_vector3 tv;
+    tPhysics_object* object;
+    int i;
+
+    for (i = 0; i < pCount; i++) {
+        object = pForces[i].object_a;
+        while ((pForces[i].object_a->flags & 0x400) != 0) {
+            pForces[i].object_a = pForces[i].object_a->parent;
+        }
+        if (object != pForces[i].object_a) {
+            BrVector3Accumulate(&pForces[i].point_a, &object->cmpos);
+            BrMatrix34ApplyP(&tv, &pForces[i].point_a, &object->transform_matrix);
+            DrMatrix34ApplyLPInverse(&pForces[i].point_a, &tv, &pForces[i].object_a->transform_matrix);
+            BrVector3Sub(&pForces[i].point_a, &pForces[i].point_a, &pForces[i].object_a->cmpos);
+            BrMatrix34ApplyV(&tv, &pForces[i].direction_a, &object->transform_matrix);
+            BrMatrix34TApplyV(&pForces[i].direction_a, &tv, &pForces[i].object_a->transform_matrix);
+        }
+        object = pForces[i].object_b;
+        if (object != NULL) {
+            while ((pForces[i].object_b->flags & 0x400) != 0) {
+                pForces[i].object_b = pForces[i].object_b->parent;
+            }
+#ifdef REC2_FIX_BUGS
+            if (object != pForces[i].object_b) {
+#else
+            if (object != pForces[i].object_a) {
+#endif
+                BrVector3Accumulate(&pForces[i].point_b, &object->cmpos);
+                BrMatrix34ApplyP(&tv, &pForces[i].point_b, &object->transform_matrix);
+                DrMatrix34ApplyLPInverse(&pForces[i].point_b, &tv, &pForces[i].object_b->transform_matrix);
+                BrVector3Sub(&pForces[i].point_b, &pForces[i].point_b, &pForces[i].object_b->cmpos);
+                BrMatrix34ApplyV(&tv, &pForces[i].direction_b, &object->transform_matrix);
+                BrMatrix34TApplyV(&pForces[i].direction_b, &tv, &pForces[i].object_b->transform_matrix);
+            }
+        }
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004baec0
+// FUNCTION: CARMA2_SW 0x004b75e0
+// FUNCTION: CARMA2_CHEAT 0x004c09f0
+int C2_HOOK_FASTCALL DoInterGroupCollisions(tPhysics_object** pObject_list, tPhysics_object* pObject, tPhysics_joint_force* pForces, tPhysics_joint_force* pOld_forces, int pCount_old_forces, tWorld_callbacks* pCallbacks) {
+    tPhysics_joint_force* forces[100];
+    tU8 excluded[100];
+    tPhysics_joint_force* workspace_forces[40];
+    br_scalar impulses[100];
+    br_scalar velocities[100];
+    tForce_group* groups[100];
+    br_scalar workspace_velocities[100];
+    br_scalar workspace_impulses[100];
+    br_vector3 distance;
+    br_vector3 torque;
+    br_vector3 offset;
+    br_vector3 moment;
+    tPhysics_object* object;
+    tPhysics_object* next;
+    tPhysics_joint* joint;
+    tForce_group* workspace;
+    br_scalar* force_impulses;
+    br_scalar limit;
+    br_scalar biggest;
+    int count;
+    int previous;
+    int total;
+    int count_joint_forces;
+    int count_groups;
+    int count_excluded;
+    int separating;
+    int broken;
+    int limited;
+    int repositioned;
+    int i;
+    int j;
+
+    count = 0;
+    object = pObject;
+    do {
+        next = object->field183_0x1d8;
+        previous = count;
+        count = FindObjectCollisions(object, *pObject_list, pForces, count, pCallbacks);
+        if (gNet_mode == eNet_mode_host && object->field_0xf0 == 1 && count > previous) {
+            BrVector3Sub(&distance, (br_vector3*)object->transform_matrix.m[3], (br_vector3*)object->field_0xbc.m[3]);
+            if (BrVector3Length(&object->v) + 0.5 < BrVector3Length(&distance) * 25.0f) {
+                object->flags |= 0x1000;
+                object->field_0xf0 = 0;
+                RepositionObjectGroup(pObject_list, pObject, pCallbacks);
+                return -1;
+            }
+        }
+        object = next;
+    } while (next != pObject);
+
+    gJoint_limit_10_hit = 0;
+    count = GetGroupJointLimits(pObject, pForces, count, 40, pCallbacks);
+    if (count == 0) {
+        return 0;
+    }
+    DoRigidJoints(pForces, count);
+    total = AddOldForces(pForces, count, pOld_forces, pCount_old_forces);
+    count_joint_forces = GetPreCalculatedJointForces(forces, pObject, groups, &count_groups);
+    for (i = 0; i < total; i++) {
+        forces[count_joint_forces + i] = &pForces[i];
+    }
+    if (count_joint_forces + total > 100) {
+        total = 100 - count_joint_forces;
+    }
+    if (count > total) {
+        count = total;
+    }
+    force_impulses = &impulses[count_joint_forces];
+    MakeMatrix(gPhysics_buffer3_ptr, 100, forces, count_joint_forces + total);
+    RestoreGroupOmegas(pObject);
+    separating = MakeVelocitiesVector(&velocities[count_joint_forces], &forces[count_joint_forces], total, count);
+    MakeJointVelocitiesVector(velocities, forces, count_joint_forces);
+    if (RQMatrixSolveNoNegatives(gPhysics_buffer3_ptr, velocities, impulses, count_joint_forces + total, 100, excluded, &count_excluded, count_joint_forces, count, groups, count_groups) != 0) {
+        gInter_group_hit_count++;
+    }
+    if (gJoint_limit_10_hit != 0) {
+        broken = 0;
+        object = pObject;
+        do {
+            joint = object->physics_joint2;
+            if (joint != NULL && object->field_0x1e0 != 0) {
+                for (i = 0; i < joint->count_limits; i++) {
+                    if (joint->limits[i].type == eJoint_limit_10) {
+                        break;
+                    }
+                }
+                if (i != joint->count_limits) {
+                    limit = joint->limits[i].value;
+                    BrVector3SetFloat(&torque, 0.0f, 0.0f, 0.0f);
+                    for (j = 0; j < total; j++) {
+                        if (pForces[j].object_a == object) {
+                            BrVector3Sub(&offset, &pForces[j].point_a, &joint->field_0x08);
+                            BrVector3Cross(&moment, &offset, &pForces[j].direction_a);
+                            BrVector3Scale(&moment, &moment, force_impulses[j]);
+                            BrVector3Accumulate(&torque, &moment);
+                        } else if (pForces[j].object_b == object) {
+                            BrVector3Sub(&offset, &pForces[j].point_b, &joint->field_0x08);
+                            BrVector3Cross(&moment, &offset, &pForces[j].direction_b);
+                            BrVector3Scale(&moment, &moment, -force_impulses[j]);
+                            BrVector3Accumulate(&torque, &moment);
+                        }
+                    }
+                    if (BrVector3LengthSquared(&torque) > limit) {
+                        broken = 1;
+                        object->field_0x1e0 = 0;
+                        for (j = 0; j < total; j++) {
+                            if (pForces[j].object_a == object || pForces[j].object_b == object) {
+                                pForces[j].type = 5;
+                            }
+                        }
+                    } else {
+                        object->disable_move_rotate = 1;
+                    }
+                }
+            }
+            object = object->field183_0x1d8;
+        } while (object != pObject);
+        if (broken != 0) {
+            MakeMatrix(gPhysics_buffer3_ptr, 100, forces, count_joint_forces + total);
+            RQMatrixSolveNoNegatives(gPhysics_buffer3_ptr, velocities, impulses, count_joint_forces + total, 100, excluded, &count_excluded, count_joint_forces, count, groups, count_groups);
+        }
+    }
+    biggest = 0.0f;
+    for (i = 0; i < count; i++) {
+        if (biggest < force_impulses[i]) {
+            biggest = force_impulses[i];
+        }
+    }
+    for (i = 0; i < count_joint_forces; i++) {
+        if (impulses[i] > 100.0f) {
+            i++;
+        }
+    }
+    for (i = 0; i < total; i++) {
+        if (force_impulses[i] == 0.0f) {
+            pForces[i].type = 9;
+        }
+    }
+    gINT_00692dc8 = 0;
+    if (pCallbacks->process_forces != NULL) {
+        pCallbacks->process_forces(pForces, force_impulses, total);
+    }
+    if (gINT_00692dc8 == 0 && pCallbacks->process_joint_forces != NULL) {
+        pCallbacks->process_joint_forces(forces, impulses, count_joint_forces);
+    }
+    if (gINT_00692dc8 == 0) {
+        ApplyJointForces(forces, impulses, count_joint_forces);
+    }
+    ApplyForces(pForces, force_impulses, total);
+    if (separating != 0 && gINT_00692dc8 == 0) {
+        CheckForTwang(forces, impulses, count_joint_forces, pCallbacks);
+    }
+    limited = GroupLimitOmega(pObject);
+    if (limited != 0) {
+        object = pObject;
+        do {
+            workspace = object->field_0x218;
+            if (workspace != NULL) {
+                for (i = 0; i < workspace->count; i++) {
+                    workspace_forces[i] = &workspace->forces[i];
+                }
+                MakeJointVelocitiesVector(workspace_velocities, workspace_forces, workspace->count);
+                RqBackSub(workspace->matrix, workspace->orthogonal, workspace_velocities, workspace_impulses, workspace->count);
+                ApplyJointForces(workspace_forces, workspace_impulses, workspace->count);
+            }
+            object = object->field183_0x1d8;
+        } while (object != pObject);
+    }
+    repositioned = RepositionObjectGroup(pObject_list, pObject, pCallbacks);
+    if (limited != 0 || repositioned != 0) {
+        total = -total;
+    }
+    return total;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004ba550
 // FUNCTION: CARMA2_SW 0x004b6c70
@@ -857,20 +3887,231 @@ int C2_HOOK_FASTCALL ReduceEffectOfForces(tPhysics_joint_force* pForces, br_scal
     // return 0;
 }
 
-// DoCollisions
+// FUNCTION: CARMA2_HW 0x004ba6b0
+// FUNCTION: CARMA2_SW 0x004b6dd0
+// FUNCTION: CARMA2_CHEAT 0x004c01e0
+void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callbacks* pCallbacks) {
+    tPhysics_joint_force forces_1[40];
+    tPhysics_joint_force forces_2[40];
+    tPhysics_joint_force* forces;
+    tPhysics_joint_force* old_forces;
+    tPhysics_joint_force* tmp;
+    tPhysics_object* object;
+    int count;
+    int loops;
 
-// AddDoubleTorqueToMatrix
+    forces = forces_1;
+    old_forces = forces_2;
+    ClearPhysicsScratchSpace();
+    gPHIL_collision_group = 1;
+    gCount_friction_forces = 0;
+    gPhysics_bounds_max_x = 0.0f;
+    gPhysics_bounds_min_x = 0.0f;
+    PrepareForCollisions(*pObject_list);
+    OrderObjectListOnX(pObject_list);
+    do {
+        gPrepared_objects = 0;
+        for (object = *pObject_list; object != NULL; object = object->next) {
+            if (object->field_0x1dc || object->disable_move_rotate) {
+                continue;
+            }
+            if (object->child != NULL && object->child->physics_joint1 != NULL && object->child->physics_joint1->type != eJoint_none) {
+                SetGroup(object, gPHIL_collision_group);
+                gPHIL_collision_group++;
+            }
+            loops = 0;
+            gInter_group_hit_count = 0;
+            count = 0;
+            for (;;) {
+                count = DoInterGroupCollisions(pObject_list, object, forces, old_forces, count, pCallbacks);
+                if (count == 0) {
+                    break;
+                }
+                loops++;
+                tmp = forces;
+                forces = old_forces;
+                old_forces = tmp;
+                if (loops >= 30 || gInter_group_hit_count >= 3) {
+                    break;
+                }
+            }
+            if (loops >= 30) {
+                PhysicsWarning("Too many loops in DoCollisions");
+            }
+        }
+    } while (gPrepared_objects != 0);
+    PostAddFriction(pCallbacks);
+    WriteNewPositions(*pObject_list);
+    CheckDoingNothingFlag(*pObject_list);
+    ListDoJointFriction(*pObject_list);
+}
 
-// DRMatrix33Inverse
+#define FORCE_RESPONSE(DIRECTION, POINT, ANGULAR, LINEAR) \
+    BrVector3Cross(&tv, ANGULAR, POINT);                   \
+    BrVector3Accumulate(&tv, LINEAR);                      \
+    response = BrVector3Dot(DIRECTION, &tv)
 
-// SetUpQuickHingeData
+inline void C2_HOOK_FASTCALL AddDoubleTorqueToMatrix(br_scalar* pMatrix, int pRows, int pIndex, tPhysics_joint_force** pForces, int pColumns) {
+    br_vector3 angular_a;
+    br_vector3 linear_a;
+    br_vector3 partner_angular_a;
+    br_vector3 partner_linear_a;
+    br_vector3 angular_b;
+    br_vector3 linear_b;
+    br_vector3 partner_angular_b;
+    br_vector3 partner_linear_b;
+    tPhysics_object* object_a;
+    tPhysics_object* object_b;
+    tPhysics_object* partner_a;
+    tPhysics_object* partner_b;
+    tPhysics_joint_force* force;
+    br_vector3 tv;
+    br_scalar response;
+    br_scalar* value;
+    int j;
 
-// InitQuickHinge
+    force = pForces[pIndex];
+    object_a = force->object_a;
+    object_b = force->object_b;
+    partner_a = SetUpTorqueHingePartners(&angular_a, &linear_a, &partner_angular_a, &partner_linear_a, &force->direction_a, object_a);
+    if (object_b != NULL) {
+        partner_b = SetUpTorqueHingePartners(&angular_b, &linear_b, &partner_angular_b, &partner_linear_b, &force->direction_b, object_b);
+    }
+    for (j = 0; j <= pIndex; j++) {
+        value = &pMatrix[j * pRows + pIndex];
+        force = pForces[j];
+        if (force->type == 11) {
+            if (force->object_a == object_a) {
+                *value = BrVector3Dot(&force->direction_a, &angular_a);
+            } else if (force->object_b == object_a) {
+                *value = -BrVector3Dot(&force->direction_b, &angular_a);
+            } else {
+                *value = 0.0f;
+            }
+            if (partner_a != NULL) {
+                force = pForces[j];
+                if (force->object_a == partner_a) {
+                    *value += BrVector3Dot(&force->direction_a, &partner_angular_a);
+                } else if (force->object_b == partner_a) {
+                    *value -= BrVector3Dot(&force->direction_b, &partner_angular_a);
+                }
+            }
+            if (object_b != NULL) {
+                force = pForces[j];
+                if (force->object_a == object_b) {
+                    *value -= BrVector3Dot(&force->direction_a, &angular_b);
+                } else if (force->object_b == object_b) {
+                    *value += BrVector3Dot(&force->direction_b, &angular_b);
+                }
+                if (partner_b != NULL) {
+                    force = pForces[j];
+                    if (force->object_a == partner_b) {
+                        *value -= BrVector3Dot(&force->direction_a, &partner_angular_b);
+                    } else if (force->object_b == partner_b) {
+                        *value += BrVector3Dot(&force->direction_b, &partner_angular_b);
+                    }
+                }
+            }
+        } else {
+            if (force->object_a == object_a) {
+                FORCE_RESPONSE(&force->direction_a, &force->point_a, &angular_a, &linear_a);
+                *value = response;
+            } else if (force->object_b == object_a) {
+                FORCE_RESPONSE(&force->direction_b, &force->point_b, &angular_a, &linear_a);
+                *value = -response;
+            } else {
+                *value = 0.0f;
+            }
+            if (partner_a != NULL) {
+                force = pForces[j];
+                if (force->object_a == partner_a) {
+                    FORCE_RESPONSE(&force->direction_a, &force->point_a, &partner_angular_a, &partner_linear_a);
+                    *value += response;
+                } else if (force->object_b == partner_a) {
+                    FORCE_RESPONSE(&force->direction_b, &force->point_b, &partner_angular_a, &partner_linear_a);
+                    *value -= response;
+                }
+            }
+            if (object_b != NULL) {
+                force = pForces[j];
+                if (force->object_a == object_b) {
+                    FORCE_RESPONSE(&force->direction_a, &force->point_a, &angular_b, &linear_b);
+                    *value -= response;
+                } else if (force->object_b == object_b) {
+                    FORCE_RESPONSE(&force->direction_b, &force->point_b, &angular_b, &linear_b);
+                    *value += response;
+                }
+                if (partner_b != NULL) {
+                    force = pForces[j];
+                    if (force->object_a == partner_b) {
+                        FORCE_RESPONSE(&force->direction_a, &force->point_a, &partner_angular_b, &partner_linear_b);
+                        *value -= response;
+                    } else if (force->object_b == partner_b) {
+                        FORCE_RESPONSE(&force->direction_b, &force->point_b, &partner_angular_b, &partner_linear_b);
+                        *value += response;
+                    }
+                }
+            }
+        }
+        pMatrix[pIndex * pRows + j] = *value;
+    }
+}
 
-// CalcQuickHingeData
+// FUNCTION: CARMA2_HW 0x004be350
+// FUNCTION: CARMA2_SW 0x004baa70
+// FUNCTION: CARMA2_CHEAT 0x004c3e80
+void C2_HOOK_FASTCALL DRMatrix33Inverse(br_scalar* pResult, const br_scalar* pInput) {
+    br_scalar inverse_determinant;
+
+    pResult[0] = pInput[4] * pInput[8] + (-pInput[5]) * pInput[7];
+    pResult[1] = -(pInput[1] * pInput[8] + (-pInput[2]) * pInput[7]);
+    pResult[2] = pInput[1] * pInput[5] + (-pInput[2]) * pInput[4];
+    inverse_determinant = (br_scalar)(1.0 / (pInput[0] * pResult[0] + pInput[1] * pResult[1] + pInput[2] * pResult[2]));
+    pResult[0] = pResult[0] * inverse_determinant;
+    pResult[3] = -(inverse_determinant * (pInput[3] * pInput[8] + (-pInput[5]) * pInput[6]));
+    pResult[6] = inverse_determinant * (pInput[3] * pInput[7] + (-pInput[4]) * pInput[6]);
+    pResult[1] = pResult[1] * inverse_determinant;
+    pResult[4] = inverse_determinant * (pInput[0] * pInput[8] + (-pInput[2]) * pInput[6]);
+    pResult[7] = -(inverse_determinant * (pInput[0] * pInput[7] + (-pInput[1]) * pInput[6]));
+    pResult[2] = pResult[2] * inverse_determinant;
+    pResult[5] = -(inverse_determinant * (pInput[0] * pInput[5] + (-pInput[2]) * pInput[3]));
+    pResult[8] = inverse_determinant * (pInput[0] * pInput[4] + (-pInput[1]) * pInput[3]);
+}
+
+inline void C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object* pObject, tPhysics_object* pPartner, br_vector3* pAxis) {
+
+    pObject->field_0x1e4->field_0x0 = 0;
+    pObject->field_0x1e4->partner = pPartner;
+}
+
+inline void C2_HOOK_FASTCALL InitQuickHinge(tPhysics_object* pObject) {
+    tPhysics_object* partner;
+    tPhysics_quick_hinge* hinges;
+
+    partner = pObject->field_0x230;
+    hinges = GetPhysicsScratchPointer(2 * sizeof(tPhysics_quick_hinge));
+    IncreasePhysicsScratchPointer(2 * sizeof(tPhysics_quick_hinge));
+    pObject->field_0x1e4 = &hinges[0];
+    partner->field_0x1e4 = &hinges[1];
+    SetUpQuickHingeData(pObject, partner, &pObject->physics_joint1->hinge_axis);
+    SetUpQuickHingeData(partner, pObject, &pObject->physics_joint1->parent_bone_axis);
+}
+
+inline void C2_HOOK_FASTCALL CalcQuickHingeData(tPhysics_object* pObject) {
+    tPhysics_object* partner;
+    br_matrix34 inverse;
+
+    partner = pObject->field_0x1e4->partner;
+    BrMatrix34LPInverse(&inverse, &pObject->transform_matrix);
+    BrMatrix34Mul(&pObject->field_0x1e4->field_0x38, &partner->transform_matrix, &inverse);
+    BrMatrix34LPInverse(&partner->field_0x1e4->field_0x38, &pObject->field_0x1e4->field_0x38);
+    pObject->field_0x1e4->field_0x0 = 1;
+    partner->field_0x1e4->field_0x0 = 1;
+}
 
 // FUNCTION: CARMA2_HW 0x004be4b0
 // FUNCTION: CARMA2_SW 0x004babd0
+// FUNCTION: CARMA2_CHEAT 0x004c3fe0
 void C2_HOOK_FASTCALL SetUpForce(br_vector3* pAngular, br_vector3* pLinear, const br_vector3* pPoint, const br_vector3* pDirection, tPhysics_object* pObject) {
     br_scalar inverse_mass;
     int i;
@@ -881,17 +4122,323 @@ void C2_HOOK_FASTCALL SetUpForce(br_vector3* pAngular, br_vector3* pLinear, cons
             pAngular->v[i] /= pObject->I.v[i];
         }
     } else {
-        BrVector3Set(pAngular, 0.0f, 0.0f, 0.f);
+        BrVector3Set(pAngular, 0.0f, 0.0f, 0.0f);
     }
     inverse_mass = (br_scalar)(1.0 / pObject->M);
     BrVector3Scale(pLinear, pDirection, inverse_mass);
 }
 
-// SetUpTorqueHingePartners
+// FUNCTION: CARMA2_HW 0x004be550
+// FUNCTION: CARMA2_SW 0x004bac70
+// FUNCTION: CARMA2_CHEAT 0x004c4080
+tPhysics_object* C2_HOOK_FASTCALL SetUpTorqueHingePartners(br_vector3* pAngular, br_vector3* pLinear, br_vector3* pPartner_angular, br_vector3* pPartner_linear, const br_vector3* pTorque, tPhysics_object* pObject) {
+    tPhysics_object* partner;
+    tPhysics_joint* joint;
+    br_vector3 lever;
+    br_vector3 cross;
+    br_vector3 rhs;
+    br_vector3 response;
+    br_vector3 rotated;
+    br_vector3 force;
+    br_vector3 temp;
+    br_scalar factor;
+    int i;
 
-// SetUpHingePartners
+    if (!(pObject->flags & 0x800)) {
+        for (i = 0; i < 3; i++) {
+            pAngular->v[i] = pTorque->v[i] / pObject->I.v[i];
+        }
+    } else {
+        BrVector3Set(pAngular, 0.0f, 0.0f, 0.0f);
+    }
+    if (pObject->field_0x1e4 == NULL) {
+        BrVector3SetFloat(pLinear, 0.0f, 0.0f, 0.0f);
+        return NULL;
+    }
+    partner = pObject->field_0x1e4->partner;
+    if (partner == pObject->field_0x230) {
+        joint = pObject->physics_joint1;
+        BrVector3Sub(&lever, &joint->field_0x08, &pObject->cmpos);
+        BrVector3Cross(&cross, pAngular, &lever);
+        rhs.v[0] = -BrVector3Dot(&cross, &joint->hinge_axis);
+        rhs.v[1] = -BrVector3Dot(&joint->hinge_axis2, pAngular);
+        rhs.v[2] = -BrVector3Dot(&joint->hinge_axis3, pAngular);
+        BrMatrix34ApplyV(&response, &rhs, &pObject->field_0x1e4->field_0x8);
+        factor = response.v[0] / pObject->M;
+        BrVector3Scale(pLinear, &joint->hinge_axis, factor);
+        factor = -(response.v[0] / partner->M);
+        BrVector3Scale(pPartner_linear, &joint->parent_bone_axis, factor);
+        for (i = 0; i < 3; i++) {
+            rotated.v[i] = joint->hinge_axis2.v[i] * response.v[1] + joint->hinge_axis3.v[i] * response.v[2];
+        }
+        BrVector3Scale(&force, &joint->hinge_axis, response.v[0]);
+        BrVector3Cross(&temp, &lever, &force);
+        BrVector3Accumulate(&temp, &rotated);
+        for (i = 0; i < 3; i++) {
+            pAngular->v[i] += temp.v[i] / pObject->I.v[i];
+        }
+        BrMatrix34ApplyV(&temp, &rotated, &pObject->transform_matrix);
+        BrMatrix34TApplyV(pPartner_angular, &temp, &partner->transform_matrix);
+        BrVector3Scale(&force, &joint->parent_bone_axis, response.v[0]);
+        BrVector3Sub(&lever, &joint->field_0x14, &partner->cmpos);
+        BrVector3Cross(&temp, &lever, &force);
+        BrVector3Accumulate(pPartner_angular, &temp);
+        for (i = 0; i < 3; i++) {
+            pPartner_angular->v[i] = -(pPartner_angular->v[i] / partner->I.v[i]);
+        }
+        return partner;
+    }
+    joint = partner->physics_joint1;
+    BrVector3Sub(&lever, &joint->field_0x14, &pObject->cmpos);
+    BrVector3Cross(&cross, pAngular, &lever);
+    rhs.v[0] = BrVector3Dot(&cross, &joint->parent_bone_axis);
+    BrMatrix34ApplyV(&rotated, pAngular, &pObject->transform_matrix);
+    BrMatrix34TApplyV(&temp, &rotated, &partner->transform_matrix);
+    rhs.v[1] = BrVector3Dot(&joint->hinge_axis2, &temp);
+    rhs.v[2] = BrVector3Dot(&joint->hinge_axis3, &temp);
+    BrMatrix34ApplyV(&response, &rhs, &partner->field_0x1e4->field_0x8);
+    factor = response.v[0] / partner->M;
+    BrVector3Scale(pPartner_linear, &joint->hinge_axis, factor);
+    factor = -(response.v[0] / pObject->M);
+    BrVector3Scale(pLinear, &joint->parent_bone_axis, factor);
+    for (i = 0; i < 3; i++) {
+        pPartner_angular->v[i] = joint->hinge_axis2.v[i] * response.v[1] + joint->hinge_axis3.v[i] * response.v[2];
+    }
+    BrMatrix34ApplyV(&temp, pPartner_angular, &partner->transform_matrix);
+    BrMatrix34TApplyV(&rotated, &temp, &pObject->transform_matrix);
+    BrVector3Scale(&force, &joint->parent_bone_axis, response.v[0]);
+    BrVector3Cross(&temp, &lever, &force);
+    BrVector3Accumulate(&rotated, &temp);
+    BrVector3Scale(&force, &joint->hinge_axis, response.v[0]);
+    BrVector3Sub(&lever, &joint->field_0x08, &partner->cmpos);
+    BrVector3Cross(&temp, &lever, &force);
+    BrVector3Accumulate(pPartner_angular, &temp);
+    for (i = 0; i < 3; i++) {
+        pAngular->v[i] -= rotated.v[i] / pObject->I.v[i];
+    }
+    for (i = 0; i < 3; i++) {
+        pPartner_angular->v[i] /= partner->I.v[i];
+    }
+    return partner;
+}
 
-// MakeMatrix
+// FUNCTION: CARMA2_HW 0x004becf0
+// FUNCTION: CARMA2_SW 0x004bb400
+// FUNCTION: CARMA2_CHEAT 0x004c4820
+tPhysics_object* C2_HOOK_FASTCALL SetUpHingePartners(br_vector3* pAngular, br_vector3* pLinear, br_vector3* pPartner_angular, br_vector3* pPartner_linear, tPhysics_object* pObject) {
+    tPhysics_object* partner;
+    tPhysics_joint* joint;
+    br_vector3 lever;
+    br_vector3 velocity;
+    br_vector3 rhs;
+    br_vector3 response;
+    br_vector3 rotated;
+    br_vector3 force;
+    br_vector3 temp;
+    br_scalar factor;
+    int i;
+
+    partner = pObject->field_0x1e4->partner;
+    if (partner == pObject->field_0x230) {
+        joint = pObject->physics_joint1;
+        BrVector3Sub(&lever, &joint->field_0x08, &pObject->cmpos);
+        BrVector3Cross(&velocity, pAngular, &lever);
+        BrVector3Accumulate(&velocity, pLinear);
+        rhs.v[0] = -BrVector3Dot(&joint->hinge_axis, &velocity);
+        rhs.v[1] = -BrVector3Dot(&joint->hinge_axis2, pAngular);
+        rhs.v[2] = -BrVector3Dot(&joint->hinge_axis3, pAngular);
+        BrMatrix34ApplyV(&response, &rhs, &pObject->field_0x1e4->field_0x8);
+        factor = response.v[0] / pObject->M;
+        for (i = 0; i < 3; i++) {
+            pLinear->v[i] += joint->hinge_axis.v[i] * factor;
+        }
+        factor = -(response.v[0] / partner->M);
+        BrVector3Scale(pPartner_linear, &joint->parent_bone_axis, factor);
+        for (i = 0; i < 3; i++) {
+            rotated.v[i] = joint->hinge_axis2.v[i] * response.v[1] + joint->hinge_axis3.v[i] * response.v[2];
+        }
+        BrVector3Scale(&force, &joint->hinge_axis, response.v[0]);
+        BrVector3Cross(&temp, &lever, &force);
+        BrVector3Accumulate(&temp, &rotated);
+        for (i = 0; i < 3; i++) {
+            pAngular->v[i] += temp.v[i] / pObject->I.v[i];
+        }
+        BrMatrix34ApplyV(&temp, &rotated, &pObject->transform_matrix);
+        BrMatrix34TApplyV(pPartner_angular, &temp, &partner->transform_matrix);
+        BrVector3Scale(&force, &joint->parent_bone_axis, response.v[0]);
+        BrVector3Sub(&lever, &joint->field_0x14, &partner->cmpos);
+        BrVector3Cross(&temp, &lever, &force);
+        BrVector3Accumulate(pPartner_angular, &temp);
+        for (i = 0; i < 3; i++) {
+            pPartner_angular->v[i] = -(pPartner_angular->v[i] / partner->I.v[i]);
+        }
+        return partner;
+    }
+    joint = partner->physics_joint1;
+    BrVector3Sub(&lever, &joint->field_0x14, &pObject->cmpos);
+    BrVector3Cross(&velocity, pAngular, &lever);
+    BrVector3Accumulate(&velocity, pLinear);
+    rhs.v[0] = BrVector3Dot(&joint->parent_bone_axis, &velocity);
+    BrMatrix34ApplyV(&rotated, pAngular, &pObject->transform_matrix);
+    BrMatrix34TApplyV(&temp, &rotated, &partner->transform_matrix);
+    rhs.v[1] = BrVector3Dot(&joint->hinge_axis2, &temp);
+    rhs.v[2] = BrVector3Dot(&joint->hinge_axis3, &temp);
+    BrMatrix34ApplyV(&response, &rhs, &partner->field_0x1e4->field_0x8);
+    factor = response.v[0] / partner->M;
+    BrVector3Scale(pPartner_linear, &joint->hinge_axis, factor);
+    factor = -(response.v[0] / pObject->M);
+    for (i = 0; i < 3; i++) {
+        pLinear->v[i] += joint->parent_bone_axis.v[i] * factor;
+    }
+    for (i = 0; i < 3; i++) {
+        pPartner_angular->v[i] = joint->hinge_axis2.v[i] * response.v[1] + joint->hinge_axis3.v[i] * response.v[2];
+    }
+    BrMatrix34ApplyV(&temp, pPartner_angular, &partner->transform_matrix);
+    BrMatrix34TApplyV(&rotated, &temp, &pObject->transform_matrix);
+    BrVector3Scale(&force, &joint->parent_bone_axis, response.v[0]);
+    BrVector3Cross(&temp, &lever, &force);
+    BrVector3Accumulate(&rotated, &temp);
+    BrVector3Scale(&force, &joint->hinge_axis, response.v[0]);
+    BrVector3Sub(&lever, &joint->field_0x08, &partner->cmpos);
+    BrVector3Cross(&temp, &lever, &force);
+    BrVector3Accumulate(pPartner_angular, &temp);
+    for (i = 0; i < 3; i++) {
+        pAngular->v[i] -= rotated.v[i] / pObject->I.v[i];
+    }
+    for (i = 0; i < 3; i++) {
+        pPartner_angular->v[i] /= partner->I.v[i];
+    }
+    return partner;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004bf490
+// FUNCTION: CARMA2_SW 0x004bbbb0
+// FUNCTION: CARMA2_CHEAT 0x004c4fc0
+void C2_HOOK_FASTCALL MakeMatrix(br_scalar* pMatrix, int pRows, tPhysics_joint_force** pForces, int pColumns) {
+    br_vector3 angular_a;
+    br_vector3 linear_a;
+    br_vector3 partner_angular_a;
+    br_vector3 partner_linear_a;
+    br_vector3 angular_b;
+    br_vector3 linear_b;
+    br_vector3 partner_angular_b;
+    br_vector3 partner_linear_b;
+    tPhysics_object* object_a;
+    tPhysics_object* object_b;
+    tPhysics_object* partner_a;
+    tPhysics_object* partner_b;
+    tPhysics_joint_force* force;
+    br_vector3 tv;
+    br_scalar response;
+    br_scalar* value;
+    int i;
+    int j;
+
+    for (i = 0; i < pColumns; i++) {
+        force = pForces[i];
+        object_b = force->object_b;
+        object_a = force->object_a;
+        if (object_b != NULL && force->type == 14) {
+            object_b = NULL;
+        }
+        if (force->type == 11) {
+            AddDoubleTorqueToMatrix(pMatrix, pRows, i, pForces, pColumns);
+            continue;
+        }
+        SetUpForce(&angular_a, &linear_a, &force->point_a, &force->direction_a, object_a);
+        if (object_a->field_0x1e4 != NULL) {
+            partner_a = SetUpHingePartners(&angular_a, &linear_a, &partner_angular_a, &partner_linear_a, object_a);
+        } else {
+            partner_a = NULL;
+        }
+        partner_b = NULL;
+        if (object_b != NULL) {
+            SetUpForce(&angular_b, &linear_b, &force->point_b, &force->direction_b, object_b);
+            if (object_b->field_0x1e4 != NULL) {
+                partner_b = SetUpHingePartners(&angular_b, &linear_b, &partner_angular_b, &partner_linear_b, object_b);
+            }
+        }
+        for (j = 0; j <= i; j++) {
+            value = &pMatrix[j * pRows + i];
+            *value = 0.0f;
+            force = pForces[j];
+            if (force->type == 11) {
+                if (force->object_a == object_a) {
+                    *value += BrVector3Dot(&force->direction_a, &angular_a);
+                } else if (force->object_b == object_a) {
+                    *value -= BrVector3Dot(&force->direction_b, &angular_a);
+                }
+                if (object_b != NULL) {
+                    if (force->object_a == object_b) {
+                        *value -= BrVector3Dot(&force->direction_a, &angular_b);
+                    } else if (force->object_b == object_b) {
+                        *value += BrVector3Dot(&force->direction_b, &angular_b);
+                    }
+                }
+                if (partner_a != NULL) {
+                    if (force->object_a == partner_a) {
+                        *value += BrVector3Dot(&force->direction_a, &partner_angular_a);
+                    } else if (force->object_b == partner_a) {
+                        *value -= BrVector3Dot(&force->direction_b, &partner_angular_a);
+                    }
+                }
+                if (partner_b != NULL) {
+                    if (force->object_a == partner_b) {
+                        *value -= BrVector3Dot(&force->direction_a, &partner_angular_b);
+                    } else if (force->object_b == partner_b) {
+                        *value += BrVector3Dot(&force->direction_b, &partner_angular_b);
+                    }
+                }
+            } else {
+                if (force->object_a == object_a) {
+                    FORCE_RESPONSE(&force->direction_a, &force->point_a, &angular_a, &linear_a);
+                    *value += response;
+                } else if (force->object_b == object_a && force->type != 14) {
+                    FORCE_RESPONSE(&force->direction_b, &force->point_b, &angular_a, &linear_a);
+                    *value -= response;
+                }
+                if (object_b != NULL) {
+                    if (force->object_a == object_b) {
+                        FORCE_RESPONSE(&force->direction_a, &force->point_a, &angular_b, &linear_b);
+                        *value -= response;
+                    } else if (force->object_b == object_b && force->type != 14) {
+                        FORCE_RESPONSE(&force->direction_b, &force->point_b, &angular_b, &linear_b);
+                        *value += response;
+                    }
+                }
+                if (partner_a != NULL) {
+                    if (force->object_a == partner_a) {
+                        FORCE_RESPONSE(&force->direction_a, &force->point_a, &partner_angular_a, &partner_linear_a);
+                        *value += response;
+                    } else if (force->object_b == partner_a) {
+                        FORCE_RESPONSE(&force->direction_b, &force->point_b, &partner_angular_a, &partner_linear_a);
+                        *value -= response;
+                    }
+                }
+                if (partner_b != NULL) {
+                    if (force->object_a == partner_b) {
+                        FORCE_RESPONSE(&force->direction_a, &force->point_a, &partner_angular_b, &partner_linear_b);
+                        *value -= response;
+                    } else if (force->object_b == partner_b) {
+                        FORCE_RESPONSE(&force->direction_b, &force->point_b, &partner_angular_b, &partner_linear_b);
+                        *value += response;
+                    }
+                }
+            }
+            pMatrix[i * pRows + j] = *value;
+        }
+    }
+}
+
+#undef FORCE_RESPONSE
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004c03f0
 void C2_HOOK_FASTCALL RestoreListOmega(tPhysics_object* pObject) {
@@ -907,23 +4454,522 @@ void C2_HOOK_FASTCALL RestoreListOmega(tPhysics_object* pObject) {
     }
 }
 
-// RestoreGroupOmegas
+inline void C2_HOOK_FASTCALL RestoreGroupOmegas(tPhysics_object* pObject) {
+    tPhysics_object* object;
 
-// MakeVelocitiesVector2
+    object = pObject;
+    do {
+        BrVector3Copy(&object->omega, &object->rotate_omega);
+        if (object->child != NULL) {
+            RestoreListOmega(object->child);
+        }
+        object = object->field183_0x1d8;
+    } while (object != pObject);
+}
 
-// MakeVelocitiesVector
+#if defined(REC2_MATCHING) && defined(_MSC_VER)
+#pragma inline_depth(0)
+#endif
 
-// NewAddFrictionObjectObject
+// FUNCTION: CARMA2_HW 0x004c0430
+// FUNCTION: CARMA2_SW 0x004bcb60
+// FUNCTION: CARMA2_CHEAT 0x004c5f50
+int C2_HOOK_FASTCALL MakeVelocitiesVector2(br_scalar* pOutput, tPhysics_joint_force** pForces, int pCapacity, int pCount) {
+    tPhysics_object* object_a;
+    tPhysics_object* object_b;
+    br_vector3 velocity;
+    br_vector3 point;
+    br_vector3 world;
+    br_vector3 delta;
+    br_vector3 other;
+    br_scalar value;
+    int has_velocity;
+    int has_separation;
+    int i;
 
-// NewAddFriction
+    has_velocity = 0;
+    for (i = pCount; i < pCapacity; i++) {
+        pOutput[i] = 0.0f;
+    }
+    for (i = 0; i < pCount; i++) {
+        object_a = pForces[i]->object_a;
+        if (pForces[i]->type == 11) {
+            pOutput[i] = -BrVector3Dot(&object_a->omega, &pForces[i]->direction_a);
+            object_b = pForces[i]->object_b;
+            if (object_b != NULL) {
+                pOutput[i] += BrVector3Dot(&object_b->omega, &pForces[i]->direction_b);
+            }
+            if (pOutput[i] < 0.001) {
+                pOutput[i] = 0.001f;
+            } else {
+                has_velocity = 1;
+            }
+        } else {
+            BrVector3Cross(&velocity, &object_a->omega, &pForces[i]->point_a);
+            BrVector3Accumulate(&velocity, &object_a->velocity_car_space);
+            pOutput[i] = -BrVector3Dot(&pForces[i]->direction_a, &velocity);
+            object_b = pForces[i]->object_b;
+            if (object_b != NULL) {
+                BrVector3Cross(&velocity, &object_b->omega, &pForces[i]->point_b);
+                BrVector3Accumulate(&velocity, &object_b->velocity_car_space);
+                pOutput[i] += BrVector3Dot(&pForces[i]->direction_b, &velocity);
+            }
+            if (pOutput[i] > 0.01) {
+                has_velocity = 1;
+            }
+            if (pOutput[i] > 0.1) {
+                value = (br_scalar)(0.1 - (pForces[i]->field_0x0 - 1.0f));
+                if (value > 1.0f) {
+                    value = 1.0f;
+                }
+                if (value < 0.1) {
+                    value = 0.1f;
+                }
+                pOutput[i] = (br_scalar)(value * (pOutput[i] - 0.1) + 0.1);
+            }
+            if (pOutput[i] < 0.0f) {
+                pOutput[i] = 0.0f;
+            }
+            pOutput[i] = (br_scalar)(pOutput[i] * 1.001 + 0.01);
+            if ((object_b == NULL || object_b->field_0x1df != 0) && object_a->field_0x1df != 0) {
+                pOutput[i] = (br_scalar)(pOutput[i] - 0.0099);
+            }
+        }
+    }
+    if (!has_velocity) {
+        has_separation = 0;
+        for (i = 0; i < pCount; i++) {
+            if (pForces[i]->type == 11) {
+                pOutput[i] = (br_scalar)((0.001 - pForces[i]->field_0x0) * 25.0);
+                if (pOutput[i] < 0.001) {
+                    pOutput[i] = 0.001f;
+                } else {
+                    has_velocity = 1;
+                }
+            } else {
+                object_a = pForces[i]->object_a;
+                object_b = pForces[i]->object_b;
+                BrVector3Add(&point, &pForces[i]->point_a, &object_a->cmpos);
+                if (object_b == NULL) {
+                    BrMatrix34ApplyP(&world, &point, &object_a->actor->t.t.mat);
+                    DrMatrix34ApplyLPInverse(&delta, &world, &object_a->transform_matrix);
+                    BrVector3Sub(&delta, &delta, &point);
+                    pOutput[i] = (br_scalar)(0.01 - BrVector3Dot(&pForces[i]->direction_a, &delta) * 25.0f);
+                } else {
+                    BrMatrix34ApplyP(&world, &point, &object_a->transform_matrix);
+                    DrMatrix34ApplyLPInverse(&delta, &world, &object_b->transform_matrix);
+                    BrMatrix34ApplyP(&world, &point, &object_a->actor->t.t.mat);
+                    DrMatrix34ApplyLPInverse(&other, &world, &object_b->actor->t.t.mat);
+                    BrVector3Sub(&delta, &other, &delta);
+                    pOutput[i] = -(BrVector3Dot(&pForces[i]->direction_b, &delta) * 25.0f);
+                    if (pForces[i]->type == 5) {
+                        BrMatrix34ApplyV(&world, &pForces[i]->direction_b, &object_b->transform_matrix);
+                        BrMatrix34TApplyV(&other, &world, &object_b->actor->t.t.mat);
+                        value = -(BrVector3Dot(&other, &delta) * 25.0f);
+                        if (value > pOutput[i]) {
+                            pOutput[i] = value;
+                        }
+                    }
+                    if (pForces[i]->field_0x10 > 0.0f) {
+                        value = pForces[i]->field_0x10 * 25.0f;
+                        if (value > pOutput[i]) {
+                            pOutput[i] = value;
+                        }
+                    }
+                }
+                if (pOutput[i] > 0.1) {
+                    value = (br_scalar)(0.1 - (pForces[i]->field_0x0 - 1.0f));
+                    if (value > 1.0f) {
+                        value = 1.0f;
+                    }
+                    if (value < 0.1) {
+                        value = 0.1f;
+                    }
+                    pOutput[i] = (br_scalar)(value * (pOutput[i] - 0.1) + 0.1);
+                } else if (pOutput[i] < 0.0f) {
+                    pOutput[i] = 0.0f;
+                }
+                if (pOutput[i] > 0.001) {
+                    has_separation = 1;
+                }
+                pOutput[i] = (br_scalar)(pOutput[i] * 1.001 + 0.01);
+            }
+        }
+        if (!has_separation) {
+            for (i = 0; i < pCount; i++) {
+                if (pForces[i]->type != 11) {
+                    pOutput[i] = 0.05f;
+                }
+            }
+        }
+    }
+    return !has_velocity;
+}
 
-// ApplyForces
+#if defined(REC2_MATCHING) && defined(_MSC_VER)
+#pragma inline_depth()
+#endif
 
-// DoJointFriction
+inline int C2_HOOK_FASTCALL MakeVelocitiesVector(br_scalar* pVelocities, tPhysics_joint_force** pForces, int pCapacity, int pCount) {
+    br_vector3 point;
+    br_vector3 world;
+    br_vector3 velocity;
+    br_vector3 other;
+    tPhysics_joint_force* force;
+    int separating;
+    int i;
 
-// ListDoJointFriction
+    separating = 0;
+    if (gDAT_0065d014 != 0) {
+        return MakeVelocitiesVector2(pVelocities, pForces, pCapacity, pCount);
+    }
+    for (i = pCount; i < pCapacity; i++) {
+        pVelocities[i] = 0.0f;
+    }
+    for (i = 0; i < pCount; i++) {
+        force = pForces[i];
+        if (force->type == 11) {
+            pVelocities[i] = -BrVector3Dot(&force->object_a->omega, &force->direction_a);
+            if (force->object_b != NULL) {
+                pVelocities[i] += BrVector3Dot(&force->object_b->omega, &force->direction_b);
+            }
+            if (pVelocities[i] < 0.001) {
+                pVelocities[i] = 0.001f;
+            } else {
+                separating = 1;
+            }
+        } else {
+            BrVector3Cross(&velocity, &force->object_a->omega, &force->point_a);
+            BrVector3Add(&velocity, &force->object_a->velocity_car_space, &velocity);
+            pVelocities[i] = -BrVector3Dot(&force->direction_a, &velocity);
+            if (force->object_b != NULL) {
+                BrVector3Cross(&velocity, &force->object_b->omega, &force->point_b);
+                BrVector3Add(&velocity, &force->object_b->velocity_car_space, &velocity);
+                pVelocities[i] += BrVector3Dot(&force->direction_b, &velocity);
+            }
+            if (pVelocities[i] < 0.0f) {
+                pVelocities[i] = 0.0f;
+            } else if (pVelocities[i] > 0.01) {
+                separating = 1;
+            }
+            pVelocities[i] = pVelocities[i] * 1.001 + 0.01;
+        }
+    }
+    if (separating != 0) {
+        return 0;
+    }
+    for (i = 0; i < pCount; i++) {
+        force = pForces[i];
+        if (force->type == 11) {
+            pVelocities[i] = (0.001 - force->field_0x0) * 25.0;
+        } else if (force->object_b != NULL) {
+            BrVector3Add(&point, &force->object_a->cmpos, &force->point_a);
+            BrMatrix34ApplyP(&world, &point, &force->object_a->transform_matrix);
+            DrMatrix34ApplyLPInverse(&velocity, &world, &force->object_b->transform_matrix);
+            BrMatrix34ApplyP(&world, &point, &force->object_a->actor->t.t.mat);
+            DrMatrix34ApplyLPInverse(&other, &world, &force->object_b->actor->t.t.mat);
+            BrVector3Sub(&velocity, &other, &velocity);
+            if (force->type == 5) {
+                BrMatrix34ApplyV(&world, &force->direction_b, &force->object_b->transform_matrix);
+                BrMatrix34TApplyV(&other, &world, &force->object_b->actor->t.t.mat);
+                pVelocities[i] = -(BrVector3Dot(&other, &velocity) * 25.0f);
+            } else {
+                pVelocities[i] = -(BrVector3Dot(&force->direction_b, &velocity) * 25.0f);
+            }
+        } else {
+            BrVector3Add(&point, &force->object_a->cmpos, &force->point_a);
+            BrMatrix34ApplyP(&world, &point, &force->object_a->actor->t.t.mat);
+            DrMatrix34ApplyLPInverse(&velocity, &world, &force->object_a->transform_matrix);
+            BrVector3Sub(&velocity, &velocity, &point);
+            pVelocities[i] = 0.01 - BrVector3Dot(&force->direction_a, &velocity) * 25.0f;
+        }
+        if (pVelocities[i] < 0.01) {
+            pVelocities[i] = 0.01f;
+        } else {
+            separating = 1;
+        }
+    }
+    if (separating == 0) {
+        for (i = 0; i < pCount; i++) {
+            if (pForces[i]->type != 11) {
+                pVelocities[i] = 0.05f;
+            }
+        }
+    }
+    return 1;
+}
 
-// PostAddFriction
+inline void C2_HOOK_FASTCALL NewAddFrictionObjectObject(tPhysics_joint_force* pForce) {
+    tPhysics_object* object_a;
+    tPhysics_object* object_b;
+    br_vector3 velocity;
+    br_vector3 velocity_b;
+    br_vector3 normal;
+    br_vector3 direction_a;
+    br_vector3 direction_b;
+    br_vector3 angular_a;
+    br_vector3 angular_b;
+    br_vector3 tv;
+    br_vector3 tv2;
+    br_scalar friction;
+    br_scalar max_impulse;
+    br_scalar speed;
+    br_scalar d;
+    br_scalar impulse;
+
+    object_a = pForce->object_a;
+    friction = pForce->field_0x0;
+    object_b = pForce->object_b;
+    object_a->collision_flag |= 0x2;
+    object_b->collision_flag |= 0x2;
+    BrVector3Cross(&tv, &object_b->omega, &pForce->point_b);
+    BrVector3Add(&velocity_b, &tv, &object_b->velocity_car_space);
+    BrMatrix34ApplyV(&tv, &velocity_b, &object_b->actor->t.t.mat);
+    BrMatrix34TApplyV(&velocity_b, &tv, &object_a->actor->t.t.mat);
+    BrVector3Cross(&tv, &object_a->omega, &pForce->point_a);
+    BrVector3Accumulate(&tv, &object_a->velocity_car_space);
+    BrVector3Sub(&velocity, &tv, &velocity_b);
+    BrMatrix34ApplyV(&tv, &pForce->direction_a, &object_a->transform_matrix);
+    BrMatrix34TApplyV(&normal, &tv, &object_a->actor->t.t.mat);
+    d = BrVector3Dot(&velocity, &normal);
+    BrVector3Scale(&tv, &normal, d);
+    BrVector3Sub(&velocity, &velocity, &tv);
+    max_impulse = 0.35f * friction * object_a->object_friction + 0.35f * friction;
+    max_impulse = max_impulse * object_b->object_friction + max_impulse;
+    speed = BrVector3Length(&velocity);
+    if (speed < 0.001f) {
+        return;
+    }
+    BrVector3Scale(&direction_a, &velocity, 1.0f / -speed);
+    BrMatrix34ApplyV(&tv, &direction_a, &object_a->actor->t.t.mat);
+    BrMatrix34TApplyV(&direction_b, &tv, &object_b->actor->t.t.mat);
+    if (!(object_a->flags & 0x800)) {
+        BrVector3Cross(&tv, &pForce->point_a, &direction_a);
+        Vector3Div(&angular_a, &tv, &object_a->I);
+    } else {
+        BrVector3Set(&angular_a, 0.0f, 0.0f, 0.0f);
+    }
+    if (!(object_b->flags & 0x800)) {
+        BrVector3Cross(&tv, &pForce->point_b, &direction_b);
+        Vector3Div(&angular_b, &tv, &object_b->I);
+    } else {
+        BrVector3Set(&angular_b, 0.0f, 0.0f, 0.0f);
+    }
+    BrVector3Cross(&tv, &angular_b, &pForce->point_b);
+    BrVector3Cross(&tv2, &angular_a, &pForce->point_a);
+    d = 1.0f / object_a->M + 1.0f / object_b->M + BrVector3Dot(&tv2, &direction_a) + BrVector3Dot(&tv, &direction_b);
+    if (fabs(d) <= 0.0001f) {
+        return;
+    }
+    impulse = speed / d;
+    if (impulse > max_impulse) {
+        impulse = max_impulse;
+    }
+    BrVector3Scale(&direction_a, &direction_a, impulse / object_a->M);
+    BrVector3Scale(&direction_b, &direction_b, -(impulse / object_b->M));
+    BrVector3Scale(&pForce->field_0x44, &direction_a, object_a->M);
+    BrVector3Scale(&pForce->field_0x50, &direction_b, object_b->M);
+    pForce->type |= 0x100;
+    BrVector3Scale(&angular_a, &angular_a, impulse);
+    BrVector3Accumulate(&object_a->omega, &angular_a);
+    BrVector3Scale(&angular_b, &angular_b, -impulse);
+    BrVector3Accumulate(&object_b->omega, &angular_b);
+    BrMatrix34ApplyV(&tv, &direction_a, &object_a->actor->t.t.mat);
+    BrVector3Accumulate(&object_a->v, &tv);
+    BrVector3Accumulate(&object_a->velocity_car_space, &direction_a);
+    BrMatrix34ApplyV(&tv, &direction_b, &object_b->actor->t.t.mat);
+    BrVector3Accumulate(&object_b->v, &tv);
+    BrVector3Accumulate(&object_b->velocity_car_space, &direction_b);
+}
+
+// FUNCTION: CARMA2_HW 0x004c0ac0
+// FUNCTION: CARMA2_SW 0x004bd1f0
+// FUNCTION: CARMA2_CHEAT 0x004c65e0
+void C2_HOOK_FASTCALL NewAddFriction(tPhysics_joint_force* pForce, tWorld_callbacks* pCallbacks) {
+    tPhysics_object* object;
+    br_vector3 point;
+    br_vector3 velocity;
+    br_vector3 normal;
+    br_vector3 direction;
+    br_vector3 angular;
+    br_vector3 tv;
+    br_scalar friction;
+    br_scalar max_impulse;
+    br_scalar speed;
+    br_scalar d;
+    br_scalar impulse;
+
+    object = pForce->object_a;
+    if (pForce->object_b != NULL && pForce->type != 14) {
+        NewAddFrictionObjectObject(pForce);
+        CapOmega(pForce->object_a);
+        CapOmega(pForce->object_b);
+        return;
+    }
+    friction = pForce->field_0x0;
+    object->collision_flag |= 0x1;
+    if (pForce->type == 1) {
+        BrVector3Scale(&point, &pForce->point_a, -0.005f);
+        BrVector3Accumulate(&point, &pForce->point_a);
+        BrVector3Cross(&velocity, &object->omega, &point);
+    } else {
+        BrVector3Cross(&velocity, &object->omega, &pForce->point_a);
+    }
+    BrVector3Accumulate(&velocity, &object->velocity_car_space);
+    BrMatrix34ApplyV(&tv, &pForce->direction_a, &object->transform_matrix);
+    BrMatrix34TApplyV(&normal, &tv, &object->actor->t.t.mat);
+    d = BrVector3Dot(&velocity, &normal);
+    BrVector3Scale(&tv, &normal, d);
+    BrVector3Sub(&velocity, &velocity, &tv);
+    if (pCallbacks != NULL && pCallbacks->get_friction_from_face != NULL && pForce->field_0xc != NULL) {
+        friction = pCallbacks->get_friction_from_face(pForce->field_0xc) * friction;
+    }
+    max_impulse = 0.35f * friction * object->world_friction + 0.35f * friction;
+    speed = BrVector3Length(&velocity);
+    if (speed < 0.001f) {
+        return;
+    }
+    BrVector3Scale(&direction, &velocity, 1.0f / -speed);
+    if (!(object->flags & 0x800)) {
+        BrVector3Cross(&tv, &pForce->point_a, &direction);
+        Vector3Div(&angular, &tv, &object->I);
+    } else {
+        BrVector3Set(&angular, 0.0f, 0.0f, 0.0f);
+    }
+    d = BrVector3Dot(&object->omega, &pForce->direction_a);
+    if (fabs(d) < 0.1f && BrVector3Dot(&angular, &object->omega) < 0.0f && BrVector3LengthSquared(&object->v) < 0.001) {
+        BrVector3Scale(&tv, &pForce->direction_a, d);
+        BrVector3Sub(&object->omega, &object->omega, &tv);
+        BrVector3SetFloat(&angular, 0.0f, 0.0f, 0.0f);
+        speed = BrVector3Length(&object->velocity_car_space);
+        if (speed < 0.001f) {
+            return;
+        }
+        BrVector3InvScale(&direction, &object->velocity_car_space, -speed);
+    }
+    BrVector3Cross(&tv, &angular, &pForce->point_a);
+    d = 1.0f / object->M + BrVector3Dot(&tv, &direction);
+    if (fabs(d) <= 0.0001f) {
+        return;
+    }
+    impulse = speed / d;
+    if (impulse > max_impulse) {
+        impulse = max_impulse;
+    }
+    BrVector3Scale(&angular, &angular, impulse);
+    BrVector3Scale(&direction, &direction, impulse / object->M);
+    BrVector3Scale(&pForce->field_0x44, &direction, object->M);
+    pForce->type |= 0x100;
+    BrVector3Accumulate(&object->omega, &angular);
+    BrMatrix34ApplyV(&tv, &direction, &object->actor->t.t.mat);
+    BrVector3Accumulate(&object->v, &tv);
+    BrVector3Accumulate(&object->velocity_car_space, &direction);
+    CapOmega(object);
+}
+
+inline void C2_HOOK_FASTCALL ApplyForces(tPhysics_joint_force* pForces, br_scalar* pImpulses, int pCount) {
+    tPhysics_object* object_a;
+    tPhysics_object* object_b;
+    int i;
+
+    for (i = 0; i < pCount; i++) {
+        if (pImpulses[i] != 0.0f && pForces[i].type != 9) {
+            object_a = pForces[i].object_a;
+            object_b = pForces[i].object_b;
+            ApplySingleForce(&pForces[i], pImpulses[i]);
+            if (pForces[i].type != 11) {
+                if (object_b != NULL) {
+                    if (((object_a->collision_flag & 0x2) == 0 || (object_b->collision_flag & 0x2) == 0) && gCount_friction_forces < REC2_ASIZE(gFriction_forces)) {
+                        gFriction_forces[gCount_friction_forces] = pForces[i];
+                        gFriction_forces[gCount_friction_forces].field_0x0 = pImpulses[i];
+                        gCount_friction_forces++;
+                    }
+                } else if ((object_a->collision_flag & 0x1) == 0 && gCount_friction_forces < REC2_ASIZE(gFriction_forces)) {
+                    gFriction_forces[gCount_friction_forces] = pForces[i];
+                    gFriction_forces[gCount_friction_forces].field_0x0 = pImpulses[i];
+                    gCount_friction_forces++;
+                }
+            }
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004c18d0
+// FUNCTION: CARMA2_SW 0x004be000
+// FUNCTION: CARMA2_CHEAT 0x004c73f0
+void C2_HOOK_FASTCALL DoJointFriction(tPhysics_object* pObject) {
+    br_scalar total_sq;
+    br_vector3 impulse;
+    int j;
+    br_vector3 tv;
+    int i;
+    br_scalar max_impulse_sq;
+    br_scalar s;
+    tPhysics_object* child;
+    br_vector3 rel[3];
+
+    if (pObject->physics_joint1 != NULL && pObject->physics_joint1->friction != 0.0f && pObject->field_0x230 != NULL) {
+        total_sq = 0.0f;
+        max_impulse_sq = pObject->physics_joint1->friction * 0.04f;
+        max_impulse_sq = max_impulse_sq * max_impulse_sq;
+        for (i = 0; i < 3; i++) {
+            BrMatrix34TApplyV(&tv, (br_vector3*)pObject->transform_matrix.m[i], &pObject->field_0x230->transform_matrix);
+            impulse.v[i] = BrVector3Dot(&tv, &pObject->field_0x230->omega) - pObject->omega.v[i];
+            for (j = 0; j < 3; j++) {
+                rel[i].v[j] = tv.v[j] / pObject->field_0x230->I.v[j];
+            }
+            impulse.v[i] /= (br_scalar)(1.0 / pObject->I.v[i] + BrVector3Dot(&rel[i], &tv));
+            total_sq += impulse.v[i] * impulse.v[i];
+        }
+        if (total_sq > max_impulse_sq) {
+            s = (br_scalar)sqrt(max_impulse_sq / total_sq);
+            BrVector3Scale(&impulse, &impulse, s);
+        }
+        for (i = 0; i < 3; i++) {
+            pObject->omega.v[i] += impulse.v[i] / pObject->I.v[i];
+            BrVector3Scale(&rel[i], &rel[i], -impulse.v[i]);
+            BrVector3Accumulate(&pObject->field_0x230->omega, &rel[i]);
+        }
+    }
+    if (pObject->physics_joint2 != NULL && pObject->physics_joint2->friction != 0.0f) {
+        max_impulse_sq = pObject->physics_joint2->friction * 0.04f;
+        total_sq = 0.0f;
+        max_impulse_sq = max_impulse_sq * max_impulse_sq;
+        for (i = 0; i < 3; i++) {
+            impulse.v[i] = pObject->omega.v[i] * pObject->I.v[i];
+            total_sq += impulse.v[i] * impulse.v[i];
+        }
+        if (total_sq > max_impulse_sq) {
+            s = (br_scalar)sqrt(max_impulse_sq / total_sq);
+            BrVector3Scale(&impulse, &impulse, s);
+        }
+        for (i = 0; i < 3; i++) {
+            pObject->omega.v[i] -= impulse.v[i] / pObject->I.v[i];
+        }
+    }
+    for (child = pObject->child; child != NULL; child = child->next) {
+        if (!child->disable_move_rotate) {
+            DoJointFriction(child);
+        }
+    }
+}
+
+inline void ListDoJointFriction(tPhysics_object* pObject) {
+
+    for (; pObject != NULL; pObject = pObject->next) {
+        if (!pObject->disable_move_rotate) {
+            DoJointFriction(pObject);
+        }
+    }
+}
+
+inline void PostAddFriction(tWorld_callbacks* pCallbacks) {
+    int i;
+
+    for (i = 0; i < gCount_friction_forces; i++) {
+        NewAddFriction(&gFriction_forces[i], pCallbacks);
+    }
+}
 
 // RotateObjectSecondOrder
 
@@ -957,7 +5003,20 @@ void C2_HOOK_FASTCALL RotateObjectFirstOrder(tPhysics_object* pObject, br_scalar
     pObject->omega.v[2] = rotated.v[2] / pObject->I.v[2];
 }
 
-// RotateObject
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004c1be0
+// STUB: CARMA2_SW 0x004be310
+// STUB: CARMA2_CHEAT 0x004c7700
+void C2_HOOK_FASTCALL RotateObject(tPhysics_object* pObject, br_scalar pDelta_time) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject, br_scalar pDelta_time) {
     br_vector3 tv;
@@ -966,14 +5025,24 @@ void C2_HOOK_FASTCALL TranslateObject(tPhysics_object* pObject, br_scalar pDelta
     BrVector3Accumulate(&pObject->actor->t.t.translate.t, &tv);
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
 // STUB: CARMA2_HW 0x004c2060
 // STUB: CARMA2_SW 0x004be790
+// STUB: CARMA2_CHEAT 0x004c7b80
 void C2_HOOK_FASTCALL GetFacesNearObject(tPhysics_object *pObject, tWorld_callbacks *pCallbacks) {
     NOT_IMPLEMENTED();
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
 // FUNCTION: CARMA2_HW 0x004c25a0
 // FUNCTION: CARMA2_SW 0x004becd0
+// FUNCTION: CARMA2_CHEAT 0x004c80c0
 void C2_HOOK_FASTCALL ResetObjectAndChildren(tPhysics_object* pObject) {
     tPhysics_object* child;
 
@@ -992,6 +5061,7 @@ void C2_HOOK_FASTCALL ResetObjectAndChildren(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004c2600
 // FUNCTION: CARMA2_SW 0x004bed30
+// FUNCTION: CARMA2_CHEAT 0x004c8120
 void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects) {
 
     while (pObjects != NULL) {
@@ -1000,7 +5070,25 @@ void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects) {
     }
 }
 
-// RepositionObjectGroup
+inline int C2_HOOK_FASTCALL RepositionObjectGroup(tPhysics_object** pObject_list, tPhysics_object* pObject, tWorld_callbacks* pCallbacks) {
+    tPhysics_object* object;
+    int result;
+
+    result = 0;
+    object = pObject;
+    do {
+        if (object->disable_move_rotate == 0) {
+            ResetObjectAndChildren(object);
+            TranslateAndRotateJointedObject(object, 0.04f);
+            GetWorldBoundingBoxForObject(object, NULL);
+            if (object->field_0x194 != NULL) {
+                result |= object->field_0x194(object);
+            }
+        }
+        object = object->field183_0x1d8;
+    } while (object != pObject);
+    return result;
+}
 
 // SimpleRotate
 
@@ -1022,6 +5110,7 @@ void C2_HOOK_FASTCALL ApplyGravitySingleObject(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004c2970
 // FUNCTION: CARMA2_SW 0x004bf0a0
+// FUNCTION: CARMA2_CHEAT 0x004c8490
 void C2_HOOK_FASTCALL ApplyGravity(tPhysics_object* pObject) {
 
     for (; pObject != NULL; pObject = pObject->next) {
@@ -1040,7 +5129,35 @@ void C2_HOOK_FASTCALL SetGravityDeltaV(tPhysics_object* pObject, br_vector3* pIm
     }
 }
 
-// TrialPositionChildren
+// FUNCTION: CARMA2_HW 0x004c2a10
+// FUNCTION: CARMA2_SW 0x004bf140
+// FUNCTION: CARMA2_CHEAT 0x004c8530
+void C2_HOOK_FASTCALL TrialPositionChildren(tPhysics_object* pObject) {
+    tPhysics_object* child;
+    tPhysics_object* root;
+    br_vector3 parent_point;
+    br_vector3 child_point;
+
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x1e8, 0x1e8);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x230, 0x230);
+
+    root = pObject;
+    child = pObject->child;
+    if (pObject->flags & 0x400) {
+        root = pObject->field_0x230;
+    }
+    for (; child != NULL; child = child->next) {
+        if (!(pObject->flags & 0x400)) {
+            BrMatrix34ApplyP(&parent_point, &child->physics_joint1->field_0x14, &pObject->actor->t.t.mat);
+            BrMatrix34ApplyP(&child_point, &child->physics_joint1->field_0x08, &child->actor->t.t.mat);
+            BrVector3Sub(&parent_point, &parent_point, &child_point);
+            BrVector3Accumulate((br_vector3*)child->actor->t.t.mat.m[3], &parent_point);
+        } else {
+            BrMatrix34Mul(&pObject->actor->t.t.mat, &pObject->field_0x1e8, &root->actor->t.t.mat);
+        }
+        TrialPositionChildren(child);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004c2b20
 // FUNCTION: CARMA2_SW 0x004bf250
@@ -1115,19 +5232,370 @@ void C2_HOOK_FASTCALL ApplyDiminishingTorque(tPhysics_object* pObject, const br_
     }
 }
 
-// OrderObjectListOnX
+inline void OrderObjectListOnX(tPhysics_object** pObject_list) {
+    tPhysics_object* first;
+    tPhysics_object* last;
+    tPhysics_object* current;
+    tPhysics_object* position;
+    tPhysics_object* next;
 
-// SwapPair
+    first = *pObject_list;
+    first->prev = NULL;
+    last = first;
+    current = first->next;
+    while (current != NULL) {
+        position = last;
+        while (position != NULL && current->transform_matrix.m[3][0] < position->transform_matrix.m[3][0]) {
+            position = position->prev;
+        }
+        if (position == last) {
+            position->next = current;
+            current->prev = position;
+            last = current;
+            current = current->next;
+        } else if (position == NULL) {
+            first->prev = current;
+            next = current->next;
+            current->next = first;
+            current->prev = NULL;
+            first = current;
+            current = next;
+        } else {
+            next = current->next;
+            current->next = position->next;
+            current->next->prev = current;
+            position->next = current;
+            current->prev = position;
+            current = next;
+        }
+    }
+    last->next = NULL;
+    *pObject_list = first;
+}
 
-// CheckObjectsPostionInList
+inline void C2_HOOK_FASTCALL SwapPair(tPhysics_object* pObject_1, tPhysics_object* pObject_2) {
+    tPhysics_object* prev;
+    tPhysics_object* next;
+
+    prev = pObject_1->prev;
+    next = pObject_2->next;
+    if (prev != NULL) {
+        prev->next = pObject_2;
+    }
+    if (next != NULL) {
+        next->prev = pObject_1;
+    }
+    pObject_1->prev = pObject_2;
+    pObject_2->prev = prev;
+    pObject_1->next = next;
+    pObject_2->next = pObject_1;
+}
+
+inline void C2_HOOK_FASTCALL CheckObjectsPostionInList(tPhysics_object* pObject, tPhysics_object** pList) {
+    tPhysics_object* other;
+
+    other = pObject->prev;
+    if (other != NULL && pObject->transform_matrix.m[3][0] < other->transform_matrix.m[3][0]) {
+        do {
+            SwapPair(other, pObject);
+            other = pObject->prev;
+        } while (other != NULL && pObject->transform_matrix.m[3][0] < other->transform_matrix.m[3][0]);
+        if (other == NULL) {
+            *pList = pObject;
+        }
+    } else {
+        other = pObject->next;
+        while (other != NULL && other->transform_matrix.m[3][0] < pObject->transform_matrix.m[3][0]) {
+            SwapPair(pObject, other);
+            other = pObject->next;
+        }
+    }
+}
 
 // TestForWrongAnswer
+inline int C2_HOOK_FASTCALL TestForWrongAnswer(const br_scalar* pOriginal, const br_scalar* pRhs, const br_scalar* pResult, int pSize) {
+    br_scalar product[100];
+    int wrong;
+    int i;
+    int j;
+
+    wrong = 0;
+    for (i = 0; i < pSize; i++) {
+        product[i] = 0.0f;
+        for (j = 0; j < pSize; j++) {
+            product[i] += pOriginal[i * 100 + j] * pResult[j];
+        }
+        if ((pResult[i] != 0.0f && fabs(product[i] - pRhs[i]) > 0.01) || product[i] - pRhs[i] < -0.01) {
+            wrong = 1;
+        }
+    }
+    return wrong;
+}
 
 // RQIterativeImprovement
+inline void C2_HOOK_FASTCALL RQIterativeImprovement(br_scalar* pForces, const br_scalar* pMatrix, const br_scalar* pOrthogonal, const br_scalar* pRhs, const br_scalar* pOriginal, const tU8* pIndices, int pSize) {
+    br_scalar residual[100];
+    br_scalar correction[100];
+    br_scalar sum;
+    int i;
+    int j;
 
-// RQExpand
+    for (i = 0; i < pSize; i++) {
+        sum = -pRhs[i];
+        for (j = 0; j < pSize; j++) {
+            sum += pOriginal[pIndices[i] * 100 + pIndices[j]] * pForces[j];
+        }
+        residual[i] = sum;
+    }
+    correction[0] = residual[0] / pMatrix[0];
+    for (i = 1; i < pSize; i++) {
+        sum = 0.0f;
+        for (j = 0; j < i; j++) {
+            sum += correction[j] * pMatrix[i * 100 + j];
+        }
+        correction[i] = (residual[i] - sum) / pMatrix[i * 101];
+    }
+    for (i = 0; i < pSize; i++) {
+        for (j = 0; j < pSize; j++) {
+            pForces[i] += pOrthogonal[j * 100 + i] * correction[j];
+        }
+    }
+}
 
-// RQSingleExpand
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004c4850
+// FUNCTION: CARMA2_SW 0x004c0f80
+// FUNCTION: CARMA2_CHEAT 0x004ca370
+void C2_HOOK_FASTCALL RQExpand(br_scalar* pMatrix, const br_scalar* pOriginal, int pOld_size, int pSize, br_scalar* pOrthogonal, const tU8* pIndices) {
+    br_scalar row[100];
+    br_scalar value;
+    br_scalar maximum;
+    br_scalar scale;
+    br_scalar diagonal;
+    br_scalar sum;
+    br_scalar length;
+    br_scalar head;
+    br_scalar denominator;
+    br_scalar coefficient;
+    const br_scalar* selected;
+    int i;
+    int j;
+    int k;
+
+    for (j = pOld_size; j < pSize; j++) {
+        selected = &pOriginal[100 * pIndices[j]];
+        for (i = 0; i < pOld_size; i++) {
+            row[i] = selected[pIndices[i]];
+            pMatrix[i * 100 + j] = row[i];
+        }
+        for (i = 0; i < pOld_size; i++) {
+            sum = 0.0f;
+            for (k = 0; k < pOld_size; k++) {
+                sum += row[k] * pOrthogonal[i * 100 + k];
+            }
+            pMatrix[j * 100 + i] = sum;
+        }
+    }
+
+    for (i = pOld_size; i < pSize; i++) {
+        selected = &pOriginal[100 * pIndices[i]];
+        for (j = pOld_size; j < pSize; j++) {
+            pMatrix[i * 100 + j] = selected[pIndices[j]];
+            pOrthogonal[i * 100 + j] = 0.0f;
+        }
+        for (j = 0; j < pOld_size; j++) {
+            pOrthogonal[i * 100 + j] = 0.0f;
+            pOrthogonal[j * 100 + i] = 0.0f;
+        }
+        pOrthogonal[i * 101] = 1.0f;
+    }
+
+    for (i = 0; i < pOld_size; i++) {
+        diagonal = pMatrix[i * 101];
+        maximum = 0.0f;
+        for (k = pOld_size; k < pSize; k++) {
+            value = (br_scalar)fabs(pMatrix[i * 100 + k]);
+            if (maximum <= value) {
+                maximum = value;
+            }
+        }
+        if (maximum == 0.0f) {
+            continue;
+        }
+        scale = (br_scalar)fabs(diagonal);
+        if (maximum > scale) {
+            scale = maximum;
+        }
+        for (k = pOld_size; k < pSize; k++) {
+            pMatrix[i * 100 + k] /= scale;
+        }
+        diagonal /= scale;
+        sum = 0.0f;
+        for (k = pOld_size; k < pSize; k++) {
+            sum += pMatrix[i * 100 + k] * pMatrix[i * 100 + k];
+        }
+        length = (br_scalar)fabs(sqrt(diagonal * diagonal + sum));
+        if (diagonal <= 0.0f) {
+            length = -length;
+        }
+        head = diagonal + length;
+        denominator = head * length;
+        for (j = 0; j < pSize; j++) {
+            sum = head * pOrthogonal[i * 100 + j];
+            for (k = pOld_size; k < pSize; k++) {
+                sum += pOrthogonal[k * 100 + j] * pMatrix[i * 100 + k];
+            }
+            coefficient = sum / denominator;
+            for (k = pOld_size; k < pSize; k++) {
+                pOrthogonal[k * 100 + j] -= coefficient * pMatrix[i * 100 + k];
+            }
+            pOrthogonal[i * 100 + j] -= head * coefficient;
+        }
+        for (j = i + 1; j < pSize; j++) {
+            sum = head * pMatrix[j * 100 + i];
+            for (k = pOld_size; k < pSize; k++) {
+                sum += pMatrix[j * 100 + k] * pMatrix[i * 100 + k];
+            }
+            coefficient = sum / denominator;
+            for (k = pOld_size; k < pSize; k++) {
+                pMatrix[j * 100 + k] -= coefficient * pMatrix[i * 100 + k];
+            }
+            pMatrix[j * 100 + i] -= head * coefficient;
+        }
+        pMatrix[i * 101] = -(length * scale);
+        for (k = pOld_size; k < pSize; k++) {
+            pMatrix[i * 100 + k] = 0.0f;
+        }
+    }
+
+    for (i = pOld_size; i < pSize; i++) {
+        maximum = 0.0f;
+        for (k = i; k < pSize; k++) {
+            value = (br_scalar)fabs(pMatrix[i * 100 + k]);
+            if (maximum <= value) {
+                maximum = value;
+            }
+        }
+        if (maximum == 0.0f) {
+            continue;
+        }
+        for (k = i; k < pSize; k++) {
+            pMatrix[i * 100 + k] /= maximum;
+        }
+        sum = 0.0f;
+        for (k = i; k < pSize; k++) {
+            sum += pMatrix[i * 100 + k] * pMatrix[i * 100 + k];
+        }
+        length = (br_scalar)fabs(sqrt(sum));
+        if (pMatrix[i * 101] <= 0.0f) {
+            length = -length;
+        }
+        head = length + pMatrix[i * 101];
+        denominator = length * head;
+        pMatrix[i * 101] = head;
+        for (j = 0; j < pSize; j++) {
+            sum = 0.0f;
+            for (k = i; k < pSize; k++) {
+                sum += pMatrix[i * 100 + k] * pOrthogonal[k * 100 + j];
+            }
+            coefficient = sum / denominator;
+            for (k = i; k < pSize; k++) {
+                pOrthogonal[k * 100 + j] -= coefficient * pMatrix[i * 100 + k];
+            }
+        }
+        for (j = i + 1; j < pSize; j++) {
+            sum = 0.0f;
+            for (k = i; k < pSize; k++) {
+                sum += pMatrix[j * 100 + k] * pMatrix[i * 100 + k];
+            }
+            coefficient = sum / denominator;
+            for (k = i; k < pSize; k++) {
+                pMatrix[j * 100 + k] -= coefficient * pMatrix[i * 100 + k];
+            }
+        }
+        pMatrix[i * 101] = -(length * maximum);
+        for (k = i + 1; k < pSize; k++) {
+            pMatrix[i * 100 + k] = 0.0f;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004c4f40
+// FUNCTION: CARMA2_SW 0x004c1670
+// FUNCTION: CARMA2_CHEAT 0x004caa60
+void C2_HOOK_FASTCALL RQSingleExpand(br_scalar* pMatrix, const br_scalar* pOriginal, int pSize, br_scalar* pOrthogonal, const tU8* pIndices) {
+    int i;
+    int k;
+    br_scalar maximum;
+    br_scalar head;
+    br_scalar denominator;
+    br_scalar length;
+    br_scalar second_coefficient;
+    br_scalar row[100];
+    br_scalar diagonal;
+    br_scalar sum;
+    br_scalar magnitude;
+    int j;
+    br_scalar second;
+    br_scalar first_coefficient;
+
+    for (i = 0; i <= pSize; i++) {
+        row[i] = pOriginal[100 * pIndices[pSize] + pIndices[i]];
+    }
+    for (k = 0; k < pSize; k++) {
+        sum = 0.0f;
+        for (j = 0; j < pSize; j++) {
+            sum += pOrthogonal[j + k * 100] * row[j];
+        }
+        pMatrix[100 * pSize + k] = sum;
+    }
+    pOrthogonal[101 * pSize] = 1.0f;
+    for (i = 0; i < pSize; i++) {
+        pOrthogonal[i * 100 + pSize] = 0.0f;
+        pOrthogonal[100 * pSize + i] = 0.0f;
+    }
+    for (i = 0; i < pSize; i++) {
+        magnitude = (br_scalar)fabs(row[i]);
+        pMatrix[i * 100 + pSize] = 0.0f;
+        if (magnitude == 0.0f) {
+            continue;
+        }
+        maximum = (br_scalar)fabs(pMatrix[i * 101]);
+        if (magnitude > maximum) {
+            maximum = magnitude;
+        }
+        second = row[i] / maximum;
+        diagonal = pMatrix[i * 101] / maximum;
+        length = (br_scalar)fabs(sqrt((diagonal * diagonal) + second * second));
+        row[i] = second;
+        if (diagonal <= 0.0f) {
+            length = -length;
+        }
+        head = diagonal + length;
+        denominator = head * length;
+        second_coefficient = second / denominator;
+        first_coefficient = head / denominator;
+        for (j = 0; j <= pSize; j++) {
+            sum = (second * pOrthogonal[pSize * 100 + j]) + (pOrthogonal[i * 100 + j] * head);
+            pOrthogonal[pSize * 100 + j] -= second_coefficient * sum;
+            pOrthogonal[i * 100 + j] -= first_coefficient * sum;
+        }
+        for (j = i + 1; j <= pSize; j++) {
+            sum = (row[j] * second) + (pMatrix[100 * j + i] * head);
+            row[j] -= sum * second_coefficient;
+            pMatrix[i + j * 100] -= sum * first_coefficient;
+        }
+        pMatrix[i * 101] = -(length * maximum);
+    }
+    pMatrix[pSize * 101] = row[pSize];
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004c5830
 // FUNCTION: CARMA2_SW 0x004c1f60
@@ -1225,27 +5693,382 @@ int C2_HOOK_FASTCALL RQDcmpV(br_scalar* pMatrix, int pDim, br_scalar* pQ) {
 
 // SparseRQDcmpV
 
-// MakeMatrixFromIndices
+// FUNCTION: CARMA2_HW 0x004c5220
+// FUNCTION: CARMA2_SW 0x004c1950
+// FUNCTION: CARMA2_CHEAT 0x004cad40
+void C2_HOOK_FASTCALL MakeMatrixFromIndices(br_scalar* pMatrix, br_scalar* pOrthogonal, const br_scalar* pOriginal, br_scalar* pResult, const br_scalar* pRhs, const tU8* pIndices, int pSize, tForce_group** pGroups, int pCount_groups) {
+    int total;
+    int g;
+    int count;
+    int i;
+    int j;
+    int k;
+
+    total = 0;
+    for (g = 0; g < pCount_groups; g++) {
+        count = pGroups[g]->count;
+        for (i = 0; i < count; i++) {
+            for (j = 0; j < count; j++) {
+                pMatrix[(total + i) * 100 + total + j] = pGroups[g]->matrix[i * count + j];
+                pOrthogonal[(total + i) * 100 + total + j] = pGroups[g]->orthogonal[i * count + j];
+            }
+            for (k = 0; k < total; k++) {
+                pMatrix[k * 100 + total + i] = 0.0f;
+                pMatrix[(total + i) * 100 + k] = 0.0f;
+                pOrthogonal[k * 100 + total + i] = 0.0f;
+                pOrthogonal[(total + i) * 100 + k] = 0.0f;
+            }
+        }
+        total += count;
+    }
+    if (pSize - total == 1) {
+        RQSingleExpand(pMatrix, pOriginal, total, pOrthogonal, pIndices);
+    } else if (pSize > total) {
+        RQExpand(pMatrix, pOriginal, total, pSize, pOrthogonal, pIndices);
+    }
+    for (i = 0; i < pSize; i++) {
+        pResult[i] = pRhs[pIndices[i]];
+    }
+}
 
 // HasBeenDoneBefore
+inline int C2_HOOK_FASTCALL HasBeenDoneBefore(tU32 pHistory[][2], int pCount, int pToggle) {
+    tU32 mask[2];
+    int i;
+    int j;
+
+    mask[0] = pHistory[pCount][0];
+    mask[1] = pHistory[pCount][1];
+    if (pToggle >= 0) {
+        mask[pToggle >> 5] ^= 1 << (pToggle & 0x1f);
+    }
+    for (i = 0; i < pCount; i++) {
+        for (j = 0; j <= 1; j++) {
+            if (mask[j] != pHistory[i][j]) {
+                break;
+            }
+        }
+        if (j > 1) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 // RemoveRQSingularities
+inline int C2_HOOK_FASTCALL RemoveRQSingularities(int pLast, const br_scalar* pMatrix, const br_scalar* pOrthogonal, const br_scalar* pRhs, const br_scalar* pForward, int pFirst, tU32 pHistory[][2], int pCount, const tU8* pIndices) {
+    br_scalar biggest;
+    br_scalar value;
+    int chosen;
+    int i;
+
+    chosen = pLast;
+    biggest = 0.0f;
+    for (i = pFirst; i < pLast; i++) {
+        value = (br_scalar)fabs(pOrthogonal[pLast * 100 + i]);
+        if (value > biggest) {
+            biggest = value;
+            chosen = i;
+        }
+    }
+    if (chosen == pLast) {
+        return pFirst;
+    }
+    if (HasBeenDoneBefore(pHistory, pCount, pIndices[chosen] - pFirst) != 0) {
+        biggest = 0.0f;
+        for (i = pFirst; i < pLast; i++) {
+            value = (br_scalar)fabs(pOrthogonal[pLast * 100 + i]);
+            if (value > biggest) {
+                if (HasBeenDoneBefore(pHistory, pCount, pIndices[i] - pFirst) == 0) {
+                    biggest = value;
+                    chosen = i;
+                }
+            }
+        }
+        if (chosen == pLast) {
+            return pFirst;
+        }
+    }
+    return chosen;
+}
 
 // AddToMatrix
+inline void C2_HOOK_FASTCALL AddToMatrix(tU8 pIndex, br_scalar* pMatrix, const br_scalar* pOriginal, br_scalar* pResult, const br_scalar* pRhs, br_scalar* pOrthogonal, tU8* pIndices, int* pSize) {
+
+    pIndices[*pSize] = pIndex;
+    *pSize += 1;
+    if (gDAT_006940b8 == 0) {
+        RQSingleExpand(pMatrix, pOriginal, *pSize - 1, pOrthogonal, pIndices);
+    } else {
+        RQExpand(pMatrix, pOriginal, *pSize - 1, *pSize, pOrthogonal, pIndices);
+    }
+    pResult[*pSize - 1] = pRhs[pIndices[*pSize - 1]];
+}
 
 // RQRemovedOneTooManyForces
+inline int C2_HOOK_FASTCALL RQRemovedOneTooManyForces(int* pCount_excluded, tU8* pExcluded, int pSize, const br_scalar* pResult, const br_scalar* pRhs, const br_scalar* pOriginal, tU32 pHistory[][2], int pCount, int pFirst) {
+    br_scalar sum;
+    br_scalar scaled;
+    br_scalar lowest;
+    int repeated;
+    int chosen;
+    int i;
+    int j;
+    tU8 index;
+
+    repeated = HasBeenDoneBefore(pHistory, pCount, -1);
+    chosen = -1;
+    lowest = 0.0f;
+    for (i = 0; i < *pCount_excluded; i++) {
+        index = pExcluded[i];
+        sum = 0.0f;
+        for (j = 0; j < pSize; j++) {
+            sum += pOriginal[index * 100 + j] * pResult[j];
+        }
+        sum -= pRhs[index];
+        scaled = sum / pOriginal[index * 101];
+        if (sum < -0.001 && scaled < lowest) {
+            if (repeated != 0 && HasBeenDoneBefore(pHistory, pCount, index - pFirst) != 0) {
+                if (chosen == -1) {
+                    chosen = i;
+                }
+            } else {
+                lowest = scaled;
+                chosen = i;
+            }
+        }
+    }
+    if (chosen < 0) {
+        return 0;
+    }
+    index = pExcluded[chosen];
+    for (i = chosen + 1; i < *pCount_excluded; i++) {
+        pExcluded[i - 1] = pExcluded[i];
+    }
+    *pCount_excluded -= 1;
+    pExcluded[*pCount_excluded] = index;
+    return 1;
+}
 
 // GetInverseM
+inline void C2_HOOK_FASTCALL GetInverseM(const br_scalar* pMatrix, const br_scalar* pOrthogonal, br_scalar* pResult, int pSize, int pFirst) {
+    br_scalar column[100];
+    br_scalar sum;
+    int i;
+    int j;
+    int k;
 
-// RQMatrixSolveNoNegatives
+    for (i = pFirst; i < pSize; i++) {
+        for (j = pSize - 1; j >= i; j--) {
+            sum = 0.0f;
+            for (k = pSize - 1; k > j; k--) {
+                sum += column[k] * pMatrix[k * 100 + j];
+            }
+            column[j] = (pOrthogonal[j * 100 + i] - sum) / pMatrix[j * 101];
+        }
+        pResult[i] = column[i];
+    }
+}
 
-// RQMatrixSolveWithNegatives
+// FUNCTION: CARMA2_HW 0x004c3b60
+// FUNCTION: CARMA2_SW 0x004c0290
+// FUNCTION: CARMA2_CHEAT 0x004c9680
+int C2_HOOK_FASTCALL RQMatrixSolveNoNegatives(const br_scalar* pOriginal, br_scalar* pRhs, br_scalar* pResult, int pSize, int pRow_size, tU8* pExcluded, int* pCount_excluded, int pFirst, int pUnused, tForce_group** pGroups, int pCount_groups) {
+    tU8 indices[100];
+    br_scalar forward[100];
+    br_scalar active_rhs[100];
+    br_scalar forces[100];
+    tU32 history[60][2];
+    tU32 mask[2];
+    br_scalar sum;
+    br_scalar limit;
+    br_scalar lowest;
+    br_scalar biggest;
+    int count;
+    int matrix_count;
+    int iteration;
+    int last;
+    int removed;
+    int negative;
+    int boundary;
+    int bit;
+    int i;
+    int j;
+
+    removed = -1;
+#ifdef REC2_FIX_BUGS
+    negative = -1;
+#endif
+    *pCount_excluded = 0;
+    if (pSize == 1) {
+        if (pOriginal[0] > 0.0001) {
+            pResult[0] = pRhs[0] / pOriginal[0];
+        } else {
+            pResult[0] = 0.0f;
+        }
+        return 0;
+    }
+    for (i = 0; i < pSize; i++) {
+        indices[i] = i;
+    }
+    count = pFirst + 1;
+    matrix_count = count;
+    *pCount_excluded = pSize - pFirst - 1;
+    for (i = 0; i < *pCount_excluded; i++) {
+        pExcluded[i] = i + pFirst + 1;
+    }
+    MakeMatrixFromIndices(gPhysics_buffer1_ptr, gPhysics_buffer2_ptr, pOriginal, active_rhs, pRhs, indices, count, pGroups, pCount_groups);
+    mask[1] = 0;
+    mask[0] = 0;
+    mask[0] |= 1;
+    for (iteration = 0;; iteration++) {
+        if (iteration >= 50 && negative == -1) {
+            PhysicsWarning("Matrix solve loop overflow");
+            return -1;
+        }
+        history[iteration][0] = mask[0];
+        history[iteration][1] = mask[1];
+        forward[0] = active_rhs[0] / gPhysics_buffer1_ptr[0];
+        for (i = 1; i < count; i++) {
+            sum = 0.0f;
+            for (j = 0; j < i; j++) {
+                sum += forward[j] * gPhysics_buffer1_ptr[i * 100 + j];
+            }
+            forward[i] = (active_rhs[i] - sum) / gPhysics_buffer1_ptr[i * 101];
+        }
+        last = count - 1;
+        limit = (br_scalar)fabs(gPhysics_buffer1_ptr[last * 101] * 100000.0f);
+        for (j = 0; j < last; j++) {
+            if (fabs(gPhysics_buffer1_ptr[last * 100 + j]) > limit) {
+                break;
+            }
+        }
+        if (j != last) {
+            removed = RemoveRQSingularities(last, gPhysics_buffer1_ptr, gPhysics_buffer2_ptr, active_rhs, forward, pFirst, history, iteration, indices);
+            pExcluded[*pCount_excluded] = indices[removed];
+            bit = indices[removed] - pFirst;
+            mask[bit >> 5] &= ~(1 << (bit & 0x1f));
+            *pCount_excluded += 1;
+            for (i = removed; i < last; i++) {
+                indices[i] = indices[i + 1];
+            }
+            count = last;
+            matrix_count = last;
+            MakeMatrixFromIndices(gPhysics_buffer1_ptr, gPhysics_buffer2_ptr, pOriginal, active_rhs, pRhs, indices, count, pGroups, pCount_groups);
+        } else {
+            for (i = 0; i < count; i++) {
+                forces[i] = 0.0f;
+                for (j = 0; j < count; j++) {
+                    forces[i] += gPhysics_buffer2_ptr[j * 100 + i] * forward[j];
+                }
+            }
+            negative = -1;
+            if (removed >= 0) {
+                removed = -1;
+                if (pRhs[pExcluded[*pCount_excluded - 1]] == 0.0f) {
+                    pRhs[pExcluded[*pCount_excluded - 1]] = -10000.0f;
+                }
+            }
+            lowest = -0.0001f;
+            for (i = pFirst; i < count; i++) {
+                if (forces[i] < lowest) {
+                    lowest = forces[i];
+                    negative = i;
+                }
+            }
+            if (negative >= 0) {
+                if (forces[count - 1] < 0.0f) {
+                    boundary = 0;
+                } else {
+                    for (boundary = last; boundary >= matrix_count; boundary--) {
+                        if (forces[boundary] > 0.0f) {
+                            boundary--;
+                            break;
+                        }
+                    }
+                    boundary++;
+                }
+                if (negative < boundary) {
+                    pExcluded[*pCount_excluded] = indices[negative];
+                    bit = indices[negative] - pFirst;
+                    mask[bit >> 5] &= ~(1 << (bit & 0x1f));
+                    *pCount_excluded += 1;
+                    indices[negative] = 0xff;
+                } else {
+                    biggest = 0.0f;
+                    negative = pFirst;
+                    GetInverseM(gPhysics_buffer1_ptr, gPhysics_buffer2_ptr, forward, count, pFirst);
+                    for (i = pFirst; i < count; i++) {
+                        if (forces[i] / forward[i] < 0.0f && fabs(forward[i]) > biggest) {
+                            biggest = (br_scalar)fabs(forward[i]);
+                            negative = i;
+                        }
+                    }
+                    pExcluded[*pCount_excluded] = indices[negative];
+                    bit = indices[negative] - pFirst;
+                    mask[bit >> 5] &= ~(1 << (bit & 0x1f));
+                    *pCount_excluded += 1;
+                    indices[negative] = 0xff;
+                }
+                matrix_count = 0;
+                for (i = 0; i < count; i++) {
+                    if (indices[i] != 0xff) {
+                        indices[matrix_count] = indices[i];
+                        active_rhs[matrix_count] = active_rhs[i];
+                        matrix_count++;
+                    }
+                }
+                count = matrix_count;
+                MakeMatrixFromIndices(gPhysics_buffer1_ptr, gPhysics_buffer2_ptr, pOriginal, active_rhs, pRhs, indices, count, pGroups, pCount_groups);
+            } else {
+                for (i = 0; i < pSize; i++) {
+                    pResult[i] = 0.0f;
+                }
+                for (i = 0; i < count; i++) {
+                    pResult[indices[i]] = forces[i];
+                }
+                if (RQRemovedOneTooManyForces(pCount_excluded, pExcluded, pSize, pResult, pRhs, pOriginal, history, iteration, pFirst) == 0) {
+                    if (TestForWrongAnswer(pOriginal, pRhs, pResult, pSize) != 0) {
+                        RQIterativeImprovement(forces, gPhysics_buffer1_ptr, gPhysics_buffer2_ptr, active_rhs, pOriginal, indices, count);
+                    }
+                    return 0;
+                }
+                bit = pExcluded[*pCount_excluded] - pFirst;
+                mask[bit >> 5] |= 1 << (bit & 0x1f);
+                AddToMatrix(pExcluded[*pCount_excluded], gPhysics_buffer1_ptr, pOriginal, active_rhs, pRhs, gPhysics_buffer2_ptr, indices, &count);
+            }
+        }
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004c53b0
+// STUB: CARMA2_SW 0x004c1ae0
+// STUB: CARMA2_CHEAT 0x004caed0
+void C2_HOOK_FASTCALL RQMatrixSolveWithNegatives(br_scalar* pR, br_scalar* pQ, br_scalar* pB, br_scalar* pX, int pCount) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004c5b50
 // FUNCTION: CARMA2_SW 0x004c2280
 int C2_HOOK_FASTCALL MatrixProcess(br_scalar* pR, br_scalar* pQ, int pDim) {
     return RQDcmpV(pR, pDim, pQ);
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004c5b60
 void C2_HOOK_FASTCALL RqBackSub(const br_scalar* pR, const br_scalar* pQ, const br_scalar* pRhs, br_scalar* pX, int pDim) {
@@ -1283,7 +6106,13 @@ void C2_HOOK_FASTCALL RqBackSub(const br_scalar* pR, const br_scalar* pQ, const 
     }
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
 // FUNCTION: CARMA2_HW 0x004c5c70
+// FUNCTION: CARMA2_SW 0x004c23a0
+// FUNCTION: CARMA2_CHEAT 0x004cb790
 void* C2_HOOK_FASTCALL GetPhysicsScratchPointer(int pSize) {
 
     if ((tU8*)gPhysics_scratch_ptr + pSize > (tU8*)gPhysics_other_buffer + gPhysics_other_buffer_capacity) {
@@ -1293,6 +6122,8 @@ void* C2_HOOK_FASTCALL GetPhysicsScratchPointer(int pSize) {
 }
 
 // FUNCTION: CARMA2_HW 0x004c5cb0
+// FUNCTION: CARMA2_SW 0x004c23e0
+// FUNCTION: CARMA2_CHEAT 0x004cb7d0
 void C2_HOOK_FASTCALL IncreasePhysicsScratchPointer(int pSize) {
 
     if ((tU8*)gPhysics_scratch_ptr + pSize > (tU8*)gPhysics_other_buffer + gPhysics_other_buffer_capacity) {
@@ -1301,12 +6132,21 @@ void C2_HOOK_FASTCALL IncreasePhysicsScratchPointer(int pSize) {
     gPhysics_scratch_ptr = (tU8*)gPhysics_scratch_ptr + pSize;
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
 // FUNCTION: CARMA2_HW 0x004c5d00
 // FUNCTION: CARMA2_SW 0x004c2430
+// FUNCTION: CARMA2_CHEAT 0x004cb820
 void C2_HOOK_FASTCALL ClearPhysicsScratchSpace(void) {
 
     gPhysics_scratch_ptr = gPhysics_other_buffer;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004c5d10
 // FUNCTION: CARMA2_SW 0x004c2440
@@ -1541,12 +6381,20 @@ void C2_NORETURN C2_HOOK_FASTCALL PhysicsError(tPhysicsError pError, const char*
     exit(pError);
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
 // FUNCTION: CARMA2_HW 0x004c61e0
 // FUNCTION: CARMA2_SW 0x004c2910
 // FUNCTION: CARMA2_CHEAT 0x004cbd00
 void C2_HOOK_FASTCALL PhysicsWarning(const char* pMessage) {
     (void)pMessage;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004c61f0
 // FUNCTION: CARMA2_SW 0x004c2920
@@ -1679,9 +6527,9 @@ int C2_HOOK_FASTCALL PhysicsObjectRecurseChildren(tPhysics_object* pObject, tEnu
 // FUNCTION: CARMA2_CHEAT 0x004cc030
 void C2_HOOK_FASTCALL InitPhysicsWorkspace(tU8* pBuffer, int pSize) {
 
-    gPhysics_buffer1_ptr = pBuffer;
+    gPhysics_buffer1_ptr = (br_scalar*)pBuffer;
     pSize -= 3 * PHYSICS_BUFFER_PART_SIZE;
-    gPhysics_buffer2_ptr = pBuffer + PHYSICS_BUFFER_PART_SIZE;
+    gPhysics_buffer2_ptr = (br_scalar*)(pBuffer + PHYSICS_BUFFER_PART_SIZE);
     gPhysics_buffer3_ptr = pBuffer + 2 * PHYSICS_BUFFER_PART_SIZE;
     pBuffer += 3 * PHYSICS_BUFFER_PART_SIZE;
     if (pSize < PHYSICS_BUFFER_OTHER_SIZE) {
