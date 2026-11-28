@@ -100,6 +100,11 @@ br_vector3 gZero_v__car;  // FIXME: make const?
 // GLOBAL: CARMA2_SW 0x00673b10
 int gFreeze_mechanics;
 
+// GLOBAL: CARMA2_HW 0x0079ef40
+// GLOBAL: CARMA2_SW 0x007954e0
+// GLOBAL: CARMA2_CHEAT 0x007a65e0
+char gNon_car_spec_list[100];
+
 // GLOBAL: CARMA2_HW 0x006793dc
 // GLOBAL: CARMA2_SW 0x00673b4c
 // GLOBAL: CARMA2_CHEAT 0x00680c8c
@@ -1583,6 +1588,30 @@ int C2_HOOK_FASTCALL TestForCarInSensiblePlace(tCar_spec* pCar_spec, br_vector3*
         &gWorld_callbacks);
     gTesting_car_for_sensible_place = 0;
     return r;
+}
+
+// FUNCTION: CARMA2_HW 0x0041fe90
+// FUNCTION: CARMA2_SW 0x0041ff10
+// FUNCTION: CARMA2_CHEAT 0x004200f0
+void C2_HOOK_FASTCALL FUN_0041fe90(br_actor* pActor) {
+    tNon_car_spec* non_car;
+    int i;
+
+    non_car = pActor->type_data;
+    for (i = 0; i < gNum_active_non_cars; i++) {
+        if (gActive_non_car_list[i] == non_car) {
+            gNum_active_non_cars--;
+            PHILRemoveObject(non_car->collision_info);
+            for (; i < gNum_active_non_cars; i++) {
+                gActive_non_car_list[i] = gActive_non_car_list[i + 1];
+            }
+            non_car->driver = eDriver_non_car_unused_slot;
+            if ((void*)gCar_to_view == (void*)non_car) {
+                FUN_0040e530(NULL);
+            }
+            return;
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x0041ff00

@@ -23,6 +23,7 @@ extern br_vector3 gZero_v__car;
 extern int gFreeze_mechanics;
 extern int gNum_active_non_cars;
 extern tNon_car_spec* gActive_non_car_list[99];
+extern char gNon_car_spec_list[100];
 extern int gEliminate_faces;
 extern int gIn_the_sea;
 extern int gFace_num__car;
@@ -224,6 +225,8 @@ extern float C2_HOOK_FASTCALL GetCarOverallBoundsMinY(const tCar_spec* pCar_spec
 extern void C2_HOOK_FASTCALL SetCarSuspGiveAndHeight(tCar_spec* pCar, float pFront_give_factor, float pRear_give_factor, float pDamping_factor, float pExtra_front_height, float pExtra_rear_height);
 
 extern int C2_HOOK_FASTCALL TestForCarInSensiblePlace(tCar_spec* pCar_spec, br_vector3* pVec3);
+
+extern void C2_HOOK_FASTCALL FUN_0041fe90(br_actor* pActor);
 
 extern tNon_car_spec* C2_HOOK_FASTCALL PullActorFromWorld(br_actor* pActor);
 
