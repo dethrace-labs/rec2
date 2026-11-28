@@ -13,6 +13,7 @@
 #include "52-errors.h"
 #include "globvrpb.h"
 #include "01-network.h"
+#include "platform.h"
 
 #include <SDL3/SDL.h>
 
@@ -451,15 +452,20 @@ tS3_error_codes C2_HOOK_FASTCALL PDS3PlayCDAChannel(tS3_channel *pChannel) {
 void PDS3ServiceCDA(int pDelta_time) {
 }
 
-void *PDS3CreateSoundBuffer(tS3_wav_info *pWav_info, void *pWav_buffer) {
+void *S3BufferWav(const char *pPath, tS3_buffer_desc *pBuffer_desc) {
     return NULL;
 }
 
-int PDS3PlaySample(tS3_channel *pChannel) {
+int S3PlaySample(tS3_channel *pChannel, tS3_descriptor *pDesc) {
     return 0;
 }
 
-int PDS3IsSamplePlaying(tS3_channel *pChannel) {
+int S3ServiceChannel(tS3_channel *pChannel) {
+    if (pChannel->type == 1) {
+        return !PDS3IsMIDIStopped(pChannel);
+    } else if (pChannel->type == 2) {
+        return PDS3IsCDAPlaying();
+    }
     return 0;
 }
 

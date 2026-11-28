@@ -11,6 +11,7 @@
 #include "platform.h"
 #include "s3/internal/audio.h"
 #include "s3/internal/resource.h"
+#include "s3/internal/sample.h"
 #include "rec2_macros.h"
 
 // GLOBAL: CARMA2_HW 0x006aaa1c
@@ -178,28 +179,85 @@ int C2_HOOK_FASTCALL PDS3InitCDA(void) {
     return 1;
 }
 
-void* C2_HOOK_FASTCALL PDS3CreateSoundBuffer(tS3_wav_info* pWav_info, void* pWav_buffer) {
-    LPDIRECTSOUNDBUFFER buffer;
-    DSBUFFERDESC buffer_desc;
-    void* buffer_data;
-    DWORD buffer_data_size;
+// FUNCTION: CARMA2_HW 0x0056907c
+// FUNCTION: CARMA2_SW 0x0056471c
+void* C2_HOOK_FASTCALL S3BufferWav(const char* pPath, tS3_buffer_desc* pBuffer_desc) {
+    FILE* fp;
+    int status;
+    int num;
+    char leaf[512];
+    DWORD locked_size;
+    tS3_wav_file* file_data;
+    LPDIRECTSOUNDBUFFER sound_buffer;
+    DSBUFFERDESC dsbdesc;
+    tS3_wav_info wav_info;
+    void* data_ptr;
+    char path[512];
+
+    data_ptr = NULL;
+    status = 0;
+    locked_size = 0;
+    if (gS3_low_memory_mode) {
+        sprintf(path, "DATA%sSOUNDS%s%s", gS3_path_separator, gS3_path_separator, pPath);
+        fp = S3_low_memory_fopen(path, "rb");
+    } else if (gS3_sound_dirname[0]) {
+        PDExtractFilename(leaf, pPath);
+        sprintf(path, "%s\\%s", gS3_sound_dirname, leaf);
+        fp = fopen(path, "rb");
+    } else {
+        fp = fopen(pPath, "rb");
+    }
+    if (fp == NULL) {
+        gS3_last_error = eS3_error_readfile;
+        return NULL;
+    }
+    num = S3GetFileSize(fp);
+    if (num == 0) {
+        fclose(fp);
+        gS3_last_error = eS3_error_readfile;
+        return NULL;
+    }
+    file_data = S3MemAllocate(num, kMem_S3_Windows_95_load_WAV_file);
+    if (file_data == NULL) {
+        fclose(fp);
+        gS3_last_error = eS3_error_memory;
+        return NULL;
+    }
+    fread(file_data, 1, num, fp);
+    fclose(fp);
+
+    C2_HOOK_BUG_ON(sizeof(tS3_wav_info) != 0xc);
+
+    memset(&wav_info, 0, sizeof(tS3_wav_info));
+    if (!S3CheckWavHeader(file_data, &wav_info.wav_info_header, &wav_info.samples, &wav_info.sample_size)) {
+        gS3_last_error = eS3_error_readfile;
+        s3_dprintf("ERROR: .WAV file '%s' is crap", path);
+        return NULL;
+    }
+    pBuffer_desc->field_0x14 = 0;
+    pBuffer_desc->field_0x10 = 0;
+    pBuffer_desc->sample_size = wav_info.sample_size;
+    pBuffer_desc->sample_rate = wav_info.wav_info_header->sample_rate;
+    pBuffer_desc->bytes_per_second = wav_info.wav_info_header->avg_bytes_per_second;
+    pBuffer_desc->count_channels = wav_info.wav_info_header->number_of_channels;
 
     C2_HOOK_BUG_ON(sizeof(DSBUFFERDESC) != 0x14);
-    memset(&buffer_desc, 0, sizeof(buffer_desc));
-    buffer_desc.dwSize = sizeof(DSBUFFERDESC);
-    buffer_desc.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPAN | DSBCAPS_CTRLFREQUENCY | DSBCAPS_STATIC;
-    buffer_desc.dwBufferBytes = pWav_info->sample_size;
-    buffer_desc.lpwfxFormat = (LPWAVEFORMATEX)pWav_info->wav_info_header;
-    if (FAILED(IDirectSound_CreateSoundBuffer(gPD_S3_direct_sound, &buffer_desc, &buffer, NULL))) {
+    memset(&dsbdesc, 0, sizeof(dsbdesc));
+    dsbdesc.dwSize = sizeof(DSBUFFERDESC);
+    dsbdesc.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPAN | DSBCAPS_CTRLFREQUENCY | DSBCAPS_STATIC;
+    dsbdesc.dwBufferBytes = wav_info.sample_size;
+    dsbdesc.lpwfxFormat = (LPWAVEFORMATEX)wav_info.wav_info_header;
+    if (FAILED(IDirectSound_CreateSoundBuffer(gPD_S3_direct_sound, &dsbdesc, &sound_buffer, NULL))) {
         return NULL;
     }
-    if (FAILED(IDirectSoundBuffer_Lock(buffer, 0, pWav_info->sample_size, &buffer_data, &buffer_data_size, NULL, NULL, 0))) {
-        IDirectSoundBuffer_Release(buffer);
+    if (FAILED(IDirectSoundBuffer_Lock(sound_buffer, 0, wav_info.sample_size, &data_ptr, &locked_size, NULL, NULL, 0))) {
         return NULL;
     }
-    memmove(buffer_data, pWav_info->samples, buffer_data_size);
-    IDirectSoundBuffer_Unlock(buffer, buffer_data, buffer_data_size, NULL, 0);
-    return buffer;
+    memcpy(data_ptr, wav_info.samples, locked_size);
+    S3MemFree(file_data);
+    IDirectSoundBuffer_Unlock(sound_buffer, data_ptr, locked_size, NULL, 0);
+    (void)status;
+    return sound_buffer;
 }
 
 // FUNCTION: CARMA2_HW 0x005693d9
@@ -345,6 +403,32 @@ int C2_HOOK_FASTCALL PDS3StopCDAChannel(tS3_channel* pChannel) {
     return 0;
 }
 
+// FUNCTION: CARMA2_HW 0x00569752
+// FUNCTION: CARMA2_SW 0x00564df2
+// FUNCTION: CARMA2_CHEAT 0x0056f328
+int C2_HOOK_FASTCALL S3ServiceChannel(tS3_channel* pChannel) {
+    LPDIRECTSOUNDBUFFER buffer;
+    DWORD status;
+
+    if (pChannel->type == 0) {
+        if (pChannel->descriptor != NULL && pChannel->descriptor->type == pChannel->type) {
+            buffer = pChannel->descriptor->pd_handle;
+            if (buffer != NULL) {
+                if (!FAILED(IDirectSoundBuffer_GetStatus(buffer, &status)) && (status & DSBSTATUS_PLAYING)) {
+                    return 1;
+                }
+            }
+        }
+        PDS3StopSampleChannel(pChannel);
+        return 0;
+    } else if (pChannel->type == 1) {
+        return !PDS3IsMIDIStopped(pChannel);
+    } else if (pChannel->type == 2) {
+        return PDS3IsCDAPlaying();
+    }
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x005697ef
 // FUNCTION: CARMA2_SW 0x00564e8f
 // FUNCTION: CARMA2_CHEAT 0x0056f3c5
@@ -473,25 +557,6 @@ int C2_HOOK_FASTCALL PDS3IsCDAPlaying(void) {
     return 0;
 }
 
-int C2_HOOK_FASTCALL PDS3IsSamplePlaying(tS3_channel* pChannel) {
-    DWORD status;
-
-    if (pChannel->descriptor != NULL && pChannel->descriptor->type == pChannel->type) {
-        LPDIRECTSOUNDBUFFER buffer;
-
-        buffer = pChannel->descriptor->pd_handle;
-        if (buffer != NULL) {
-            if (!FAILED(IDirectSoundBuffer_GetStatus(buffer, &status))) {
-                if (status & DSBSTATUS_PLAYING) {
-                    return 1;
-                }
-            }
-        }
-    }
-    PDS3StopSampleChannel(pChannel);
-    return 0;
-}
-
 // FUNCTION: CARMA2_HW 0x0056967e
 // FUNCTION: CARMA2_SW 0x00564d1e
 // FUNCTION: CARMA2_CHEAT 0x0056f254
@@ -506,20 +571,36 @@ int C2_HOOK_FASTCALL PDS3UpdateChannelFrequency(tS3_channel* pChannel) {
     return 1;
 }
 
-int C2_HOOK_FASTCALL PDS3PlaySample(tS3_channel* pChannel) {
+// FUNCTION: CARMA2_HW 0x00569865
+// FUNCTION: CARMA2_SW 0x00564f05
+// FUNCTION: CARMA2_CHEAT 0x0056f43b
+int C2_HOOK_FASTCALL S3PlaySample(tS3_channel* pChannel, tS3_descriptor* pDesc) {
+    LPDIRECTSOUNDBUFFER snd_buffer;
+    HRESULT hr;
+    DWORD mode;
 
+    hr = 0;
+    mode = 0;
     if (pChannel->descriptor != NULL && pChannel->descriptor->type == pChannel->type) {
-        IDirectSoundBuffer *sound_buffer = pChannel->descriptor->pd_handle;
-        if (sound_buffer != NULL) {
-            int looping = pChannel->repetitions == 0;
-            IDirectSoundBuffer_Play(sound_buffer, 0, 0, looping ? DSBPLAY_LOOPING : 0);
-            if (!looping) {
-                IDirectSoundBuffer_SetCurrentPosition(sound_buffer, 0);
+        snd_buffer = pChannel->descriptor->pd_handle;
+        if (snd_buffer != NULL) {
+            if (pChannel->repetitions == 0) {
+                mode = DSBPLAY_LOOPING;
+            }
+#ifdef REC2_CHEAT
+            if (gS3_callbacks.field_0x0 != NULL && pChannel->repetitions) {
+                gS3_callbacks.field_0x0(pChannel);
+            }
+#endif
+            IDirectSoundBuffer_Play(snd_buffer, 0, 0, mode);
+            if (mode == 0) {
+                IDirectSoundBuffer_SetCurrentPosition(snd_buffer, 0);
             }
         }
-        PDS3UpdateChannelVolume(pChannel);
-        PDS3UpdateChannelFrequency(pChannel);
     }
+    PDS3UpdateChannelVolume(pChannel);
+    PDS3UpdateChannelFrequency(pChannel);
+    (void)hr;
     return 1;
 }
 

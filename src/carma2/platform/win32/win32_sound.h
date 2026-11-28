@@ -51,8 +51,6 @@ extern int C2_HOOK_FASTCALL PDS3DDXInit(void);
 
 extern int C2_HOOK_FASTCALL PDS3InitCDA(void);
 
-extern void* C2_HOOK_FASTCALL PDS3CreateSoundBuffer(tS3_wav_info* pWav_info, void* pWav_buffer);
-
 extern void C2_HOOK_FASTCALL PDS3ReleaseSound(tS3_descriptor* pSound_descriptor);
 
 extern int C2_HOOK_FASTCALL PDReverseAudio(tS3_channel* pChannel);
@@ -77,11 +75,7 @@ extern int C2_HOOK_FASTCALL PDS3IsMIDIStopped(tS3_channel *pChannel);
 
 extern int C2_HOOK_FASTCALL PDS3IsCDAPlaying(void);
 
-extern int C2_HOOK_FASTCALL PDS3IsSamplePlaying(tS3_channel* pChannel);
-
 extern int C2_HOOK_FASTCALL PDS3UpdateChannelFrequency(tS3_channel* pChannel);
-
-extern int C2_HOOK_FASTCALL PDS3PlaySample(tS3_channel* pChannel);
 
 extern tS3_error_codes C2_HOOK_FASTCALL PDS3StartMidiChannel(tS3_channel* pChannel);
 
