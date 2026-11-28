@@ -636,6 +636,24 @@ typedef struct {
 
 typedef struct {
     undefined4 field_0x0;
+    br_vector3 field_0x4;
+    br_vector3 field_0x10;
+    br_vector3 field_0x1c;
+    br_vector3 field_0x28;
+    br_vector3 field_0x34;
+    undefined4 field_0x40;
+    undefined4 field_0x44;
+    undefined4 field_0x48;
+    undefined4 field_0x4c;
+    br_matrix34 field_0x50;
+    undefined4 field_0x80;
+    br_bounds3 field_0x84;
+    int field_0x9c;
+    br_matrix34 field_0xa0;
+} tPipe_chunk_shrapnel_shower;
+
+typedef struct {
+    undefined4 field_0x0;
     tU32 uid;
     tU32 time;
     float force;
@@ -699,6 +717,8 @@ typedef struct {
 
 typedef struct {
     tU32 size; // size is size of complete chunk (including size member)
+    tU8 field_0x4[124]; /* FIXME: unknown type */
+    tU16 field_0x80[64];
     tU8 data[];
 } tPipe_chunk_bend;
 
@@ -751,10 +771,17 @@ typedef struct {
     br_pixelmap* pixelmap;
 } tPipe_chunk_oil_spill;
 
+typedef struct {
+    br_model* model;
+    tCompressed_vector3 direction;
+    tU16 values[];
+} tPipe_chunk_crush;
+
 typedef enum {
     ePipe_chunk_frame_finish = 0,
     ePipe_chunk_ped_incident = 1,
     ePipe_chunk_sound = 2,
+    ePipe_chunk_crush = 3,
     ePipe_chunk_car = 5,
     ePipe_chunk_graphical_wheel_stuff = 6,
     ePipe_chunk_damage = 7,
@@ -777,12 +804,17 @@ typedef enum {
     ePipe_chunk_relink = 25,
     ePipe_chunk_identity = 26,
     ePipe_chunk_split_weld = 27,
+    ePipe_chunk_bend = 28,
+    ePipe_chunk_unbend = 29,
+    ePipe_chunk_shrapnel_shower = 30,
     ePipe_chunk_explosion = 31,
     ePipe_chunk_non_car_creation = 32,
     ePipe_chunk_smash_model_change = 33,
+    ePipe_chunk_smash_remove_faces = 34,
     ePipe_chunk_smash_decal = 35,
     ePipe_smash_texture_change = 36,
     ePipe_chunk_repulse_ray = 37,
+    ePipe_chunk_end_my_bend = 38,
     ePipe_chunk_ped_status = 40,
     ePipe_chunk_ped_dir = 41,
     ePipe_chunk_ped_move = 42,
@@ -839,6 +871,20 @@ typedef struct {
 } tPipe_chunk_split_weld;
 
 typedef struct {
+    tU16 field_0x0;
+    tU16 field_0x2;
+    tU16 field_0x4;
+    br_vector3 field_0x8;
+    float field_0x14;
+} tPipe_chunk_bend_point;
+
+typedef struct {
+    tU16 field_0x0;
+    tU16 field_0x2;
+    tU16 field_0x4;
+} tPipe_chunk_unbend;
+
+typedef struct {
     br_uint_16 vertices[3];
     br_uint_16 smoothing;
 } tPipe_remove_face;
@@ -882,6 +928,7 @@ typedef struct tPipe_chunk {
         tPipe_phil_object phil_object;
         tPipe_funk_enable funk_enable;
         tPipe_chunk_shrapnel shrapnel;
+        tPipe_chunk_shrapnel_shower shrapnel_shower;
         tPipe_chunk_remove_faces remove_faces;
         tPipe_chunk_identity identity;
         tPipe_chunk_flame flame;
@@ -922,6 +969,7 @@ typedef struct tPipe_chunk {
         tPipe_single_drone_straight_pos drone_straight_pos;
         tPipe_chunk_repulse_ray repulse_ray;
         tPipe_chunk_oil_spill oil_spill;
+        tPipe_chunk_crush crush;
         tPipe_chunk_extended_splash extended_splash;
         tPipe_single_graphical_wheel_stuff graphical_wheel_stuff;
         char raw_data[0];
