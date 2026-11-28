@@ -9,15 +9,20 @@
 #ifndef __MACTYPES__
 #define __MACTYPES__
 
+#include "c2_hooks.h"
+
 #include <stdint.h>
 
 typedef long                      Fixed;
 typedef int16_t                   OSErr;
 typedef char                      Str255[256];
 typedef Str255                    StrFileName;
+typedef char                      Str31[32];
 typedef char *                    Ptr;
 typedef Ptr *                     Handle;
 typedef long                      TimeValue;
+typedef long                      TimeScale;
+typedef long                      Size;
 typedef unsigned char *           StringPtr;
 typedef StringPtr *               StringHandle;
 typedef int16_t                   ScriptCode;
@@ -28,11 +33,11 @@ enum {
     noErr                         = 0
 };
 
-struct Rect {
+typedef struct Rect {
     short               top;
     short               left;
     short               bottom;
     short               right;
-};
+} Rect;
 
 #endif /* __MACTYPES__ */

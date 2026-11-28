@@ -128,6 +128,13 @@ typedef union {
     tU32 u32;
 } tFloat_u32_union;
 
+typedef struct {
+    int left;
+    int top;
+    int right;
+    int bottom;
+} tReplay_button_rect; /* FIXME: name and fields are guesses */
+
 typedef enum {
     eEdit_mode_options = 0,
     eEdit_mode_cheat = 1,
@@ -1942,6 +1949,11 @@ typedef struct tHeadup_info {
     char* name;
     tNet_head_avail avail;
 } tHeadup_info;
+
+typedef struct {
+    char name[32];
+    tU32 value;
+} tQuick_time_option;
 
 typedef enum {
     kSoundFx_None = -1,

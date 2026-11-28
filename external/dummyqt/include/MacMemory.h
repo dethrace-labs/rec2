@@ -9,6 +9,14 @@
 #ifndef __MACMEMORY__
 #define __MACMEMORY__
 
-extern void DisposeHandle(Handle h);
+extern void C2_HOOK_CDECL DisposeHandle(Handle h);
+
+extern Handle C2_HOOK_CDECL NewHandle(Size byteCount);
+
+extern OSErr C2_HOOK_CDECL MemError(void);
+
+extern void C2_HOOK_CDECL MoveHHi(Handle h);
+
+extern void C2_HOOK_CDECL HLock(Handle h);
 
 #endif /* __MACMEMORY__ */
