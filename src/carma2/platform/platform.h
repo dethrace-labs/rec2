@@ -109,11 +109,13 @@ extern int C2_HOOK_FASTCALL PDNetJoinGame(tNet_game_details* pGame_details, cons
 
 extern void C2_HOOK_FASTCALL PDNetHostFinishGame(tNet_game_details* pDetails);
 
-extern void C2_HOOK_FASTCALL PDNetLeaveGame(void);
+extern void C2_HOOK_FASTCALL PDNetLeaveGame(tNet_game_details* pDetails);
 
 extern tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* pDetails, void** gRemote_addr);
 
 extern int C2_HOOK_FASTCALL PDNetSendMessageToAddress(tNet_game_details* pDetails, tNet_message* pMessage, void* pAddress);
+
+extern void C2_HOOK_FASTCALL PDNetDisposePlayer(tNet_game_player_info* pPlayer);
 
 extern int C2_HOOK_FASTCALL PDFileUnlock(const char* pThe_path);
 
