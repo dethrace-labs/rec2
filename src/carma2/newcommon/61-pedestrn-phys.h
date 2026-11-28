@@ -171,11 +171,11 @@ extern void C2_HOOK_FASTCALL OneLessPed(tPedestrian* pPed);
 
 extern void C2_HOOK_FASTCALL ScoreForKilledPedestrian(tPedestrian* pPed, float pHeight);
 
-// KillPedestrian
+extern void C2_HOOK_FASTCALL KillPedestrian(tPedestrian* pPed, tPhysics_object* pCollision_info);
 
 extern int C2_HOOK_FASTCALL DismemberPed(tPedestrian* pPed, int pBone_index);
 
-extern void C2_HOOK_FASTCALL DamagePedestrian(tPedestrian* pPed, int pDamage, int pArg3, int pArg4, tPhysics_object* pObject);
+extern int C2_HOOK_FASTCALL DamagePedestrian(tPedestrian* pPed, int pDamage, int pArg3, int pArg4, tPhysics_object* pObject);
 
 // SetLastHitter
 
@@ -189,19 +189,19 @@ extern void C2_HOOK_FASTCALL DamagePedestrian(tPedestrian* pPed, int pDamage, in
 
 // DoToPeds
 
-// DoPedAnnihilator
+extern int C2_HOOK_FASTCALL DoPedAnnihilator(tCar_spec* pCar, float pRange);
 
 // RepulseIt
 
 // DoPedestrianRepulsifictor
 
-// CompileBurnableList
+extern int C2_HOOK_FASTCALL CompileBurnableList(tPedestrian* pPed, tCar_spec* pCar, float pDistance_squared, tU32 pTime, void* pContext);
 
-// SortPedListFunction
+extern int C2_HOOK_CDECL SortPedListFunction(const void* pFirst, const void* pSecond);
 
-// ChoosePedToNapalm
+extern tPedestrian* C2_HOOK_FASTCALL ChoosePedToNapalm(tCar_spec* pCar);
 
-// DoPedNapalm
+extern int C2_HOOK_FASTCALL DoPedNapalm(tCar_spec* pCar);
 
 // KillNapalmBolt
 
@@ -315,9 +315,13 @@ extern void C2_HOOK_FASTCALL FindNearestPed(void);
 
 extern void C2_HOOK_FASTCALL ResetPedNearness(void);
 
+extern void C2_HOOK_FASTCALL FUN_004d63a0(void);
+
 extern void C2_HOOK_FASTCALL GetPedestrianDebugInfo(char* pBuffer, int pPed_index);
 
 extern void C2_HOOK_FASTCALL ShowActivePedCount(void);
+
+extern void C2_HOOK_FASTCALL FUN_004d6870(void);
 
 extern void C2_HOOK_FASTCALL PedPreCollisionStuff(void);
 
