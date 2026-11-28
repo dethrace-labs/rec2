@@ -88,12 +88,13 @@ typedef struct {
     int field_0x44;
     undefined4 field_0x48;
     undefined4 field_0x4c;
+    undefined field_0x50[16]; /* FIXME: unknown, the original reserves 0x60 bytes on the stack */
 } tJoystick_effect_description;
 
 typedef struct {
     DIEFFECT di_effect;
     undefined type_specific_params[24];
-    undefined field_0x4c[20];
+    DIENVELOPE envelope;
     LONG field_0x60;
     undefined4 field_0x64;
     char name[128];
