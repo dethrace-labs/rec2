@@ -34,7 +34,7 @@ extern tU32 gPipe_sound_start_time;
 extern tU32 gPipe_sound_time_window;
 extern int gDisable_advance;
 extern int gPipe_count_callbacks;
-extern tPipe_smudge_data* gCrush_space;
+extern tPipe_model_mash* gCrush_space;
 extern tU8* gEnd_of_session;
 
 extern int C2_HOOK_FASTCALL ARReplayForwards(void);
@@ -236,6 +236,8 @@ extern void C2_HOOK_FASTCALL PipeSingleProxRay(int pRay_index, tCar_spec* pCar, 
 extern void C2_HOOK_FASTCALL PipeSingleSkidAdjustment(int pSkid_num, br_matrix34* pMatrix, br_material* pMaterial);
 
 extern void C2_HOOK_FASTCALL PipeSingleFlap(br_actor* pActor, br_angle pAngle);
+
+extern void C2_HOOK_FASTCALL PipeSingleModelMash(br_model* pModel, br_vector3* pMash);
 
 extern void C2_HOOK_FASTCALL PipeSingleRelink(br_actor* pParent, br_actor* pActor);
 
