@@ -219,6 +219,7 @@ void C2_HOOK_FASTCALL ProcessModelFaceMaterials2(br_model* pModel, material_cbfn
 }
 
 // FUNCTION: CARMA2_HW 0x00448850
+// FUNCTION: CARMA2_SW 0x00448c70
 // FUNCTION: CARMA2_CHEAT 0x00448d60
 intptr_t C2_HOOK_CDECL ProcessFaceMaterials(br_actor* pActor, void* pData) {
     tPMFMCB* callback = pData;
@@ -433,6 +434,7 @@ br_material* C2_HOOK_FASTCALL UnsuffixedMaterial(const char* pOld_ident, const c
 }
 
 // FUNCTION: CARMA2_HW 0x00447c60
+// FUNCTION: CARMA2_SW 0x004487b0
 // FUNCTION: CARMA2_CHEAT 0x00448180
 br_material* C2_HOOK_FASTCALL RoadUntexToPersp(br_model* pModel, tU16 pFace) {
     br_material* old_mat;
