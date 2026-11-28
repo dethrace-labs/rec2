@@ -12,6 +12,9 @@
 #include "c2_hooks.h"
 #include "rec2_types.h"
 
+extern const br_vector3 gPed_x_unit_vector;
+extern const br_vector3 gPed_y_unit_vector;
+extern const br_vector3 gPed_z_unit_vector;
 extern int gPed_count_limbed_actors;
 extern br_actor* gLimbs_actor;
 extern tSmashable_initial_position_spec gGiblet_initial_position;
@@ -86,9 +89,9 @@ extern int gPed_valium_left;
 
 // InitBoner
 
-// DRVector3SafeCross
+extern void C2_HOOK_FASTCALL DRVector3SafeCross(br_vector3* pDest, const br_vector3* pA, const br_vector3* pB);
 
-// DRVector3SafeCrossXZ
+extern void C2_HOOK_FASTCALL DRVector3SafeCrossXZ(br_vector3* pDest, const br_vector3* pA, const br_vector3* pB);
 
 extern void C2_HOOK_FASTCALL ScaleModelXYZ(br_model* pModel, br_scalar pScale_x, br_scalar pScale_y, br_scalar pScale_z);
 

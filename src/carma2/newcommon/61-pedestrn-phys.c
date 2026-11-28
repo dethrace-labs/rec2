@@ -79,7 +79,7 @@ int gGhost_pedestrians = 0;
 // FUNCTION: CARMA2_HW 0x004d5730
 // FUNCTION: CARMA2_SW 0x004d1e20
 // FUNCTION: CARMA2_CHEAT 0x004db2f0
-int C2_HOOK_FASTCALL OrientationChanged(const br_matrix34* pOrientation_1, const br_matrix34* pOrientation_2, float pCos_angle) {
+inline int C2_HOOK_FASTCALL OrientationChanged(const br_matrix34* pOrientation_1, const br_matrix34* pOrientation_2, float pCos_angle) {
     if (BrVector3Dot((br_vector3*)pOrientation_1->m[0], (br_vector3*)pOrientation_2->m[0]) < pCos_angle
         || BrVector3Dot((br_vector3*)pOrientation_1->m[1], (br_vector3*)pOrientation_2->m[1]) < pCos_angle
         || BrVector3Dot((br_vector3*)pOrientation_1->m[2], (br_vector3*)pOrientation_2->m[2]) < pCos_angle) {
@@ -142,7 +142,28 @@ inline void C2_HOOK_FASTCALL ResetPedFaceCache(void) {
 
 // RecachePedestrian
 
-// SetCharacterDirectionAR
+// FUNCTION: CARMA2_HW 0x004d3360
+// FUNCTION: CARMA2_SW 0x004cfa50
+// FUNCTION: CARMA2_CHEAT 0x004d8f20
+void C2_HOOK_FASTCALL SetCharacterDirectionAR(tPed_character_instance* pPed, const br_vector3* pDir, const br_vector3* pUp) {
+    tPhysics_object* object;
+
+    if (pPed->field_0x14 & 0x1) {
+        object = pPed->personality->form->simple_physicing[(tS8)pPed->field_0x5].collision_info;
+    } else {
+        object = GetRootObject(pPed);
+    }
+    if (gAction_replay_mode && !gBOOL_00744804) {
+        return;
+    }
+    if (!(pPed->field_0x14 & 0x4) && gProgram_state.racing) {
+        PipeSinglePedDir(((tS16)pPed->ped->field_0x06 << 16) | (pPed->ped - gPedestrian_array), pDir);
+    }
+    SetCharacterDirection(pPed, pDir, pUp);
+    if (gProgram_state.racing && OrientationChanged(&object->transform_matrix, &object->actor->t.t.mat, 0.7f)) {
+        AssertRootObjectsMatrix(pPed);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004ca4d0
 // FUNCTION: CARMA2_SW 0x004c6c00
@@ -729,7 +750,52 @@ int C2_HOOK_FASTCALL IsActorRenderworthy(br_actor* pActor) {
     }
 }
 
-// SetPedXZDirection
+// FUNCTION: CARMA2_HW 0x004cc2c0
+// FUNCTION: CARMA2_SW 0x004c89c0
+// FUNCTION: CARMA2_CHEAT 0x004d1e30
+void C2_HOOK_FASTCALL SetPedXZDirection(tPedestrian* pPed, br_vector3* pDir, float pSpeed, tU32 pTime) {
+    tPed_face_cache_0x34* face_cache;
+    br_vector3 side;
+    br_vector3 dir;
+    br_scalar length;
+    br_scalar turn_time;
+
+    face_cache = pPed->field_0x0c->field_0xb0;
+    if (face_cache == NULL || face_cache->field_0x30 == NULL) {
+        return;
+    }
+    DRVector3SafeCross(&side, &y_unit_vector, pDir);
+    DRVector3SafeCross(&dir, &side, &face_cache->field_0x30->normal);
+    length = BrVector3Length(&dir);
+    if (length > 2.3841858e-07f) {
+        length = 1.0 / length;
+        BrVector3Scale(&dir, &dir, length);
+    } else {
+        BrVector3Set(&dir, 1.0f, 0.0f, 0.0f);
+    }
+    if (pPed->field_0x0c->field_0x6c == 0 || BrVector3Dot(&pPed->field_0x0c->field_0x48, &dir) <= .95) {
+        pPed->field_0x0c->field_0x48.v[0] = dir.v[0];
+        pPed->field_0x0c->field_0x48.v[1] = dir.v[1];
+        pPed->field_0x0c->field_0x48.v[2] = dir.v[2];
+        if (pSpeed != 0.0f) {
+            pPed->field_0x0c->field_0x54.v[0] = pPed->field_0x0c->field_0x48.v[0];
+            pPed->field_0x0c->field_0x54.v[1] = pPed->field_0x0c->field_0x48.v[1];
+            pPed->field_0x0c->field_0x54.v[2] = pPed->field_0x0c->field_0x48.v[2];
+            turn_time = (tS16)pPed->character->field_0x1e * (pSpeed / BrVector3Length(&pPed->character->field_0xd8)) / 30.0f;
+            if (turn_time > .5) {
+                turn_time = 0.5f;
+            }
+            pPed->field_0x0c->field_0x6c = pTime;
+            pPed->field_0x0c->field_0x70 = pTime - turn_time * -1000.0f;
+            pPed->field_0x0c->field_0x60.v[0] = pPed->character->field_0xc0.v[0];
+            pPed->field_0x0c->field_0x60.v[1] = pPed->character->field_0xc0.v[1];
+            pPed->field_0x0c->field_0x60.v[2] = pPed->character->field_0xc0.v[2];
+        } else {
+            pPed->field_0x0c->field_0x6c = 0;
+            SetCharacterDirectionAR(pPed->character, &pPed->field_0x0c->field_0x48, &pPed->character->field_0xcc);
+        }
+    }
+}
 
 // StopPedNoise
 
