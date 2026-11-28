@@ -2056,21 +2056,222 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor, void*
 
 // IsOnNonCarHalf
 
-// SplitCar
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0042e2e0
+// STUB: CARMA2_SW 0x0042e350
+// STUB: CARMA2_CHEAT 0x0042e480
+void C2_HOOK_FASTCALL SplitCar(tCar_spec* pCar, const tSplit_info* pSplit_info, int pArg3) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // QuantizePlane
 
 // WithinBounds
 
-// SplitCheck
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// FindForceEdge
+// STUB: CARMA2_HW 0x004307e0
+// STUB: CARMA2_SW 0x00430810
+// STUB: CARMA2_CHEAT 0x004309b0
+int C2_HOOK_FASTCALL SplitCheck(tCar_spec* pCar, int pArg2, const br_vector3* pPlane, float pArg4, tSplit_info* pSplit_info) {
+    NOT_IMPLEMENTED();
+}
 
-// DoXZSplitting
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
-// DoYSplitting
+inline int C2_HOOK_FASTCALL FindForceEdge(const br_vector3* pPoint, const tPhysics_object* pObject, br_vector3* pEdge, br_scalar* pDot) {
+    int i;
+    int j;
+    int count;
+    int faces[2];
+    tFace_ref* face;
 
-// DoSplitting
+    count = 0;
+    for (i = pObject->box_face_start; i < pObject->box_face_end && count < 2; i++) {
+        face = &gFace_list__car[i];
+        for (j = 0; j < 3; j++) {
+            if (PointEdgeDistSq(pPoint, &face->v[j], &face->v[(j + 1) % 3]) < 1.1920929e-7f) {
+                faces[count] = i;
+                count++;
+                BrVector3Sub(pEdge, &face->v[j], &face->v[(j + 1) % 3]);
+                break;
+            }
+        }
+    }
+    if (count < 2) {
+        return 0;
+    }
+    *pDot = BrVector3Dot(&gFace_list__car[faces[0]].normal, &gFace_list__car[faces[1]].normal);
+    return 1;
+}
+
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x00430e30
+// FUNCTION: CARMA2_SW 0x00430e60
+// FUNCTION: CARMA2_CHEAT 0x00431000
+int C2_HOOK_FASTCALL DoXZSplitting(tPhysics_joint_force* pForces, br_scalar* pImpulses, int pCount) {
+    int i;
+    tCar_spec* car;
+    br_scalar threshold;
+    br_scalar dot;
+    br_scalar length;
+    br_vector3 edge;
+    br_vector3 edge_car;
+    br_vector3 point;
+    br_vector3 line;
+    tSplit_info split_info;
+    int index;
+
+    if (pCount > 40) {
+        pCount = 40;
+    }
+    for (i = 0; i < pCount; i++) {
+        if (pImpulses[i] < 0.01f || pForces[i].object_b != NULL || pForces[i].type != 0 || pForces[i].object_a == NULL) {
+            continue;
+        }
+        car = pForces[i].object_a->owner;
+        if (car == NULL || pForces[i].object_a->flags_0x238 != 1 || car == NULL || car->driver <= eDriver_5
+                || car->car_crush_spec == NULL || car->car_crush_spec->field_0x4b8 || car->invulnerable_no_crushage) {
+            continue;
+        }
+        threshold = car->collision_info->M * gMin_force_to_split_XZ_per_tonne / (car->softness_factor * car->car_crush_spec->snappability_factor);
+        if (pImpulses[i] < threshold) {
+            continue;
+        }
+        if (!FindForceEdge(&pForces[i].point_b, car->collision_info, &edge, &dot)) {
+            continue;
+        }
+        if (!(dot <= (br_scalar)cos(0.1744903177022934))) {
+            continue;
+        }
+        BrMatrix34TApplyV(&edge_car, &edge, &car->collision_info->actor->t.t.mat);
+        BrVector3Cross(&split_info.normal, &edge_car, &pForces[i].direction_a);
+        BrVector3Normalise(&split_info.normal, &split_info.normal);
+        if (fabs(split_info.normal.v[0]) <= 0.707107f && fabs(split_info.normal.v[2]) <= 0.707107f) {
+            continue;
+        }
+        BrVector3Add(&point, &pForces[i].point_a, &car->collision_info->cmpos);
+        split_info.d = BrVector3Dot(&split_info.normal, &point);
+        line.v[0] = split_info.normal.v[0];
+        line.v[1] = split_info.normal.v[2];
+        length = BR_LENGTH2(line.v[0], line.v[1]);
+        if (length > BR_SCALAR_EPSILON * 2) {
+            length = (br_scalar)(1.0 / length);
+            line.v[0] *= length;
+            line.v[1] *= length;
+        } else {
+            line.v[0] = 1.0f;
+            line.v[1] = 0.0f;
+        }
+        line.v[2] = line.v[0] * point.v[0] + line.v[1] * point.v[2];
+        if (SplitCheck(car, 0, &line, 0.0f, &split_info)) {
+            index = i;
+            ReduceEffectOfForces(pForces, pImpulses, pCount, &index, 1, threshold);
+            SplitCar(car, &split_info, 1);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+inline int C2_HOOK_FASTCALL DoYSplitting(tPhysics_joint_force* pForces, br_scalar* pImpulses, int pCount) {
+    int i;
+    int j;
+    int split_ok;
+    int count_indices;
+    tCar_spec* car;
+    br_scalar split_y;
+    br_scalar total;
+    br_scalar threshold;
+    int used[40];
+    int indices[40];
+    tSplit_info split_info;
+
+    if (pCount > 40) {
+        pCount = 40;
+    }
+    for (i = 0; i < pCount; i++) {
+        used[i] = 0;
+    }
+    for (i = 0; i < pCount; i++) {
+        if (pImpulses[i] < 0.01f || used[i] || pForces[i].object_b != NULL || pForces[i].object_a == NULL) {
+            continue;
+        }
+        car = pForces[i].object_a->owner;
+        if (car == NULL || pForces[i].object_a->flags_0x238 != 1 || car == NULL || car->driver <= eDriver_5
+                || car->car_crush_spec == NULL || car->car_crush_spec->field_0x4b8 || car->invulnerable_no_crushage) {
+            continue;
+        }
+        split_ok = 1;
+        split_y = car->car_crush_spec->split_y_pos - car->collision_info->cmpos.v[1];
+        if (pForces[i].point_a.v[1] < split_y) {
+            split_ok = 0;
+        } else {
+            indices[0] = i;
+            count_indices = 1;
+            total = pImpulses[i];
+        }
+        used[i] = 1;
+        for (j = i + 1; j < pCount; j++) {
+            if (pImpulses[j] < 0.01f || used[j] || pForces[j].object_b != NULL || pForces[j].object_a->owner != car) {
+                continue;
+            }
+            if (split_ok) {
+                if (pForces[j].point_a.v[1] < split_y) {
+                    split_ok = 0;
+                } else {
+                    indices[count_indices] = j;
+                    total += pImpulses[j];
+                    count_indices++;
+                }
+            }
+            used[j] = 1;
+        }
+        if (split_ok) {
+            threshold = car->collision_info->M * gMin_force_to_split_Y_per_tonne / (car->softness_factor * car->car_crush_spec->snappability_factor);
+            if (total > threshold && SplitCheck(car, 1, NULL, car->car_crush_spec->split_y_pos, &split_info)) {
+                ReduceEffectOfForces(pForces, pImpulses, pCount, indices, count_indices, threshold);
+                SplitCar(car, &split_info, 1);
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0042dfd0
+// FUNCTION: CARMA2_SW 0x0042e040
+// FUNCTION: CARMA2_CHEAT 0x0042e170
+int C2_HOOK_FASTCALL DoSplitting(tPhysics_joint_force* pForces, br_scalar* pImpulses, int pCount) {
+
+    if (DoXZSplitting(pForces, pImpulses, pCount)) {
+        return 1;
+    }
+    if (DoYSplitting(pForces, pImpulses, pCount)) {
+        return 1;
+    }
+    return 0;
+}
 
 // DoJointSnapping
 
@@ -2157,7 +2358,24 @@ void C2_HOOK_FASTCALL SetModelForUpdate(br_model* pModel) {
     }
 }
 
-// RandomlyXZSplitCar
+// FUNCTION: CARMA2_HW 0x00435d40
+// FUNCTION: CARMA2_SW 0x00435d70
+// FUNCTION: CARMA2_CHEAT 0x00435f30
+void C2_HOOK_FASTCALL RandomlyXZSplitCar(tCar_spec* pCar) {
+    br_bounds3* bounds;
+    float angle;
+    br_vector3 plane;
+    tSplit_info split_info;
+
+    bounds = &pCar->collision_info->bb1;
+    angle = FRandomBetween(0.0f, 6.2831855f);
+    plane.v[0] = (float)sin(angle);
+    plane.v[1] = (float)cos(angle);
+    plane.v[2] = plane.v[0] * ((bounds->min.v[0] + bounds->max.v[0]) * 0.5f) + plane.v[1] * ((bounds->min.v[2] + bounds->max.v[2]) * 0.5f);
+    if (SplitCheck(pCar, 0, &plane, 0.0f, &split_info)) {
+        SplitCar(pCar, &split_info, 0);
+    }
+}
 
 // RandomlyBendCar
 
