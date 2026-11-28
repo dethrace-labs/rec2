@@ -2056,21 +2056,135 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor, void*
 
 // IsOnNonCarHalf
 
-// SplitCar
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0042e2e0
+// STUB: CARMA2_SW 0x0042e350
+// STUB: CARMA2_CHEAT 0x0042e480
+void C2_HOOK_FASTCALL SplitCar(tCar_spec* pCar, const tSplit_info* pSplit_info, int pArg3) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // QuantizePlane
 
 // WithinBounds
 
-// SplitCheck
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004307e0
+// STUB: CARMA2_SW 0x00430810
+// STUB: CARMA2_CHEAT 0x004309b0
+int C2_HOOK_FASTCALL SplitCheck(tCar_spec* pCar, int pArg2, const br_vector3* pPlane, float pArg4, tSplit_info* pSplit_info) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FindForceEdge
 
-// DoXZSplitting
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// DoYSplitting
+// STUB: CARMA2_HW 0x00430e30
+// STUB: CARMA2_SW 0x00430e60
+// STUB: CARMA2_CHEAT 0x00431000
+int C2_HOOK_FASTCALL DoXZSplitting(tPhysics_joint_force* pForces, br_scalar* pImpulses, int pCount) {
+    NOT_IMPLEMENTED();
+}
 
-// DoSplitting
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+inline int C2_HOOK_FASTCALL DoYSplitting(tPhysics_joint_force* pForces, br_scalar* pImpulses, int pCount) {
+    int i;
+    int j;
+    int split_ok;
+    int count_indices;
+    tCar_spec* car;
+    br_scalar split_y;
+    br_scalar total;
+    br_scalar threshold;
+    int used[40];
+    int indices[40];
+    tSplit_info split_info;
+
+    if (pCount > 40) {
+        pCount = 40;
+    }
+    for (i = 0; i < pCount; i++) {
+        used[i] = 0;
+    }
+    for (i = 0; i < pCount; i++) {
+        if (pImpulses[i] < 0.01f || used[i] || pForces[i].object_b != NULL || pForces[i].object_a == NULL) {
+            continue;
+        }
+        car = pForces[i].object_a->owner;
+        if (car == NULL || pForces[i].object_a->flags_0x238 != 1 || car == NULL || car->driver <= eDriver_5
+                || car->car_crush_spec == NULL || car->car_crush_spec->field_0x4b8 || car->invulnerable_no_crushage) {
+            continue;
+        }
+        split_ok = 1;
+        split_y = car->car_crush_spec->split_y_pos - car->collision_info->cmpos.v[1];
+        if (pForces[i].point_a.v[1] < split_y) {
+            split_ok = 0;
+        } else {
+            indices[0] = i;
+            count_indices = 1;
+            total = pImpulses[i];
+        }
+        used[i] = 1;
+        for (j = i + 1; j < pCount; j++) {
+            if (pImpulses[j] < 0.01f || used[j] || pForces[j].object_b != NULL || pForces[j].object_a->owner != car) {
+                continue;
+            }
+            if (split_ok) {
+                if (pForces[j].point_a.v[1] < split_y) {
+                    split_ok = 0;
+                } else {
+                    indices[count_indices] = j;
+                    total += pImpulses[j];
+                    count_indices++;
+                }
+            }
+            used[j] = 1;
+        }
+        if (split_ok) {
+            threshold = car->collision_info->M * gMin_force_to_split_Y_per_tonne / (car->softness_factor * car->car_crush_spec->snappability_factor);
+            if (total > threshold && SplitCheck(car, 1, NULL, car->car_crush_spec->split_y_pos, &split_info)) {
+                ReduceEffectOfForces(pForces, pImpulses, pCount, indices, count_indices, threshold);
+                SplitCar(car, &split_info, 1);
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x0042dfd0
+// FUNCTION: CARMA2_SW 0x0042e040
+// FUNCTION: CARMA2_CHEAT 0x0042e170
+int C2_HOOK_FASTCALL DoSplitting(tPhysics_joint_force* pForces, br_scalar* pImpulses, int pCount) {
+
+    if (DoXZSplitting(pForces, pImpulses, pCount)) {
+        return 1;
+    }
+    if (DoYSplitting(pForces, pImpulses, pCount)) {
+        return 1;
+    }
+    return 0;
+}
 
 // DoJointSnapping
 
@@ -2157,7 +2271,24 @@ void C2_HOOK_FASTCALL SetModelForUpdate(br_model* pModel) {
     }
 }
 
-// RandomlyXZSplitCar
+// FUNCTION: CARMA2_HW 0x00435d40
+// FUNCTION: CARMA2_SW 0x00435d70
+// FUNCTION: CARMA2_CHEAT 0x00435f30
+void C2_HOOK_FASTCALL RandomlyXZSplitCar(tCar_spec* pCar) {
+    br_bounds3* bounds;
+    float angle;
+    br_vector3 plane;
+    tSplit_info split_info;
+
+    bounds = &pCar->collision_info->bb1;
+    angle = FRandomBetween(0.0f, 6.2831855f);
+    plane.v[0] = (float)sin(angle);
+    plane.v[1] = (float)cos(angle);
+    plane.v[2] = plane.v[0] * ((bounds->min.v[0] + bounds->max.v[0]) * 0.5f) + plane.v[1] * ((bounds->min.v[2] + bounds->max.v[2]) * 0.5f);
+    if (SplitCheck(pCar, 0, &plane, 0.0f, &split_info)) {
+        SplitCar(pCar, &split_info, 0);
+    }
+}
 
 // RandomlyBendCar
 
