@@ -89,15 +89,19 @@ extern void C2_HOOK_FASTCALL ResetScreenWobble(void);
 
 // CalculateWobblitude
 
-// ProcessNonTrackActors
+extern void C2_HOOK_FASTCALL ProcessNonTrackActors(br_pixelmap* pRender_buffer, br_pixelmap* pDepth_buffer, br_actor* pCamera, br_matrix34* pCamera_to_world);
 
-// ConditionallyFillWithSky
+extern int C2_HOOK_FASTCALL ConditionallyFillWithSky(br_pixelmap* pPixelmap);
 
-// FoxyStuff
+extern void C2_HOOK_FASTCALL FoxyStuff(br_matrix34* pMat34, br_actor* pCamera, br_pixelmap* pColour, br_pixelmap* pDepth);
 
-// DoARenderPass
+#ifdef REC2_CHEAT
+extern void C2_HOOK_FASTCALL CheckModelSanity(br_model* pModel);
+#endif
 
-// DoACompleteRenderPass
+extern void C2_HOOK_FASTCALL DoARenderPass(br_matrix34* pMat34, br_actor* pCamera, br_pixelmap* pColour, br_pixelmap* pDepth, br_scalar pYon_factor, int pShadows, int pEffects, int pArg8);
+
+extern void C2_HOOK_FASTCALL DoACompleteRenderPass(int pMirror, br_matrix34* pCamera_to_world, br_actor* pCamera, br_pixelmap* pScreen, br_pixelmap* pDepth);
 
 extern void C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on);
 
