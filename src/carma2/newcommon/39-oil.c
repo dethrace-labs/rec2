@@ -38,6 +38,7 @@ int gNext_oil_pixie = 0;
 
 // GLOBAL: CARMA2_HW 0x00691714
 // GLOBAL: CARMA2_SW 0x0068b76c
+// GLOBAL: CARMA2_CHEAT 0x00698fb4
 int gBig_bang = 0;
 
 // GLOBAL: CARMA2_HW 0x0074a68c
