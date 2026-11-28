@@ -34,6 +34,7 @@ extern int gINT_0067bdfc;
 extern tU8 gCrush_data_entry_counter;
 extern int gCount_net_crush_detach_list;
 extern int gCount_net_crush_semi_detach_bit_list;
+extern tU16 gBend_counter;
 extern int gCount_net_crush_full_detach_bit_list;
 extern int gCount_car_damage_crush_list;
 extern tToggled_door gToggled_doors[16];
@@ -146,7 +147,7 @@ extern void C2_HOOK_FASTCALL DisposeVertexData(tModel_detail_vertex_data* pVerte
 
 extern float C2_HOOK_FASTCALL DistSq(const br_vector3* pP, int pCount, const br_vector3* pVertices);
 
-// LimitImpactScale
+extern void C2_HOOK_FASTCALL LimitImpactScale(float* pScale, int pAxis, float pPos, float pDirection, tU16 pLimit_number, const tCar_crush_limits* pLimits, int pMax_index);
 
 extern float C2_HOOK_FASTCALL GetImpactScale(const br_vector3* pP, int pCount, const br_vector3* pVertices, float pMax_dist_sq);
 
@@ -158,19 +159,19 @@ extern int C2_HOOK_FASTCALL NearestAxis(const br_vector3* pVector);
 
 // PossibleShockSmash
 
-// CrushModels
+extern intptr_t C2_HOOK_FASTCALL CrushModels(br_actor* pActor, br_matrix34* pMat, void* pContext);
 
-// CrushPoint
+extern void C2_HOOK_FASTCALL CrushPoint(br_vector3* pPoint, int pCount, const br_vector3* pVertices, const br_vector3* pDirection, br_scalar pForce, tU16 pLimit_number, const tCar_crush_limits* pLimits, int pMax_index);
 
 extern void C2_HOOK_FASTCALL ClipPointToLimits(br_vector3* pPoint, tU16 pLimit_bits, const tCar_crush_limits* pLimits);
 
-// CrushCollisionShapes
+extern void C2_HOOK_FASTCALL CrushCollisionShapes(tCar_spec* pCar, tSpam_userdata* pContext);
 
-// SimpleCrushCarModelsCB
+extern intptr_t C2_HOOK_FASTCALL SimpleCrushCarModelsCB(br_actor* pActor, br_matrix34* pMat, void* pContext);
 
-// SimpleCrushCar
+extern void C2_HOOK_FASTCALL SimpleCrushCar(tCar_spec* pCar, tSpam_userdata* pContext);
 
-// CrushCar
+extern void C2_HOOK_FASTCALL CrushCar(tCar_spec* pCar, br_actor* pActor, tCar_crush* pCrush);
 
 // SendCrush
 
@@ -180,11 +181,11 @@ extern void C2_HOOK_FASTCALL ExpandCrush(tCar_crush* pDest, const tCompressed_ca
 
 // RemoveDuplicatePoints
 
-// SimpleCrushModel
+extern void C2_HOOK_FASTCALL SimpleCrushModel(br_model* pModel, int pCount, const br_vector3* pPoints, const br_vector3* pForce, const br_bounds3* pBounds);
 
-// CrushDrone
+extern void C2_HOOK_FASTCALL CrushDrone(tDrone_crush_data* pCrush_data, int pCount, const br_vector3* pPoints, const br_vector3* pForce);
 
-// CrushDroneObject
+extern void C2_HOOK_FASTCALL CrushDroneObject(tPhysics_object* pObject, int pCount, const br_vector3* pPoints, const br_vector3* pForce);
 
 // DoDroneCrushing
 
@@ -222,7 +223,7 @@ extern void C2_HOOK_FASTCALL SetFlappage(br_actor* pActor, tCar_spec* pCar, int 
 
 // SetUpSemiDetachedBitJoint
 
-// BitIsInBentPartOfCar
+extern int C2_HOOK_FASTCALL BitIsInBentPartOfCar(br_actor* pActor, br_scalar pBend_z, br_scalar pPivot_z);
 
 // SetUpFlapJoint
 
@@ -236,21 +237,21 @@ extern void C2_HOOK_FASTCALL ReAttachBit(tCar_spec* pCar_spec, br_actor* pActor_
 
 // CentreModelOnPoint
 
-// SemiDetachBit
+extern tPhysics_object* C2_HOOK_FASTCALL SemiDetachBit(tCar_spec* pCar, br_actor* pActor, float pArg3, int* pArg4, br_vector3* pP1, br_bounds3* pBounds, br_vector3* pP2, br_vector3* pP3);
 
 extern int C2_HOOK_FASTCALL GetSDBJointPosAndBounds(br_vector3* pP1, br_vector3* pP2, br_vector3* pP3, br_bounds3* pBounds, br_actor* pActor);
 
 extern void C2_HOOK_FASTCALL SendSemiDetachBit(tCar_spec* pCar, br_actor* pActor, float pArg3, tNet_game_player_info* pPlayer);
 
-// SendDetachBit
+extern void C2_HOOK_FASTCALL SendDetachBit(tCar_spec* pCar, br_actor* pActor);
 
 extern void C2_HOOK_FASTCALL SendAllSemiDetachedBits(tNet_game_player_info* pPlayer);
 
 extern void C2_HOOK_FASTCALL AddNonCar(tNon_car_spec* pNon_car, const tDriver* pDriver);
 
-// DetachBit
+extern tPhysics_object* C2_HOOK_FASTCALL DetachBit(tCar_spec* pCar, br_actor* pActor, br_bounds3* pBounds);
 
-// DoDetaching
+extern void C2_HOOK_FASTCALL DoDetaching(void);
 
 // FlapBit
 
@@ -278,9 +279,9 @@ extern int C2_HOOK_FASTCALL BitObjectIsSufficientlyOutsideCarObjectToDetach(tPhy
 
 extern void C2_HOOK_FASTCALL FullyDetachBit(tCar_spec* pCar, tPhysics_object* pObject);
 
-// SendFullyDetachBit
+extern void C2_HOOK_FASTCALL SendFullyDetachBit(tCar_spec* pCar, tPhysics_object* pObject);
 
-// DoFullyDetaching
+extern void C2_HOOK_FASTCALL DoFullyDetaching(void);
 
 // CalculateCollisionObjectStuffForSplitHalves
 
@@ -308,21 +309,21 @@ extern void C2_HOOK_FASTCALL FullyDetachBit(tCar_spec* pCar, tPhysics_object* pO
 
 extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsDoubleSided(br_actor* pActor, void* pArg);
 
-// SwapCarShapes
+extern void C2_HOOK_FASTCALL SwapCarShapes(tCar_spec* pCar, tPhysics_shape* pShape);
 
-// IsAWheelOrPivotActor
+extern int C2_HOOK_FASTCALL IsAWheelOrPivotActor(br_actor* pActor, tCar_spec* pCar);
 
 extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor, void* pArg);
 
 // IsOnNonCarHalf
 
-// SplitCar
+extern void C2_HOOK_FASTCALL SplitCar(tCar_spec* pCar, const tSplit_info* pSplit_info, int pArg3);
 
 // QuantizePlane
 
 // WithinBounds
 
-// SplitCheck
+extern int C2_HOOK_FASTCALL SplitCheck(tCar_spec* pCar, int pArg2, const br_vector3* pPlane, float pArg4, tSplit_info* pSplit_info);
 
 // FindForceEdge
 
@@ -334,65 +335,65 @@ extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor
 
 // DoJointSnapping
 
-// PointIsOutsideShape
+extern int C2_HOOK_FASTCALL PointIsOutsideShape(const br_vector3* pPoint, const tCollision_shape_polyhedron_data* pPolyhedron);
 
-// PointIsOutsideLimits
+extern int C2_HOOK_FASTCALL PointIsOutsideLimits(const tCar_crush_shape_info* pShape, int pPoint_index, const tCar_crush_limits* pLimits);
 
-// ClipPointToPolyhedron
+extern void C2_HOOK_FASTCALL ClipPointToPolyhedron(br_vector3* pPoint, const tCollision_shape_polyhedron_data* pPolyhedron);
 
-// QuantizeVector3
+extern void C2_HOOK_FASTCALL QuantizeVector3(br_vector3* pV);
 
-// MoveCarToSensiblePlace
+extern int C2_HOOK_FASTCALL MoveCarToSensiblePlace(tCar_spec* pCar);
 
-// SwapShapesIfPossible
+extern int C2_HOOK_FASTCALL SwapShapesIfPossible(tCar_spec* pCar_spec);
 
 // DoShapeSwapping
 
 extern void C2_HOOK_FASTCALL BendPoint(br_vector3* pPoint, const tBend_point_context* pContext);
 
-// EdgeCrossesZPlane
+extern int C2_HOOK_FASTCALL EdgeCrossesZPlane(br_scalar pZ, const br_vector3* pP1, const br_vector3* pP2);
 
 // BendCollisionShape
 
-// BendCollisionShapes
+extern void C2_HOOK_FASTCALL BendCollisionShapes(tCar_spec* pCar, const tBend_point_context* pContext);
 
 // BendModel
 
-// BendModels
+extern intptr_t C2_HOOK_FASTCALL BendModels(br_actor* pActor, br_vector3* pTranslation, void* pContext);
 
-// BrAngleToSignedDegree
+extern br_scalar C2_HOOK_FASTCALL BrAngleToSignedDegree(br_angle pAngle);
 
 // BendWheels
 
-// BendActor
+extern void C2_HOOK_FASTCALL BendActor(tCar_spec* pCar, br_actor* pActor, br_angle pAngle_x, br_angle pAngle_y, br_angle pAngle_z, const br_vector3* pPivot, br_scalar pZ, tBend_point_spec* pSpec);
 
-// BendOtherThings
+extern void C2_HOOK_FASTCALL BendOtherThings(tCar_spec* pCar, tBend_point_spec* pSpec);
 
-// ReAttachOrFullyDetachDifficultBits
+extern void C2_HOOK_FASTCALL ReAttachOrFullyDetachDifficultBits(tCar_spec* pCar, br_scalar pBend_z, br_scalar pPivot_z);
 
-// BendCar
+extern void C2_HOOK_FASTCALL BendCar(tCar_spec* pCar, br_angle pAngle_x, br_angle pAngle_y, br_angle pAngle_z, const br_vector3* pPivot, br_scalar pZ, int pArg7);
 
-// QuantizeAngle
+extern br_angle C2_HOOK_FASTCALL QuantizeAngle(br_angle pAngle, br_angle pMin, br_angle pMax, br_angle pStep);
 
-// BendCarOneForce
+extern int C2_HOOK_FASTCALL BendCarOneForce(tCar_spec* pCar, tCar_crush* pCar_crush);
 
-// DoBending
+extern void C2_HOOK_FASTCALL DoBending(void);
 
 extern void C2_HOOK_CDECL JitModelUpdate(br_actor* pActor, br_model* pModel, br_material* pMaterial, void* pOrder_table, br_uint_8 pStyle, int pOn_screen);
 
 extern void C2_HOOK_FASTCALL SetModelForUpdate(br_model* pModel);
 
-// RandomlyXZSplitCar
+extern void C2_HOOK_FASTCALL RandomlyXZSplitCar(tCar_spec* pCar);
 
-// RandomlyBendCar
+extern void C2_HOOK_FASTCALL RandomlyBendCar(tCar_spec* pCar);
 
 extern void C2_HOOK_FASTCALL TotallySpamTheCar(tCar_spec* pCar, br_scalar pDamage);
 
 extern intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseUltraPlus(br_actor* pActor, br_actor_enum_cbfn* pCallback, void* pArg);
 
-// FireOffBitsCB
+extern intptr_t C2_HOOK_CDECL FireOffBitsCB(br_actor* pActor, void* pContext);
 
-// FireSomeBitsOffCar
+extern void C2_HOOK_FASTCALL FireSomeBitsOffCar(tCar_spec* pCar);
 
 // DoSpams
 
@@ -496,29 +497,29 @@ extern void C2_HOOK_FASTCALL ARApplySplitWeld(tCar_spec* pCar, const br_vector4*
 
 extern void C2_HOOK_FASTCALL ARUndoSplitWeld(tCar_spec* pCar);
 
-// ReceivedCrush
+extern void C2_HOOK_FASTCALL ReceivedCrush(tNet_message_chunk* pContents);
 
-// FindBitWithID
+extern intptr_t C2_HOOK_CDECL FindBitWithID(br_actor* pActor, void* pContext);
 
-// AttachedBitFromID
+extern br_actor* C2_HOOK_FASTCALL AttachedBitFromID(tCar_spec* pCar, tU8 pID);
 
-// ReceivedSemiDetachBit
+extern void C2_HOOK_FASTCALL ReceivedSemiDetachBit(tNet_message_chunk* pContents);
 
 // ReceivedDetachBit
 
-// SemiDetachedBitObjectFromID
+extern tPhysics_object* C2_HOOK_FASTCALL SemiDetachedBitObjectFromID(tCar_spec* pCar, tU8 pID);
 
-// ReceivedFullyDetachBit
+extern void C2_HOOK_FASTCALL ReceivedFullyDetachBit(tNet_message_chunk* pContents);
 
-// DetachedBitFromID
+extern br_actor* C2_HOOK_FASTCALL DetachedBitFromID(tCar_spec* pCar, tU8 pID);
 
-// SemiDetachedBitFromID
+extern br_actor* C2_HOOK_FASTCALL SemiDetachedBitFromID(tCar_spec* pCar, tU8 pID);
 
-// ReceivedReAttachBit
+extern void C2_HOOK_FASTCALL ReceivedReAttachBit(tNet_message_chunk* pContents);
 
 extern void C2_HOOK_FASTCALL ReceivedReAttachAllBits(tNet_message_chunk* pContents);
 
-// DoQueuedNetDetaching
+extern void C2_HOOK_FASTCALL DoQueuedNetDetaching(void);
 
 // DBNonCarOwner
 
