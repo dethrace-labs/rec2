@@ -12,6 +12,7 @@
 
 #include "41-utility.h"
 #include "25-grafdata.h"
+#include "52-errors.h"
 #include "platform.h"
 #include "rec2_macros.h"
 
@@ -36,6 +37,7 @@ int gEdge_trigger_mode;
 
 // GLOBAL: CARMA2_HW 0x00657200
 // GLOBAL: CARMA2_SW 0x00651bb8
+// GLOBAL: CARMA2_CHEAT 0x0065da90
 int gGo_ahead_keys[3] = { 51, 52, 106 };
 
 // GLOBAL: CARMA2_HW 0x0074b5c0
@@ -68,6 +70,11 @@ tU32 gLast_roll;
 // GLOBAL: CARMA2_CHEAT 0x006939e0
 int gCurrent_cursor;
 
+// GLOBAL: CARMA2_HW 0x0068c1cc
+// GLOBAL: CARMA2_SW 0x00686214
+// GLOBAL: CARMA2_CHEAT 0x00693a6c
+int gInsert_mode;
+
 // GLOBAL: CARMA2_HW 0x0068be88
 // GLOBAL: CARMA2_SW 0x00685ed0
 // GLOBAL: CARMA2_CHEAT 0x00693728
@@ -85,19 +92,22 @@ int gVisible_length;
 
 // GLOBAL: CARMA2_HW 0x0068be48
 // GLOBAL: CARMA2_SW 0x00685e90
-// GLOBAL: CARMA2_cHEAT 0x006936e8
+// GLOBAL: CARMA2_CHEAT 0x006936e8
 int gLetter_y_coords[15];
 
 // GLOBAL: CARMA2_HW 0x0068be84
 // GLOBAL: CARMA2_SW 0x00685ecc
+// GLOBAL: CARMA2_CHEAT 0x00693724
 int gThe_length;
 
 // GLOBAL: CARMA2_HW 0x0068c150
 // GLOBAL: CARMA2_SW 0x00686198
+// GLOBAL: CARMA2_CHEAT 0x006939f0
 char gCurrent_typing[110];
 
 // GLOBAL: CARMA2_HW 0x0068c1c0
 // GLOBAL: CARMA2_SW 0x00686208
+// GLOBAL: CARMA2_CHEAT 0x00693a60
 int gCurrent_position;
 
 // GLOBAL: CARMA2_HW 0x0068c1c8
@@ -114,30 +124,46 @@ int gINT_006621e4 = 1;
 int gINT_006621e8 = 1;
 
 // GLOBAL: CARMA2_HW 0x006621ec
+// GLOBAL: CARMA2_CHEAT 0x00669a58
 int gINT_006621ec = 1;
 
 // GLOBAL: CARMA2_HW 0x006621f0
+// GLOBAL: CARMA2_CHEAT 0x00669a5c
 int gINT_006621f0 = 1;
 
 // GLOBAL: CARMA2_HW 0x0068be44
+// GLOBAL: CARMA2_SW 0x00685e8c
+// GLOBAL: CARMA2_CHEAT 0x006936e4
 int gJoy1_x;
 
 // GLOBAL: CARMA2_HW 0x0068c13c
+// GLOBAL: CARMA2_SW 0x00686184
+// GLOBAL: CARMA2_CHEAT 0x006939dc
 int gJoy1_y;
 
 // GLOBAL: CARMA2_HW 0x0068be40
+// GLOBAL: CARMA2_SW 0x00685e88
+// GLOBAL: CARMA2_CHEAT 0x006936e0
 int gJoy2_x;
 
 // GLOBAL: CARMA2_HW 0x0068becc
+// GLOBAL: CARMA2_SW 0x00685f14
+// GLOBAL: CARMA2_CHEAT 0x0069376c
 int gJoy2_y;
 
 // GLOBAL: CARMA2_HW 0x0065720c
+// GLOBAL: CARMA2_SW 0x00651bc4
+// GLOBAL: CARMA2_CHEAT 0x0065da9c
 int gLast_key_down = -1000;
 
 // GLOBAL: CARMA2_HW 0x0068c1d0
+// GLOBAL: CARMA2_SW 0x00686218
+// GLOBAL: CARMA2_CHEAT 0x00693a70
 tU32 gLast_key_down_time;
 
 // GLOBAL: CARMA2_HW 0x0068bed8
+// GLOBAL: CARMA2_SW 0x00685f20
+// GLOBAL: CARMA2_CHEAT 0x00693778
 int gModifiers_down;
 
 
@@ -288,6 +314,8 @@ void C2_HOOK_FASTCALL CyclePollKeys(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004821a0
+// FUNCTION: CARMA2_SW 0x0047f2e0
+// FUNCTION: CARMA2_CHEAT 0x004824c0
 void C2_HOOK_FASTCALL ResetPollKeys(void) {
     size_t i;
 
@@ -681,6 +709,8 @@ void C2_HOOK_FASTCALL FUN_00483e90(void) {
 #endif
 
 // FUNCTION: CARMA2_HW 0x00483fd0
+// FUNCTION: CARMA2_SW 0x00481110
+// FUNCTION: CARMA2_CHEAT 0x004842f0
 void C2_HOOK_FASTCALL BlankSlot(int pIndex, int pName_length, int pVisible_length) {
     int i;
 
@@ -733,6 +763,7 @@ int C2_HOOK_FASTCALL ChangeCharTo(int pSlot_index, int pChar_index, char pNew_ch
 
 // FUNCTION: CARMA2_HW 0x004840d0
 // FUNCTION: CARMA2_SW 0x00481210
+// FUNCTION: CARMA2_CHEAT 0x004843f0
 void C2_HOOK_FASTCALL StopTyping(int pSlot_index) {
     int i;
 
@@ -753,6 +784,8 @@ void C2_HOOK_FASTCALL RevertTyping(int pSlot_index, char* pRevert_str) {
 }
 
 // FUNCTION: CARMA2_HW 0x00484170
+// FUNCTION: CARMA2_SW 0x004812b0
+// FUNCTION: CARMA2_CHEAT 0x00484490
 void C2_HOOK_FASTCALL StartTyping(int pSlot_index, char* pText, int pVisible_length) {
 
     gThe_length = pVisible_length;
@@ -762,8 +795,147 @@ void C2_HOOK_FASTCALL StartTyping(int pSlot_index, char* pText, int pVisible_len
     gCurrent_cursor = ChangeCharTo(pSlot_index, gCurrent_position, ROLLING_LETTER_LOOP_RANDOM);
 }
 
+inline void C2_HOOK_FASTCALL SetRollingCursor(int pSlot_index) {
+
+    gCurrent_cursor = ChangeCharTo(pSlot_index, gCurrent_position, ROLLING_LETTER_LOOP_RANDOM);
+}
+
+inline void C2_HOOK_FASTCALL DoRLBackspace(int pSlot_index) {
+    int i;
+    int new_len;
+
+    if (gCurrent_position != 0) {
+        if ((size_t)gCurrent_position == strlen(gCurrent_typing)) {
+            ChangeCharTo(pSlot_index, (int)strlen(gCurrent_typing), ' ');
+        } else {
+            ChangeCharTo(pSlot_index, (int)strlen(gCurrent_typing) - 1, ' ');
+        }
+        new_len = (int)strlen(gCurrent_typing) - 1;
+        for (i = gCurrent_position - 1; i < new_len; i++) {
+            gCurrent_typing[i] = gCurrent_typing[i + 1];
+            ChangeCharTo(pSlot_index, i, gCurrent_typing[i]);
+        }
+        gCurrent_typing[new_len] = '\0';
+        gCurrent_position = gCurrent_position - 1;
+        SetRollingCursor(pSlot_index);
+    }
+}
+
+inline void C2_HOOK_FASTCALL DoRLDelete(int pSlot_index) {
+    int i;
+    int new_len;
+
+    if ((size_t)gCurrent_position < strlen(gCurrent_typing) - 1) {
+        ChangeCharTo(pSlot_index, (int)strlen(gCurrent_typing) - 1, ' ');
+        new_len = (int)strlen(gCurrent_typing) - 1;
+        for (i = gCurrent_position; new_len > i; i++) {
+            gCurrent_typing[i] = gCurrent_typing[i + 1];
+            ChangeCharTo(pSlot_index, i, gCurrent_typing[i]);
+        }
+        gCurrent_typing[new_len] = '\0';
+        SetRollingCursor(pSlot_index);
+    }
+}
+
+inline void C2_HOOK_FASTCALL DoRLInsert(int pSlot_index) {
+
+    if (gInsert_mode) {
+        gInsert_mode = 0;
+    } else {
+        gInsert_mode = 1;
+    }
+}
+
+inline void C2_HOOK_FASTCALL DoRLCursorLeft(int pSlot_index) {
+
+    if (gCurrent_position != 0) {
+        if ((size_t)gCurrent_position == strlen(gCurrent_typing)) {
+            ChangeCharTo(pSlot_index, (int)strlen(gCurrent_typing), ' ');
+        } else {
+            ChangeCharTo(pSlot_index, gCurrent_position, gCurrent_typing[gCurrent_position]);
+        }
+        gCurrent_position--;
+        SetRollingCursor(pSlot_index);
+    }
+}
+
+inline void C2_HOOK_FASTCALL DoRLCursorRight(int pSlot_index) {
+
+    if ((size_t)gCurrent_position < strlen(gCurrent_typing)) {
+        ChangeCharTo(pSlot_index, gCurrent_position, gCurrent_typing[gCurrent_position]);
+        gCurrent_position++;
+        SetRollingCursor(pSlot_index);
+    }
+}
+
+inline void C2_HOOK_FASTCALL DoRLTypeLetter(int pChar, int pSlot_index) {
+    int i;
+    int new_len;
+
+    if (pChar < ' ') {
+        return;
+    }
+    if (gInsert_mode) {
+        new_len = (int)strlen(gCurrent_typing) + 1;
+        if (new_len > 100) {
+            new_len = 100;
+            FUN_0044c690(-1);
+        }
+        for (i = new_len - 1; i > gCurrent_position; i--) {
+            gCurrent_typing[i] = gCurrent_typing[i - 1];
+            ChangeCharTo(pSlot_index, i, gCurrent_typing[i]);
+        }
+    } else if ((size_t)gCurrent_position == strlen(gCurrent_typing)) {
+        new_len = (int)strlen(gCurrent_typing) + 1;
+    } else {
+        new_len = (int)strlen(gCurrent_typing);
+    }
+    if (new_len > 100) {
+        new_len = 100;
+        FUN_0044c690(-1);
+    }
+    gCurrent_typing[new_len] = '\0';
+    if (gCurrent_position > new_len - 1) {
+        gCurrent_position = new_len - 1;
+    }
+    gCurrent_typing[gCurrent_position] = pChar;
+    ChangeCharTo(pSlot_index, gCurrent_position, pChar);
+    gCurrent_position++;
+    SetRollingCursor(pSlot_index);
+}
+
+// FUNCTION: CARMA2_HW 0x004841e0
+// FUNCTION: CARMA2_SW 0x00481320
+// FUNCTION: CARMA2_CHEAT 0x00484500
+void C2_HOOK_FASTCALL TypeKey(int pSlot_index, char pKey) {
+
+    switch (pKey) {
+    case 50:
+        DoRLBackspace(pSlot_index);
+        return;
+    case 65:
+        DoRLDelete(pSlot_index);
+        return;
+    case 64:
+        DoRLInsert(pSlot_index);
+        return;
+    case 70:
+        DoRLCursorLeft(pSlot_index);
+        return;
+    case 71:
+        DoRLCursorRight(pSlot_index);
+        return;
+    case 47:
+        return;
+    default:
+        DoRLTypeLetter(PDGetASCIIFromKey(pKey), pSlot_index);
+        return;
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x00484510
 // FUNCTION: CARMA2_SW 0x00481650
+// FUNCTION: CARMA2_CHEAT 0x00484830
 void C2_HOOK_FASTCALL SetSlotXY(int pSlot_index, int pX_coord, int pY_coord) {
     gLetter_x_coords[pSlot_index] = pX_coord;
     gLetter_y_coords[pSlot_index] = pY_coord;
@@ -771,6 +943,7 @@ void C2_HOOK_FASTCALL SetSlotXY(int pSlot_index, int pX_coord, int pY_coord) {
 
 // FUNCTION: CARMA2_HW 0x00484530
 // FUNCTION: CARMA2_SW 0x00481670
+// FUNCTION: CARMA2_CHEAT 0x00484850
 void C2_HOOK_FASTCALL GetTypedName(char* pDestn, int pMax_length) {
 
     if (strlen(gCurrent_typing) > (size_t)pMax_length) {
@@ -783,6 +956,7 @@ void C2_HOOK_FASTCALL GetTypedName(char* pDestn, int pMax_length) {
 
 // FUNCTION: CARMA2_HW 0x00484590
 // FUNCTION: CARMA2_SW 0x004816d0
+// FUNCTION: CARMA2_CHEAT 0x004848b0
 void C2_HOOK_FASTCALL KillCursor(int pSlot_index) {
     int x_coord;
     int y_coord;
