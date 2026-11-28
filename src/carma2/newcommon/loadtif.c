@@ -263,6 +263,87 @@ br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex(const char* pDirectory, const c
     return texture;
 }
 
+// FUNCTION: CARMA2_HW 0x00486760
+// FUNCTION: CARMA2_SW 0x004838a0
+// FUNCTION: CARMA2_CHEAT 0x00486a80
+void C2_HOOK_FASTCALL LoadAllTiffTexturesInDirectory(const char* pDirectory, br_pixelmap* pPalette, int pFlags, int* pError_code) {
+    tLoadDirectoryStructureCBData data;
+    tLoadDirectoryStructureCBResult* next;
+    tPath_name path;
+
+    data.loadFlags = pFlags | kLoadTextureFlags_SaveBrenderTexture;
+    data.errorCode = pError_code;
+    data.results = NULL;
+    data.directory = pDirectory;
+    data.pPalette = pPalette;
+    if (!(pFlags & kLoadTextureFlags_16bbp)) {
+        sprintf(path, "%s%s%s", pDirectory, gDir_separator, "TIFFX");
+        data.isTiffx = 1;
+        PDEnumPath(path, LoadTiffTextureCB, &data);
+    }
+    if (*pError_code == 0) {
+        sprintf(path, "%s%s%s", pDirectory, gDir_separator, "TIFFRGB");
+        data.isTiffx = 0;
+        PDEnumPath(path, LoadTiffTextureCB, &data);
+        while (data.results != NULL) {
+            next = data.results->next;
+            if (data.results->name != NULL) {
+                BrMemFree(data.results->name);
+            }
+            BrMemFree(data.results);
+            data.results = next;
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00486860
+// FUNCTION: CARMA2_SW 0x004839a0
+// FUNCTION: CARMA2_CHEAT 0x00486b80
+int C2_HOOK_FASTCALL LoadTiffTextureCB(const char* pPath, void* pContext) {
+    tLoadDirectoryStructureCBData* data;
+    tLoadDirectoryStructureCBResult* result;
+    br_pixelmap* texture;
+    tPath_name texture_name;
+    int length;
+
+    data = pContext;
+    length = strlen(pPath) - 4;
+    if (length > 0 && PDstricmp(&pPath[length], ".TIF") == 0) {
+        sprintf(texture_name, "%.*s", length, pPath);
+        result = NULL;
+        if (!data->isTiffx) {
+            for (result = data->results; result != NULL; result = result->next) {
+                if (PDstricmp(texture_name, result->name) == 0) {
+                    break;
+                }
+            }
+        }
+        if (result == NULL) {
+            texture = LoadTiffTexture_Ex(data->directory, texture_name, data->pPalette, data->loadFlags, data->errorCode);
+            if (texture != NULL) {
+                BrPixelmapFree(texture);
+            }
+            if (*data->errorCode != 0) {
+                return *data->errorCode;
+            }
+        }
+        if (data->isTiffx) {
+            result = BrMemAllocate(sizeof(tLoadDirectoryStructureCBResult), BR_MEMORY_APPLICATION);
+            if (result != NULL) {
+                result->name = BrMemStrDup(texture_name);
+                if (result->name != NULL) {
+                    result->next = data->results;
+                    data->results = result;
+                    return 0;
+                }
+            }
+            *data->errorCode = 2;
+            return 2;
+        }
+    }
+    return 0;
+}
+
 // FUNCTION: CARMA2_HW 0x004869e0
 // FUNCTION: CARMA2_SW 0x00483b20
 // FUNCTION: CARMA2_CHEAT 0x00486d00
