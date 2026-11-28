@@ -221,13 +221,12 @@ void C2_HOOK_FASTCALL ProcessModelFaceMaterials2(br_model* pModel, material_cbfn
 // FUNCTION: CARMA2_HW 0x00448850
 // FUNCTION: CARMA2_CHEAT 0x00448d60
 intptr_t C2_HOOK_CDECL ProcessFaceMaterials(br_actor* pActor, void* pData) {
-    tPMFMCB* callback = pData;
 
     if (pActor->identifier != NULL && pActor->identifier[0] == '&') {
         return 0;
     }
     if (pActor->type == BR_ACTOR_MODEL && pActor->model != NULL) {
-        ProcessModelFaceMaterials(pActor->model, callback);
+        ProcessModelFaceMaterials(pActor->model, (tPMFMCB*)pData);
     }
     return BrActorEnum(pActor, ProcessFaceMaterials, pData);
 }
@@ -552,7 +551,23 @@ br_material* C2_HOOK_FASTCALL DisposeSuffixedMaterials(br_model* pModel, tU16 pF
     return NULL;
 }
 
-// DisposeTexturingMaterials
+// FUNCTION: CARMA2_HW 0x004489d0
+// FUNCTION: CARMA2_SW 0x00448df0
+// FUNCTION: CARMA2_CHEAT 0x00448ee0
+void C2_HOOK_FASTCALL DisposeTexturingMaterials(void) {
+
+    if (gWall_texturing_level == eWTL_linear) {
+        ProcessFaceMaterials(gProgram_state.track_spec.the_actor, (void*)WallLinearToPersp);
+    } else if (gWall_texturing_level == eWTL_none) {
+        ProcessFaceMaterials(gProgram_state.track_spec.the_actor, (void*)WallUntexToPersp);
+    }
+    if (gRoad_texturing_level == eRTL_none) {
+        ProcessFaceMaterials(gProgram_state.track_spec.the_actor, (void*)RoadUntexToPersp);
+    }
+    if (gWall_texturing_level != eWTL_full || gRoad_texturing_level != eRTL_full) {
+        ProcessFaceMaterials(gProgram_state.track_spec.the_actor, (void*)DisposeSuffixedMaterials);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x00448ea0
 // FUNCTION: CARMA2_SW 0x004492c0
