@@ -15,6 +15,8 @@
 extern int gINT_0068d920;
 extern tNet_game_player_info* gLast_lepper;
 extern int gLast_it_change;
+extern int gWinner_declared;
+extern int gGame_scores[12];
 
 // SendShapeNumbers
 
@@ -116,7 +118,7 @@ extern void C2_HOOK_FASTCALL DoNetGameManagement(void);
 
 extern void C2_HOOK_FASTCALL InitialisePlayerScore(tNet_game_player_info* pPlayer);
 
-// InitPlayers
+extern void C2_HOOK_FASTCALL InitPlayers(void);
 
 extern void C2_HOOK_FASTCALL UseGeneralScore(int pScore);
 
