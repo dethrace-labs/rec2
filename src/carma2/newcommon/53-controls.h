@@ -36,6 +36,8 @@ extern int gCancel_recover;
 extern tRace_over_reason gRace_over_reason;
 extern tU32 gPalette_fade_time;
 extern tEdit_func* gEdit_funcs[eEdit_mode_count][18][8];
+extern tToggle_element gToggle_array[44];
+extern char* gEdit_mode_names[12];
 
 extern void C2_HOOK_FASTCALL CompleteRace(void);
 
@@ -121,7 +123,7 @@ extern void C2_HOOK_FASTCALL TDamageRRWheel(void);
 
 extern void C2_HOOK_FASTCALL ToggleMiniMap(void);
 
-// CheckToggles
+extern void C2_HOOK_FASTCALL CheckToggles(int pRacing);
 
 extern int C2_HOOK_FASTCALL CarWorldOffFallenCheckThingy(tCar_spec* pCar, int pCheck_around);
 
@@ -149,7 +151,7 @@ extern void C2_HOOK_FASTCALL SetRecovery(void);
 
 extern int C2_HOOK_FASTCALL TradeInAPO(int pCost);
 
-// CheckOtherRacingKeys
+extern void C2_HOOK_FASTCALL CheckOtherRacingKeys(void);
 
 extern int C2_HOOK_FASTCALL CheckRecoverCost(void);
 
