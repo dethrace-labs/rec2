@@ -34,6 +34,11 @@ extern tNet_game_options gFrontend_net_options;
 extern int gPicked_wreck;
 extern tWreck_gallery_car_info gWreck_gallery_car_infos[30];
 extern tNet_game_type gFrontend_game_type;
+extern int gRace_index;
+extern char gFrontend_host_join_buffer[256];
+extern tNet_game_details* gGame_to_join;
+extern const char* gFrontend_has_joined_text;
+extern int gFrontend_net_car_index;
 extern tStruct_00686508 gUNK_006883b0;
 extern tStruct_00686508 gUNK_006886e8;
 extern br_actor* gFrontend_wrecks_actor;
@@ -71,11 +76,11 @@ extern br_token_value gFrontend_backdrop0_material_prims[3];
 extern br_actor* gFrontend_camera;
 extern br_actor* gFrontend_backdrop_actors[3];
 
-// SetGameTarget
+extern void C2_HOOK_FASTCALL SetGameTarget(tNet_game_type* pGame_type, tNet_game_options* pGame_options);
 
 extern void C2_HOOK_FASTCALL SetOptions(tNet_game_type pGame_type, tNet_game_options* pGame_options);
 
-// ReadNetGameChoices
+extern void C2_HOOK_FASTCALL ReadNetGameChoices(tNet_game_type* pGame_type, tNet_game_options* pGame_options, int* pRace_index);
 
 extern int C2_HOOK_FASTCALL PickARandomCar(void);
 
@@ -89,7 +94,7 @@ extern void C2_HOOK_FASTCALL DefaultNetSettings(void);
 
 extern void C2_HOOK_FASTCALL DisposeJoinableGame(int pIndex);
 
-// InitGamesToJoin
+extern void C2_HOOK_FASTCALL InitGamesToJoin(void);
 
 extern void C2_HOOK_FASTCALL DisposeJoinList(int pException);
 
@@ -137,7 +142,7 @@ extern void C2_HOOK_FASTCALL RefreshRacesScroller(tFrontend_spec* pFrontend);
 
 // NetworkUpdateSelectedGameInfo
 
-// UpdateNetTrackScroller
+extern void C2_HOOK_FASTCALL UpdateNetTrackScroller(tFrontend_spec* pFrontend);
 
 extern void C2_HOOK_FASTCALL RefreshNetRacesScroller(tFrontend_spec* pFrontend);
 
@@ -145,7 +150,7 @@ extern void C2_HOOK_FASTCALL RefreshNetRacesScroller(tFrontend_spec* pFrontend);
 
 // NetRaceDn
 
-// SaveSinglePlayerState
+extern void C2_HOOK_FASTCALL SaveSinglePlayerState(void);
 
 extern void C2_HOOK_FASTCALL RestoreSinglePlayerState(void);
 
@@ -171,7 +176,7 @@ extern int C2_HOOK_FASTCALL StartFudge(tFrontend_spec* pFrontend);
 
 // FRONTEND_NewGameMenuHandler
 
-// UpdateNetGameTypeScroller
+extern void C2_HOOK_FASTCALL UpdateNetGameTypeScroller(tFrontend_spec* pFrontend);
 
 // NetGameTypeUp
 
@@ -179,9 +184,9 @@ extern int C2_HOOK_FASTCALL StartFudge(tFrontend_spec* pFrontend);
 
 extern int C2_HOOK_FASTCALL MultiplayerSetup(tFrontend_spec* pFrontend);
 
-// NetworkJoinSetup
+extern void C2_HOOK_FASTCALL NetworkJoinSetup(void);
 
-// NetworkJoinMenuInfunc
+extern int C2_HOOK_FASTCALL NetworkJoinMenuInfunc(tFrontend_spec* pFrontend);
 
 extern void C2_HOOK_FASTCALL StopAllThatJoinyStuffThisInstant(void);
 
@@ -193,19 +198,19 @@ extern int C2_HOOK_FASTCALL ChooseNetCar(tNet_game_details* pNet_game, tNet_game
 
 extern void C2_HOOK_FASTCALL InitNetStorageSpace(void);
 
-// DisposeNetStorageSpace
+extern void C2_HOOK_FASTCALL DisposeNetStorageSpace(void);
 
-// SetUpOtherNetThings
+extern void C2_HOOK_FASTCALL SetUpOtherNetThings(tNet_game_details* pNet_game);
 
-// DoMultiplayerStartStuff
+extern int C2_HOOK_FASTCALL DoMultiplayerStartStuff(tNet_mode pNet_mode);
 
-// NetworkJoinGoAhead
+extern int C2_HOOK_FASTCALL NetworkJoinGoAhead(tFrontend_spec* pFrontend);
 
-// NetSetRaceType
+extern int C2_HOOK_FASTCALL NetSetRaceType(tFrontend_spec* pFrontend);
 
-// NetworkStartJoin
+extern int C2_HOOK_FASTCALL NetworkStartJoin(tFrontend_spec* pFrontend);
 
-// NetworkStartHost
+extern int C2_HOOK_FASTCALL NetworkStartHost(tFrontend_spec* pFrontend);
 
 // NetHostChooseThisRace
 
