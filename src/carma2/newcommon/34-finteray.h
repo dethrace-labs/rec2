@@ -22,7 +22,7 @@ extern int gNearest_face_group;
 extern br_model* gNearest_model;
 extern br_matrix34 gPick_model_to_view__finteray;
 
-// BadDiv
+extern int C2_HOOK_FASTCALL BadDiv__finteray(br_scalar a, br_scalar b);
 
 // DRVector2AccumulateScale
 
@@ -64,7 +64,7 @@ extern void C2_HOOK_FASTCALL StationarySphereEdgeCollide(const br_vector3* pPoin
 
 extern void C2_HOOK_FASTCALL CheckSingleFace(tFace_ref* pFace, br_vector3* ray_pos, br_vector3* ray_dir, br_vector3* normal, br_scalar* rt, br_vector3* coll_pos);
 
-// MultiRayCheckSingleFace
+extern void C2_HOOK_FASTCALL MultiRayCheckSingleFace(int pNum_rays, tFace_ref* pFace, br_vector3* ray_pos, br_vector3* ray_dir, br_vector3* normal, br_scalar* rt);
 
 extern void C2_HOOK_FASTCALL GetNewBoundingBox(br_bounds* b2, const br_bounds* b1, const br_matrix34* m);
 
