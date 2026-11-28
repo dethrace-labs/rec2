@@ -347,17 +347,473 @@ int C2_HOOK_FASTCALL BoundsOverlapTest(const br_bounds3* pBounds_1, const br_bou
 
 // GetObjectObjectEdgePoints
 
-// GetSphereNonSphereForceInfo
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// GetSphereSphereForceInfo
+// FUNCTION: CARMA2_HW 0x004269c0
+// FUNCTION: CARMA2_SW 0x00426a60
+// FUNCTION: CARMA2_CHEAT 0x00426b50
+int C2_HOOK_FASTCALL GetSphereNonSphereForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_shape* pShape_a, tPhysics_shape* pShape_b, br_vector3* pPoints_a, br_vector3* pPoints_b, int pCount_a, int pCount_b, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+    int i;
+    int result;
+    int edge_count;
+    int below_x;
+    int below_y;
+    int below_z;
+    int above_x;
+    int above_y;
+    int above_z;
+    tU8 all_codes;
+    tU8 codes[64];
+    br_scalar t;
+    br_scalar value;
+    br_vector3* shape_points;
+    tPolyhedron_edge_indexes* edges;
+    br_vector3 corners[8];
+    br_vector3 point;
+    br_vector3 normal;
+    br_vector3 world_normal;
+    br_vector3 tmp;
+    br_vector3 sphere_point;
+    br_vector3 new_position;
+    br_vector3 old_position;
+    br_vector3 new_world_b;
+    br_vector3 old_world_b;
+    br_vector3 new_world_a;
+    br_vector3 old_world_a;
+    br_vector3 new_relative_a;
+    br_vector3 old_relative_a;
+    br_vector3 new_relative_b;
+    br_vector3 old_relative_b;
+    br_vector3 direction;
 
-// GetSphereShapeForceInfo
+    all_codes = 0xff;
+    for (i = 0; i < pCount_b; i++) {
+        if (pPoints_b[2 * i].v[0] < pShape_a->common.bb.min.v[0] - 0.005f && pPoints_b[2 * i + 1].v[0] < pShape_a->common.bb.min.v[0] - 0.005f) {
+            below_x = 1;
+        } else {
+            below_x = 0;
+        }
+        if (pPoints_b[2 * i].v[1] < pShape_a->common.bb.min.v[1] - 0.005f && pPoints_b[2 * i + 1].v[1] < pShape_a->common.bb.min.v[1] - 0.005f) {
+            below_y = 1;
+        } else {
+            below_y = 0;
+        }
+        if (pPoints_b[2 * i].v[2] < pShape_a->common.bb.min.v[2] - 0.005f && pPoints_b[2 * i + 1].v[2] < pShape_a->common.bb.min.v[2] - 0.005f) {
+            below_z = 1;
+        } else {
+            below_z = 0;
+        }
+        if (pPoints_b[2 * i].v[0] > pShape_a->common.bb.max.v[0] + 0.005f && pPoints_b[2 * i + 1].v[0] > pShape_a->common.bb.max.v[0] + 0.005f) {
+            above_x = 1;
+        } else {
+            above_x = 0;
+        }
+        if (pPoints_b[2 * i].v[1] > pShape_a->common.bb.max.v[1] + 0.005f && pPoints_b[2 * i + 1].v[1] > pShape_a->common.bb.max.v[1] + 0.005f) {
+            above_y = 1;
+        } else {
+            above_y = 0;
+        }
+        if (pPoints_b[2 * i].v[2] > pShape_a->common.bb.max.v[2] + 0.005f && pPoints_b[2 * i + 1].v[2] > pShape_a->common.bb.max.v[2] + 0.005f) {
+            above_z = 1;
+        } else {
+            above_z = 0;
+        }
+        codes[i] = below_x + 2 * (below_y + 2 * (below_z + 2 * (above_x + 2 * (above_y + 2 * above_z))));
+        all_codes &= codes[i];
+    }
+    if (all_codes != 0) {
+        return pCount;
+    }
+    switch (pShape_b->common.type) {
+    case kCollisionShapeType_Box:
+        shape_points = corners;
+        for (i = 0; i < 8; i++) {
+            corners[i].v[0] = (i & 0x2) ? pShape_b->common.bb.min.v[0] : pShape_b->common.bb.max.v[0];
+            corners[i].v[1] = (i & 0x1) ? pShape_b->common.bb.min.v[1] : pShape_b->common.bb.max.v[1];
+            corners[i].v[2] = (i & 0x4) ? pShape_b->common.bb.min.v[2] : pShape_b->common.bb.max.v[2];
+        }
+        break;
+    case kCollisionShapeType_Wireframe:
+        shape_points = pShape_b->wireframe.wireframe.points;
+        break;
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        shape_points = pShape_b->polyhedron.polyhedron.points;
+        break;
+    default:
+        break;
+    }
+    for (i = 0; i < pCount_b; i++) {
+        if (codes[i] == 0) {
+            result = LineSphereCollWithSphere(&pPoints_b[2 * i], &pPoints_b[2 * i + 1], &pShape_a->sphere.sphere, &point, &normal, &t);
+            if (result != 0) {
+                if (result == -1) {
+                    codes[i] = 0xff;
+                } else {
+                    BrMatrix34ApplyV(&world_normal, &normal, &pObject_a->actor->t.t.mat);
+                    BrMatrix34ApplyV(&tmp, &normal, &pObject_a->transform_matrix);
+                    BrVector3Scale(&tmp, &tmp, 1.0f - t);
+                    BrVector3Scale(&world_normal, &world_normal, t);
+                    BrVector3Accumulate(&world_normal, &tmp);
+                    BrVector3Normalise(&world_normal, &world_normal);
+                    pCount = AddObjectObjectForce(pForces, &point, t, &shape_points[i], &world_normal, pCount, pObject_a, pObject_b, 5, NULL, 0.0f);
+                }
+            }
+        }
+    }
+    switch (pShape_b->common.type) {
+    case kCollisionShapeType_Box:
+        SphereBoxFaceCollide(&pShape_a->sphere.sphere, &pShape_b->box, &pPoints_a[0], &pPoints_a[1], &point, &normal, &t);
+        break;
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        SpherePolyFaceCollide(&pShape_a->sphere.sphere, &pShape_b->polyhedron.polyhedron, &pPoints_a[0], &pPoints_a[1], &point, &normal, &t);
+        break;
+    default:
+        t = 100.0f;
+        break;
+    }
+    if (t <= 1.0f) {
+        BrMatrix34ApplyV(&world_normal, &normal, &pObject_b->actor->t.t.mat);
+        BrMatrix34ApplyV(&tmp, &normal, &pObject_b->transform_matrix);
+        BrVector3Scale(&tmp, &tmp, 1.0f - t);
+        BrVector3Scale(&world_normal, &world_normal, t);
+        BrVector3Accumulate(&world_normal, &tmp);
+        BrVector3Normalise(&world_normal, &world_normal);
+        BrMatrix34TApplyV(&tmp, &world_normal, &pObject_a->transform_matrix);
+        BrMatrix34TApplyV(&sphere_point, &world_normal, &pObject_a->actor->t.t.mat);
+        BrVector3Scale(&tmp, &tmp, 1.0f - t);
+        BrVector3Scale(&sphere_point, &sphere_point, t);
+        BrVector3Accumulate(&sphere_point, &tmp);
+        BrVector3Normalise(&sphere_point, &sphere_point);
+        BrVector3Scale(&sphere_point, &sphere_point, pShape_a->sphere.sphere.radius);
+        BrVector3Accumulate(&sphere_point, &pShape_a->sphere.sphere.center);
+        BrMatrix34ApplyP(&tmp, &pShape_a->sphere.sphere.center, &pObject_a->transform_matrix);
+        DrMatrix34ApplyLPInverse(&new_position, &tmp, &pObject_b->transform_matrix);
+        BrMatrix34ApplyP(&tmp, &pShape_a->sphere.sphere.center, &pObject_a->actor->t.t.mat);
+        DrMatrix34ApplyLPInverse(&old_position, &tmp, &pObject_b->actor->t.t.mat);
+        BrVector3Sub(&old_position, &old_position, &new_position);
+        value = BrVector3Dot(&old_position, &normal);
+        pCount = AddObjectObjectForce(pForces, &point, t, &sphere_point, &world_normal, pCount, pObject_b, pObject_a, 8, NULL, value);
+    }
+    switch (pShape_b->common.type) {
+    case kCollisionShapeType_Box:
+        edges = gDefault_box_collision_wireframe_edges;
+        edge_count = 12;
+        break;
+    case kCollisionShapeType_Wireframe:
+        edges = pShape_b->wireframe.wireframe.lines;
+        edge_count = pShape_b->wireframe.wireframe.count_lines;
+        break;
+    case kCollisionShapeType_Polyhedron:
+    case kCollisionShapeType_Wireframe_Polyhedron:
+        edges = pShape_b->polyhedron.polyhedron.edges;
+        edge_count = pShape_b->polyhedron.polyhedron.count_edges;
+        break;
+    default:
+        PhysicsError(ePhysicsError_UnknownShapeType, "");
+        break;
+    }
+    for (i = 0; i < edge_count; i++) {
+        if ((codes[edges[i].index1] & codes[edges[i].index2] & 0x3f) == 0) {
+            codes[edges[i].index1] |= 0x80;
+            codes[edges[i].index2] |= 0x80;
+            SphereEdgeCollide(&shape_points[edges[i].index1], &shape_points[edges[i].index2], &pPoints_a[0], &pPoints_a[1], &pShape_a->sphere.sphere, &point, &normal, &t, codes[edges[i].index1], codes[edges[i].index2]);
+            if (t <= 1.0f) {
+                BrMatrix34ApplyV(&world_normal, &normal, &pObject_b->actor->t.t.mat);
+                BrMatrix34ApplyV(&tmp, &normal, &pObject_b->transform_matrix);
+                BrVector3Scale(&tmp, &tmp, 1.0f - t);
+                BrVector3Scale(&world_normal, &world_normal, t);
+                BrVector3Accumulate(&world_normal, &tmp);
+                BrVector3Normalise(&world_normal, &world_normal);
+                BrMatrix34TApplyV(&tmp, &world_normal, &pObject_a->transform_matrix);
+                BrMatrix34TApplyV(&sphere_point, &world_normal, &pObject_a->actor->t.t.mat);
+                BrVector3Scale(&tmp, &tmp, 1.0f - t);
+                BrVector3Scale(&sphere_point, &sphere_point, t);
+                BrVector3Accumulate(&sphere_point, &tmp);
+                BrVector3Normalise(&sphere_point, &sphere_point);
+                BrVector3Scale(&sphere_point, &sphere_point, pShape_a->sphere.sphere.radius);
+                BrVector3Accumulate(&sphere_point, &pShape_a->sphere.sphere.center);
+                BrMatrix34ApplyP(&tmp, &pShape_a->sphere.sphere.center, &pObject_a->transform_matrix);
+                DrMatrix34ApplyLPInverse(&new_position, &tmp, &pObject_b->transform_matrix);
+                BrMatrix34ApplyP(&tmp, &pShape_a->sphere.sphere.center, &pObject_a->actor->t.t.mat);
+                DrMatrix34ApplyLPInverse(&old_position, &tmp, &pObject_b->actor->t.t.mat);
+                BrVector3Sub(&old_position, &old_position, &new_position);
+                value = BrVector3Dot(&old_position, &normal);
+                pCount = AddObjectObjectForce(pForces, &point, t, &sphere_point, &world_normal, pCount, pObject_b, pObject_a, 8, NULL, value);
+                if (pCount == 500) {
+                    BrMatrix34ApplyP(&new_world_b, &point, &pObject_b->transform_matrix);
+                    BrMatrix34ApplyP(&old_world_b, &point, &pObject_b->actor->t.t.mat);
+                    BrMatrix34ApplyP(&new_world_a, &sphere_point, &pObject_a->transform_matrix);
+                    BrMatrix34ApplyP(&old_world_a, &sphere_point, &pObject_a->actor->t.t.mat);
+                    DrMatrix34ApplyLPInverse(&new_relative_b, &new_world_b, &pObject_a->transform_matrix);
+                    DrMatrix34ApplyLPInverse(&old_relative_b, &old_world_b, &pObject_a->actor->t.t.mat);
+                    BrMatrix34TApplyV(&direction, &world_normal, &pObject_a->transform_matrix);
+                    DrMatrix34ApplyLPInverse(&new_relative_a, &new_world_a, &pObject_b->transform_matrix);
+                    DrMatrix34ApplyLPInverse(&old_relative_a, &old_world_a, &pObject_b->actor->t.t.mat);
+                    BrMatrix34TApplyV(&direction, &world_normal, &pObject_b->transform_matrix);
+                }
+            }
+        }
+    }
+    return pCount;
+}
 
-// GetNonSphereNonSphereForceInfo
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
-// GetNonSphereShapeForceInfo
+inline int C2_HOOK_FASTCALL GetSphereSphereForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_shape* pShape_a, tPhysics_shape* pShape_b, br_vector3* pPoints_a, br_vector3* pPoints_b, int pCount_a, int pCount_b, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+    br_vector3 normal;
+    br_vector3 world_normal;
+    br_vector3 new_normal;
+    br_vector3 old_normal;
+    br_vector3 point_a;
+    br_vector3 point_b;
+    br_scalar t;
 
-// GetObjectObjectForceInfo
+    SphereSphereCollide(&pShape_a->sphere.sphere, &pShape_b->sphere.sphere, &pPoints_b[0], &pPoints_b[1], &normal, &t);
+    if (t <= 1.0f) {
+        BrVector3Scale(&point_a, &normal, -pShape_a->sphere.sphere.radius);
+        BrVector3Accumulate(&point_a, &pShape_a->sphere.sphere.center);
+        BrMatrix34ApplyV(&new_normal, &normal, &pObject_a->transform_matrix);
+        BrMatrix34ApplyV(&old_normal, &normal, &pObject_a->actor->t.t.mat);
+        BrVector3Scale(&new_normal, &new_normal, 1.0f - t);
+        BrVector3Scale(&old_normal, &old_normal, t);
+        BrVector3Add(&world_normal, &new_normal, &old_normal);
+        BrMatrix34TApplyV(&new_normal, &world_normal, &pObject_b->transform_matrix);
+        BrMatrix34TApplyV(&old_normal, &world_normal, &pObject_b->actor->t.t.mat);
+        BrVector3Scale(&new_normal, &new_normal, 1.0f - t);
+        BrVector3Scale(&old_normal, &old_normal, t);
+        BrVector3Accumulate(&new_normal, &old_normal);
+        BrVector3Scale(&point_b, &new_normal, pShape_b->sphere.sphere.radius);
+        BrVector3Accumulate(&point_b, &pShape_b->sphere.sphere.center);
+        pCount = AddObjectObjectForce(pForces, &point_a, t, &point_b, &world_normal, pCount, pObject_a, pObject_b, 7, NULL, 0.0f);
+    }
+    return pCount;
+}
+
+inline int C2_HOOK_FASTCALL GetSphereShapeForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_shape* pShape_a, tPhysics_shape* pShape_b, br_vector3* pPoints_a, br_vector3* pPoints_b, int pCount_a, int pCount_b, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+
+    if (pShape_b->common.type == kCollisionShapeType_Sphere) {
+        return GetSphereSphereForceInfo(pObject_a, pObject_b, pShape_a, pShape_b, pPoints_a, pPoints_b, pCount_a, pCount_b, pForces, pCount, pMax_count);
+    } else {
+        return GetSphereNonSphereForceInfo(pObject_a, pObject_b, pShape_a, pShape_b, pPoints_a, pPoints_b, pCount_a, pCount_b, pForces, pCount, pMax_count);
+    }
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x00427870
+// STUB: CARMA2_SW 0x00427900
+// STUB: CARMA2_CHEAT 0x00427a00
+int C2_HOOK_FASTCALL GetNonSphereNonSphereForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_shape* pShape_a, tPhysics_shape* pShape_b, br_vector3* pPoints_a, br_vector3* pPoints_b, int pCount_a, int pCount_b, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+inline int C2_HOOK_FASTCALL GetNonSphereShapeForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_shape* pShape_a, tPhysics_shape* pShape_b, br_vector3* pPoints_a, br_vector3* pPoints_b, int pCount_a, int pCount_b, tPhysics_joint_force* pForces, int pCount, int pMax_count) {
+
+    if (pShape_b->common.type == kCollisionShapeType_Sphere) {
+        return GetSphereNonSphereForceInfo(pObject_b, pObject_a, pShape_b, pShape_a, pPoints_b, pPoints_a, pCount_b, pCount_a, pForces, pCount, pMax_count);
+    } else {
+        return GetNonSphereNonSphereForceInfo(pObject_a, pObject_b, pShape_a, pShape_b, pPoints_a, pPoints_b, pCount_a, pCount_b, pForces, pCount, pMax_count);
+    }
+}
+
+/* FIXME: the sizes of the point and count arrays are guesses. */
+// FUNCTION: CARMA2_HW 0x00425ca0
+// FUNCTION: CARMA2_SW 0x00425d40
+// FUNCTION: CARMA2_CHEAT 0x00425e30
+int C2_HOOK_FASTCALL GetObjectObjectForceInfo(tPhysics_object* pObject_a, tPhysics_object* pObject_b, tPhysics_joint_force* pForces, int pCount) {
+    br_matrix34 new_matrix;
+    br_matrix34 old_matrix;
+    br_matrix34 inverse_new;
+    br_matrix34 inverse_old;
+    tU16 counts_b[17];
+    tU16 counts_a[17];
+    br_vector3 corner;
+    br_vector3 points_b[256];
+    br_vector3 points_a[256];
+    br_vector3* points;
+    br_vector3* other_points;
+    tPhysics_shape* shape;
+    tPhysics_shape* other_shape;
+    tPhysics_joint_force* first;
+    br_scalar dot;
+    int count;
+    int i;
+    int j;
+
+    count = 0;
+    shape = pObject_b->shape;
+    other_shape = pObject_a->shape;
+    if (pCount > 36) {
+        return 0;
+    }
+    BrMatrix34LPInverse(&inverse_new, &pObject_a->transform_matrix);
+    BrMatrix34Mul(&new_matrix, &pObject_b->transform_matrix, &inverse_new);
+    BrMatrix34LPInverse(&inverse_old, &pObject_a->actor->t.t.mat);
+    BrMatrix34Mul(&old_matrix, &pObject_b->actor->t.t.mat, &inverse_old);
+    points = points_b;
+    j = 0;
+    for (; shape != NULL; shape = shape->common.next) {
+        switch (shape->common.type) {
+        case kCollisionShapeType_Box:
+            counts_b[j] = 8;
+                for (i = 0; i < 8; i++) {
+                    if (i & 0x2) {
+                        corner.v[0] = shape->common.bb.min.v[0];
+                    } else {
+                        corner.v[0] = shape->common.bb.max.v[0];
+                    }
+                    if (i & 0x1) {
+                        corner.v[1] = shape->common.bb.min.v[1];
+                    } else {
+                        corner.v[1] = shape->common.bb.max.v[1];
+                    }
+                    if (i & 0x4) {
+                        corner.v[2] = shape->common.bb.min.v[2];
+                    } else {
+                        corner.v[2] = shape->common.bb.max.v[2];
+                    }
+                        BrMatrix34ApplyP(&points[2 * i], &corner, &new_matrix);
+                        BrMatrix34ApplyP(&points[2 * i + 1], &corner, &old_matrix);
+                }
+            points += 16;
+            break;
+        case kCollisionShapeType_Wireframe:
+            counts_b[j] = shape->wireframe.wireframe.count_points;
+            for (i = 0; i < shape->wireframe.wireframe.count_points; i++) {
+                BrMatrix34ApplyP(&points[2 * i], &shape->wireframe.wireframe.points[i], &new_matrix);
+                BrMatrix34ApplyP(&points[2 * i + 1], &shape->wireframe.wireframe.points[i], &old_matrix);
+            }
+            points += 2 * shape->wireframe.wireframe.count_points;
+            break;
+        case kCollisionShapeType_Polyhedron:
+        case kCollisionShapeType_Wireframe_Polyhedron:
+            counts_b[j] = shape->polyhedron.polyhedron.count_points;
+            for (i = 0; i < shape->polyhedron.polyhedron.count_points; i++) {
+                BrMatrix34ApplyP(&points[2 * i], &shape->polyhedron.polyhedron.points[i], &new_matrix);
+                BrMatrix34ApplyP(&points[2 * i + 1], &shape->polyhedron.polyhedron.points[i], &old_matrix);
+            }
+            points += 2 * shape->polyhedron.polyhedron.count_points;
+            break;
+        case kCollisionShapeType_Sphere:
+            BrMatrix34ApplyP(&points[0], &shape->sphere.sphere.center, &new_matrix);
+            BrMatrix34ApplyP(&points[1], &shape->sphere.sphere.center, &old_matrix);
+            points += 2;
+            counts_b[j] = 1;
+            break;
+        default:
+            PhysicsError(ePhysicsError_UnknownShapeType, "");
+            break;
+        }
+        j++;
+    }
+    shape = other_shape;
+    points = points_a;
+    j = 0;
+    for (; shape != NULL; shape = shape->common.next) {
+        switch (shape->common.type) {
+        case kCollisionShapeType_Box:
+            counts_a[j] = 8;
+                for (i = 0; i < 8; i++) {
+                    if (i & 0x2) {
+                        corner.v[0] = shape->common.bb.min.v[0];
+                    } else {
+                        corner.v[0] = shape->common.bb.max.v[0];
+                    }
+                    if (i & 0x1) {
+                        corner.v[1] = shape->common.bb.min.v[1];
+                    } else {
+                        corner.v[1] = shape->common.bb.max.v[1];
+                    }
+                    if (i & 0x4) {
+                        corner.v[2] = shape->common.bb.min.v[2];
+                    } else {
+                        corner.v[2] = shape->common.bb.max.v[2];
+                    }
+                        DrMatrix34ApplyLPInverse(&points[2 * i], &corner, &new_matrix);
+                        DrMatrix34ApplyLPInverse(&points[2 * i + 1], &corner, &old_matrix);
+                }
+            points += 16;
+            break;
+        case kCollisionShapeType_Wireframe:
+            counts_a[j] = shape->wireframe.wireframe.count_points;
+            for (i = 0; i < shape->wireframe.wireframe.count_points; i++) {
+                DrMatrix34ApplyLPInverse(&points[2 * i], &shape->wireframe.wireframe.points[i], &new_matrix);
+                DrMatrix34ApplyLPInverse(&points[2 * i + 1], &shape->wireframe.wireframe.points[i], &old_matrix);
+            }
+            points += 2 * shape->wireframe.wireframe.count_points;
+            break;
+        case kCollisionShapeType_Polyhedron:
+        case kCollisionShapeType_Wireframe_Polyhedron:
+            counts_a[j] = shape->polyhedron.polyhedron.count_points;
+            for (i = 0; i < shape->polyhedron.polyhedron.count_points; i++) {
+                DrMatrix34ApplyLPInverse(&points[2 * i], &shape->polyhedron.polyhedron.points[i], &new_matrix);
+                DrMatrix34ApplyLPInverse(&points[2 * i + 1], &shape->polyhedron.polyhedron.points[i], &old_matrix);
+            }
+            points += 2 * shape->polyhedron.polyhedron.count_points;
+            break;
+        case kCollisionShapeType_Sphere:
+            DrMatrix34ApplyLPInverse(&points[0], &shape->sphere.sphere.center, &new_matrix);
+            DrMatrix34ApplyLPInverse(&points[1], &shape->sphere.sphere.center, &old_matrix);
+            points += 2;
+            counts_a[j] = 1;
+            break;
+        default:
+            PhysicsError(ePhysicsError_UnknownShapeType, "");
+            break;
+        }
+        j++;
+    }
+    points = points_a;
+    i = 0;
+    for (shape = pObject_a->shape; shape != NULL; shape = shape->common.next) {
+        other_points = points_b;
+        j = 0;
+        if (shape->common.type == kCollisionShapeType_Sphere) {
+            for (other_shape = pObject_b->shape; other_shape != NULL; other_shape = other_shape->common.next) {
+                count = GetSphereShapeForceInfo(pObject_a, pObject_b, shape, other_shape, points, other_points, counts_a[i], counts_b[j], &pForces[pCount], count, 40 - pCount);
+                other_points += 2 * counts_b[j];
+                j++;
+            }
+        } else {
+            for (other_shape = pObject_b->shape; other_shape != NULL; other_shape = other_shape->common.next) {
+                count = GetNonSphereShapeForceInfo(pObject_a, pObject_b, shape, other_shape, points, other_points, counts_a[i], counts_b[j], &pForces[pCount], count, 40 - pCount);
+                other_points += 2 * counts_b[j];
+                j++;
+            }
+        }
+        points += 2 * counts_a[i];
+        i++;
+    }
+    if (count == 0) {
+        return 0;
+    }
+    BrVector3Copy(&pObject_a->omega, &pObject_a->rotate_omega);
+    BrVector3Copy(&pObject_b->omega, &pObject_b->rotate_omega);
+    first = &pForces[pCount];
+    for (i = 1; i < count; i++) {
+        if (pForces[pCount + i].object_a == first->object_a) {
+            dot = BrVector3Dot(&first->direction_a, &pForces[pCount + i].direction_a);
+        } else {
+            dot = -BrVector3Dot(&first->direction_b, &pForces[pCount + i].direction_a);
+        }
+        if (dot < 0.707) {
+            break;
+        }
+    }
+    return i;
+}
 
 // FUNCTION: CARMA2_HW 0x00428480
 // FUNCTION: CARMA2_SW 0x00428510
