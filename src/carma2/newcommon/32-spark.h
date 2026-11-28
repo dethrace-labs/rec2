@@ -141,7 +141,7 @@ extern void C2_HOOK_FASTCALL RestoreCarPixelmaps(tCar_spec* pCar);
 
 // MungeShrapnel
 
-// DrMatrix34Rotate
+extern void C2_HOOK_FASTCALL DrMatrix34Rotate(br_matrix34* mat, br_angle r, const br_vector3* a);
 
 extern int C2_HOOK_CDECL CmpSmokeZ(const void* p1, const void* p2);
 
@@ -157,7 +157,7 @@ extern void C2_HOOK_FASTCALL RenderRecordedSmokeCircles(void);
 
 // ReplaySmoke
 
-// GenerateContinuousSmoke
+extern void C2_HOOK_FASTCALL GenerateContinuousSmoke(tCar_spec* pCar, int pWheel, tU32 pTime);
 
 // RenderSmoke
 
@@ -197,7 +197,7 @@ extern void C2_HOOK_FASTCALL InitFlame(void);
 
 extern void C2_HOOK_FASTCALL InitSplash(FILE* pF);
 
-// DisposeSplash
+extern void C2_HOOK_FASTCALL DisposeSplash(void);
 
 // DrawTheGlow
 
@@ -237,7 +237,7 @@ extern void C2_HOOK_FASTCALL FreeSmokeShadeTables(void);
 
 extern void C2_HOOK_FASTCALL LoadInKevStuff(FILE* pF);
 
-// DisposeKevStuff
+extern void C2_HOOK_FASTCALL DisposeKevStuff(void);
 
 extern void C2_HOOK_FASTCALL DisposeKevStuffCar(tCar_spec* pCar);
 
@@ -287,7 +287,7 @@ extern void C2_HOOK_FASTCALL ClearSplashReplay(uintptr_t pObject);
 
 extern void* C2_HOOK_FASTCALL GetSplashIndex(tPhysics_object* pObject);
 
-// ClearSplashes
+extern void C2_HOOK_FASTCALL ClearSplashes(tPhysics_object* pObject);
 
 extern void C2_HOOK_FASTCALL AdjustSplashReplay(void* pObject, int pType, float pWater_density, br_vector3* pNormal, br_bounds3* pBounds);
 
