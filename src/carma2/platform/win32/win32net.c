@@ -506,7 +506,7 @@ void C2_HOOK_FASTCALL PDNetHostFinishGame(tNet_game_details* pDetails) {
 // FUNCTION: CARMA2_HW 0x0051a0b0
 // FUNCTION: CARMA2_SW 0x00513b90
 // FUNCTION: CARMA2_CHEAT 0x0051f7d0
-void C2_HOOK_FASTCALL PDNetLeaveGame(void) {
+void C2_HOOK_FASTCALL PDNetLeaveGame(tNet_game_details* pDetails) {
 
     dr_dprintf("PDNetLeaveGame()");
 }
@@ -562,7 +562,7 @@ tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* pDetails, 
 // FUNCTION: CARMA2_HW 0x0051a620
 // FUNCTION: CARMA2_SW 0x00514100
 // FUNCTION: CARMA2_CHEAT 0x0051fd40
-void C2_HOOK_FASTCALL PDNetDisposePlayer(void) {
+void C2_HOOK_FASTCALL PDNetDisposePlayer(tNet_game_player_info* pPlayer) {
 
     dr_dprintf("PDNetDisposePlayer()");
 }
