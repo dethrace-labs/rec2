@@ -1952,7 +1952,12 @@ void C2_HOOK_FASTCALL SendNetSmash(tPhysics_object* pObject, undefined4 pArg2, f
     NOT_IMPLEMENTED();
 }
 
-// SendAllSmashes
+// STUB: CARMA2_HW 0x004f0f80
+// STUB: CARMA2_SW 0x004ecbe0
+// STUB: CARMA2_CHEAT 0x004f6c20
+void C2_HOOK_FASTCALL SendAllSmashes(tNet_game_player_info* pPlayer) {
+    NOT_IMPLEMENTED();
+}
 
 // HitPowerup
 

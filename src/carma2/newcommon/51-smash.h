@@ -300,7 +300,7 @@ extern float C2_HOOK_FASTCALL BashModel(tSmashable_item_spec* pSpec, tPhysics_ob
 
 extern void C2_HOOK_FASTCALL SendNetSmash(tPhysics_object* pObject, undefined4 pArg2, float pMagnitude, br_vector3* pPosition, br_vector3* pNormal, br_vector3* pForce, int pArg7);
 
-// SendAllSmashes
+extern void C2_HOOK_FASTCALL SendAllSmashes(tNet_game_player_info* pPlayer);
 
 // HitPowerup
 
