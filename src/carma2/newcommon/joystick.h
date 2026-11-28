@@ -17,6 +17,7 @@ extern int gJoystick_index;
 extern float gJoystick_x_steering;
 extern float gJoystick_y_throttle;
 extern int gINT_00595f84;
+extern int gCurrent_exclusive_ffb_effect;
 extern int gINT_00596310;
 extern int gJoystick_preferences_backup_valid;
 extern tButtonJoystickInfo gJoystick_preferences_backup;
@@ -36,6 +37,20 @@ extern void C2_HOOK_FASTCALL RestoreJoystickPreferences(void);
 
 extern int C2_HOOK_FASTCALL HasCurrentJoystick(void);
 
+extern void C2_HOOK_FASTCALL FUN_0045a670(void);
+
+extern int C2_HOOK_FASTCALL AddToTextBufferCallback(const char* pPath, void* pContext);
+
+extern int C2_HOOK_FASTCALL StoreTextHeadup(tHeadup_text_buffer* pTexts, tHeadup_text* pNew, int pSorted);
+
+#ifdef REC2_HW
+extern void C2_HOOK_FASTCALL CreateAccentPolyActor(float pX, float pY, float pWidth, float pHeight);
+#endif
+
+extern void C2_HOOK_FASTCALL FUN_0045acf0(void);
+
+extern void C2_HOOK_FASTCALL FUN_0045b0a0(tHeadup_text_buffer* pText_buffer);
+
 extern void C2_HOOK_FASTCALL PeekCharacter(FILE* pF);
 
 extern int C2_HOOK_FASTCALL ReadUntilCharacter(FILE* pF, char* pBuffer, int pBuffer_size, char pLimit_char);
@@ -44,7 +59,19 @@ extern int C2_HOOK_FASTCALL WriteJoystickPreferences(FILE* pF, const tButtonJoys
 
 extern int C2_HOOK_FASTCALL CountJoystickPreferences(FILE* pF);
 
+extern void C2_HOOK_FASTCALL FUN_0045c240(void);
+
 extern int C2_HOOK_FASTCALL ToggleJoystickThrottle(void);
+
+extern int C2_HOOK_FASTCALL FUN_0045c590(int pKey);
+
+extern void C2_HOOK_FASTCALL FUN_0045c5d0(void);
+
+extern void C2_HOOK_FASTCALL FUN_0045c680(void);
+
+extern void C2_HOOK_FASTCALL StopDinputEffect(int pIndex);
+
+extern void C2_HOOK_FASTCALL UnloadDinputFFBEffectAtIndex(int index);
 
 extern void C2_HOOK_FASTCALL SetJoystickDPadEnabled(int pEnabled);
 
