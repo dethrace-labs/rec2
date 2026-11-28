@@ -1353,6 +1353,13 @@ typedef struct tFlicette {
     int y[2];
 } tFlicette;
 
+typedef struct tRadio_bastards {
+    int count;
+    int top;
+    int current_value;
+    int left[5];
+} tRadio_bastards;
+
 typedef struct tMouse_area {
     int left[2];
     int top[2];
@@ -1561,12 +1568,10 @@ typedef struct {
     int cock_margin_y;
     int field_0x10c;
     int field_0x110;
-    int field_0x114;
-    int field_0x118;
-    int field_0x11c;
-    int field_0x120;
-    int field_0x124;
-    int field_0x128;
+    int dial__x[2];
+    int dial__y[2];
+    int dial__x_centre;
+    int dial__y_centre;
     int field_0x12c;
     int field_0x130;
     int field_0x134;
@@ -1788,10 +1793,10 @@ typedef struct {
     int field_0x494;
     int field_0x498;
     int field_0x49c;
-    int field_0x4a0;
-    int field_0x4a4;
-    int field_0x4a8;
-    int field_0x4ac;
+    int graph_opt_disable_x;
+    int graph_opt_disable_y;
+    int sound_opt_disable_x;
+    int sound_opt_disable_y;
     int field_0x4b0;
     int net_message_enter_y;
     int field_0x4b8;
@@ -6064,6 +6069,7 @@ enum {
     kFatalError_CannotLoadCarResolutionIndependentFile = 0x19,
     kFatalError_CannotLoadDamageImage = 0x1b,
     kFatalError_CannotLoadSpeedoImage = 0x23,
+    kFatalError_CannotLoadDialsImage = 0x2a,
     kFatalError_CannotOpenRacesFile = 0x32,
     kFatalError_CannotOpenOpponentsFile = 0x36,
     kFatalError_OpponentCountMismatchesActualNumberOfOpponents = 0x37,
