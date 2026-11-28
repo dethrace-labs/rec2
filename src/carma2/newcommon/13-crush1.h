@@ -70,7 +70,7 @@ extern intptr_t C2_HOOK_CDECL LinkCarCrushData(br_actor* pActor, void* pData);
 
 extern intptr_t C2_HOOK_CDECL AccumulateSquashVertices(br_actor* pActor, void* pData);
 
-// InitModelMasterCrushData
+extern void C2_HOOK_FASTCALL InitModelMasterCrushData(tCar_spec* pCar_spec);
 
 extern void C2_HOOK_FASTCALL InitNetworkShapesStuff(tCar_crush_spec* pCar_crush);
 
@@ -80,17 +80,17 @@ extern int C2_HOOK_CDECL DecreasingCompare(const void* pValue1, const void* pVal
 
 extern tU16 C2_HOOK_FASTCALL CrushLimitNumber(const br_vector3* pPoint, const tCar_crush_limits* pLimits, const tCar_crush_count_limits* pCount_limits, int* pInvalid);
 
-// SoftnessOfNearestPointCB
+extern intptr_t C2_HOOK_FASTCALL SoftnessOfNearestPointCB(br_actor* pActor, br_vector3* pPoint, void* pContext);
 
 extern intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseWithTranslation(br_actor* pActor, br_vector3* pDelta, tDRActorEnumRecurseWithTranslation_cbfn* pCallback, void* pContext);
 
-// SoftnessOfNearestPoint
+extern float C2_HOOK_FASTCALL SoftnessOfNearestPoint(tCar_spec* pCar_spec, br_vector3* pPoint);
 
 // SetUpShapeLimitingStuff
 
-// CopyShapePolyhedron
+extern void C2_HOOK_FASTCALL CopyShapePolyhedron(tCollision_shape_polyhedron* pDest, const tCollision_shape_polyhedron* pSource);
 
-// InitShapeStuff
+extern void C2_HOOK_FASTCALL InitShapeStuff(tCar_crush_spec* pCar_crush, tPhysics_object* pCollision_info, tCar_spec* pCar_spec);
 
 // InitPhysMasterCrushData
 
@@ -106,13 +106,13 @@ extern intptr_t C2_HOOK_FASTCALL DRActorEnumRecurseWithTranslation(br_actor* pAc
 
 // InitPhysCrushDataCB
 
-// InitPhysCrushData
+extern void C2_HOOK_FASTCALL InitPhysCrushData(tCar_spec* pCar_spec);
 
 // CalculateReferencePoints
 
 extern intptr_t C2_HOOK_CDECL InitModelCrushDataCB(br_actor* pActor, void* pData);
 
-// InitModelCrushData
+extern void C2_HOOK_FASTCALL InitModelCrushData(tCar_spec* pCar_spec);
 
 // PointEdgeDistSq
 
@@ -122,9 +122,9 @@ extern void C2_HOOK_FASTCALL InitModelVertexData(tModel_detail_vertex_data* pVer
 
 extern intptr_t C2_HOOK_CDECL InitVertexDataCB(br_actor* pActor, void* pData);
 
-// InitVertexData
+extern void C2_HOOK_FASTCALL InitVertexData(tCar_spec* pCar_spec);
 
-// CheckWheelPositions
+extern void C2_HOOK_FASTCALL CheckWheelPositions(tCar_spec* pCar_spec);
 
 // InitPhysModCrushData
 
