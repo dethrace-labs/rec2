@@ -153,7 +153,7 @@ extern void C2_HOOK_FASTCALL ResetCars(void);
 
 extern int C2_HOOK_FASTCALL PipeObjectPosition(tPhysics_object* pObject, void* pContext);
 
-// PipeCarPositions
+extern void C2_HOOK_FASTCALL PipeCarPositions(void);
 
 extern void C2_HOOK_FASTCALL DoSmudge(tPipe_chunk** pChunk, int pDir);
 
@@ -181,6 +181,10 @@ extern void C2_HOOK_FASTCALL AddSparkToPipingSession(int pSpark_index, const br_
 
 extern void C2_HOOK_FASTCALL AddShrapnelToPipingSession(int pShrapnel_index, const br_vector3* pPos, tU16 pAge, br_material* pMaterial);
 
+extern void C2_HOOK_FASTCALL AddScreenWobbleToPipingSession(int pWobble_x, int pWobble_y);
+
+extern void C2_HOOK_FASTCALL AddGrooveStopToPipingSession(int pGroove_index, br_matrix34* pMatrix, int pPath_interrupt, int pObject_interrupt, float pPath_resumption, float pObject_resumption);
+
 extern void C2_HOOK_FASTCALL AddNonCarToPipingSession(int pIndex, br_actor* pActor);
 
 extern void C2_HOOK_FASTCALL AddSmokeToPipingSession(int pIndex, tU8 pType, br_vector3* pPos, br_scalar pRadius, br_scalar pStrength);
@@ -193,11 +197,29 @@ extern void C2_HOOK_FASTCALL AddSplashToPipingSession(tPhysics_object* pObject);
 
 extern void C2_HOOK_FASTCALL AddExtendedSplashToPipingSession(tPhysics_object* pObject, void* pSubject);
 
-// AddCarToPipingSession
+extern void C2_HOOK_FASTCALL AddOilSpillToPipingSession(int pIndex, br_matrix34* pMat, br_scalar pFull_size, br_scalar pGrow_rate, tU32 pSpill_time, tU32 pStop_time, tCar_spec* pCar, br_vector3* pOriginal_pos, br_pixelmap* pPixelmap);
 
-// AddDamageToPipingSession
+extern void C2_HOOK_FASTCALL AddFrameFinishToPipingSession(void);
+
+extern void C2_HOOK_FASTCALL AddCarToPipingSession(int pCar_ID, br_matrix34* pCar_mat, br_vector3* pCar_velocity, float pSpeedo_speed, float pRevs, int pGear, int pFrame_coll_flag, int pField_0x18cc);
+
+extern void C2_HOOK_FASTCALL AddGraphicalWheelStuffToPipingSession(tCar_spec* pCar);
+
+extern void C2_HOOK_FASTCALL AddSoundToPipingSession(tS3_outlet* pOutlet, int pSound, tS3_volume pL_volume, tS3_volume pR_volume, int pPitch, const br_vector3* pPosition);
+
+extern void C2_HOOK_FASTCALL AddDamageToPipingSession(int pCar_ID, tS8* pDamage_deltas);
+
+extern void C2_HOOK_FASTCALL AddSpecialToPipingSession(tPipe_special_action pType);
+
+extern void C2_HOOK_FASTCALL AddCarIncidentToPipingSession(tCar_spec* pCar, br_vector3* pPosition, float pForce);
+
+extern void C2_HOOK_FASTCALL AddPedIncidentToPipingSession(tPedestrian* pPed, br_actor* pActor);
+
+extern void C2_HOOK_FASTCALL AddWallIncidentToPipingSession(float pSeverity, br_vector3* pImpact_point);
 
 extern void C2_HOOK_FASTCALL AddProxRayToPipingSession(int pRay_index, tCar_spec* pCar, tU16 pPed_index, tU32 pTime);
+
+extern void C2_HOOK_FASTCALL AddSkidAdjustmentToPipingSession(int pSkid_num, br_matrix34* pMatrix, br_material* pMaterial);
 
 extern void C2_HOOK_FASTCALL AddFlapToPipingSession(br_actor* pActor, br_angle pAngle);
 
