@@ -48,17 +48,17 @@ extern void C2_HOOK_FASTCALL StationarySphereEdgeCollide(const br_vector3* pPoin
 
 // StationarySphereSphereCollide
 
-// SphereSphereCollide
+extern void C2_HOOK_FASTCALL SphereSphereCollide(const tCollision_shape_sphere_data* pSphere_1, const tCollision_shape_sphere_data* pSphere_2, const br_vector3* pStart, const br_vector3* pEnd, br_vector3* pNormal, br_scalar* pCollision_t);
 
 // StationarySphereEdgeCollide
 
 // PointSphereCollision
 
-// SphereEdgeCollide
+extern void C2_HOOK_FASTCALL SphereEdgeCollide(br_vector3* pEdge_start, br_vector3* pEdge_end, br_vector3* pSphere_start, br_vector3* pSphere_end, tCollision_shape_sphere_data* pSphere, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pT, int pStart_flags, int pEnd_flags);
 
-// SpherePolyFaceCollide
+extern void C2_HOOK_FASTCALL SpherePolyFaceCollide(const tCollision_shape_sphere_data* pSphere, const tCollision_shape_polyhedron_data* pPolyhedron, const br_vector3* pStart, const br_vector3* pEnd, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pCollision_t);
 
-// SphereBoxFaceCollide
+extern void C2_HOOK_FASTCALL SphereBoxFaceCollide(const tCollision_shape_sphere_data* pSphere, const tCollision_shape_box* pBox, const br_vector3* pStart, const br_vector3* pEnd, br_vector3* pPoint, br_vector3* pNormal, br_scalar* pCollision_t);
 
 // SphereFaceCollide
 
