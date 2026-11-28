@@ -308,7 +308,7 @@ extern void C2_HOOK_FASTCALL FullyDetachBit(tCar_spec* pCar, tPhysics_object* pO
 
 extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsDoubleSided(br_actor* pActor, void* pArg);
 
-// SwapCarShapes
+extern void C2_HOOK_FASTCALL SwapCarShapes(tCar_spec* pCar, tPhysics_shape* pShape);
 
 // IsAWheelOrPivotActor
 
@@ -334,17 +334,17 @@ extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor
 
 // DoJointSnapping
 
-// PointIsOutsideShape
+extern int C2_HOOK_FASTCALL PointIsOutsideShape(const br_vector3* pPoint, const tCollision_shape_polyhedron_data* pPolyhedron);
 
-// PointIsOutsideLimits
+extern int C2_HOOK_FASTCALL PointIsOutsideLimits(const tCar_crush_shape_info* pShape, int pPoint_index, const tCar_crush_limits* pLimits);
 
-// ClipPointToPolyhedron
+extern void C2_HOOK_FASTCALL ClipPointToPolyhedron(br_vector3* pPoint, const tCollision_shape_polyhedron_data* pPolyhedron);
 
-// QuantizeVector3
+extern void C2_HOOK_FASTCALL QuantizeVector3(br_vector3* pV);
 
-// MoveCarToSensiblePlace
+extern int C2_HOOK_FASTCALL MoveCarToSensiblePlace(tCar_spec* pCar);
 
-// SwapShapesIfPossible
+extern int C2_HOOK_FASTCALL SwapShapesIfPossible(tCar_spec* pCar_spec);
 
 // DoShapeSwapping
 
@@ -410,15 +410,15 @@ extern int C2_HOOK_FASTCALL BattenDownTheObjects(tPhysics_object* pCollision_inf
 
 extern void C2_HOOK_FASTCALL CompletelyUnBendCollisionShape(tCar_crush_shape_info* pShape);
 
-// CompletelyUnBendCollisionShapes
+extern void C2_HOOK_FASTCALL CompletelyUnBendCollisionShapes(tCar_spec* pCar_spec);
 
 extern void C2_HOOK_FASTCALL CompletelyUnBendWheels(tCar_spec* pCar_spec);
 
-// CompletelyUnBendOtherThings
+extern void C2_HOOK_FASTCALL CompletelyUnBendOtherThings(tCar_spec* pCar_spec);
 
 extern intptr_t C2_HOOK_CDECL EnableGroovers(br_actor* pActor, void* pData);
 
-// DoCompletelyUnBentThings
+extern void C2_HOOK_FASTCALL DoCompletelyUnBentThings(tCar_spec* pCar_spec);
 
 extern void C2_HOOK_FASTCALL TotallyRepairCarCollisionShapes(tCar_spec* pCar_spec);
 
@@ -476,7 +476,7 @@ extern void C2_HOOK_FASTCALL RepairCarCollisionShapes(tCar_spec* pCar, float pSt
 
 // RestoreVitalBitsOfObject
 
-// WeldCar
+extern void C2_HOOK_FASTCALL WeldCar(tCar_spec* pCar_spec);
 
 // ARCompressCrush
 

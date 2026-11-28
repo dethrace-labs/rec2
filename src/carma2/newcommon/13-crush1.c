@@ -15,9 +15,11 @@
 #include "18-graphics2.h"
 #include "23-piping.h"
 #include "30-opponent.h"
+#include "32-spark.h"
 #include "41-utility.h"
 #include "49-physics.h"
 #include "51-smash.h"
+#include "52-errors.h"
 #include "53-controls.h"
 #include "60-phil.h"
 #include "69-sound.h"
@@ -2032,7 +2034,12 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsDoubleSided(br_actor* pActor, void*
     return 0;
 }
 
-// SwapCarShapes
+inline void C2_HOOK_FASTCALL SwapCarShapes(tCar_spec* pCar, tPhysics_shape* pShape) {
+
+    pCar->collision_info->shape = pShape;
+    UpdateCollisionObject(pCar->collision_info);
+    pCar->collision_info->bb2.min.v[1] = GetCarOverallBoundsMinY(pCar);
+}
 
 // IsAWheelOrPivotActor
 
@@ -2074,17 +2081,177 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor, void*
 
 // DoJointSnapping
 
-// PointIsOutsideShape
+inline int C2_HOOK_FASTCALL PointIsOutsideShape(const br_vector3* pPoint, const tCollision_shape_polyhedron_data* pPolyhedron) {
+    int i;
 
-// PointIsOutsideLimits
+    for (i = 0; i < pPolyhedron->count_planes; i++) {
+        if (BrVector3Dot(&pPolyhedron->planes[i], pPoint) + pPolyhedron->planes[i].v[3] < -1e-5) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
-// ClipPointToPolyhedron
+inline int C2_HOOK_FASTCALL PointIsOutsideLimits(const tCar_crush_shape_info* pShape, int pPoint_index, const tCar_crush_limits* pLimits) {
+    int i;
+    int bits;
 
-// QuantizeVector3
+    bits = pShape->field_0x18[pPoint_index].field_0x28;
+    for (i = 0; i < 3; i++) {
+        if (pShape->field_0x18[pPoint_index].field_0x18.v[i] < pLimits->limits[i][0].values[bits & 0x3]) {
+            return 1;
+        }
+        bits >>= 2;
+        if (pShape->field_0x18[pPoint_index].field_0x18.v[i] > pLimits->limits[i][1].values[bits & 0x3]) {
+            return 1;
+        }
+        bits >>= 2;
+    }
+    return 0;
+}
 
-// MoveCarToSensiblePlace
+inline void C2_HOOK_FASTCALL ClipPointToPolyhedron(br_vector3* pPoint, const tCollision_shape_polyhedron_data* pPolyhedron) {
+    int i;
+    br_scalar distance;
+    br_vector3 offset;
 
-// SwapShapesIfPossible
+    for (i = 0; i < pPolyhedron->count_planes; i++) {
+        distance = BrVector3Dot(&pPolyhedron->planes[i], pPoint) + pPolyhedron->planes[i].v[3];
+        if (distance < 0.0f) {
+            BrVector3Scale(&offset, &pPolyhedron->planes[i], -distance);
+            BrVector3Accumulate(pPoint, &offset);
+        }
+    }
+}
+
+inline void C2_HOOK_FASTCALL QuantizeVector3(br_vector3* pV) {
+    tCompressed_vector3 compressed;
+
+    CompressVector3(&compressed, pV, -2.5f, 2.5f);
+    ExpandVector3(pV, &compressed, -2.5f, 2.5f);
+}
+
+inline int C2_HOOK_FASTCALL MoveCarToSensiblePlace(tCar_spec* pCar) {
+    br_vector3 original_pos;
+    br_vector3 last_direction;
+    br_vector3 direction;
+    br_scalar step;
+    int i;
+
+    step = 0.007246377f;
+    BrVector3Set(&last_direction, 0.0f, 0.0f, 0.0f);
+    BrVector3Copy(&original_pos, (br_vector3*)pCar->collision_info->transform_matrix.m[3]);
+    for (i = 0; i < 10; i++) {
+        if (TestForCarInSensiblePlace(pCar, &direction)) {
+            return 1;
+        }
+        if (BrVector3Dot(&direction, &last_direction) > 0.707107f) {
+            step *= 2.0f;
+        } else {
+            BrVector3Copy(&last_direction, &direction);
+            step = 0.007246377f;
+        }
+        BrVector3Scale(&direction, &direction, step);
+        BrVector3Accumulate((br_vector3*)pCar->collision_info->transform_matrix.m[3], &direction);
+    }
+    BrVector3Copy((br_vector3*)pCar->collision_info->transform_matrix.m[3], &original_pos);
+    return 0;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004349c0
+// FUNCTION: CARMA2_SW 0x004349f0
+// FUNCTION: CARMA2_CHEAT 0x00434bb0
+int C2_HOOK_FASTCALL SwapShapesIfPossible(tCar_spec* pCar_spec) {
+    tCar_crush_spec* car_crush;
+    tCar_crush_shape_info* shape;
+    tCollision_shape_polyhedron* first_poly;
+    tCollision_shape_polyhedron* last_poly;
+    tCollision_shape_polyhedron* poly;
+    tPhysics_shape* original_shape;
+    int i;
+    int j;
+
+    car_crush = pCar_spec->car_crush_spec;
+    if (car_crush == NULL || car_crush->count_shapes == 0 || car_crush->field_0x4 == NULL) {
+        return 0;
+    }
+    if (!car_crush->version_le_100) {
+        car_crush->expand_bounding_box = 0;
+        return 0;
+    }
+    first_poly = NULL;
+    last_poly = NULL;
+    for (i = 0; i < car_crush->count_shapes; i++) {
+        shape = &car_crush->field_0x4[i];
+        if (shape->field_0x8) {
+            continue;
+        }
+        if (car_crush->expand_bounding_box & 0x4) {
+            for (j = 0; j < shape->count_points; j++) {
+                ClipPointToPolyhedron(&shape->field_0x18[j].field_0x18, &shape->field_0x0->polyhedron);
+                if (PointIsOutsideShape(&shape->field_0x18[j].field_0x18, &shape->field_0x0->polyhedron)
+                    || PointIsOutsideLimits(shape, j, &car_crush->field_0xbc)) {
+                    BrVector3Copy(&shape->field_0x18[j].field_0x18, &shape->field_0x18[j].field_0xc);
+                }
+                if (DRVector3TestForNan(&shape->field_0x18[j].field_0x18)) {
+                    PDEnterDebugger("NaN");
+                }
+            }
+        }
+        if (car_crush->expand_bounding_box & 0x2) {
+            shape->field_0x4->polyhedron.count_points = shape->count_points;
+            for (j = 0; j < shape->count_points; j++) {
+                if (gNet_mode != eNet_mode_none) {
+                    QuantizeVector3(&shape->field_0x18[j].field_0x18);
+                }
+                BrVector3Copy(&shape->field_0x4->polyhedron.points[j], &shape->field_0x18[j].field_0x18);
+            }
+            FillInShape((tPhysics_shape*)shape->field_0x4);
+        }
+        if (first_poly == NULL) {
+            first_poly = shape->field_0x4;
+        }
+        if (last_poly != NULL) {
+            last_poly->common.next = (tPhysics_shape*)shape->field_0x4;
+        }
+        last_poly = shape->field_0x4;
+    }
+    if (first_poly == NULL) {
+        return 0;
+    }
+    original_shape = pCar_spec->collision_info->shape;
+    SwapCarShapes(pCar_spec, (tPhysics_shape*)first_poly);
+    if (!(car_crush->expand_bounding_box & 0x4) && !MoveCarToSensiblePlace(pCar_spec)) {
+        SwapCarShapes(pCar_spec, original_shape);
+        return 1;
+    }
+    if (car_crush->expand_bounding_box & 0x8) {
+        BrVector3Copy(&pCar_spec->collision_info->cmpos, &car_crush->field_0x10);
+    }
+    car_crush->expand_bounding_box = 0;
+    for (i = 0; i < car_crush->count_shapes; i++) {
+        shape = &car_crush->field_0x4[i];
+        if (!shape->field_0x8) {
+            poly = shape->field_0x0;
+            shape->field_0x0 = shape->field_0x4;
+            shape->field_0x4 = poly;
+            for (j = 0; j < shape->count_points; j++) {
+                BrVector3Copy(&shape->field_0x18[j].field_0xc, &shape->field_0x18[j].field_0x18);
+            }
+        }
+    }
+    car_crush->field_0x28 = 1;
+    SetHierarchyDoingNothingFlag(pCar_spec->collision_info, 0);
+    return 0;
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // DoShapeSwapping
 
@@ -2250,12 +2417,19 @@ void C2_HOOK_FASTCALL CompletelyUnBendCollisionShape(tCar_crush_shape_info* pSha
     }
 }
 
-// CompletelyUnBendCollisionShapes
+inline void C2_HOOK_FASTCALL CompletelyUnBendCollisionShapes(tCar_spec* pCar_spec) {
+    int i;
+
+    for (i = 0; i < pCar_spec->car_crush_spec->count_shapes; i++) {
+        CompletelyUnBendCollisionShape(&pCar_spec->car_crush_spec->field_0x4[i]);
+    }
+    pCar_spec->car_crush_spec->expand_bounding_box = 3;
+}
 
 // FUNCTION: CARMA2_HW 0x0043a010
 // FUNCTION: CARMA2_SW 0x0043a050
 // FUNCTION: CARMA2_CHEAT 0x0043a230
-void C2_HOOK_FASTCALL CompletelyUnBendWheels(tCar_spec* pCar_spec) {
+inline void C2_HOOK_FASTCALL CompletelyUnBendWheels(tCar_spec* pCar_spec) {
     br_actor* actor;
     tGroovidelic_spec* groove;
     br_vector3 delta;
@@ -2288,7 +2462,12 @@ void C2_HOOK_FASTCALL CompletelyUnBendWheels(tCar_spec* pCar_spec) {
     pCar_spec->field_0x1260 = 0.0f;
 }
 
-// CompletelyUnBendOtherThings
+inline void C2_HOOK_FASTCALL CompletelyUnBendOtherThings(tCar_spec* pCar_spec) {
+
+    CompletelyUnBendCollisionShapes(pCar_spec);
+    CompletelyUnBendWheels(pCar_spec);
+    BrVector3Copy(&pCar_spec->collision_info->cmpos, &pCar_spec->car_crush_spec->field_0x264);
+}
 
 // FUNCTION: CARMA2_HW 0x00439910
 // FUNCTION: CARMA2_SW 0x00439950
@@ -2306,7 +2485,12 @@ intptr_t C2_HOOK_CDECL EnableGroovers(br_actor* pActor, void* pData) {
     return 0;
 }
 
-// DoCompletelyUnBentThings
+inline void C2_HOOK_FASTCALL DoCompletelyUnBentThings(tCar_spec* pCar_spec) {
+
+    pCar_spec->car_crush_spec->field_0x144 = 0;
+    CompletelyUnBendOtherThings(pCar_spec);
+    DRActorEnumRecurse(pCar_spec->car_model_actor, EnableGroovers, NULL);
+}
 
 // FUNCTION: CARMA2_HW 0x00439960
 // FUNCTION: CARMA2_SW 0x004399a0
@@ -2421,11 +2605,67 @@ void C2_HOOK_FASTCALL SendReAttachAllBits(tCar_spec* pCar) {
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x00439510
-// STUB: CARMA2_SW 0x00439550
-// STUB: CARMA2_CHEAT 0x00439720
+// FUNCTION: CARMA2_HW 0x00439510
+// FUNCTION: CARMA2_SW 0x00439550
+// FUNCTION: CARMA2_CHEAT 0x00439720
 void C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {
-    NOT_IMPLEMENTED();
+    int i;
+    tCar_crush_spec* car_crush;
+
+#ifdef REC2_CHEAT
+    if (gArrow_mode) {
+        return;
+    }
+#endif
+    StopCarSmokingInstantly(pCar_spec);
+    if (ARIsActionReplayAvailable()) {
+        PipeInstantUnSmudge(pCar_spec);
+    }
+    pCar_spec->repair_time += 100000;
+    for (i = 0; i < (int)REC2_ASIZE(pCar_spec->damage_units); i++) {
+        pCar_spec->damage_units[i].damage_level = 0;
+        pCar_spec->damage_units[i].last_level = 0;
+        pCar_spec->damage_units[i].smoke_last_level = 0;
+    }
+    if (pCar_spec->use_shell_model) {
+        return;
+    }
+    car_crush = pCar_spec->car_crush_spec;
+    if (car_crush == NULL) {
+        return;
+    }
+    if (car_crush->field_0x4b8) {
+        WeldCar(pCar_spec);
+    }
+    for (i = 0; i < car_crush->field_0x2b0; i++) {
+        ReAttachBit(pCar_spec, car_crush->field_0x2b4[i].field_0x4, car_crush->field_0x2b4[i].field_0x0, NULL);
+    }
+    car_crush->field_0x2b0 = 0;
+    for (i = 0; i < car_crush->field_0x270; i++) {
+        ReAttachBit(pCar_spec, car_crush->field_0x274[i].field_0x4, car_crush->field_0x274[i].field_0x0, car_crush->field_0x274[i].field_0x8);
+    }
+    car_crush->field_0x270 = 0;
+    DRActorEnumRecurse(pCar_spec->car_model_actor, MakeCarModelsMaterialsSingleSided, pCar_spec);
+    PipeSingleDSModel(0, pCar_spec);
+    if (car_crush->field_0x144) {
+        DoCompletelyUnBentThings(pCar_spec);
+    }
+    ARStartPipingSession(ePipe_chunk_model_mash);
+    PhysicsObjectRecurse(pCar_spec->collision_info, TotallyRepairObject, pCar_spec);
+    AREndPipingSession();
+    dr_dprintf("TotallyRepairACar() - Point 7");
+    TotallyRepairCarCollisionShapes(pCar_spec);
+    dr_dprintf("TotallyRepairACar() - Point 8");
+    PhysicsObjectRecurse(pCar_spec->collision_info, BattenDownTheObjects, pCar_spec);
+    dr_dprintf("TotallyRepairACar() - Point 9");
+    if (gProgram_state.prog_status != eProg_idling) {
+        dr_dprintf("TotallyRepairACar() - Point 10");
+        SwapShapesIfPossible(pCar_spec);
+    }
+    dr_dprintf("TotallyRepairACar() - Point 11");
+    pCar_spec->use_shell_model = 1;
+    RemoveCarFromCrushLists(pCar_spec);
+    dr_dprintf("TotallyRepairACar() - Point 12");
 }
 
 #ifdef REC2_MATCHING
@@ -2561,7 +2801,20 @@ void C2_HOOK_FASTCALL RepairCarCollisionShapes(tCar_spec* pCar, float pStep) {
 
 // RestoreVitalBitsOfObject
 
-// WeldCar
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x0043b8a0
+// STUB: CARMA2_SW 0x0043b8f0
+// STUB: CARMA2_CHEAT 0x0043bad0
+void C2_HOOK_FASTCALL WeldCar(tCar_spec* pCar_spec) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // ARCompressCrush
 
