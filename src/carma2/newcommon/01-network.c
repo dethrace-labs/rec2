@@ -8,19 +8,19 @@
 
 #include "01-network.h"
 
-#include "04-netgame.h"
 #include "15-displays.h"
 #include "18-graphics2.h"
 #include "18b-graphics2.h"
 #include "19-font.h"
 #include "32-spark.h"
-#include "41-utility.h"
 #include "47-win95net.h"
 #include "53-controls.h"
 #include "68-timer.h"
 #include "platform.h"
 #include "globvars.h"
 #include "globvrpb.h"
+#include "04-netgame.h"
+#include "41-utility.h"
 
 #include "rec2_macros.h"
 
@@ -129,6 +129,11 @@ int gDont_allow_joiners;
 // GLOBAL: CARMA2_CHEAT 0x00751d30
 tU32 gUINT_0074a690;
 
+// GLOBAL: CARMA2_HW 0x0074a694
+// GLOBAL: CARMA2_SW 0x00741154
+// GLOBAL: CARMA2_CHEAT 0x00751d34
+int gReceived_game_scores;
+
 // GLOBAL: CARMA2_HW 0x0074a718
 // GLOBAL: CARMA2_SW 0x007411d8
 // GLOBAL: CARMA2_CHEAT 0x00751db8
@@ -183,6 +188,7 @@ int gNext_guarantee;
 
 // GLOBAL: CARMA2_HW 0x0068d990
 // GLOBAL: CARMA2_SW 0x006879e8
+// GLOBAL: CARMA2_CHEAT 0x00695230
 tGuaranteed_message gGuarantee_list[200] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x00690230
@@ -351,7 +357,7 @@ void C2_HOOK_FASTCALL NetSendHeadupToPlayer(char* pMessage, tPlayer_ID pPlayer) 
 void C2_HOOK_FASTCALL LeaveTempGame(void) {
 
     if (gCurrent_join_poll_game != NULL) {
-        NetLeaveGameLowLevel();
+        NetLeaveGameLowLevel(gCurrent_join_poll_game);
     }
     gTime_for_next_one = 1;
     gCurrent_join_poll_game = NULL;
@@ -459,12 +465,12 @@ tNet_game_details* C2_HOOK_FASTCALL NetAllocatePIDGameDetails(void) {
     return BrMemAllocate(sizeof(tNet_game_details), kMem_net_pid_details);
 }
 
-void C2_HOOK_FASTCALL NetLeaveGameLowLevel(void) {
+void C2_HOOK_FASTCALL NetLeaveGameLowLevel(tNet_game_details* pDetails) {
 
     if (gNet_mode == eNet_mode_host) {
         PDNetHostFinishGame(gCurrent_net_game);
     } else {
-        PDNetLeaveGame();
+        PDNetLeaveGame(pDetails);
     }
 }
 
@@ -925,10 +931,22 @@ void C2_HOOK_FASTCALL DisposeExcessMemory(void) {
 // FUNCTION: CARMA2_SW 0x0049c0d0
 // FUNCTION: CARMA2_CHEAT 0x004a0a40
 int C2_HOOK_FASTCALL NetDisposeMessage(tNet_game_details* pDetails, tNet_message* pMessage) {
+#ifdef REC2_CHEAT
+    int i;
+#endif
 
     if (pMessage->header.field_0x14 == 0xff) {
         return -1;
     }
+#ifdef REC2_CHEAT
+    if (pMessage->header.field_0x14 != 0) {
+        for (i = 0; i < gNext_guarantee; i++) {
+            if (gGuarantee_list[i].message == pMessage && !gGuarantee_list[i].recieved) {
+                PDFatalError("Temp debug stuff");
+            }
+        }
+    }
+#endif
     pMessage->contents.raw.header.type = eNetMsg_none;
     return 0;
 }
@@ -1120,15 +1138,47 @@ void C2_HOOK_FASTCALL NetReceiveAndProcessMessages(void) {
     }
 }
 
-// STUB: CARMA2_HW 0x004a4ac0
+// FUNCTION: CARMA2_HW 0x004a4ac0
+// FUNCTION: CARMA2_SW 0x004a0c40
+// FUNCTION: CARMA2_CHEAT 0x004a5890
 void C2_HOOK_FASTCALL BroadcastStatus(void) {
-    NOT_IMPLEMENTED();
+    tNet_message* message;
+    int i;
+
+    switch (gNet_mode) {
+    case eNet_mode_client:
+        message = NetBuildMessage(eNet_message_chunk_type_status_report, 0);
+        message->contents.status_report.status = gNet_players[gThis_net_player_index].player_status;
+        NetSendMessageToHost(gCurrent_net_game, message);
+        break;
+    case eNet_mode_host:
+        message = NetBuildMessage(eNet_message_chunk_type_group_status, gNumber_of_net_players);
+        message->contents.group_status.player_id_sum = 0;
+        message->contents.group_status.number_of_players = gNumber_of_net_players;
+        for (i = 0; i < gNumber_of_net_players; i++) {
+            message->contents.group_status.player_id_sum += gNet_players[i].ID;
+            message->contents.group_status.player_status[i] = gNet_players[i].player_status;
+        }
+        NetSendMessageToAllPlayers(gCurrent_net_game, message);
+        break;
+    default:
+        break;
+    }
+    NetSendMessageStacks();
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
 // STUB: CARMA2_HW 0x004a4da0
 void C2_HOOK_FASTCALL CheckForDisappearees(void) {
     NOT_IMPLEMENTED();
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004a5240
 // FUNCTION: CARMA2_SW 0x004a13c0
@@ -1148,9 +1198,9 @@ void C2_HOOK_FASTCALL CheckForPendingStartRace(void) {
     }
 }
 
-// STUB: CARMA2_HW 0x004a5280
-// STUB: CARMA2_SW 0x004a1400
-// STUB: CARMA2_CHEAT 0x004a6150
+// FUNCTION: CARMA2_HW 0x004a5280
+// FUNCTION: CARMA2_SW 0x004a1400
+// FUNCTION: CARMA2_CHEAT 0x004a6150
 void C2_HOOK_FASTCALL NetService(int pIn_race) {
     tU32 time;
 
@@ -1203,11 +1253,20 @@ void C2_HOOK_FASTCALL NetFinishRace(tNet_game_details* pDetails, tRace_over_reas
     NetGuaranteedSendMessageToAllPlayers(gCurrent_net_game, the_message, NULL);
 }
 
-// STUB: CARMA2_HW 0x004a57e0
-// STUB: CARMA2_SW 0x004a1960
-// STUB: CARMA2_CHEAT 0x004a66e0
+// FUNCTION: CARMA2_HW 0x004a57e0
+// FUNCTION: CARMA2_SW 0x004a1960
+// FUNCTION: CARMA2_CHEAT 0x004a66e0
 void C2_HOOK_FASTCALL NetPlayerStatusChanged(tPlayer_status pNew_status) {
-    NOT_IMPLEMENTED();
+
+    if (gNet_mode != eNet_mode_none && gNet_players[gThis_net_player_index].player_status != pNew_status) {
+        gNet_players[gThis_net_player_index].player_status = pNew_status;
+        BroadcastStatus();
+        if (gProgram_state.current_car.disabled && pNew_status >= ePlayer_status_racing && pNew_status != ePlayer_status_recovering) {
+            EnableCar(&gProgram_state.current_car);
+        } else if (!gProgram_state.current_car.disabled && pNew_status < ePlayer_status_racing) {
+            DisableCar(&gProgram_state.current_car);
+        }
+    }
 }
 
 // FUNCTION: CARMA2_HW 0x004a5b30
@@ -1361,10 +1420,87 @@ int C2_HOOK_FASTCALL NetGuaranteedSendMessageToAddress(tNet_game_details* pDetai
     }
 }
 
-// STUB: CARMA2_HW 0x004a6080
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004a6080
+// FUNCTION: CARMA2_SW 0x004a2200
+// FUNCTION: CARMA2_CHEAT 0x004a7150
 void C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
-    NOT_IMPLEMENTED();
+    int i;
+    int j;
+    int k;
+    int size;
+    tU32 time;
+    tNet_message_chunk* chunk;
+    tNet_message_chunk* contents;
+    tNet_game_player_info* player;
+
+    C2_HOOK_BUG_ON(sizeof(tGuaranteed_message) != 0x34);
+
+    i = 0;
+    time = PDGetTotalTime();
+    for (j = 0; j < gNext_guarantee; j++) {
+        if (j != i) {
+            gGuarantee_list[i] = gGuarantee_list[j];
+        }
+        if (!gGuarantee_list[i].recieved) {
+            if (gGuarantee_list[i].message->header.field_0x14 != 0xff) {
+                PDFatalError("Dodgy message in guarantee list");
+            }
+            if (gGuarantee_list[i].NotifyFail != NULL) {
+                gGuarantee_list[i].recieved |= gGuarantee_list[i].NotifyFail(time - gGuarantee_list[i].send_time, gGuarantee_list[i].message);
+            } else if (time - gGuarantee_list[i].send_time > 10000) {
+                gGuarantee_list[i].recieved = 1;
+            }
+        }
+        if (!gGuarantee_list[i].recieved) {
+            if (time > gGuarantee_list[i].next_resend_time) {
+                *(tU16*)&gGuarantee_list[i].message->contents.raw.data[gGuarantee_list[i].message->contents.raw.header.size] = gGuarantee_list[i].field_0x2c;
+                if (gGuarantee_list[i].field_0x30 == 1) {
+                    GetCheckSum(gGuarantee_list[i].message);
+                    PDNetSendMessageToAddress(gCurrent_net_game, gGuarantee_list[i].message, &gGuarantee_list[i].pd_address);
+                } else if (gGuarantee_list[i].field_0x30 == 0) {
+                    player = gNet_players;
+                    for (k = 0; k < gNumber_of_net_players; k++, player++) {
+                        if (player->ID == gGuarantee_list[i].local_id) {
+                            break;
+                        }
+                    }
+                    if (k == gNumber_of_net_players) {
+                        gGuarantee_list[i].recieved = 1;
+                        i++;
+                        continue;
+                    }
+                    size = 0;
+                    chunk = &gGuarantee_list[i].message->contents;
+                    for (k = 0; k < 2; k++) {
+                        size += chunk->raw.header.size;
+                        chunk = (tNet_message_chunk*)((tU8*)chunk + chunk->raw.header.size);
+                    }
+                    contents = NetGetToPlayerContentsSize(player, size);
+                    player->field_0xcc->header.field_0x14++;
+                    memcpy(contents, &gGuarantee_list[i].message->contents, size);
+                } else {
+                    PDFatalError("oops - guaranteed messages");
+                }
+                gGuarantee_list[i].resend_period = (tU32)(gGuarantee_list[i].resend_period * 1.2);
+                gGuarantee_list[i].next_resend_time += gGuarantee_list[i].resend_period;
+            }
+            i++;
+        } else if ((i < 1 || gGuarantee_list[i].message != gGuarantee_list[i - 1].message)
+                   && (j + 1 >= gNext_guarantee || gGuarantee_list[i].message != gGuarantee_list[j + 1].message)) {
+            gGuarantee_list[i].message->header.field_0x14 = 0;
+            NetDisposeMessage(gCurrent_net_game, gGuarantee_list[i].message);
+        }
+    }
+    gNext_guarantee = i;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // NetWaitForGuaranteeReplies
 
