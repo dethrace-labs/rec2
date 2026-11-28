@@ -26,6 +26,8 @@
 #include "37-brucetrk.h"
 #include "41-utility.h"
 #include "49-physics.h"
+#include "49-physics-collide.h"
+#include "49-physics-support.h"
 #include "53-controls.h"
 #include "55-volume.h"
 #include "57-drone.h"
