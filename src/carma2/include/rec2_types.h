@@ -1353,6 +1353,13 @@ typedef struct tFlicette {
     int y[2];
 } tFlicette;
 
+typedef struct tRadio_bastards {
+    int count;
+    int top;
+    int current_value;
+    int left[5];
+} tRadio_bastards;
+
 typedef struct tMouse_area {
     int left[2];
     int top[2];
@@ -1561,12 +1568,10 @@ typedef struct {
     int cock_margin_y;
     int field_0x10c;
     int field_0x110;
-    int field_0x114;
-    int field_0x118;
-    int field_0x11c;
-    int field_0x120;
-    int field_0x124;
-    int field_0x128;
+    int dial__x[2];
+    int dial__y[2];
+    int dial__x_centre;
+    int dial__y_centre;
     int field_0x12c;
     int field_0x130;
     int field_0x134;
@@ -1733,15 +1738,15 @@ typedef struct {
     int field_0x3b8;
     int field_0x3bc;
     int field_0x3c0;
-    int field_0x3c4;
-    int field_0x3c8;
-    int field_0x3cc;
-    int field_0x3d0;
-    int field_0x3d4;
-    int field_0x3d8;
-    int field_0x3dc;
-    int field_0x3e0;
-    int field_0x3e4;
+    int key_assign_col_1;
+    int key_assign_col_1_a;
+    int key_assign_col_2;
+    int key_assign_col_2_a;
+    int key_assign_y_pitch;
+    int key_assign_y;
+    int key_assign_key_map_y;
+    int key_assign_flic_x;
+    int key_assign_flic_y;
     int map_render_x_marg;
     int map_render_y_marg;
     int field_0x3f0;
@@ -1788,10 +1793,10 @@ typedef struct {
     int field_0x494;
     int field_0x498;
     int field_0x49c;
-    int field_0x4a0;
-    int field_0x4a4;
-    int field_0x4a8;
-    int field_0x4ac;
+    int graph_opt_disable_x;
+    int graph_opt_disable_y;
+    int sound_opt_disable_x;
+    int sound_opt_disable_y;
     int field_0x4b0;
     int net_message_enter_y;
     int field_0x4b8;
@@ -5821,6 +5826,7 @@ enum {
     eMiscString_net_games_always_accessorized = 124,
     eMiscString_recovery_cancelled = 125,
     eMiscString_task_switched = 139,
+    eMiscString_key_assignment_names = 140, /* FIXME: start of the 18 key names of the Carmageddon 1 control options screen */
     eMiscString_you_re_already_at_max_you_need_more_slots = 174,
     eMiscString_armor_strengthened = 175,
     eMiscString_engine_power_increased = 176,
@@ -5848,6 +5854,7 @@ enum {
     eMiscString_message_sent = 226,
     eMiscString_enter_message = 227,
     eMiscString_please_wait_host_has_paused = 228,
+    eMiscString_use_system_control_panel_for_joysticks = 229, /* FIXME: name from Carmageddon 1 */
     eMiscString_too_late_to_cancel = 242,
     eMiscString_could_not_find_carmageddon_cd = 243,
     eMiscString_no_target_to_lock_onto = 250,
@@ -6064,6 +6071,7 @@ enum {
     kFatalError_CannotLoadCarResolutionIndependentFile = 0x19,
     kFatalError_CannotLoadDamageImage = 0x1b,
     kFatalError_CannotLoadSpeedoImage = 0x23,
+    kFatalError_CannotLoadDialsImage = 0x2a,
     kFatalError_CannotOpenRacesFile = 0x32,
     kFatalError_CannotOpenOpponentsFile = 0x36,
     kFatalError_OpponentCountMismatchesActualNumberOfOpponents = 0x37,
