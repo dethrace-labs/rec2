@@ -4221,7 +4221,9 @@ typedef struct  {
     tU8 field_0x33;
     int count_shape_points; /* >0 if shape is poly, ==0 if box */
     int shape_points[16];
-    undefined field_0x78[16];
+    undefined field_0x78[4];
+    tCompressed_vector3 bounds_min;
+    tCompressed_vector3 bounds_max;
 } tCar_crush_detach_data;
 
 typedef struct {
@@ -4332,8 +4334,7 @@ typedef struct tCar_crush_spec {
     br_actor* actor; /* ->user is tCar_spec pointer */
     br_actor* model_actor;
     undefined field_0x4d4[0x548 - 0x4d4];
-    br_vector3 field_0x548;
-    float field_0x554;
+    br_vector4 field_0x548;
     br_vector3 driver_position;
     tCollision_shape_wireframe* field_0x564[4];
     tU32 field_0x574;
@@ -4343,19 +4344,25 @@ typedef struct tCar_crush_spec {
 typedef struct tCrush_net_detach_list_item {
     br_actor* actor;
     tCar_spec* car;
-    undefined field_0x8[28];
+    tU32 time;
+    br_bounds3 bounds;
 } tCrush_net_detach_list_item;
 
 typedef struct tCrush_net_semi_detach_bit_list_item {
     br_actor* actor;
     tCar_spec* car;
-    undefined field_0x8[68];
+    tU32 time;
+    br_vector3 point_1;
+    br_vector3 point_2;
+    br_vector3 point_3;
+    br_bounds3 bounds;
+    float value;
 } tCrush_net_semi_detach_bit_list_item;
 
 typedef struct tCrush_net_full_detach_bit_list_item {
     tCar_spec* car;
     tPhysics_object* object;
-    undefined field_0x8[0xc - 0x8];
+    tU32 time;
 } tCrush_net_full_detach_bit_list_item;
 
 typedef struct tCrush_net_reattach_bit_list_item {
@@ -5460,7 +5467,10 @@ typedef enum {
     eNet_message_chunk_type_oil_spill = 0x1f,
     eNet_message_chunk_type_car_crush = 0x20,
     eNet_message_chunk_type_semi_detach_bit = 0x24,
+    eNet_message_chunk_type_fully_detach_bit = 0x25,
     eNet_message_chunk_type_reattach_bit = 0x26,
+    eNet_message_chunk_type_db_non_car = 0x27,
+    eNet_message_chunk_type_sh_non_car = 0x29,
     eNet_message_chunk_type_reattach_all_bits = 0x2b,
     eNet_message_chunk_type_toggle_doors = 0x2c,
     eNet_message_chunk_type_view_car = 0x2f,
@@ -5530,10 +5540,10 @@ typedef struct {
 } tNet_message_chunk_semi_detach_bit;
 
 typedef struct {
-    int ID;
-    tU8 field_0x4;
-    undefined field_0x5[0x8 - 0x5];
-    tU32 field_0x8;
+    tNet_message_chunk_header header;
+    tPlayer_ID player;
+    tU8 id;
+    tU32 time;
     tCompressed_vector3 bounds_min;
     tCompressed_vector3 bounds_max;
 } tNet_message_chunk_detach_bit;
@@ -5550,6 +5560,27 @@ typedef struct {
     tPlayer_ID player;
     tU32 time;
 } tNet_message_chunk_reattach_all_bits;
+
+typedef struct {
+    tNet_message_chunk_header header;
+    tPlayer_ID player;
+    tU8 id;
+    tCompressed_vector3 bounds_min;
+    tCompressed_vector3 bounds_max;
+    tU32 time;
+    undefined field_0x1c[4];
+    tU16 flags;
+    tU8 object_hierarchy[];
+} tNet_message_chunk_db_non_car;
+
+typedef struct {
+    tNet_message_chunk_header header;
+    tPlayer_ID player;
+    tU32 time;
+    tU16 flags;
+    tCompressed_vector4 plane;
+    tU8 object_hierarchy[];
+} tNet_message_chunk_sh_non_car;
 
 typedef struct {
     tNet_message_chunk_header header;
@@ -5698,7 +5729,10 @@ typedef union {
     tNet_message_chunk_oil_spill oil_spill; /* type = 0x1f*/
     tNet_message_car_crush car_crush; /* type = 0x20 */
     tNet_message_chunk_semi_detach_bit semi_detach_bit; /* type = 0x24 */
+    tNet_message_chunk_semi_detach_bit fully_detach_bit; /* type = 0x25, value unused */
     tNet_message_chunk_reattach_bit reattach_bit; /* type = 0x26 */
+    tNet_message_chunk_db_non_car db_non_car; /* type = 0x27 */
+    tNet_message_chunk_sh_non_car sh_non_car; /* type = 0x29 */
     tNet_message_chunk_reattach_all_bits reattach_all_bits; /* type = 0x2b */
     tNet_message_chunk_toggle_doors toggle_doors; /* type = 0x2c */
     tNet_message_chunk_view_car view_car; /* type = 0x2f */
@@ -6100,6 +6134,7 @@ enum {
     kFatalError_CannotLoadAGeneratedShadeTable = 0x6d,
     kFatalError_NetworkCodeSelfCheck = 0x6e,
     kFatalError_RanOutOfFunkGrooveSlotBunches = 0x71,
+    kFatalError_NetContentsTooBig_S = 0x72,
     kFatalError_FileIsCorrupted_S = 0x73,
     kFatalError_CantFindFile_S = 0x75,
     kFatalError_CantLoadCrushDataFile_S = 0x76,
