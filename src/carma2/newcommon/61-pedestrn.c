@@ -61,6 +61,11 @@ tSmashable_initial_position_spec gGiblet_initial_position;
 // GLOBAL: CARMA2_CHEAT 0x0069bc94
 float gGiblet_scrape_start;
 
+// GLOBAL: CARMA2_HW 0x00694234
+// GLOBAL: CARMA2_SW 0x0068e28c
+// GLOBAL: CARMA2_CHEAT 0x0069bdac
+int gPed_severing_damage;
+
 // GLOBAL: CARMA2_HW 0x00694238
 // GLOBAL: CARMA2_SW 0x0068e290
 // GLOBAL: CARMA2_CHEAT 0x0069bdb0
