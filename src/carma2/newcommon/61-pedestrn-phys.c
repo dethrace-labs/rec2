@@ -733,7 +733,20 @@ int C2_HOOK_FASTCALL IsActorRenderworthy(br_actor* pActor) {
 
 // StopPedNoise
 
-// MakePedNoise
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004cd880
+// STUB: CARMA2_SW 0x004c9f80
+// STUB: CARMA2_CHEAT 0x004d3410
+void C2_HOOK_FASTCALL MakePedNoise(tPedestrian* pPed, int pArg2, int pArg3, tPhysics_object* pCollision_info) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004cbcd0
 // FUNCTION: CARMA2_SW 0x004c83d0
@@ -851,7 +864,10 @@ void C2_HOOK_FASTCALL StartPedRunning(tPedestrian* pPed, tU32 pTime, int pArg3) 
 
 // PedAnimCausesMovement
 
-// StopSmoothTurning
+inline void C2_HOOK_FASTCALL StopSmoothTurning(tPedestrian* pPed) {
+
+    pPed->field_0x0c->field_0x6c = 0;
+}
 
 // SetKnockedOverMove
 
@@ -1197,7 +1213,20 @@ void C2_HOOK_FASTCALL ScoreForKilledPedestrian(tPedestrian* pPed, float pHeight)
     AwardTime(gPed_times[gProgram_state.skill_level]);
 }
 
-// KillPedestrian
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004cce70
+// STUB: CARMA2_SW 0x004c9570
+// STUB: CARMA2_CHEAT 0x004d29e0
+void C2_HOOK_FASTCALL KillPedestrian(tPedestrian* pPed, tPhysics_object* pCollision_info) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004cd9e0
 // FUNCTION: CARMA2_SW 0x004ca0e0
@@ -1236,17 +1265,194 @@ int C2_HOOK_FASTCALL DismemberPed(tPedestrian* pPed, int pBone_index) {
     }
 }
 
-// STUB: CARMA2_HW 0x004cd640
-// STUB: CARMA2_SW 0x004c9d40
-void C2_HOOK_FASTCALL DamagePedestrian(tPedestrian* pPed, int pDamage, int pArg3, int pArg4, tPhysics_object* pObject) {
-    NOT_IMPLEMENTED();
+// FUNCTION: CARMA2_HW 0x004cd640
+// FUNCTION: CARMA2_SW 0x004c9d40
+// FUNCTION: CARMA2_CHEAT 0x004d31d0
+int C2_HOOK_FASTCALL DamagePedestrian(tPedestrian* pPed, int pDamage, int pArg3, int pArg4, tPhysics_object* pObject) {
+    tPed_form* form;
+    br_scalar mass_factor;
+    br_scalar damage_left;
+    int count;
+    int severing_damage;
+
+    count = 0;
+    form = pPed->character->personality->form;
+    mass_factor = 0.068 / form->simple_physicing[(tS8)pPed->character->field_0x5].collision_info->M;
+    pDamage = (int)(mass_factor * mass_factor * pDamage);
+    if (form->non_humanoid && (gPed_dismemberfest || gExploding_pedestrians) && pDamage < 100) {
+        pDamage = 100;
+    }
+    damage_left = (br_scalar)pDamage;
+    if (pObject != NULL && !gImmortal_peds && gGoreLevel >= 2) {
+        while (1) {
+            if (gPed_dismemberfest) {
+                severing_damage = 5;
+            } else {
+                severing_damage = gPed_severing_damage;
+            }
+            damage_left -= severing_damage;
+            if (damage_left < 0.0f || count >= 5) {
+                break;
+            }
+            if (gExploding_pedestrians || gPed_dismemberfest || PercentageChance(gPed_severing_chance)) {
+                count += DismemberPed(pPed, IRandomBetween(1, pPed->character->personality->form->count_bones - 1));
+            }
+        }
+    }
+    if (count > 4) {
+        pPed->field_0x0c->field_0x2e |= 0x2;
+    }
+    if (pPed->hit_points <= 0) {
+        if (pDamage > 2) {
+            MakePedNoise(pPed, 5, 0, pObject);
+        }
+        return 1;
+    }
+    if (pPed->character->personality->form->non_humanoid && pPed->character->field_0xc) {
+        pPed->hit_points = 0;
+        pDamage = 0;
+    }
+    if (pPed->character->field_0xc & gPow2_array[pPed->character->personality->form->index_head_bone]) {
+        pPed->hit_points = 0;
+    } else if (pDamage >= 100) {
+        pPed->hit_points = 0;
+    } else {
+        pPed->hit_points -= pDamage;
+    }
+    if (gImmortal_peds && pPed->hit_points <= 0) {
+        pPed->hit_points = 1;
+    }
+    if (pPed->hit_points > 0) {
+        if (pArg3 >= 0) {
+            SetPedMove(pPed, pArg3, -1, 0, 1, GetTotalTime(), ePed_action_impacting);
+        }
+        MakePedNoise(pPed, 4, 0, pObject);
+        return 0;
+    } else {
+        if (pArg4 >= 0) {
+            SetPedMove(pPed, pArg4, -1, 0, 1, GetTotalTime(), ePed_action_impacting);
+        }
+        MakePedNoise(pPed, 1, 0, pObject);
+        KillPedestrian(pPed, pObject);
+        return 1;
+    }
 }
 
-// SetLastHitter
+// FUNCTION: CARMA2_HW 0x004cdeb0
+// FUNCTION: CARMA2_SW 0x004ca5b0
+// FUNCTION: CARMA2_CHEAT 0x004d3a40
+void C2_HOOK_FASTCALL SetLastHitter(tPedestrian* pPed, tPhysics_object* pObject) {
+    tCar_spec* car;
+
+    if (pObject == NULL || pPed->field_0x0c == NULL) {
+        return;
+    }
+    if (pObject->owner != NULL && pObject->flags_0x238 >= 2 && pObject->flags_0x238 <= 4 && pPed->field_0x0c->field_0xc0 == NULL
+            && ((tPed_character_instance*)pObject->owner)->ped != NULL && ((tPed_character_instance*)pObject->owner)->ped->field_0x0c != NULL) {
+        pPed->field_0x0c->field_0xc0 = ((tPed_character_instance*)pObject->owner)->ped->field_0x0c->field_0xc0;
+    }
+    if ((pObject->owner != NULL && pObject->flags_0x238 == 1)
+            || (pObject->flags_0x238 == 0x20 && (gMutant_tail_state == 2 || GetTotalTime() - gDAT_00705b70 < 7500))
+            || pObject->flags_0x238 == 0x40
+            || pObject->flags_0x238 == 0x10) {
+        if (pObject->flags_0x238 == 0x40) {
+            car = ((tNon_car_spec*)pObject->owner)->field_0x30;
+        } else if (pObject->flags_0x238 == 0x10) {
+            car = ((tDrone_spec*)pObject->owner)->field_0x5d4;
+        } else {
+            car = pObject->owner;
+        }
+        if ((car != NULL && car->driver > 5) || pObject->parent != NULL) {
+            pPed->field_0x0c->field_0xc0 = car;
+            if (pObject->owner != NULL && pObject->flags_0x238 == 0x20) {
+                pPed->field_0x0c->field_0x2e |= 0x8;
+            }
+            if (pObject->owner != NULL && pObject->flags_0x238 == 0x20 && gMutant_tail_state == 1) {
+                pPed->field_0x0c->field_0x2e |= 0x10;
+            }
+            if (pObject->flags_0x238 == 0x40) {
+                pPed->field_0x0c->field_0x2e = 0x40;
+            }
+            if (pObject->flags_0x238 == 0x10) {
+                pPed->field_0x0c->field_0x2e = 0x1;
+            }
+        } else if (car != NULL && pPed->field_0x0c->field_0xc0 == NULL) {
+            pPed->field_0x0c->field_0xc0 = car->field_0xc8;
+            pPed->field_0x0c->field_0x2e |= 0x1;
+        }
+    }
+}
 
 // MakePedVanish
 
-// CBPassiveCollision
+// FUNCTION: CARMA2_HW 0x004cdc00
+// FUNCTION: CARMA2_SW 0x004ca300
+// FUNCTION: CARMA2_CHEAT 0x004d3790
+int C2_HOOK_FASTCALL CBPassiveCollision(tPed_character_instance* pCharacter, tPhysics_object* pObject, tPhysics_object* pOther_object) {
+    tU32 time;
+    tPedestrian* ped;
+    int was_alive;
+    br_scalar mass;
+    br_scalar x;
+    br_scalar y;
+    br_scalar z;
+    br_scalar energy;
+    float damage;
+
+    time = GetTotalTime();
+    ped = pCharacter->ped;
+    was_alive = ped->hit_points > 0;
+    if (!(ped->flags & 0x40)) {
+        return 0;
+    }
+    ped->field_0x06++;
+    if (ped->field_0x0c != NULL) {
+        ped->field_0x0c->field_0x19 = 0;
+    }
+    StopSmoothTurning(ped);
+    SetLastHitter(ped, pOther_object);
+    mass = -pCharacter->personality->M;
+    x = pCharacter->field_0xd8.v[0] * mass;
+    y = pCharacter->field_0xd8.v[1] * mass;
+    z = pCharacter->field_0xd8.v[2] * mass;
+    if (pOther_object != NULL) {
+        x = pOther_object->v.v[0] * pOther_object->M + x;
+        y = pOther_object->v.v[1] * pOther_object->M + y;
+        z = pOther_object->v.v[2] * pOther_object->M + z;
+    }
+    energy = x * x + y * y + z * z;
+    if (pOther_object != NULL && pOther_object->owner != NULL && pOther_object->flags_0x238 == 0x20 && pOther_object->M == gMass_mutant_tail_ball) {
+        energy *= 10.0f;
+    }
+    if (gExploding_pedestrians) {
+        damage = gPed_severing_damage * 5;
+    } else {
+        damage = energy / gPed_max_survivable_impact * 100.0f;
+    }
+    DamagePedestrian(ped, damage, 0x5a, energy < 10.0 ? 0x5b : 0x5c, pOther_object);
+    if (ped->hit_points <= 0) {
+        MakePedNoise(ped, damage > 200.0f ? 2 : 1, 0, pOther_object);
+        SetPedMove(ped, 0x5e, -1, 0, 0, time, ePed_action_dead);
+    } else {
+        MakePedNoise(ped, damage > 66.0f ? 1 : 0, 0, pOther_object);
+    }
+    if (pObject->flags_0x238 == 5) {
+        pObject->field_0x1a0 = 0x40000;
+        pObject->field_0x1a4 = 0x40000;
+    } else {
+        pObject->field_0x1a0 = 0x20000;
+        pObject->field_0x1a4 = 0x40000;
+    }
+    PipeSinglePedStatus(pCharacter->ped, -1, -1, 1, 5, pCharacter->field_0x4, pCharacter->field_0x4, pCharacter->field_0x5, pCharacter->field_0x5,
+        &pCharacter->field_0xc0, &pCharacter->field_0xcc, &pCharacter->field_0x8c);
+    if (was_alive) {
+        if ((pOther_object != NULL && pOther_object->owner != NULL && pOther_object->flags_0x238 == 1 && ((tCar_spec*)pOther_object->owner)->driver == eDriver_local_human)
+                || (pOther_object->flags_0x238 == 0x20 && (gMutant_tail_state == 2 || GetTotalTime() - gDAT_00705b70 < 7500))) {
+            PipeSinglePedIncident(ped, pOther_object->actor);
+        }
+    }
+    return 1;
+}
 
 // BastardIt
 
