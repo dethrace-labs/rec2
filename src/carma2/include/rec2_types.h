@@ -4035,7 +4035,7 @@ typedef struct {
     void (C2_HOOK_FASTCALL * load_form)(tPed_form* pPed_form, FILE* pF);
     void (C2_HOOK_FASTCALL * dispose_form)(tPed_form*);
     void (C2_HOOK_FASTCALL * load_personality)(tPed_personality*, FILE*);
-    void (C2_HOOK_FASTCALL * dispose_personality)(undefined4*);
+    void (C2_HOOK_FASTCALL * dispose_personality)(tPed_personality*);
 } tPedForms_vtable;
 
 typedef enum {
@@ -4805,8 +4805,8 @@ typedef struct {
 typedef struct tPed_movement_spec{
     tU32 min_time_between;
     tU32 max_time_between;
-    float min_walk_speed_factor;
-    float max_walk_speed_factor;
+    int min_walk_speed_factor;
+    int max_walk_speed_factor;
     br_angle max_random_angle;
     tU8 padding_0x12[2];
 } tPed_movement_spec;
