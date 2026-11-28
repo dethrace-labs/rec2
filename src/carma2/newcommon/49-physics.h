@@ -196,7 +196,7 @@ extern void C2_HOOK_FASTCALL WriteNewPositions(tPhysics_object* pObject);
 
 extern void C2_HOOK_FASTCALL SetListDoingNothingFlag(tPhysics_object* pObject, int pFlag);
 
-// SetGroupDoingNothingFlag
+extern void C2_HOOK_FASTCALL SetGroupDoingNothingFlag(tPhysics_object* pObject, int pFlag);
 
 extern void C2_HOOK_FASTCALL SetHierarchyDoingNothingFlag(tPhysics_object* pObject, int pFlag);
 
@@ -432,12 +432,12 @@ extern void C2_HOOK_FASTCALL InitPhysics(void);
 
 // PointOutOfSightNotAR (moved to 51-smash for inlining purposes)
 
-// CalcCollObjIDFromCarSpec
+// CalcCollObjIDFromCarSpec (moved to 51-smash for inlining purposes)
 
-// CalcCollObjID
+// CalcCollObjID (moved to 51-smash for inlining purposes)
 
-// GetCarSpecFromCollObjID
+// GetCarSpecFromCollObjID (moved to 51-smash for inlining purposes)
 
-// GetCollObjFromID
+// GetCollObjFromID (moved to 51-smash for inlining purposes)
 
 #endif // GUARD_49_PHYSICS_H
