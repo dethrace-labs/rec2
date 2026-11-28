@@ -57,6 +57,96 @@ int gMinTimeOpponentRepair;
 // GLOBAL: CARMA2_CHEAT 0x00751d28
 int gMaxTimeOpponentRepair;
 
+// GLOBAL: CARMA2_HW 0x00676850
+// GLOBAL: CARMA2_SW 0x00670fc0
+// GLOBAL: CARMA2_CHEAT 0x0067e100
+int gMats_allocated;
+
+// GLOBAL: CARMA2_HW 0x00676858
+// GLOBAL: CARMA2_SW 0x00670fc8
+// GLOBAL: CARMA2_CHEAT 0x0067e108
+br_material* gMat_dk_yel;
+
+// GLOBAL: CARMA2_HW 0x0067685c
+// GLOBAL: CARMA2_SW 0x00670fcc
+// GLOBAL: CARMA2_CHEAT 0x0067e10c
+br_material* gMat_md_yel;
+
+// GLOBAL: CARMA2_HW 0x00676860
+// GLOBAL: CARMA2_SW 0x00670fd0
+// GLOBAL: CARMA2_CHEAT 0x0067e110
+br_material* gMat_lt_yel;
+
+// GLOBAL: CARMA2_HW 0x00676864
+// GLOBAL: CARMA2_SW 0x00670fd4
+// GLOBAL: CARMA2_CHEAT 0x0067e114
+br_material* gMat_dk_red;
+
+// GLOBAL: CARMA2_HW 0x00676868
+// GLOBAL: CARMA2_SW 0x00670fd8
+// GLOBAL: CARMA2_CHEAT 0x0067e118
+br_material* gMat_md_red;
+
+// GLOBAL: CARMA2_HW 0x0067686c
+// GLOBAL: CARMA2_SW 0x00670fdc
+// GLOBAL: CARMA2_CHEAT 0x0067e11c
+br_material* gMat_lt_red;
+
+// GLOBAL: CARMA2_HW 0x00676870
+// GLOBAL: CARMA2_SW 0x00670fe0
+// GLOBAL: CARMA2_CHEAT 0x0067e120
+br_material* gMat_dk_grn;
+
+// GLOBAL: CARMA2_HW 0x00676874
+// GLOBAL: CARMA2_SW 0x00670fe4
+// GLOBAL: CARMA2_CHEAT 0x0067e124
+br_material* gMat_md_grn;
+
+// GLOBAL: CARMA2_HW 0x00676878
+// GLOBAL: CARMA2_SW 0x00670fe8
+// GLOBAL: CARMA2_CHEAT 0x0067e128
+br_material* gMat_lt_grn;
+
+// GLOBAL: CARMA2_HW 0x0067687c
+// GLOBAL: CARMA2_SW 0x00670fec
+// GLOBAL: CARMA2_CHEAT 0x0067e12c
+br_material* gMat_dk_blu;
+
+// GLOBAL: CARMA2_HW 0x00676880
+// GLOBAL: CARMA2_SW 0x00670ff0
+// GLOBAL: CARMA2_CHEAT 0x0067e130
+br_material* gMat_lt_blu;
+
+// GLOBAL: CARMA2_HW 0x00676884
+// GLOBAL: CARMA2_SW 0x00670ff4
+// GLOBAL: CARMA2_CHEAT 0x0067e134
+br_material* gMat_dk_turq;
+
+// GLOBAL: CARMA2_HW 0x00676888
+// GLOBAL: CARMA2_SW 0x00670ff8
+// GLOBAL: CARMA2_CHEAT 0x0067e138
+br_material* gMat_lt_turq;
+
+// GLOBAL: CARMA2_HW 0x0067688c
+// GLOBAL: CARMA2_SW 0x00670ffc
+// GLOBAL: CARMA2_CHEAT 0x0067e13c
+br_material* gMat_dk_gry;
+
+// GLOBAL: CARMA2_HW 0x00676890
+// GLOBAL: CARMA2_SW 0x00671000
+// GLOBAL: CARMA2_CHEAT 0x0067e140
+br_material* gMat_md_gry;
+
+// GLOBAL: CARMA2_HW 0x00676894
+// GLOBAL: CARMA2_SW 0x00671004
+// GLOBAL: CARMA2_CHEAT 0x0067e144
+br_material* gMat_lt_gry;
+
+// GLOBAL: CARMA2_HW 0x0067689c
+// GLOBAL: CARMA2_SW 0x0067100c
+// GLOBAL: CARMA2_CHEAT 0x0067e14c
+int gAI_world_alternate_frame;
+
 // GLOBAL: CARMA2_HW 0x0069173c
 // GLOBAL: CARMA2_SW 0x0068b794
 // GLOBAL: CARMA2_CHEAT 0x006990e8
@@ -1373,6 +1463,10 @@ tCar_spec* C2_HOOK_FASTCALL GetCarSpecFromGlobalOppoIndex(int pIndex) {
     return NULL;
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
 // FUNCTION: CARMA2_HW 0x004ae9e0
 // FUNCTION: CARMA2_SW 0x004aab50
 // FUNCTION: CARMA2_CHEAT 0x004afef0
@@ -1386,6 +1480,10 @@ int C2_HOOK_FASTCALL GetOpponentsRealSection(tOpponent_spec* pOpponent_spec, int
         return pSection_no;
     }
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004aea00
 // FUNCTION: CARMA2_SW 0x004aab70
@@ -1504,4 +1602,226 @@ void C2_HOOK_FASTCALL TwoCarsHitEachOther(tCar_spec* pA_car, tCar_spec* pAnother
 
 // RecordOpponentTwattageOccurrence
 
-// GetOpponentMood
+// FUNCTION: CARMA2_HW 0x004af490
+// FUNCTION: CARMA2_SW 0x004ab600
+void C2_HOOK_FASTCALL FUN_004af490(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af4a0
+// FUNCTION: CARMA2_SW 0x004ab610
+void C2_HOOK_FASTCALL FUN_004af4a0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af4b0
+// FUNCTION: CARMA2_SW 0x004ab620
+void C2_HOOK_FASTCALL FUN_004af4b0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af4c0
+// FUNCTION: CARMA2_SW 0x004ab630
+void C2_HOOK_FASTCALL FUN_004af4c0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af4d0
+// FUNCTION: CARMA2_SW 0x004ab640
+void C2_HOOK_FASTCALL FUN_004af4d0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af4e0
+// FUNCTION: CARMA2_SW 0x004ab650
+void C2_HOOK_FASTCALL FUN_004af4e0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af4f0
+// FUNCTION: CARMA2_SW 0x004ab660
+void C2_HOOK_FASTCALL FUN_004af4f0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af500
+// FUNCTION: CARMA2_SW 0x004ab670
+void C2_HOOK_FASTCALL FUN_004af500(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af510
+// FUNCTION: CARMA2_SW 0x004ab680
+void C2_HOOK_FASTCALL FUN_004af510(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af520
+// FUNCTION: CARMA2_SW 0x004ab690
+void C2_HOOK_FASTCALL FUN_004af520(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af530
+// FUNCTION: CARMA2_SW 0x004ab6a0
+void C2_HOOK_FASTCALL FUN_004af530(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af540
+// FUNCTION: CARMA2_SW 0x004ab6b0
+void C2_HOOK_FASTCALL FUN_004af540(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af550
+// FUNCTION: CARMA2_SW 0x004ab6c0
+void C2_HOOK_FASTCALL FUN_004af550(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af560
+// FUNCTION: CARMA2_SW 0x004ab6d0
+void C2_HOOK_FASTCALL FUN_004af560(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af570
+// FUNCTION: CARMA2_SW 0x004ab6e0
+void C2_HOOK_FASTCALL FUN_004af570(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af580
+// FUNCTION: CARMA2_SW 0x004ab6f0
+void C2_HOOK_FASTCALL FUN_004af580(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af590
+// FUNCTION: CARMA2_SW 0x004ab700
+void C2_HOOK_FASTCALL FUN_004af590(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af5a0
+// FUNCTION: CARMA2_SW 0x004ab710
+void C2_HOOK_FASTCALL FUN_004af5a0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af5b0
+// FUNCTION: CARMA2_SW 0x004ab720
+void C2_HOOK_FASTCALL FUN_004af5b0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af5c0
+// FUNCTION: CARMA2_SW 0x004ab730
+void C2_HOOK_FASTCALL FUN_004af5c0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af5d0
+// FUNCTION: CARMA2_SW 0x004ab740
+void C2_HOOK_FASTCALL FUN_004af5d0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af5e0
+// FUNCTION: CARMA2_SW 0x004ab750
+void C2_HOOK_FASTCALL FUN_004af5e0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af5f0
+// FUNCTION: CARMA2_SW 0x004ab760
+void C2_HOOK_FASTCALL FUN_004af5f0(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af600
+// FUNCTION: CARMA2_SW 0x004ab770
+void C2_HOOK_FASTCALL FUN_004af600(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af610
+// FUNCTION: CARMA2_SW 0x004ab780
+void C2_HOOK_FASTCALL FUN_004af610(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af620
+// FUNCTION: CARMA2_SW 0x004ab790
+void C2_HOOK_FASTCALL FUN_004af620(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af630
+// FUNCTION: CARMA2_SW 0x004ab7a0
+// FUNCTION: CARMA2_CHEAT 0x004b4f00
+void C2_HOOK_FASTCALL FUN_004af630(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af640
+// FUNCTION: CARMA2_SW 0x004ab7b0
+// FUNCTION: CARMA2_CHEAT 0x004b4f10
+tOpponent_Status C2_HOOK_FASTCALL GetOpponentMood(tCar_spec* pCar_spec) {
+    tOpponent_spec* opponent_spec;
+
+    opponent_spec = GetOpponentSpecFromCarSpec(pCar_spec);
+    if (pCar_spec->knackered) {
+        return eOpponent_status_Wasted;
+    } else if (gCountdown) {
+        return eOpponent_status_On_grid;
+    } else if (gTime_stamp_for_this_munging < opponent_spec->stun_time_ends) {
+        return eOpponent_status_Stunned;
+    } else if (opponent_spec->follow_path_data.struggle_time != 0 && opponent_spec->current_objective != eOOT_get_near_player) {
+        return eOpponent_status_Confused;
+    }
+    switch (opponent_spec->current_objective) {
+    case eOOT_complete_race:
+        return eOpponent_status_Racing;
+    case eOOT_pursue_and_twat:
+        return eOpponent_status_Trying_to_kill_you;
+    case eOOT_run_away:
+        return eOpponent_status_Running_away;
+    case eOOT_frozen:
+        return eOpponent_status_Frozen;
+    default:
+        return eOpponent_status_Trying_to_get_to_you;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004af770
+// FUNCTION: CARMA2_SW 0x004ab8e0
+// FUNCTION: CARMA2_CHEAT 0x004b5040
+void C2_HOOK_FASTCALL FUN_004af770(void) {
+}
+
+// FUNCTION: CARMA2_HW 0x004af780
+// FUNCTION: CARMA2_SW 0x004ab8f0
+// FUNCTION: CARMA2_CHEAT 0x004b5050
+int C2_HOOK_FASTCALL FUN_004af780(char* pBuffer) {
+    const char* action;
+    int braking;
+
+    if (gProgram_state.AI_vehicles.opponents[0].follow_path_data.cheating) {
+        sprintf(pBuffer, "%s: Cheating %d (%d)",
+            gProgram_state.AI_vehicles.opponents[0].car_spec->driver_name,
+            gProgram_state.AI_vehicles.opponents[0].follow_path_data.section_no,
+            GetOpponentsRealSection(&gProgram_state.AI_vehicles.opponents[0], gProgram_state.AI_vehicles.opponents[0].follow_path_data.section_no));
+    } else if (gProgram_state.AI_vehicles.opponents[0].follow_path_data.struggle_time != 0) {
+        braking = 0;
+        if (gTime_stamp_for_this_munging > (float)(gProgram_state.AI_vehicles.opponents[0].follow_path_data.struggle_time + 2000)
+                + 750 * (gProgram_state.AI_vehicles.opponents[0].follow_path_data.number_of_struggles - 1)
+                - gProgram_state.AI_vehicles.opponents[0].car_spec->collision_info->M * -15.0f) {
+            braking = 1;
+        }
+        if (braking) {
+            action = "braking";
+        } else {
+            action = "reversing";
+        }
+        sprintf(pBuffer, "%s: Physics Struggling %d (%d) %s:%d",
+            gProgram_state.AI_vehicles.opponents[0].car_spec->driver_name,
+            gProgram_state.AI_vehicles.opponents[0].follow_path_data.section_no,
+            GetOpponentsRealSection(&gProgram_state.AI_vehicles.opponents[0], gProgram_state.AI_vehicles.opponents[0].follow_path_data.section_no),
+            action,
+            gProgram_state.AI_vehicles.opponents[0].follow_path_data.number_of_struggles);
+    } else {
+#ifdef REC2_FIX_BUGS
+        sprintf(pBuffer, "%s: Physics %d (%d)",
+            gProgram_state.AI_vehicles.opponents[0].car_spec->driver_name,
+            gProgram_state.AI_vehicles.opponents[0].follow_path_data.section_no,
+            GetOpponentsRealSection(&gProgram_state.AI_vehicles.opponents[0], gProgram_state.AI_vehicles.opponents[0].follow_path_data.section_no));
+#else
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
+        sprintf(pBuffer, "%s: Physics %d (%d)",
+            gProgram_state.AI_vehicles.opponents[0].car_spec->driver_name,
+            gProgram_state.AI_vehicles.opponents[0].follow_path_data.section_no);
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+#endif
+    }
+    return 0;
+}
