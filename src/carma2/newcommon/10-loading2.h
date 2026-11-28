@@ -17,6 +17,7 @@ extern int gKey_map_index;
 
 extern const char* gPedTextTxtPath;
 extern int gGroove_funk_offset;
+extern tCar_spec* gCurrent_car_spec;
 extern const char* gNet_avail_names[4];
 extern tHeadup_info gHeadup_image_info[45];
 extern br_pixelmap* gHeadup_images[45];
@@ -45,7 +46,7 @@ extern void C2_HOOK_FASTCALL LoadInterfaceStuff(int pWithin_race);
 
 extern void C2_HOOK_FASTCALL InitInterfaceLoadState(void);
 
-// AdjustCarCoordinates
+extern void C2_HOOK_FASTCALL AdjustCarCoordinates(tCar_spec* pCar);
 
 extern void C2_HOOK_FASTCALL LoadSpeedo(FILE* pF, int pIndex, tCar_spec* pCar_spec);
 
@@ -59,15 +60,15 @@ extern void C2_HOOK_FASTCALL LoadHeadups(FILE* pF, int pIndex, tCar_spec* pCar_s
 
 // ReadNonCarMechanicsData
 
-// ReadPartHeader
+extern void C2_HOOK_FASTCALL ReadPartHeader(tPhysics_object* pObject, FILE* pF);
 
-// ReadMechanicsShapes
+extern void C2_HOOK_FASTCALL ReadMechanicsShapes(tPhysics_shape** pShapes, FILE* pF);
 
-// NewReadMechanicsData
+extern void C2_HOOK_FASTCALL NewReadMechanicsData(FILE* pF, tCar_spec* c, char* pLine);
 
-// LoadGear
+extern void C2_HOOK_FASTCALL LoadGear(FILE* pF, int pIndex, tCar_spec* pCar_spec);
 
-// AddRefOffset
+extern void C2_HOOK_FASTCALL AddRefOffset(int* pRef_holder);
 
 extern void C2_HOOK_FASTCALL GetDamageProgram(FILE* pF, tCar_spec* pCar_spec, tImpact_location pImpact_location);
 
@@ -77,31 +78,33 @@ extern intptr_t C2_HOOK_CDECL AllocateCarModelData(br_actor* pActor, void* pData
 
 // AddCarModelToList
 
-// LinkCarModel
+extern intptr_t C2_HOOK_CDECL LinkCarModel(br_actor* pActor, void* pContext);
 
-// LinkCarModelsToActor
+extern void C2_HOOK_FASTCALL LinkCarModelsToActor(br_actor* pActor, br_model** pModels, int pModel_count, int pCount_detail_levels);
 
 extern br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererShadingType pShading_type);
 
 // ReadShrapnelMaterials
 
-// SetModelFlags
+extern void C2_HOOK_FASTCALL SetModelFlags(br_model* pModel, int pOwner);
 
-// FindCarShellModel
+extern br_model* C2_HOOK_FASTCALL FindCarShellModel(br_model** pModels, int pCount);
 
 extern intptr_t C2_HOOK_CDECL LinkCarActorsToGroovidelicsCB(br_actor* pActor, void* pData);
 
-// LinkCarActorsToGroovidelics
+extern void C2_HOOK_FASTCALL LinkCarActorsToGroovidelics(br_actor* pActor);
 
-// ReadCarKeywordData
+extern void C2_HOOK_FASTCALL ReadCarKeywordData(tCar_spec* pCar_spec, FILE* pF);
 
-// TrashModelMaterialIdentifiers
+extern void C2_HOOK_FASTCALL TrashModelMaterialIdentifiers(tCar_spec* pCar_spec, tBrender_storage* pStorage);
 
-// CentreModel
+extern void C2_HOOK_FASTCALL CentreModel(br_actor* pActor);
 
-// PivotizeWheel
+extern void C2_HOOK_FASTCALL PivotizeWheel(br_actor* pActor);
 
-// SetUpGraphicalWheelStuff
+extern void C2_HOOK_FASTCALL SetUpGraphicalWheelStuff(tCar_spec* pCar_spec);
+
+extern void C2_HOOK_FASTCALL LoadCarShrapnelMaterials(FILE* pF, tCar_spec* pCar_spec);
 
 extern void C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, tCar_spec* pCar_spec, int pOwner, const char* pDriver_name, tBrender_storage* pStorage_space);
 
