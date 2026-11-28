@@ -28,6 +28,7 @@
 #include "60-phil.h"
 #include "69-sound.h"
 #include "globvars.h"
+#include "globvrpb.h"
 #include "platform.h"
 
 #include "rec2_macros.h"
@@ -52,6 +53,7 @@ tU8* gPipe_buffer_working_end;
 
 // GLOBAL: CARMA2_HW 0x006768c8
 // GLOBAL: CARMA2_SW 0x00671038
+// GLOBAL: CARMA2_CHEAT 0x0067e178
 tU8* gEnd_of_session = NULL;
 
 #ifdef REC2_MATCHING
@@ -142,18 +144,59 @@ int gDisable_advance;
 // GLOBAL: CARMA2_CHEAT 0x0067e1c0
 int gPipe_count_callbacks;
 
+// GLOBAL: CARMA2_HW 0x006940d0
+// GLOBAL: CARMA2_SW 0x0068e128
+// GLOBAL: CARMA2_CHEAT 0x0069bc48
+tU32 gOldest_time;
+
+// GLOBAL: CARMA2_HW 0x006940d4
+// GLOBAL: CARMA2_SW 0x0068e12c
+// GLOBAL: CARMA2_CHEAT 0x0069bc4c
+tPipe_smudge_data* gSmudge_space;
+
+// GLOBAL: CARMA2_HW 0x006940d8
+// GLOBAL: CARMA2_SW 0x0068e130
+// GLOBAL: CARMA2_CHEAT 0x0069bc50
+br_scalar gMax_distance;
+
+// GLOBAL: CARMA2_HW 0x006940e0
+// GLOBAL: CARMA2_SW 0x0068e138
+// GLOBAL: CARMA2_CHEAT 0x0069bc58
+br_vector3 gReference_pos;
+
+// GLOBAL: CARMA2_HW 0x006940f0
+// GLOBAL: CARMA2_SW 0x0068e148
+// GLOBAL: CARMA2_CHEAT 0x0069bc68
+br_vector3 gCar_pos;
+
+// GLOBAL: CARMA2_HW 0x00694100
+// GLOBAL: CARMA2_SW 0x0068e158
+// GLOBAL: CARMA2_CHEAT 0x0069bc78
+tCar_spec* gCar_ptr;
+
 // GLOBAL: CARMA2_HW 0x00694104
 // GLOBAL: CARMA2_SW 0x0068e15c
 // GLOBAL: CARMA2_CHEAT 0x0069bc7c
 tPipe_smudge_data* gCrush_space;
+
+// GLOBAL: CARMA2_HW 0x00694108
+// GLOBAL: CARMA2_SW 0x0068e160
+// GLOBAL: CARMA2_CHEAT 0x0069bc80
+tU32 gYoungest_time;
 
 // GLOBAL: CARMA2_HW 0x0069410c
 // GLOBAL: CARMA2_SW 0x0068e164
 // GLOBAL: CARMA2_CHEAT 0x0069bc84
 tFloat_u32_union gFloat_pipe_union;
 
+// GLOBAL: CARMA2_HW 0x00694110
+// GLOBAL: CARMA2_SW 0x0068e168
+// GLOBAL: CARMA2_CHEAT 0x0069bc88
+tU32 gTrigger_time;
+
 // FUNCTION: CARMA2_HW 0x00402300
 // FUNCTION: CARMA2_SW 0x00402300
+// FUNCTION: CARMA2_CHEAT 0x00402300
 int C2_HOOK_FASTCALL ARReplayForwards(void) {
     if (gPipe_play_ptr == gPipe_record_ptr) {
         return 0;
@@ -301,6 +344,7 @@ tU32 C2_HOOK_FASTCALL LengthOfSession(tPipe_session* pSession) {
 
 // FUNCTION: CARMA2_HW 0x004024e0
 // FUNCTION: CARMA2_SW 0x004024e0
+// FUNCTION: CARMA2_CHEAT 0x004024e0
 void C2_HOOK_FASTCALL ARAdvanceChunkPtr(tU8** pChunk, int pType) {
     tU8* old_chunk;
 
@@ -432,6 +476,7 @@ void C2_HOOK_FASTCALL AREndPipingSession(void) {
 
 // FUNCTION: CARMA2_HW 0x004028a0
 // FUNCTION: CARMA2_SW 0x004028a0
+// FUNCTION: CARMA2_CHEAT 0x004028a0
 void C2_HOOK_FASTCALL ARAddDataToSession(int pType, uintptr_t pOwner, void* pData, tU32 pSize) {
     tU32 new_size;
 
@@ -860,17 +905,178 @@ int C2_HOOK_FASTCALL PipeObjectPosition(tPhysics_object* pObject, void* pContext
 
 // DoOilSpillAR
 
-// CheckCar
+#if defined(REC2_MATCHING) && defined(_MSC_VER)
+#pragma inline_depth(0)
+#endif
 
-// CarTimeout
+// FUNCTION: CARMA2_HW 0x004c6a30
+// FUNCTION: CARMA2_SW 0x004c3160
+// FUNCTION: CARMA2_CHEAT 0x004cc550
+int C2_HOOK_FASTCALL CheckCar(tPipe_chunk* pChunk_ptr, int pChunk_count, tU32 pTime) {
+    int i;
+    tCar_spec* car;
+    br_vector3 com_offset_c;
+    br_vector3 com_offset_w;
+    br_vector3 difference;
+    tPipe_chunk* temp_ptr;
+
+    temp_ptr = pChunk_ptr;
+    if (ARReplayForwards()) {
+        if (pTime <= gOldest_time) {
+            return 0;
+        }
+    } else {
+        if (pTime >= gOldest_time) {
+            return 0;
+        }
+    }
+    for (i = 0; i < pChunk_count; i++) {
+        if ((temp_ptr->subject_index & 0xffffff00) == (eVehicle_self << 8)) {
+            car = &gProgram_state.current_car;
+        } else {
+            car = GetCarSpec(temp_ptr->subject_index >> 8, temp_ptr->subject_index & 0xff);
+        }
+        if (car == gCar_ptr) {
+            BrVector3Copy(&gCar_pos, (br_vector3*)temp_ptr->data.car.mat.m[3]);
+            BrVector3InvScale(&com_offset_c, &car->centre_of_mass_world_scale, WORLD_SCALE);
+            BrMatrix34ApplyV(&com_offset_w, &com_offset_c, &temp_ptr->data.car.mat);
+            BrVector3Accumulate(&gCar_pos, &com_offset_w);
+            BrVector3Sub(&difference, &gCar_pos, &gReference_pos);
+            gTrigger_time = pTime;
+            if (BrVector3LengthSquared(&difference) <= gMax_distance) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
+        ARAdvanceChunkPtr((tU8**)&temp_ptr, ePipe_chunk_car);
+    }
+    return 0;
+}
+
+// FUNCTION: CARMA2_HW 0x004c6bc0
+// FUNCTION: CARMA2_SW 0x004c32f0
+// FUNCTION: CARMA2_CHEAT 0x004cc6e0
+int C2_HOOK_FASTCALL CarTimeout(tU32 pTime) {
+
+    if (ARReplayForwards()) {
+        if (pTime > gYoungest_time) {
+            return 0;
+        }
+    } else {
+        if (pTime < gYoungest_time) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+#if defined(REC2_MATCHING) && defined(_MSC_VER)
+#pragma inline_depth()
+#endif
 
 // ScanCarsPositions
 
-// InitialiseActionReplay
+// GLOBAL: CARMA2_HW 0x0065d0c8
+// GLOBAL: CARMA2_SW 0x00657a00
+// GLOBAL: CARMA2_CHEAT 0x00664780
+tReplay_callback gPiping_function_array[70] = {
+    { NULL, 0x4, NULL, ApplyFrameBoundary, 0x0, NULL },
+    { NULL, 0x14, NULL, NULL, 0x0, NULL },
+    { NULL, 0x14, NULL, NULL /* FIXME: ApplySound */, 0x0, NULL },
+    { NULL, 0x0, NULL /* FIXME: CalcCrushLength */, NULL /* FIXME: ApplyCrush */, 0x5, NULL /* FIXME: UndoCrush */ },
+    { NULL, 0x0, NULL, NULL, 0x1, NULL },
+    { NULL, 0x44, NULL, ApplyCar, 0x3, NULL },
+    { NULL, 0x6, NULL, ApplyGWS, 0x3, NULL },
+    { NULL, 0xc, NULL, NULL /* FIXME: ApplyDamage */, 0x4, NULL /* FIXME: UndoDamage */ },
+    { NULL, 0x2, NULL, ApplySpecial, 0x4, NULL /* FIXME: UndoSpecial */ },
+    { NULL, 0x0, NULL, NULL, 0x2, NULL },
+    { ResetSparks, 0x18, NULL, ApplySpark, 0x2, NULL },
+    { ResetShrapnel, 0x0, CalcShrapnelLength, ApplyShrapnel, 0x2, NULL },
+    { ResetScreenWobble, 0x2, NULL, ApplyScreenWobble, 0x4, UndoScreenWobble },
+    { NULL, 0x40, NULL, NULL /* FIXME: ApplyGrooveStop */, 0x2, NULL },
+    { NULL, 0x34, NULL, ApplyNonCar, 0x3, NULL },
+    { ResetSmoke, 0xa, NULL, ApplySmoke, 0x2, NULL },
+    { NULL, 0x54, NULL, NULL /* FIXME: ApplyOilSpill */, 0x2, NULL },
+    { NULL, 0x14, NULL, ApplySmokeColumn, 0x1, NULL },
+    { NULL, 0x14, NULL, ApplyFlame, 0x1, NULL },
+    { NULL, 0x0, CalcSmudgeLength, ApplySmudge, 0x4, UndoSmudge },
+    { NULL, 0x10, NULL, ApplySplash, 0x4, UndoSplash },
+    { NULL /* FIXME: ResetProxRay */, 0x8, NULL, ApplyProxRay, 0x1, NULL },
+    { NULL, 0x34, NULL, ApplySkidAdjustment, 0x4, UndoSkidAdjustment },
+    { NULL, 0x8, NULL, ApplyFlap, 0x5, UndoFlap },
+    { NULL, 0x0, CalcModelMashLength, ApplyModelMash, 0x5, UndoModelMash },
+    { NULL, 0xc, NULL, ApplyRelink, 0x5, UndoRelink },
+    { NULL, 0x4, NULL, ApplyIdentity, 0x1, NULL },
+    { NULL, 0x14, NULL, ApplySplitWeld, 0x4, UndoSplitWeld },
+    { NULL, 0x18, NULL, ApplyBend, 0x5, UndoBend },
+    { NULL, 0x6, NULL, ApplyUnBend, 0x5, UndoUnBend },
+    { NULL, 0xd0, NULL, NULL /* FIXME: ApplyShrapnelShower */, 0x4, NULL /* FIXME: UndoShrapnelShower */ },
+    { NULL, 0x78, NULL, ApplyExplosion, 0x2, NULL },
+    { NULL, 0x4, NULL, ApplyNonCarCreation, 0x5, UndoNonCarCreation },
+    { NULL, 0x8, NULL, ApplySmashModelChange, 0x5, UndoSmashModelChange },
+    { NULL, 0x0, NULL /* FIXME: CalcRemoveFacesLength */, ApplySmashRemoveFaces, 0x5, UndoSmashRemoveFaces },
+    { NULL, 0x4, NULL, ApplySmashDecal, 0x5, UndoSmashDecal },
+    { NULL, 0x10, NULL, ApplySmashTextureChange, 0x5, UndoSmashTextureChange },
+    { ResetRepulseRay, 0xc, NULL, ApplyRepulseRay, 0x2, NULL },
+    { NULL, 0x0, CalcEndMyBendLength, ApplyEndMyBend, 0x1, NULL },
+    { NULL, 0x10, NULL, ApplyActorTrans, 0x5, UndoActorTrans },
+    { NULL, 0x50, NULL, NULL /* FIXME: ApplyPedStatus */, 0x5, NULL /* FIXME: UndoPedStatus */ },
+    { NULL, 0xc, NULL, ApplyPedDir, 0x2, NULL },
+    { NULL, 0x64, NULL, NULL /* FIXME: ApplyPedMove */, 0x5, NULL /* FIXME: UndoPedMove */ },
+    { NULL, 0x30, NULL, NULL /* FIXME: ApplyPedPhysics */, 0x2, NULL },
+    { NULL, 0x4, NULL, NULL /* FIXME: ApplyPedDismember */, 0x5, UndoPedDismember },
+    { NULL, 0x8, NULL, ApplyPedFPChange, 0x5, UndoPedFPChange },
+    { NULL, 0x18, NULL, ApplyPedPos, 0x5, UndoPedPos },
+    { NULL, 0x18, NULL, NULL /* FIXME: ApplyPedModelChange */, 0x5, NULL /* FIXME: UndoPedModelChange */ },
+    { NULL, 0x30, NULL, ApplyPHILObject, 0x2, NULL },
+    { NULL, 0x34, NULL, NULL /* FIXME: ApplyGibShower */, 0x4, NULL /* FIXME: UndoGibShower */ },
+    { NULL, 0x2c, NULL, ApplyBloodSpurt, 0x4, NULL /* FIXME: UndoBloodSpurt */ },
+    { NULL, 0x8, NULL, ApplyGrooveOnOff, 0x5, UndoGrooveOnOff },
+    { NULL, 0x0, NULL, ApplyPowerupGot, 0x5, UndoPowerupGot },
+    { NULL, 0x0, NULL, ApplyPowerupLose, 0x5, UndoPowerupLose },
+    { NULL, 0x2, NULL, ApplyFunkEnable, 0x5, UndoFunkEnable },
+    { NULL, 0x8, NULL, ApplyVanishDismembered, 0x5, UndoVanishDismembered },
+    { NULL, 0x2, NULL, ApplyDSModel, 0x1, NULL },
+    { NULL, 0x26c, NULL, ApplyPedDiagnostics, 0x2, NULL },
+    { NULL, 0xc, NULL, ApplyVector3, 0x5, UndoVector3 },
+    { NULL, 0x2c, NULL, ApplyExtendedSplash, 0x4, NULL /* FIXME: UndoExtendedSplash */ },
+    { NULL, 0x2, NULL, NULL /* FIXME: ApplyDroneRender */, 0x1, NULL },
+    { NULL, 0x1e, NULL, ApplyDroneCornerPos, 0x1, NULL },
+    { NULL, 0x8, NULL, ApplyDroneStraightPos, 0x1, NULL },
+    { NULL, 0x4, NULL, ApplyDroneUnused, 0x1, NULL },
+    { ARResetNapalmBolts, 0x58, NULL, ApplyNapalmBolt, 0x4, UndoNapalmBolt },
+    { NULL, 0x4, NULL, ApplyPowerupRespawn, 0x5, UndoPowerupRespawn },
+    { NULL, 0x30, NULL, ApplyShitMine, 0x5, UndoShitMine },
+    { NULL, 0x30, NULL, ApplyEndShitMine, 0x5, UndoEndShitMine },
+    { NULL, 0x2, NULL, ApplyTransformType, 0x5, UndoTransformType },
+    { NULL, 0x2, NULL, ApplyOppoRenderage, 0x1, NULL },
+};
 
 #if defined(REC2_MATCHING) && defined(_MSC_VER)
 #pragma inline_depth(0)
 #endif
+
+// FUNCTION: CARMA2_HW 0x004c6bf0
+// FUNCTION: CARMA2_SW 0x004c3320
+// FUNCTION: CARMA2_CHEAT 0x004cc710
+void C2_HOOK_FASTCALL InitialiseActionReplay(void) {
+    int enable;
+
+    if (!gAusterity_mode && gNet_mode == eNet_mode_none) {
+        enable = 1;
+    } else {
+        enable = 0;
+    }
+    ARInitialise(enable, REC2_ASIZE(gPiping_function_array), gPiping_function_array);
+    if (!gAusterity_mode && gNet_mode == eNet_mode_none) {
+        gCrush_space = BrMemAllocate(0x4000, kMem_pipe_model_geometry);
+        gSmudge_space = gCrush_space;
+    } else {
+        gCrush_space = NULL;
+        gSmudge_space = NULL;
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004c6c60
 // FUNCTION: CARMA2_SW 0x004c3390
@@ -894,7 +1100,31 @@ void C2_HOOK_FASTCALL DisposeActionReplay(void) {
 
 // AddCrushToPipingSession
 
-// AddSmudgeToPipingSession
+#if defined(REC2_MATCHING) && defined(_MSC_VER)
+#pragma inline_depth(0)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004c6ea0
+// FUNCTION: CARMA2_SW 0x004c35d0
+// FUNCTION: CARMA2_CHEAT 0x004cc9c0
+void C2_HOOK_FASTCALL AddSmudgeToPipingSession(tU16 pCar_ID, int pModel_index, int pVertex_count, tSmudged_vertex* pCoordinates) {
+    tU32 data_size;
+
+    if (gSmudge_space != NULL) {
+        if (pVertex_count > 600) {
+            pVertex_count = 600;
+        }
+        data_size = pVertex_count * sizeof(tSmudged_vertex);
+        gSmudge_space->vertex_count = pVertex_count;
+        gSmudge_space->model_index = pModel_index;
+        memcpy(gSmudge_space->vertex_changes, pCoordinates, data_size);
+        ARAddDataToSession(ePipe_chunk_smudge, pCar_ID, gSmudge_space, data_size + offsetof(tPipe_smudge_data, vertex_changes));
+    }
+}
+
+#if defined(REC2_MATCHING) && defined(_MSC_VER)
+#pragma inline_depth()
+#endif
 
 // FUNCTION: CARMA2_HW 0x004c6f20
 // FUNCTION: CARMA2_SW 0x004c3650
@@ -2752,7 +2982,7 @@ void C2_HOOK_FASTCALL UndoBend(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
 // FUNCTION: CARMA2_HW 0x004ca060
 // FUNCTION: CARMA2_SW 0x004c6790
 // FUNCTION: CARMA2_CHEAT 0x004cfba0
-void C2_HOOK_FASTCALL UndoUnBend(void) {
+void C2_HOOK_FASTCALL UndoUnBend(tPipe_chunk** pChunk, tPipe_chunk* pPrev_chunk) {
 }
 
 // UndoShrapnelShower
