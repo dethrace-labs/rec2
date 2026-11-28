@@ -35,6 +35,41 @@
 // GLOBAL: CARMA2_CHEAT 0x00597ae0
 int gSky_on = 1;
 
+// GLOBAL: CARMA2_HW 0x0079ec2c
+// GLOBAL: CARMA2_SW 0x0079518c
+// GLOBAL: CARMA2_CHEAT 0x007a62cc
+br_angle gSky_image_height;
+
+// GLOBAL: CARMA2_HW 0x0079ec2e
+// GLOBAL: CARMA2_SW 0x0079518e
+// GLOBAL: CARMA2_CHEAT 0x007a62ce
+br_angle gSky_image_width;
+
+// GLOBAL: CARMA2_HW 0x0079ec30
+// GLOBAL: CARMA2_SW 0x00795190
+// GLOBAL: CARMA2_CHEAT 0x007a62d0
+br_angle gSky_image_underground;
+
+// GLOBAL: CARMA2_HW 0x0067c4b4
+// GLOBAL: CARMA2_SW 0x00676c2c
+// GLOBAL: CARMA2_CHEAT 0x00683d5c
+float gSky_width;
+
+// GLOBAL: CARMA2_HW 0x0067c4c8
+// GLOBAL: CARMA2_SW 0x00676c40
+// GLOBAL: CARMA2_CHEAT 0x00683d70
+float gSky_height;
+
+// GLOBAL: CARMA2_HW 0x0067c4d0
+// GLOBAL: CARMA2_SW 0x00676c48
+// GLOBAL: CARMA2_CHEAT 0x00683d78
+float gSky_y_multiplier;
+
+// GLOBAL: CARMA2_HW 0x0067c4d4
+// GLOBAL: CARMA2_SW 0x00676c4c
+// GLOBAL: CARMA2_CHEAT 0x00683d7c
+float gSky_x_multiplier;
+
 // GLOBAL: CARMA2_HW 0x0079ec1c
 // GLOBAL: CARMA2_SW 0x0079517c
 // GLOBAL: CARMA2_CHEAT 0x007a62bc
@@ -154,7 +189,20 @@ int C2_HOOK_CDECL Log2(int pNumber) {
     return 0;
 }
 
-// CalculateWrappingMultiplier
+inline br_scalar C2_HOOK_FASTCALL CalculateWrappingMultiplier(br_scalar pValue, br_scalar pYon) {
+    br_scalar k;
+    br_scalar trunc_k;
+    int int_k;
+
+    k = (float)(pYon * 1.3f * REC2_TAU / pValue);
+    int_k = (int)k;
+    if (k - (br_scalar)int_k <= 0.5f) {
+        trunc_k = (br_scalar)int_k;
+    } else {
+        trunc_k = (br_scalar)int_k + 1.0f;
+    }
+    return (float)(trunc_k / REC2_TAU * pValue);
+}
 
 br_scalar C2_HOOK_FASTCALL DepthCueingShiftToDistance(int pDistance) {
 
@@ -328,9 +376,21 @@ void C2_HOOK_FASTCALL InstantDepthChange(tDepth_effect_type pType, br_pixelmap* 
 #pragma auto_inline(on)
 #endif
 
-// Tan
+inline br_scalar C2_HOOK_FASTCALL Tan(br_scalar pAngle) {
 
-// EdgeU
+    return sinf(BrAngleToRadian(pAngle)) / cosf(BrAngleToRadian(pAngle));
+}
+
+inline br_scalar C2_HOOK_FASTCALL EdgeU(br_angle pSky, br_angle pView, br_angle pPerfect) {
+    br_scalar a;
+    br_scalar b;
+    br_scalar c;
+
+    a = BR_COS(pPerfect) * BR_COS(pPerfect);
+    b = BR_SIN(pView);
+    c = (BR_COS(pView) + 1.0f) * BrAngleToRadian(pSky);
+    return b * a / c;
+}
 
 inline br_model* C2_HOOK_FASTCALL CreateHorizonModel(br_actor* pCamera) {
     tU8 nbands;
@@ -986,10 +1046,100 @@ void C2_HOOK_FASTCALL ChangeDepthEffect(void) {
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x00445e20
-// STUB: CARMA2_SW 0x00445ea0
+// FUNCTION: CARMA2_HW 0x00445e20
+// FUNCTION: CARMA2_SW 0x00445ea0
+// FUNCTION: CARMA2_CHEAT 0x00446340
 void C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel) {
-    NOT_IMPLEMENTED();
+    br_camera* camera_data;
+    br_scalar horizon_half_height;
+    br_scalar horizon_half_width;
+    br_scalar horizon_half_diag;
+    br_scalar tan_half_fov;
+    br_scalar sky_distance;
+    br_angle half_diag_fov;
+    tU8 nbands;
+    tU8 band;
+    tU8 vertex;
+    tU8 stripe;
+    br_scalar edge_u;
+    br_scalar narrow_u;
+    br_angle min_angle;
+    br_angle angle_range;
+    br_angle angle;
+
+    nbands = 21;
+    camera_data = pCamera->type_data;
+    tan_half_fov = Tan(camera_data->field_of_view / 2);
+    sky_distance = camera_data->yon_z - 1.0f;
+    horizon_half_height = sky_distance * tan_half_fov;
+    horizon_half_width = horizon_half_height * camera_data->aspect;
+    horizon_half_diag = sqrt(horizon_half_height * horizon_half_height + horizon_half_width * horizon_half_width);
+    half_diag_fov = BrRadianToAngle(atan2f(horizon_half_diag, sky_distance));
+    edge_u = EdgeU(gSky_image_width, 2 * half_diag_fov, BR_ANGLE_DEG(10));
+    narrow_u = edge_u / 2.0f;
+    gSky_height = horizon_half_height * 2.0f;
+    gSky_width = horizon_half_width * 2.0f;
+    gSky_y_multiplier = CalculateWrappingMultiplier(gSky_height, camera_data->yon_z);
+    gSky_x_multiplier = CalculateWrappingMultiplier(gSky_width, camera_data->yon_z);
+
+    for (vertex = 0; vertex < 4 * (nbands + 1); vertex += 4) {
+        pModel->vertices[vertex].map.v[0] = -edge_u;
+    }
+    for (vertex = 1; vertex < 4 * (nbands + 1); vertex += 4) {
+        pModel->vertices[vertex].map.v[0] = -narrow_u;
+    }
+    for (vertex = 2; vertex < 4 * (nbands + 1); vertex += 4) {
+        pModel->vertices[vertex].map.v[0] = narrow_u;
+    }
+    for (vertex = 3; vertex < 4 * (nbands + 1); vertex += 4) {
+        pModel->vertices[vertex].map.v[0] = edge_u;
+    }
+    for (vertex = 0; vertex < 4 * (nbands + 1); vertex += 4) {
+        pModel->vertices[vertex].p.v[0] = -horizon_half_diag;
+    }
+    for (vertex = 1; vertex < 4 * (nbands + 1); vertex += 4) {
+        pModel->vertices[vertex].p.v[0] = -(horizon_half_diag / 2.0f);
+    }
+    for (vertex = 2; vertex < 4 * (nbands + 1); vertex += 4) {
+        pModel->vertices[vertex].p.v[0] = horizon_half_diag / 2.0f;
+    }
+    for (vertex = 3; vertex < 4 * (nbands + 1); vertex += 4) {
+        pModel->vertices[vertex].p.v[0] = horizon_half_diag;
+    }
+    PossibleService();
+    min_angle = -BR_ANGLE_DEG(90) - half_diag_fov;
+    angle_range = -gSky_image_underground - min_angle;
+    for (band = 0; band < 2; band++) {
+        angle = min_angle + angle_range * band / 2;
+        vertex = 4 * band;
+        pModel->vertices[vertex].p.v[1] = sin(BrAngleToRadian(angle)) * sky_distance;
+        pModel->vertices[vertex].p.v[2] = (-cos(BrAngleToRadian(angle))) * sky_distance;
+    }
+    min_angle = -gSky_image_underground;
+    angle_range = gSky_image_height;
+    for (band = 0; band < 18; band++) {
+        angle = min_angle + angle_range * band / 18;
+        vertex = 4 * (band + 2);
+        pModel->vertices[vertex].p.v[1] = sin(BrAngleToRadian(angle)) * sky_distance;
+        pModel->vertices[vertex].p.v[2] = (-cos(BrAngleToRadian(angle))) * sky_distance;
+    }
+    min_angle = gSky_image_height - gSky_image_underground;
+    angle_range = half_diag_fov + BR_ANGLE_DEG(90) - min_angle;
+    for (band = 0; band <= 1; band++) {
+        angle = min_angle + angle_range * band;
+        pModel->vertices[4 * (band + 20)].p.v[1] = sinf(BrAngleToRadian(angle)) * sky_distance;
+        pModel->vertices[4 * (band + 20)].p.v[2] = (-cosf(BrAngleToRadian(angle))) * sky_distance;
+    }
+    PossibleService();
+    for (band = 0; band <= nbands; ++band) {
+        vertex = 4 * band;
+        for (stripe = 1; stripe < 4; ++stripe) {
+            pModel->vertices[vertex + stripe].p.v[1] = pModel->vertices[vertex].p.v[1];
+            pModel->vertices[vertex + stripe].p.v[2] = pModel->vertices[vertex].p.v[2];
+        }
+    }
+
+    BrModelUpdate(pModel, BR_MODU_ALL & ~BR_MODU_FACES);
 }
 
 #ifdef REC2_MATCHING
