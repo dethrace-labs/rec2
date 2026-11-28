@@ -1600,11 +1600,98 @@ void C2_HOOK_FASTCALL ActivateMine(tShit_mine* pMine, tPowerup* pPowerup, tCar_s
     BrVector3Copy(&pMine->collision_info->water_normal, &pCar->collision_info->water_normal);
 }
 
-// PositionMine
+// FUNCTION: CARMA2_HW 0x004dd590
+// FUNCTION: CARMA2_SW 0x004d9a90
+// FUNCTION: CARMA2_CHEAT 0x004e3150
+void C2_HOOK_FASTCALL PositionMine(tShit_mine* pMine, tCar_spec* pCar) {
+    br_vector3 v;
+    br_matrix34 mat;
 
-// MineSound
+    if (pMine->flags & 0x40) {
+        BrMatrix34Translate(&pMine->collision_info->actor->t.t.mat,
+            0.0f,
+            (pCar->collision_info->bb1.max.v[1] - pCar->collision_info->bb1.min.v[1]) * 0.5f,
+            (br_scalar)(pCar->collision_info->bb1.min.v[2] - 0.15));
+    } else {
+        BrMatrix34Translate(&pMine->collision_info->actor->t.t.mat,
+            0.0f,
+            (pCar->collision_info->bb1.max.v[1] - pCar->collision_info->bb1.min.v[1]) * 0.5f,
+            (br_scalar)(pCar->collision_info->bb1.max.v[2] + 0.15));
+    }
+    BrMatrix34Copy(&mat, &pCar->collision_info->transform_matrix);
+    BrMatrix34Post(&pMine->collision_info->actor->t.t.mat, &mat);
+    BrMatrix34Copy(&pMine->collision_info->transform_matrix, &pMine->collision_info->actor->t.t.mat);
+    BrVector3Set(&v, 0.0f, pMine->field_0x20, pMine->field_0x24);
+    BrMatrix34ApplyV(&pMine->collision_info->v, &v, &mat);
+    BrVector3Add(&pMine->collision_info->v, &pCar->collision_info->v, &pMine->collision_info->v);
+    if (pMine->flags & 0x40) {
+        BrVector3Add(&pMine->collision_info->v, &pCar->collision_info->v, &pMine->collision_info->v);
+    }
+    BrVector3Set(&pMine->collision_info->omega, 0.0f, 0.0f, 0.0f);
+}
 
-// ReceivedMine
+inline void C2_HOOK_FASTCALL MineSound(tShit_mine* pMine) {
+
+    if (pMine->flags & 0x40) {
+        DRS3StartSound3D(gCar_outlet, 5405, &pMine->collision_info->actor->t.t.translate.t, &gZero_v__car, 1, 255, 0x10000, 0x10000);
+    } else {
+        DRS3StartSound3D(gCar_outlet, 5404, &pMine->collision_info->actor->t.t.translate.t, &gZero_v__car, 1, 255, 0x10000, 0x10000);
+    }
+    if (pMine->field_0x30 != NULL && pMine->field_0x30->driver == eDriver_local_human) {
+        PlayExclusiveFFBEffect("Mine_Shit", 0);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004dd210
+// FUNCTION: CARMA2_SW 0x004d9710
+// FUNCTION: CARMA2_CHEAT 0x004e2dd0
+void C2_HOOK_FASTCALL ReceivedMine(tNet_message_chunk* pContents) {
+    tShit_mine* mine;
+    tPowerup* powerup;
+    tCar_spec* car;
+    int player;
+    tU32 size;
+
+    mine = &gShit_mines[(tU8)pContents->mine_explode.mine_index];
+    player = pContents->mine_explode.field_0x5;
+    powerup = &gPowerup_array[pContents->mine_explode.field_0x4];
+    if (player >= 0 && player < gNumber_of_net_players) {
+        car = gNet_players[player].car;
+    } else {
+        car = gNet_players[0].car;
+    }
+    if (pContents->mine_explode.field_0x8 == -1) {
+        if (mine->field_0x35 == pContents->mine_explode.field_0x3 || (!(mine->flags & 0x2) && (mine->flags & 0x1))) {
+            if (!(mine->flags & 0x1)) {
+                ActivateMine(mine, powerup, car);
+            }
+            WriteHierarchyNetworkStuff(pContents->mine_explode.object_hierarchy, mine->collision_info, 2);
+            MineExplode(mine);
+        }
+    } else {
+        if (!(mine->flags & 0x1) || mine->field_0x35 != pContents->mine_explode.field_0x3) {
+            if (!(mine->flags & 0x1)) {
+                ActivateMine(mine, powerup, car);
+            }
+            if (player >= 0 && player < gNumber_of_net_players) {
+                PositionMine(mine, mine->field_0x30);
+            } else {
+                BrMatrix34Translate(&mine->collision_info->transform_matrix, 1000.0f, 1000.0f, 1000.0f);
+                BrMatrix34Copy(&mine->collision_info->actor->t.t.mat, &mine->collision_info->transform_matrix);
+            }
+            MineSound(mine);
+            mine->field_0x35 = pContents->mine_explode.field_0x3;
+        }
+        mine->collision_info->message_time = pContents->mine_explode.field_0x8;
+        mine->collision_info->field_0x261 = pContents->mine_explode.header.type;
+        mine->collision_info->disable_move_rotate = 0;
+        size = pContents->mine_explode.header.size - 0xc;
+        if (size > 0x48) {
+            size = 0x48;
+        }
+        memcpy(mine->collision_info->field_0x294, pContents->mine_explode.object_hierarchy, size);
+    }
+}
 
 // ShitMine
 
