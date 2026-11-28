@@ -14,6 +14,7 @@
 #include "15-displays.h"
 #include "28-world3.h"
 #include "41-utility.h"
+#include "joystick.h"
 #include "55-volume.h"
 #include "61-pedestrn-phys.h"
 #include "70-packfile.h"
@@ -64,6 +65,11 @@ br_actor* gLast_actor;
 // GLOBAL: CARMA2_SW 0x006ad300
 // GLOBAL: CARMA2_CHEAT 0x006bdcc0
 br_model* gAdditional_models[1000];
+
+// GLOBAL: CARMA2_HW 0x006ab94c
+// GLOBAL: CARMA2_SW 0x006a539c
+// GLOBAL: CARMA2_CHEAT 0x006b2fdc
+char* gDrop_actor_name;
 
 // GLOBAL: CARMA2_HW 0x006ab948
 // GLOBAL: CARMA2_SW 0x006a5398
@@ -286,6 +292,20 @@ void C2_HOOK_FASTCALL AutoSaveAdditionalStuff(void) {
     FlushAllPedCaches();
 }
 
+// STUB: CARMA2_HW 0x005076a0
+// STUB: CARMA2_SW 0x00502af0
+// STUB: CARMA2_CHEAT 0x0050d090
+void C2_HOOK_FASTCALL DropActor(int pIndex, int pPowerup) {
+    NOT_IMPLEMENTED();
+}
+
+// STUB: CARMA2_HW 0x005088b0
+// STUB: CARMA2_SW 0x00503d00
+// STUB: CARMA2_CHEAT 0x0050e2a0
+void C2_HOOK_FASTCALL DeleteAcc(void) {
+    NOT_IMPLEMENTED();
+}
+
 // FUNCTION: CARMA2_HW 0x0050c980
 // FUNCTION: CARMA2_SW 0x00507dd0
 // FUNCTION: CARMA2_CHEAT 0x00512370
@@ -497,4 +517,36 @@ void C2_HOOK_FASTCALL HideSpecialVolumes(void) {
             DelSpecVolumeGraph(i);
         }
     }
+}
+
+// FUNCTION: CARMA2_HW 0x00511200
+// FUNCTION: CARMA2_SW 0x0050c650
+// FUNCTION: CARMA2_CHEAT 0x00516bf0
+void C2_HOOK_FASTCALL FUN_00511200(void) {
+
+    FUN_0045acf0();
+}
+
+// FUNCTION: CARMA2_HW 0x00511210
+// FUNCTION: CARMA2_SW 0x0050c660
+// FUNCTION: CARMA2_CHEAT 0x00516c00
+void C2_HOOK_FASTCALL FUN_00511210(void) {
+
+    FUN_0045a670();
+}
+
+// FUNCTION: CARMA2_HW 0x00511220
+// FUNCTION: CARMA2_SW 0x0050c670
+// FUNCTION: CARMA2_CHEAT 0x00516c10
+void C2_HOOK_FASTCALL FUN_00511220(void) {
+
+    FUN_0045ae20();
+}
+
+// FUNCTION: CARMA2_HW 0x00511230
+// FUNCTION: CARMA2_SW 0x0050c680
+// FUNCTION: CARMA2_CHEAT 0x00516c20
+void C2_HOOK_FASTCALL FUN_00511230(void) {
+
+    FUN_0045b150();
 }

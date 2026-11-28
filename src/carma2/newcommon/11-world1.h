@@ -14,6 +14,7 @@
 
 extern int gDelete_count;
 extern br_actor* gDelete_list[500];
+extern char* gDrop_actor_name;
 
 extern br_uint_32 C2_HOOK_FASTCALL DeleteBastards(br_actor* pActor, br_matrix34* pMatrix, void* pArg);
 
@@ -39,6 +40,10 @@ extern void C2_HOOK_FASTCALL DoSaveAdditionalStuff(void);
 
 extern void C2_HOOK_FASTCALL AutoSaveAdditionalStuff(void);
 
+extern void C2_HOOK_FASTCALL DropActor(int pIndex, int pPowerup);
+
+extern void C2_HOOK_FASTCALL DeleteAcc(void);
+
 extern void C2_HOOK_FASTCALL DropSpecVol0(void);
 
 extern br_material* C2_HOOK_FASTCALL GetInternalMat(void);
@@ -60,5 +65,13 @@ extern void C2_HOOK_FASTCALL DelSpecVolumeGraph(int pIndex);
 extern void C2_HOOK_FASTCALL ShowSpecialVolumes(void);
 
 extern void C2_HOOK_FASTCALL HideSpecialVolumes(void);
+
+extern void C2_HOOK_FASTCALL FUN_00511200(void);
+
+extern void C2_HOOK_FASTCALL FUN_00511210(void);
+
+extern void C2_HOOK_FASTCALL FUN_00511220(void);
+
+extern void C2_HOOK_FASTCALL FUN_00511230(void);
 
 #endif // GUARD_11_WORLD1_H
