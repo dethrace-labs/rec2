@@ -35,6 +35,41 @@
 // GLOBAL: CARMA2_CHEAT 0x0069a940
 int gINT_00692dc8;
 
+// GLOBAL: CARMA2_HW 0x00692dcc
+// GLOBAL: CARMA2_SW 0x0068ce24
+// GLOBAL: CARMA2_CHEAT 0x0069a944
+int gPrepared_objects;
+
+// GLOBAL: CARMA2_HW 0x00692dd0
+// GLOBAL: CARMA2_SW 0x0068ce28
+// GLOBAL: CARMA2_CHEAT 0x0069a948
+br_scalar gPhysics_bounds_max_x;
+
+// GLOBAL: CARMA2_HW 0x00692dd4
+// GLOBAL: CARMA2_SW 0x0068ce2c
+// GLOBAL: CARMA2_CHEAT 0x0069a94c
+br_scalar gPhysics_bounds_min_x;
+
+// GLOBAL: CARMA2_HW 0x00692ddc
+// GLOBAL: CARMA2_SW 0x0068ce34
+// GLOBAL: CARMA2_CHEAT 0x0069a954
+int gCount_friction_forces;
+
+// GLOBAL: CARMA2_HW 0x00692de0
+// GLOBAL: CARMA2_SW 0x0068ce38
+// GLOBAL: CARMA2_CHEAT 0x0069a958
+tPhysics_joint_force gFriction_forces[50];
+
+// GLOBAL: CARMA2_HW 0x006940a0
+// GLOBAL: CARMA2_SW 0x0068e0f8
+// GLOBAL: CARMA2_CHEAT 0x0069bc18
+int gPHIL_collision_group;
+
+// GLOBAL: CARMA2_HW 0x006940a4
+// GLOBAL: CARMA2_SW 0x0068e0fc
+// GLOBAL: CARMA2_CHEAT 0x0069bc1c
+int gInter_group_hit_count;
+
 // GLOBAL: CARMA2_HW 0x006940c0
 // GLOBAL: CARMA2_SW 0x0068e118
 // GLOBAL: CARMA2_CHEAT 0x0069bc38
@@ -576,6 +611,10 @@ void C2_HOOK_FASTCALL CreateJointTorque(tPhysics_object* pObject, tPhysics_objec
 
 // LimitOmega
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
 // FUNCTION: CARMA2_HW 0x004c1840
 // FUNCTION: CARMA2_SW 0x004bdf70
 void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
@@ -587,6 +626,10 @@ void C2_HOOK_FASTCALL CapOmega(tPhysics_object* pObject) {
         pObject->omega.v[2] = pObject->omega.v[2] / (2.f * ts);
     }
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // ListLimitOmega
 
@@ -649,49 +692,255 @@ void C2_HOOK_FASTCALL TellPhysicsJointsHaveChanged(tPhysics_object* pCollision_i
     gINT_00692dc8 = 1;
 }
 
-// CombineBounds
+void C2_HOOK_FASTCALL CombineBounds(br_bounds* pBounds, br_bounds* pOther) {
+    int i;
 
-// GetWorldBoundingBoxForObjects
-
-// GetWorldBoundingBoxForObject
-
-// MatricesAreIdentical
-
-// InternalPrepareObject
-
-// PrepareObject
-
-// PrepareForCollisions
-
-// CheckPointVelocities
-
-// FUNCTION: CARMA2_HW 0x004c2a10
-// FUNCTION: CARMA2_SW 0x004bf140
-void C2_HOOK_FASTCALL WriteNewPositions(tPhysics_object* pObject) {
-    tPhysics_object* child;
-    tPhysics_object* root;
-    br_vector3 parent_point;
-    br_vector3 child_point;
-
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x1e8, 0x1e8);
-    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x230, 0x230);
-
-    root = pObject;
-    child = pObject->child;
-    if (pObject->flags & 0x400) {
-        root = pObject->field_0x230;
-    }
-    for (; child != NULL; child = child->next) {
-        if (!(pObject->flags & 0x400)) {
-            BrMatrix34ApplyP(&parent_point, &child->physics_joint1->field_0x14, &pObject->actor->t.t.mat);
-            BrMatrix34ApplyP(&child_point, &child->physics_joint1->field_0x08, &child->actor->t.t.mat);
-            BrVector3Sub(&parent_point, &parent_point, &child_point);
-            BrVector3Accumulate((br_vector3*)child->actor->t.t.mat.m[3], &parent_point);
-        } else {
-            BrMatrix34Mul(&pObject->actor->t.t.mat, &pObject->field_0x1e8, &root->actor->t.t.mat);
+    for (i = 0; i < 3; i++) {
+        if (pOther->min.v[i] < pBounds->min.v[i]) {
+            pBounds->min.v[i] = pOther->min.v[i];
         }
-        WriteNewPositions(child);
+        if (pOther->max.v[i] > pBounds->max.v[i]) {
+            pBounds->max.v[i] = pOther->max.v[i];
+        }
     }
+}
+
+void C2_HOOK_FASTCALL GetWorldBoundingBoxForObjects(tPhysics_object* pObject, br_bounds* pBounds) {
+
+    for (; pObject != NULL; pObject = pObject->next) {
+        GetWorldBoundingBoxForObject(pObject, pBounds);
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004b9ce0
+// FUNCTION: CARMA2_SW 0x004b6400
+// FUNCTION: CARMA2_CHEAT 0x004bf810
+void C2_HOOK_FASTCALL GetWorldBoundingBoxForObject(tPhysics_object* pObject, br_bounds* pBounds) {
+    br_bounds bounds;
+    br_scalar extent;
+    int i;
+
+    GetNewBoundingBox(&pObject->field_0xf4, &pObject->bb1, &pObject->transform_matrix);
+    GetNewBoundingBox(&bounds, &pObject->bb1, &pObject->actor->t.t.mat);
+    for (i = 0; i < 3; i++) {
+        if (pObject->field_0xf4.min.v[i] > bounds.min.v[i]) {
+            pObject->field_0xf4.min.v[i] = bounds.min.v[i];
+        }
+        if (pObject->field_0xf4.max.v[i] < bounds.max.v[i]) {
+            pObject->field_0xf4.max.v[i] = bounds.max.v[i];
+        }
+        pObject->field_0xf4.min.v[i] -= 0.0025;
+        pObject->field_0xf4.max.v[i] -= -0.0025;
+    }
+    pObject->field_0x10c = pObject->field_0xf4;
+    GetWorldBoundingBoxForObjects(pObject->child, &pObject->field_0x10c);
+    if (pBounds != NULL) {
+        CombineBounds(pBounds, &pObject->field_0x10c);
+    } else {
+        extent = pObject->field_0x10c.max.v[0] - pObject->transform_matrix.m[3][0];
+        if (gPhysics_bounds_max_x <= extent) {
+            gPhysics_bounds_max_x = extent;
+        }
+        extent = pObject->field_0x10c.min.v[0] - pObject->transform_matrix.m[3][0];
+        if (gPhysics_bounds_min_x >= extent) {
+            gPhysics_bounds_min_x = extent;
+        }
+    }
+}
+
+int C2_HOOK_FASTCALL MatricesAreIdentical(br_matrix34* pMat1, br_matrix34* pMat2) {
+    int i;
+    int j;
+
+    for (i = 3; i >= 0; i--) {
+        for (j = 0; j < 3; j++) {
+            if (pMat1->m[i][j] != pMat2->m[i][j]) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+// FUNCTION: CARMA2_HW 0x004b99e0
+// FUNCTION: CARMA2_SW 0x004b6100
+// FUNCTION: CARMA2_CHEAT 0x004bf510
+void C2_HOOK_FASTCALL InternalPrepareObject(tPhysics_object* pObject) {
+    br_vector3 offset;
+
+    if (pObject->M == 0.0f) {
+        pObject->M = 0.01f;
+        BrVector3SetFloat(&pObject->I, 0.01f, 0.01f, 0.01f);
+    }
+    pObject->field_0x1de = 0;
+    pObject->collision_flag = 0;
+    pObject->field_0x1dc = 0;
+    pObject->field_0x1e4 = 0;
+    pObject->flags &= ~0x1200;
+    pObject->field_0x21c = 1.0f;
+    pObject->field183_0x1d8 = pObject;
+    pObject->field_0x218 = 0;
+    pObject->field_0x1e0 = pObject->disable_move_rotate;
+    BrMatrix34TApplyV(&pObject->velocity_car_space, &pObject->v, &pObject->transform_matrix);
+    BrVector3Copy(&pObject->field_0x1b4, &pObject->v);
+    BrVector3Copy(&pObject->field_0x1cc, &pObject->omega);
+    if (pObject->parent != NULL) {
+        pObject->disable_move_rotate = pObject->parent->disable_move_rotate;
+    }
+    if (!pObject->disable_move_rotate && pObject->field_0x1df) {
+        pObject->field_0x21c *= 50.0f;
+        BrVector3Scale(&pObject->I, &pObject->I, 50.0f);
+    }
+    if (pObject->disable_move_rotate & (pObject->field_0xf0 != 2)) {
+        BrMatrix34Copy(&pObject->actor->t.t.mat, &pObject->transform_matrix);
+        PrepareForCollisions(pObject->child);
+        if (pObject->parent == NULL) {
+            GetWorldBoundingBoxForObject(pObject, NULL);
+        }
+    } else if (pObject->field_0xf0 == 2) {
+        pObject->field_0x230 = pObject->parent;
+        BrVector3Sub(&offset, (br_vector3*)pObject->actor->t.t.mat.m[3], (br_vector3*)pObject->transform_matrix.m[3]);
+        if (BrVector3LengthSquared(&offset) > 1.0) {
+            PhysicsWarning("Stupid trial position");
+            BrMatrix34Copy(&pObject->transform_matrix, &pObject->actor->t.t.mat);
+        }
+        if (!MatricesAreIdentical(&pObject->transform_matrix, &pObject->actor->t.t.mat)) {
+            pObject->disable_move_rotate = 0;
+        }
+        PrepareForCollisions(pObject->child);
+        GetWorldBoundingBoxForObject(pObject, NULL);
+    } else {
+        if (pObject->field_0xf0 != 1) {
+            BrMatrix34LPNormalise(&pObject->actor->t.t.mat, &pObject->transform_matrix);
+        } else {
+            BrMatrix34Copy(&pObject->field_0xbc, &pObject->actor->t.t.mat);
+        }
+        PrepareForCollisions(pObject->child);
+        if (pObject->parent == NULL) {
+            MoveJointedObject(pObject, 0.04f);
+            GetWorldBoundingBoxForObject(pObject, NULL);
+        }
+    }
+}
+
+// STUB: CARMA2_HW 0x004b9770
+// STUB: CARMA2_SW 0x004b5e90
+// STUB: CARMA2_CHEAT 0x004bf2a0
+void C2_HOOK_FASTCALL PrepareObject(tPhysics_object* pObject, tPhysics_object** pList) {
+    NOT_IMPLEMENTED();
+}
+
+void C2_HOOK_FASTCALL PrepareForCollisions(tPhysics_object* pObject) {
+
+    for (; pObject != NULL; pObject = pObject->next) {
+        InternalPrepareObject(pObject);
+    }
+}
+
+inline int CheckPointVelocities(tPhysics_object* pObject, br_scalar pMax_velocity_squared) {
+    int i;
+    br_vector3 point;
+    br_vector3 base;
+    br_vector3 velocity;
+
+    BrVector3Cross(&base, &pObject->omega, &pObject->cmpos);
+    BrVector3Accumulate(&base, &pObject->velocity_car_space);
+    for (i = 0; i < 8; i++) {
+        if (i & 0x2) {
+            point.v[0] = pObject->bb1.min.v[0];
+        } else {
+            point.v[0] = pObject->bb1.max.v[0];
+        }
+        if (i & 0x1) {
+            point.v[1] = pObject->bb1.min.v[1];
+        } else {
+            point.v[1] = pObject->bb1.max.v[1];
+        }
+        if (i & 0x4) {
+            point.v[2] = pObject->bb1.min.v[2];
+        } else {
+            point.v[2] = pObject->bb1.max.v[2];
+        }
+        BrVector3Cross(&velocity, &pObject->omega, &point);
+        BrVector3Accumulate(&velocity, &base);
+        if (BrVector3LengthSquared(&velocity) > pMax_velocity_squared) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// FUNCTION: CARMA2_HW 0x004baa00
+// FUNCTION: CARMA2_SW 0x004b7120
+// FUNCTION: CARMA2_CHEAT 0x004c0530
+int C2_HOOK_FASTCALL WriteNewPositions(tPhysics_object* pObject) {
+    int all_doing_nothing;
+    int doing_nothing;
+    br_vector3 tv;
+    br_scalar energy;
+    br_scalar v_squared;
+    br_scalar length;
+    br_scalar normal_v;
+    br_scalar normal_v2;
+
+    all_doing_nothing = 1;
+    for (; pObject != NULL; pObject = pObject->next) {
+        if (pObject->field_0x21c != 1.0f) {
+            pObject->I.v[0] /= pObject->field_0x21c;
+            pObject->I.v[1] /= pObject->field_0x21c;
+            pObject->I.v[2] /= pObject->field_0x21c;
+        }
+        if (pObject->field_0xf0) {
+            pObject->field_0xf0 = 0;
+            pObject->disable_move_rotate = ((tU32)pObject->flags >> 5) & 0x1;
+        }
+        doing_nothing = 0;
+        pObject->flags = (pObject->flags & ~0x100) | (((tU32)pObject->flags >> 1) & 0x100);
+        if (!pObject->disable_move_rotate) {
+            if (pObject->field_0x1df && pObject->field183_0x1d8 == pObject) {
+                pObject->field_0x1df = 0;
+            }
+            BrVector3Add(&tv, &pObject->field_0x1cc, &pObject->omega);
+            energy = (pObject->I.v[0] * (tv.v[0] * tv.v[0])
+                + pObject->I.v[1] * (tv.v[1] * tv.v[1])
+                + pObject->I.v[2] * (tv.v[2] * tv.v[2])) / pObject->M;
+            if (!pObject->collision_flag && pObject->field_0x1df) {
+                v_squared = 0.0f;
+            } else {
+                v_squared = BrVector3LengthSquared(&pObject->v);
+            }
+            if (v_squared < 0.001 && energy < 0.03 * 0.003) {
+                length = BrVector3Length(&pObject->field_0x54);
+                tv.v[0] = pObject->field_0x54.v[0] / length;
+                tv.v[1] = pObject->field_0x54.v[1] / length;
+                tv.v[2] = pObject->field_0x54.v[2] / length;
+                normal_v = -BrVector3Dot(&tv, &pObject->v);
+                normal_v2 = -BrVector3Dot(&tv, &pObject->field_0x1b4);
+                if (pObject->field_0x1df
+                    || (normal_v < 0.012f && length * 0.9f < normal_v - normal_v2 && CheckPointVelocities(pObject, 0.0004f))) {
+                    if (pObject->physics_joint2 == NULL || pObject->collision_flag || pObject->transform_matrix.m[1][1] > 0.999) {
+                        doing_nothing = 1;
+                        BrVector3SetFloat(&pObject->v, 0.0f, 0.0f, 0.0f);
+                        BrVector3SetFloat(&pObject->omega, 0.0f, 0.0f, 0.0f);
+                        BrVector3SetFloat(&pObject->rotate_omega, 0.0f, 0.0f, 0.0f);
+                    }
+                }
+            }
+        }
+        pObject->field_0x1df = doing_nothing;
+        BrMatrix34Copy(&pObject->transform_matrix, &pObject->actor->t.t.mat);
+        BrMatrix34ApplyP(&pObject->pos, &pObject->cmpos, &pObject->transform_matrix);
+        if (pObject->child != NULL) {
+            doing_nothing = WriteNewPositions(pObject->child);
+            if (pObject->field_0x1df) {
+                pObject->field_0x1df += doing_nothing * 2;
+            }
+        } else {
+            pObject->field_0x1df *= 3;
+        }
+        all_doing_nothing &= (pObject->field_0x1df >> 1) & 0x1;
+    }
+    return all_doing_nothing;
 }
 
 // FUNCTION: CARMA2_HW 0x004b9eb0
@@ -708,7 +957,19 @@ void C2_HOOK_FASTCALL SetListDoingNothingFlag(tPhysics_object* pObject, int pFla
     }
 }
 
-// SetGroupDoingNothingFlag
+// FUNCTION: CARMA2_HW 0x004b9e40
+// FUNCTION: CARMA2_SW 0x004b6560
+// FUNCTION: CARMA2_CHEAT 0x004bf970
+void C2_HOOK_FASTCALL SetGroupDoingNothingFlag(tPhysics_object* pObject, int pFlag) {
+    tPhysics_object* object;
+
+    pObject->disable_move_rotate = pFlag;
+    object = pObject;
+    do {
+        SetHierarchyDoingNothingFlag(object, pFlag);
+        object = object->field183_0x1d8;
+    } while (object != NULL && object != pObject);
+}
 
 // FUNCTION: CARMA2_HW 0x004b9ef0
 // FUNCTION: CARMA2_SW 0x004b6610
@@ -721,7 +982,22 @@ void C2_HOOK_FASTCALL SetHierarchyDoingNothingFlag(tPhysics_object* pObject, int
     }
 }
 
-// CheckDoingNothingFlag
+inline void CheckDoingNothingFlag(tPhysics_object* pObject) {
+    tPhysics_object* object;
+    tU8 flag;
+
+    for (; pObject != NULL; pObject = pObject->next) {
+        if (!pObject->disable_move_rotate && (pObject->field_0x1df & 0x2)) {
+            flag = 0x2;
+            for (object = pObject->field183_0x1d8; object != pObject; object = object->field183_0x1d8) {
+                flag &= object->field_0x1df;
+            }
+            if (flag & 0x2) {
+                SetGroupDoingNothingFlag(pObject, 1);
+            }
+        }
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004bae80
 // FUNCTION: CARMA2_SW 0x004b75a0
@@ -773,6 +1049,7 @@ void C2_HOOK_FASTCALL MakeObjectListDoSomething(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004bd9b0
 // FUNCTION: CARMA2_SW 0x004ba0d0
+// FUNCTION: CARMA2_CHEAT 0x004c34e0
 void C2_HOOK_FASTCALL SetObjectTrialPositionType(tPhysics_object* pObject, int pType) {
     tPhysics_object* child;
 
@@ -816,7 +1093,21 @@ int C2_HOOK_FASTCALL FlagsAreGo(tPhysics_object* pCollision_1, tPhysics_object* 
 
 // DoRigidJoints
 
-// DoInterGroupCollisions
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x004baec0
+// STUB: CARMA2_SW 0x004b75e0
+// STUB: CARMA2_CHEAT 0x004c09f0
+int C2_HOOK_FASTCALL DoInterGroupCollisions(tPhysics_object** pObject_list, tPhysics_object* pObject, tPhysics_joint_force* pForces, tPhysics_joint_force* pOld_forces, int pCount_old_forces, tWorld_callbacks* pCallbacks) {
+    /* FIXME: the types of pForces, pOld_forces and pCount_old_forces are guesses */
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004ba550
 // FUNCTION: CARMA2_SW 0x004b6c70
@@ -857,7 +1148,64 @@ int C2_HOOK_FASTCALL ReduceEffectOfForces(tPhysics_joint_force* pForces, br_scal
     // return 0;
 }
 
-// DoCollisions
+// FUNCTION: CARMA2_HW 0x004ba6b0
+// FUNCTION: CARMA2_SW 0x004b6dd0
+// FUNCTION: CARMA2_CHEAT 0x004c01e0
+void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callbacks* pCallbacks) {
+    tPhysics_joint_force forces_1[40];
+    tPhysics_joint_force forces_2[40];
+    tPhysics_joint_force* forces;
+    tPhysics_joint_force* old_forces;
+    tPhysics_joint_force* tmp;
+    tPhysics_object* object;
+    int count;
+    int loops;
+
+    forces = forces_1;
+    old_forces = forces_2;
+    ClearPhysicsScratchSpace();
+    gPHIL_collision_group = 1;
+    gCount_friction_forces = 0;
+    gPhysics_bounds_max_x = 0.0f;
+    gPhysics_bounds_min_x = 0.0f;
+    PrepareForCollisions(*pObject_list);
+    OrderObjectListOnX(pObject_list);
+    do {
+        gPrepared_objects = 0;
+        for (object = *pObject_list; object != NULL; object = object->next) {
+            if (object->field_0x1dc || object->disable_move_rotate) {
+                continue;
+            }
+            if (object->child != NULL && object->child->physics_joint1 != NULL && object->child->physics_joint1->type != eJoint_none) {
+                SetGroup(object, gPHIL_collision_group);
+                gPHIL_collision_group++;
+            }
+            loops = 0;
+            gInter_group_hit_count = 0;
+            count = 0;
+            for (;;) {
+                count = DoInterGroupCollisions(pObject_list, object, forces, old_forces, count, pCallbacks);
+                if (count == 0) {
+                    break;
+                }
+                loops++;
+                tmp = forces;
+                forces = old_forces;
+                old_forces = tmp;
+                if (loops >= 30 || gInter_group_hit_count >= 3) {
+                    break;
+                }
+            }
+            if (loops >= 30) {
+                PhysicsWarning("Too many loops in DoCollisions");
+            }
+        }
+    } while (gPrepared_objects != 0);
+    PostAddFriction(pCallbacks);
+    WriteNewPositions(*pObject_list);
+    CheckDoingNothingFlag(*pObject_list);
+    ListDoJointFriction(*pObject_list);
+}
 
 // AddDoubleTorqueToMatrix
 
@@ -913,17 +1261,252 @@ void C2_HOOK_FASTCALL RestoreListOmega(tPhysics_object* pObject) {
 
 // MakeVelocitiesVector
 
-// NewAddFrictionObjectObject
+inline void C2_HOOK_FASTCALL NewAddFrictionObjectObject(tPhysics_joint_force* pForce) {
+    tPhysics_object* object_a;
+    tPhysics_object* object_b;
+    br_vector3 velocity;
+    br_vector3 velocity_b;
+    br_vector3 normal;
+    br_vector3 direction_a;
+    br_vector3 direction_b;
+    br_vector3 angular_a;
+    br_vector3 angular_b;
+    br_vector3 tv;
+    br_vector3 tv2;
+    br_scalar friction;
+    br_scalar max_impulse;
+    br_scalar speed;
+    br_scalar d;
+    br_scalar impulse;
 
-// NewAddFriction
+    object_a = pForce->object_a;
+    friction = pForce->field_0x0;
+    object_b = pForce->object_b;
+    object_a->collision_flag |= 0x2;
+    object_b->collision_flag |= 0x2;
+    BrVector3Cross(&tv, &object_b->omega, &pForce->point_b);
+    BrVector3Add(&velocity_b, &tv, &object_b->velocity_car_space);
+    BrMatrix34ApplyV(&tv, &velocity_b, &object_b->actor->t.t.mat);
+    BrMatrix34TApplyV(&velocity_b, &tv, &object_a->actor->t.t.mat);
+    BrVector3Cross(&tv, &object_a->omega, &pForce->point_a);
+    BrVector3Accumulate(&tv, &object_a->velocity_car_space);
+    BrVector3Sub(&velocity, &tv, &velocity_b);
+    BrMatrix34ApplyV(&tv, &pForce->direction_a, &object_a->transform_matrix);
+    BrMatrix34TApplyV(&normal, &tv, &object_a->actor->t.t.mat);
+    d = BrVector3Dot(&velocity, &normal);
+    BrVector3Scale(&tv, &normal, d);
+    BrVector3Sub(&velocity, &velocity, &tv);
+    max_impulse = 0.35f * friction * object_a->object_friction + 0.35f * friction;
+    max_impulse = max_impulse * object_b->object_friction + max_impulse;
+    speed = BrVector3Length(&velocity);
+    if (speed < 0.001f) {
+        return;
+    }
+    BrVector3Scale(&direction_a, &velocity, 1.0f / -speed);
+    BrMatrix34ApplyV(&tv, &direction_a, &object_a->actor->t.t.mat);
+    BrMatrix34TApplyV(&direction_b, &tv, &object_b->actor->t.t.mat);
+    if (!(object_a->flags & 0x800)) {
+        BrVector3Cross(&tv, &pForce->point_a, &direction_a);
+        Vector3Div(&angular_a, &tv, &object_a->I);
+    } else {
+        BrVector3Set(&angular_a, 0.0f, 0.0f, 0.0f);
+    }
+    if (!(object_b->flags & 0x800)) {
+        BrVector3Cross(&tv, &pForce->point_b, &direction_b);
+        Vector3Div(&angular_b, &tv, &object_b->I);
+    } else {
+        BrVector3Set(&angular_b, 0.0f, 0.0f, 0.0f);
+    }
+    BrVector3Cross(&tv, &angular_b, &pForce->point_b);
+    BrVector3Cross(&tv2, &angular_a, &pForce->point_a);
+    d = 1.0f / object_a->M + 1.0f / object_b->M + BrVector3Dot(&tv2, &direction_a) + BrVector3Dot(&tv, &direction_b);
+    if (fabs(d) <= 0.0001f) {
+        return;
+    }
+    impulse = speed / d;
+    if (impulse > max_impulse) {
+        impulse = max_impulse;
+    }
+    BrVector3Scale(&direction_a, &direction_a, impulse / object_a->M);
+    BrVector3Scale(&direction_b, &direction_b, -(impulse / object_b->M));
+    BrVector3Scale(&pForce->field_0x44, &direction_a, object_a->M);
+    BrVector3Scale(&pForce->field_0x50, &direction_b, object_b->M);
+    pForce->type |= 0x100;
+    BrVector3Scale(&angular_a, &angular_a, impulse);
+    BrVector3Accumulate(&object_a->omega, &angular_a);
+    BrVector3Scale(&angular_b, &angular_b, -impulse);
+    BrVector3Accumulate(&object_b->omega, &angular_b);
+    BrMatrix34ApplyV(&tv, &direction_a, &object_a->actor->t.t.mat);
+    BrVector3Accumulate(&object_a->v, &tv);
+    BrVector3Accumulate(&object_a->velocity_car_space, &direction_a);
+    BrMatrix34ApplyV(&tv, &direction_b, &object_b->actor->t.t.mat);
+    BrVector3Accumulate(&object_b->v, &tv);
+    BrVector3Accumulate(&object_b->velocity_car_space, &direction_b);
+}
+
+// FUNCTION: CARMA2_HW 0x004c0ac0
+// FUNCTION: CARMA2_SW 0x004bd1f0
+// FUNCTION: CARMA2_CHEAT 0x004c65e0
+void C2_HOOK_FASTCALL NewAddFriction(tPhysics_joint_force* pForce, tWorld_callbacks* pCallbacks) {
+    tPhysics_object* object;
+    br_vector3 point;
+    br_vector3 velocity;
+    br_vector3 normal;
+    br_vector3 direction;
+    br_vector3 angular;
+    br_vector3 tv;
+    br_scalar friction;
+    br_scalar max_impulse;
+    br_scalar speed;
+    br_scalar d;
+    br_scalar impulse;
+
+    object = pForce->object_a;
+    if (pForce->object_b != NULL && pForce->type != 14) {
+        NewAddFrictionObjectObject(pForce);
+        CapOmega(pForce->object_a);
+        CapOmega(pForce->object_b);
+        return;
+    }
+    friction = pForce->field_0x0;
+    object->collision_flag |= 0x1;
+    if (pForce->type == 1) {
+        BrVector3Scale(&point, &pForce->point_a, -0.005f);
+        BrVector3Accumulate(&point, &pForce->point_a);
+        BrVector3Cross(&velocity, &object->omega, &point);
+    } else {
+        BrVector3Cross(&velocity, &object->omega, &pForce->point_a);
+    }
+    BrVector3Accumulate(&velocity, &object->velocity_car_space);
+    BrMatrix34ApplyV(&tv, &pForce->direction_a, &object->transform_matrix);
+    BrMatrix34TApplyV(&normal, &tv, &object->actor->t.t.mat);
+    d = BrVector3Dot(&velocity, &normal);
+    BrVector3Scale(&tv, &normal, d);
+    BrVector3Sub(&velocity, &velocity, &tv);
+    if (pCallbacks != NULL && pCallbacks->get_friction_from_face != NULL && pForce->field_0xc != NULL) {
+        friction = pCallbacks->get_friction_from_face(pForce->field_0xc) * friction;
+    }
+    max_impulse = 0.35f * friction * object->world_friction + 0.35f * friction;
+    speed = BrVector3Length(&velocity);
+    if (speed < 0.001f) {
+        return;
+    }
+    BrVector3Scale(&direction, &velocity, 1.0f / -speed);
+    if (!(object->flags & 0x800)) {
+        BrVector3Cross(&tv, &pForce->point_a, &direction);
+        Vector3Div(&angular, &tv, &object->I);
+    } else {
+        BrVector3Set(&angular, 0.0f, 0.0f, 0.0f);
+    }
+    d = BrVector3Dot(&object->omega, &pForce->direction_a);
+    if (fabs(d) < 0.1f && BrVector3Dot(&angular, &object->omega) < 0.0f && BrVector3LengthSquared(&object->v) < 0.001) {
+        BrVector3Scale(&tv, &pForce->direction_a, d);
+        BrVector3Sub(&object->omega, &object->omega, &tv);
+        BrVector3SetFloat(&angular, 0.0f, 0.0f, 0.0f);
+        speed = BrVector3Length(&object->velocity_car_space);
+        if (speed < 0.001f) {
+            return;
+        }
+        BrVector3InvScale(&direction, &object->velocity_car_space, -speed);
+    }
+    BrVector3Cross(&tv, &angular, &pForce->point_a);
+    d = 1.0f / object->M + BrVector3Dot(&tv, &direction);
+    if (fabs(d) <= 0.0001f) {
+        return;
+    }
+    impulse = speed / d;
+    if (impulse > max_impulse) {
+        impulse = max_impulse;
+    }
+    BrVector3Scale(&angular, &angular, impulse);
+    BrVector3Scale(&direction, &direction, impulse / object->M);
+    BrVector3Scale(&pForce->field_0x44, &direction, object->M);
+    pForce->type |= 0x100;
+    BrVector3Accumulate(&object->omega, &angular);
+    BrMatrix34ApplyV(&tv, &direction, &object->actor->t.t.mat);
+    BrVector3Accumulate(&object->v, &tv);
+    BrVector3Accumulate(&object->velocity_car_space, &direction);
+    CapOmega(object);
+}
 
 // ApplyForces
 
-// DoJointFriction
+// FUNCTION: CARMA2_HW 0x004c18d0
+// FUNCTION: CARMA2_SW 0x004be000
+// FUNCTION: CARMA2_CHEAT 0x004c73f0
+void C2_HOOK_FASTCALL DoJointFriction(tPhysics_object* pObject) {
+    br_scalar total_sq;
+    br_vector3 impulse;
+    int j;
+    br_vector3 tv;
+    int i;
+    br_scalar max_impulse_sq;
+    br_scalar s;
+    tPhysics_object* child;
+    br_vector3 rel[3];
 
-// ListDoJointFriction
+    if (pObject->physics_joint1 != NULL && pObject->physics_joint1->friction != 0.0f && pObject->field_0x230 != NULL) {
+        total_sq = 0.0f;
+        max_impulse_sq = pObject->physics_joint1->friction * 0.04f;
+        max_impulse_sq = max_impulse_sq * max_impulse_sq;
+        for (i = 0; i < 3; i++) {
+            BrMatrix34TApplyV(&tv, (br_vector3*)pObject->transform_matrix.m[i], &pObject->field_0x230->transform_matrix);
+            impulse.v[i] = BrVector3Dot(&tv, &pObject->field_0x230->omega) - pObject->omega.v[i];
+            for (j = 0; j < 3; j++) {
+                rel[i].v[j] = tv.v[j] / pObject->field_0x230->I.v[j];
+            }
+            impulse.v[i] /= (br_scalar)(1.0 / pObject->I.v[i] + BrVector3Dot(&rel[i], &tv));
+            total_sq += impulse.v[i] * impulse.v[i];
+        }
+        if (total_sq > max_impulse_sq) {
+            s = (br_scalar)sqrt(max_impulse_sq / total_sq);
+            BrVector3Scale(&impulse, &impulse, s);
+        }
+        for (i = 0; i < 3; i++) {
+            pObject->omega.v[i] += impulse.v[i] / pObject->I.v[i];
+            BrVector3Scale(&rel[i], &rel[i], -impulse.v[i]);
+            BrVector3Accumulate(&pObject->field_0x230->omega, &rel[i]);
+        }
+    }
+    if (pObject->physics_joint2 != NULL && pObject->physics_joint2->friction != 0.0f) {
+        max_impulse_sq = pObject->physics_joint2->friction * 0.04f;
+        total_sq = 0.0f;
+        max_impulse_sq = max_impulse_sq * max_impulse_sq;
+        for (i = 0; i < 3; i++) {
+            impulse.v[i] = pObject->omega.v[i] * pObject->I.v[i];
+            total_sq += impulse.v[i] * impulse.v[i];
+        }
+        if (total_sq > max_impulse_sq) {
+            s = (br_scalar)sqrt(max_impulse_sq / total_sq);
+            BrVector3Scale(&impulse, &impulse, s);
+        }
+        for (i = 0; i < 3; i++) {
+            pObject->omega.v[i] -= impulse.v[i] / pObject->I.v[i];
+        }
+    }
+    for (child = pObject->child; child != NULL; child = child->next) {
+        if (!child->disable_move_rotate) {
+            DoJointFriction(child);
+        }
+    }
+}
 
-// PostAddFriction
+inline void ListDoJointFriction(tPhysics_object* pObject) {
+
+    for (; pObject != NULL; pObject = pObject->next) {
+        if (!pObject->disable_move_rotate) {
+            DoJointFriction(pObject);
+        }
+    }
+}
+
+inline void PostAddFriction(tWorld_callbacks* pCallbacks) {
+    int i;
+
+    for (i = 0; i < gCount_friction_forces; i++) {
+        NewAddFriction(&gFriction_forces[i], pCallbacks);
+    }
+}
 
 // RotateObjectSecondOrder
 
@@ -974,6 +1557,7 @@ void C2_HOOK_FASTCALL GetFacesNearObject(tPhysics_object *pObject, tWorld_callba
 
 // FUNCTION: CARMA2_HW 0x004c25a0
 // FUNCTION: CARMA2_SW 0x004becd0
+// FUNCTION: CARMA2_CHEAT 0x004c80c0
 void C2_HOOK_FASTCALL ResetObjectAndChildren(tPhysics_object* pObject) {
     tPhysics_object* child;
 
@@ -992,6 +1576,7 @@ void C2_HOOK_FASTCALL ResetObjectAndChildren(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004c2600
 // FUNCTION: CARMA2_SW 0x004bed30
+// FUNCTION: CARMA2_CHEAT 0x004c8120
 void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects) {
 
     while (pObjects != NULL) {
@@ -1002,14 +1587,52 @@ void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects) {
 
 // RepositionObjectGroup
 
-// SimpleRotate
+// FUNCTION: CARMA2_HW 0x004c2670
+// FUNCTION: CARMA2_SW 0x004beda0
+// FUNCTION: CARMA2_CHEAT 0x004c8190
+void C2_HOOK_FASTCALL SimpleRotate(tPhysics_object* pObject, br_scalar pDt) {
+    br_scalar length;
+    br_vector3 axis;
+    br_vector3 tv;
 
-// InterpolateSingleObject
+    if (!pObject->disable_move_rotate) {
+        length = BrVector3Length(&pObject->rotate_omega);
+        axis.v[0] = pObject->rotate_omega.v[0] / length;
+        axis.v[1] = pObject->rotate_omega.v[1] / length;
+        axis.v[2] = pObject->rotate_omega.v[2] / length;
+        pDt = length * pDt;
+        if (fabs(pDt) >= 0.0001) {
+            BrMatrix34ApplyV(&tv, &pObject->cmpos, &pObject->actor->t.t.mat);
+            BrVector3Accumulate(&pObject->actor->t.t.translate.t, &tv);
+            BrMatrix34PreRotate(&pObject->actor->t.t.mat, BrRadianToAngle(pDt), &axis);
+            BrMatrix34ApplyV(&tv, &pObject->cmpos, &pObject->actor->t.t.mat);
+            BrVector3Sub(&pObject->actor->t.t.translate.t, &pObject->actor->t.t.translate.t, &tv);
+        }
+    }
+}
 
-// InterpolateObjects
+// FUNCTION: CARMA2_HW 0x004c2830
+// FUNCTION: CARMA2_SW 0x004bef60
+// FUNCTION: CARMA2_CHEAT 0x004c8350
+void C2_HOOK_FASTCALL InterpolateSingleObject(tPhysics_object* pObject, br_scalar pDt) {
+
+    TranslateObject(pObject, pDt);
+    SimpleRotate(pObject, pDt);
+    if (pObject->child != NULL) {
+        InterpolateObjects(pObject->child, pDt);
+    }
+}
+
+inline void C2_HOOK_FASTCALL InterpolateObjects(tPhysics_object* pList, br_scalar pDt) {
+
+    for (; pList != NULL; pList = pList->next) {
+        InterpolateSingleObject(pList, pDt);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004c2910
 // FUNCTION: CARMA2_SW 0x004bf040
+// FUNCTION: CARMA2_CHEAT 0x004c8430
 void C2_HOOK_FASTCALL ApplyGravitySingleObject(tPhysics_object* pObject) {
 
     if (!pObject->disable_move_rotate) {
@@ -1022,6 +1645,7 @@ void C2_HOOK_FASTCALL ApplyGravitySingleObject(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004c2970
 // FUNCTION: CARMA2_SW 0x004bf0a0
+// FUNCTION: CARMA2_CHEAT 0x004c8490
 void C2_HOOK_FASTCALL ApplyGravity(tPhysics_object* pObject) {
 
     for (; pObject != NULL; pObject = pObject->next) {
@@ -1031,6 +1655,7 @@ void C2_HOOK_FASTCALL ApplyGravity(tPhysics_object* pObject) {
 
 // FUNCTION: CARMA2_HW 0x004c29d0
 // FUNCTION: CARMA2_SW 0x004bf100
+// FUNCTION: CARMA2_CHEAT 0x004c84f0
 void C2_HOOK_FASTCALL SetGravityDeltaV(tPhysics_object* pObject, br_vector3* pImpulse) {
     tPhysics_object* pChild;
 
@@ -1040,7 +1665,35 @@ void C2_HOOK_FASTCALL SetGravityDeltaV(tPhysics_object* pObject, br_vector3* pIm
     }
 }
 
-// TrialPositionChildren
+// FUNCTION: CARMA2_HW 0x004c2a10
+// FUNCTION: CARMA2_SW 0x004bf140
+// FUNCTION: CARMA2_CHEAT 0x004c8530
+void C2_HOOK_FASTCALL TrialPositionChildren(tPhysics_object* pObject) {
+    tPhysics_object* child;
+    tPhysics_object* root;
+    br_vector3 parent_point;
+    br_vector3 child_point;
+
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x1e8, 0x1e8);
+    C2_HOOK_STATIC_ASSERT_STRUCT_OFFSET(tPhysics_object, field_0x230, 0x230);
+
+    root = pObject;
+    child = pObject->child;
+    if (pObject->flags & 0x400) {
+        root = pObject->field_0x230;
+    }
+    for (; child != NULL; child = child->next) {
+        if (!(pObject->flags & 0x400)) {
+            BrMatrix34ApplyP(&parent_point, &child->physics_joint1->field_0x14, &pObject->actor->t.t.mat);
+            BrMatrix34ApplyP(&child_point, &child->physics_joint1->field_0x08, &child->actor->t.t.mat);
+            BrVector3Sub(&parent_point, &parent_point, &child_point);
+            BrVector3Accumulate((br_vector3*)child->actor->t.t.mat.m[3], &parent_point);
+        } else {
+            BrMatrix34Mul(&pObject->actor->t.t.mat, &pObject->field_0x1e8, &root->actor->t.t.mat);
+        }
+        TrialPositionChildren(child);
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004c2b20
 // FUNCTION: CARMA2_SW 0x004bf250
@@ -1115,7 +1768,46 @@ void C2_HOOK_FASTCALL ApplyDiminishingTorque(tPhysics_object* pObject, const br_
     }
 }
 
-// OrderObjectListOnX
+inline void OrderObjectListOnX(tPhysics_object** pObject_list) {
+    tPhysics_object* first;
+    tPhysics_object* last;
+    tPhysics_object* current;
+    tPhysics_object* position;
+    tPhysics_object* next;
+
+    first = *pObject_list;
+    first->prev = NULL;
+    last = first;
+    current = first->next;
+    while (current != NULL) {
+        position = last;
+        while (position != NULL && current->transform_matrix.m[3][0] < position->transform_matrix.m[3][0]) {
+            position = position->prev;
+        }
+        if (position == last) {
+            position->next = current;
+            current->prev = position;
+            last = current;
+            current = current->next;
+        } else if (position == NULL) {
+            first->prev = current;
+            next = current->next;
+            current->next = first;
+            current->prev = NULL;
+            first = current;
+            current = next;
+        } else {
+            next = current->next;
+            current->next = position->next;
+            current->next->prev = current;
+            position->next = current;
+            current->prev = position;
+            current = next;
+        }
+    }
+    last->next = NULL;
+    *pObject_list = first;
+}
 
 // SwapPair
 
@@ -1301,12 +1993,21 @@ void C2_HOOK_FASTCALL IncreasePhysicsScratchPointer(int pSize) {
     gPhysics_scratch_ptr = (tU8*)gPhysics_scratch_ptr + pSize;
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
 // FUNCTION: CARMA2_HW 0x004c5d00
 // FUNCTION: CARMA2_SW 0x004c2430
+// FUNCTION: CARMA2_CHEAT 0x004cb820
 void C2_HOOK_FASTCALL ClearPhysicsScratchSpace(void) {
 
     gPhysics_scratch_ptr = gPhysics_other_buffer;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004c5d10
 // FUNCTION: CARMA2_SW 0x004c2440
@@ -1541,12 +2242,20 @@ void C2_NORETURN C2_HOOK_FASTCALL PhysicsError(tPhysicsError pError, const char*
     exit(pError);
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
 // FUNCTION: CARMA2_HW 0x004c61e0
 // FUNCTION: CARMA2_SW 0x004c2910
 // FUNCTION: CARMA2_CHEAT 0x004cbd00
 void C2_HOOK_FASTCALL PhysicsWarning(const char* pMessage) {
     (void)pMessage;
 }
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004c61f0
 // FUNCTION: CARMA2_SW 0x004c2920

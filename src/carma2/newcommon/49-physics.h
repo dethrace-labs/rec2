@@ -14,6 +14,16 @@
 
 extern int gINT_00692dc8;
 
+extern int gPrepared_objects;
+
+extern int gCount_friction_forces;
+
+extern tPhysics_joint_force gFriction_forces[50];
+
+extern int gPHIL_collision_group;
+
+extern int gInter_group_hit_count;
+
 extern tPhysicsError_cbfn* gPhysics_error_cb;
 extern void* gPhysics_buffer1_ptr;
 extern void* gPhysics_buffer2_ptr;
@@ -180,19 +190,19 @@ extern void C2_HOOK_FASTCALL TellPhysicsJointsHaveChanged(tPhysics_object* pColl
 
 // GetWorldBoundingBoxForObjects
 
-// GetWorldBoundingBoxForObject
+extern void C2_HOOK_FASTCALL GetWorldBoundingBoxForObject(tPhysics_object* pObject, br_bounds* pBounds);
 
 // MatricesAreIdentical
 
 // InternalPrepareObject
 
-// PrepareObject
+extern void C2_HOOK_FASTCALL PrepareObject(tPhysics_object* pObject, tPhysics_object** pList);
 
-// PrepareForCollisions
+extern void C2_HOOK_FASTCALL PrepareForCollisions(tPhysics_object* pObject);
 
-// CheckPointVelocities
+extern int CheckPointVelocities(tPhysics_object* pObject, br_scalar pMax_velocity_squared);
 
-extern void C2_HOOK_FASTCALL WriteNewPositions(tPhysics_object* pObject);
+extern int C2_HOOK_FASTCALL WriteNewPositions(tPhysics_object* pObject);
 
 extern void C2_HOOK_FASTCALL SetListDoingNothingFlag(tPhysics_object* pObject, int pFlag);
 
@@ -200,7 +210,7 @@ extern void C2_HOOK_FASTCALL SetListDoingNothingFlag(tPhysics_object* pObject, i
 
 extern void C2_HOOK_FASTCALL SetHierarchyDoingNothingFlag(tPhysics_object* pObject, int pFlag);
 
-// CheckDoingNothingFlag
+extern void CheckDoingNothingFlag(tPhysics_object* pObject);
 
 extern void C2_HOOK_FASTCALL SetGroup(tPhysics_object* pObject, int pGroup);
 
@@ -240,11 +250,11 @@ extern int C2_HOOK_FASTCALL FlagsAreGo(tPhysics_object* pCollision_1, tPhysics_o
 
 // DoRigidJoints
 
-// DoInterGroupCollisions
+extern int C2_HOOK_FASTCALL DoInterGroupCollisions(tPhysics_object** pObject_list, tPhysics_object* pObject, tPhysics_joint_force* pForces, tPhysics_joint_force* pOld_forces, int pCount_old_forces, tWorld_callbacks* pCallbacks);
 
 extern int C2_HOOK_FASTCALL ReduceEffectOfForces(tPhysics_joint_force* pForces, br_scalar* pImpulses, int pCount, const int* pIndices, int pIndex_count, br_scalar pThreshold);
 
-// DoCollisions
+extern void C2_HOOK_FASTCALL DoCollisions(tPhysics_object** pObject_list, tWorld_callbacks* pCallbacks);
 
 // AddDoubleTorqueToMatrix
 
@@ -272,17 +282,17 @@ extern void C2_HOOK_FASTCALL RestoreListOmega(tPhysics_object* pObject);
 
 // MakeVelocitiesVector
 
-// NewAddFrictionObjectObject
+extern void C2_HOOK_FASTCALL NewAddFrictionObjectObject(tPhysics_joint_force* pForce);
 
-// NewAddFriction
+extern void C2_HOOK_FASTCALL NewAddFriction(tPhysics_joint_force* pForce, tWorld_callbacks* pCallbacks);
 
 // ApplyForces
 
 // DoJointFriction
 
-// ListDoJointFriction
+extern void ListDoJointFriction(tPhysics_object* pObject);
 
-// PostAddFriction
+extern void PostAddFriction(tWorld_callbacks* pCallbacks);
 
 // RotateObjectSecondOrder
 
@@ -300,11 +310,11 @@ extern void C2_HOOK_FASTCALL ResetObjectList(tPhysics_object* pObjects);
 
 // RepositionObjectGroup
 
-// SimpleRotate
+extern void C2_HOOK_FASTCALL SimpleRotate(tPhysics_object* pObject, br_scalar pDt);
 
-// InterpolateSingleObject
+extern void C2_HOOK_FASTCALL InterpolateSingleObject(tPhysics_object* pObject, br_scalar pDt);
 
-// InterpolateObjects
+extern void C2_HOOK_FASTCALL InterpolateObjects(tPhysics_object* pList, br_scalar pDt);
 
 extern void C2_HOOK_FASTCALL ApplyGravitySingleObject(tPhysics_object* pObject);
 
@@ -312,7 +322,7 @@ extern void C2_HOOK_FASTCALL ApplyGravity(tPhysics_object* pObject);
 
 extern void C2_HOOK_FASTCALL SetGravityDeltaV(tPhysics_object* pObject, br_vector3* pImpulse);
 
-// TrialPositionChildren
+extern void C2_HOOK_FASTCALL TrialPositionChildren(tPhysics_object* pObject);
 
 extern void C2_HOOK_FASTCALL InternalPositionChildren(tPhysics_object* pParent, tPhysics_object* pRoot);
 
@@ -322,7 +332,7 @@ extern void C2_HOOK_FASTCALL ApplyTorque(tPhysics_object* pObject, const br_vect
 
 extern void C2_HOOK_FASTCALL ApplyDiminishingTorque(tPhysics_object* pObject, const br_vector3 *pTorque);
 
-// OrderObjectListOnX
+extern void OrderObjectListOnX(tPhysics_object** pObject_list);
 
 // SwapPair
 

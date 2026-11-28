@@ -10,17 +10,31 @@
 
 #include "00-car.h"
 #include "18-graphics2.h"
+#include "23-piping.h"
+#include "41-utility.h"
 #include "49-physics.h"
 #include "55-volume.h"
+#include "globvars.h"
 #include "platform.h"
 #include "rec2_macros.h"
 
 #include <stdarg.h>
+#include <string.h>
 
 // GLOBAL: CARMA2_HW 0x0065d004
 // GLOBAL: CARMA2_SW 0x0065793c
 // GLOBAL: CARMA2_CHEAT 0x006645fc
 int gPHIL_disabled = 1;
+
+// GLOBAL: CARMA2_HW 0x0065d008
+// GLOBAL: CARMA2_SW 0x00657940
+// GLOBAL: CARMA2_CHEAT 0x00664600
+br_scalar gPHIL_enter_water_drag = 1.0f;
+
+// GLOBAL: CARMA2_HW 0x0065d00c
+// GLOBAL: CARMA2_SW 0x00657944
+// GLOBAL: CARMA2_CHEAT 0x00664604
+br_scalar gPHIL_leave_water_drag = 1.0f;
 
 // GLOBAL: CARMA2_HW 0x0074a5f0
 // GLOBAL: CARMA2_SW 0x007410b0
@@ -41,6 +55,11 @@ int gPHIL_count_list_collision_infos;
 // GLOBAL: CARMA2_SW 0x0068c43c
 // GLOBAL: CARMA2_CHEAT 0x00699dcc
 int gPHIL_object_added;
+
+// GLOBAL: CARMA2_HW 0x006923e8
+// GLOBAL: CARMA2_SW 0x0068c440
+// GLOBAL: CARMA2_CHEAT 0x00699dd0
+tPhysics_callbacks* gPHIL_callbacks;
 
 // GLOBAL: CARMA2_HW 0x006923ec
 // GLOBAL: CARMA2_SW 0x0068c444
@@ -333,11 +352,69 @@ void C2_HOOK_FASTCALL PHILDisable(void) {
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x004b5d40
-// STUB: CARMA2_SW 0x004b2460
-// STUB: CARMA2_CHEAT 0x004bb610
+// FUNCTION: CARMA2_HW 0x004b5d40
+// FUNCTION: CARMA2_SW 0x004b2460
+// FUNCTION: CARMA2_CHEAT 0x004bb610
 int C2_HOOK_FASTCALL PHILAddObject(tPhysics_object* pObject) {
-    NOT_IMPLEMENTED();
+    int i;
+    tPHIL_queued_header* free_header;
+
+    free_header = NULL;
+    if (gPHIL_disabled) {
+        return 0;
+    }
+    PHILVerify();
+    if (gPHIL_munging_objects && !gPHIL_object_added) {
+#ifdef REC2_CHEAT
+        PDFatalError("Queued PHIL actions are not currently supported");
+#endif
+        gPhil_queued_objects.objects[gPHIL_count_queued_objects].collision_info = pObject;
+        gPhil_queued_objects.objects[gPHIL_count_queued_objects].field_0x8 = 1;
+        gPhil_queued_objects.objects[gPHIL_count_queued_objects].flags = 0;
+        pObject->field_0x240 = &gPhil_queued_objects.objects[gPHIL_count_queued_objects];
+        pObject->field_0x239 = 2;
+        gPHIL_count_queued_objects++;
+        PHILVerify();
+        return 0;
+    }
+    for (i = 0; i < (int)REC2_ASIZE(gPhil_queued_objects.headers); i++) {
+        if (gPhil_queued_objects.headers[i].collision_info == NULL) {
+            if (free_header == NULL) {
+                free_header = &gPhil_queued_objects.headers[i];
+            }
+        } else if (pObject == gPhil_queued_objects.headers[i].collision_info) {
+            PHILVerify();
+            return 2;
+        }
+    }
+    if (free_header != NULL) {
+        memset(free_header, 0, sizeof(*free_header));
+        free_header->collision_info = pObject;
+        free_header->field_0x8 = 1;
+        pObject->flags |= 0x20;
+        pObject->field_0x240 = free_header;
+        pObject->field_0x239 = 1;
+        gPHIL_count_list_collision_infos++;
+        if (gPHIL_list_collision_infos != NULL) {
+            pObject->next = gPHIL_list_collision_infos->next;
+            gPHIL_list_collision_infos->next = pObject;
+            pObject->prev = gPHIL_list_collision_infos;
+            if (pObject->next != NULL) {
+                pObject->next->prev = pObject;
+            }
+        } else {
+            gPHIL_list_collision_infos = pObject;
+            pObject->next = NULL;
+            pObject->prev = NULL;
+        }
+        if (gPHIL_doing_physics) {
+            PrepareObject(pObject, &gPHIL_list_collision_infos);
+        }
+        PHILVerify();
+        return 0;
+    }
+    PHILVerify();
+    return 1;
 }
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
@@ -422,6 +499,9 @@ int C2_HOOK_FASTCALL PHILRemoveObject(tPhysics_object* pObject) {
     return 0;
 }
 
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 // FUNCTION: CARMA2_HW 0x004b5fd0
 // FUNCTION: CARMA2_SW 0x004b26f0
@@ -753,13 +833,117 @@ float C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object* pObject, int pProp
     return 0.0f;
 }
 
-// FlushQueuedAddsAndRemoves
+inline void C2_HOOK_FASTCALL FlushQueuedAddsAndRemoves(void) {
+    int i;
+    tPHIL_queued_object_info* queued;
+    tPHIL_queued_header* info;
+    const br_vector3* velocity;
+    const br_vector3* omega;
 
-// ChangedObjectsCallbacks
+    for (i = 0; i < gPHIL_count_queued_objects; i++) {
+        queued = &gPhil_queued_objects.objects[i];
+        if (queued->collision_info != NULL) {
+            PHILAddObject(queued->collision_info);
+            if (queued->flags & 0x4) {
+                PHILSetPassiveObjectsMatrix(queued->collision_info, &queued->field_0x30);
+            }
+            if (queued->field_0x8 == 2) {
+                if (queued->flags & 0x2) {
+                    omega = &queued->field_0x24;
+                } else {
+                    omega = NULL;
+                }
+                if (queued->flags & 0x1) {
+                    velocity = &queued->field_0x18;
+                } else {
+                    velocity = NULL;
+                }
+                PHILMakeObjectActive(queued->collision_info, velocity, omega, 0);
+            }
+            info = queued->collision_info->field_0x240;
+            if (info != NULL) {
+                info->field_0x4 &= ~0x2;
+                info->field_0x4 |= queued->field_0x4 & ~0x2;
+                info->field_0xc = queued->field_0xc;
+                info->field_0x10 = queued->field_0x10;
+                info->field_0x14 = queued->field_0x14;
+            }
+        }
+    }
+    for (i = 0; i < gPHIL_count_queued_objects_for_removal; i++) {
+        if (gPHIL_queued_objects_for_removal[i] != NULL) {
+            PHILRemoveObject(gPHIL_queued_objects_for_removal[i]);
+        }
+    }
+}
 
-// ProcessDrag2
+// FUNCTION: CARMA2_HW 0x004b6be0
+// FUNCTION: CARMA2_SW 0x004b3300
+// FUNCTION: CARMA2_CHEAT 0x004bc6f0
+void C2_HOOK_FASTCALL ChangedObjectsCallbacks(tPhysics_object* pObjects, tPhysics_callbacks* pCallbacks, tU32 pPeriod) {
+    tPHIL_queued_header* info;
+    tPhysics_object* object;
 
-// ProcessDrag
+    while (pObjects != NULL) {
+        if (PHILReturnObjectStatus(pObjects) == 2) {
+            if (pObjects->disable_move_rotate) {
+                info = pObjects->field_0x240;
+                if (info != NULL && (info->field_0x4 & 0x2)) {
+                    if (pCallbacks->active_halted == NULL || pCallbacks->active_halted(pObjects)) {
+                        PHILMakeObjectPassive(pObjects);
+                    }
+                }
+            } else {
+                if (pCallbacks->changed_objects != NULL) {
+                    pCallbacks->changed_objects(pObjects, pPeriod);
+                }
+                info = pObjects->field_0x240;
+                if (info != NULL && (info->field_0x4 & 0x4)) {
+                    /* Only the first-child chain is piped, not the siblings of the children. */
+                    for (object = pObjects; object != NULL; object = object->child) {
+                        PipeSinglePHILObject(object);
+                    }
+                }
+            }
+        }
+        pObjects = pObjects->next;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004b6ce0
+// FUNCTION: CARMA2_SW 0x004b3400
+// FUNCTION: CARMA2_CHEAT 0x004bc810
+void C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, br_scalar pDrag, int pFlags, tSpecial_volume* pVolume) {
+    br_scalar drag;
+    tSpecial_volume* volume;
+    br_vector3 damping;
+    tPhysics_object* child;
+
+    drag = (br_scalar)(2e-05 * pDrag);
+    volume = NULL;
+    if (pFlags & 0x8) {
+        volume = pVolume;
+    }
+    if (volume != NULL) {
+        if (pObject_info->field_0x14 == 0.0f || volume == NULL || volume->viscosity_multiplier <= 2.0) {
+            drag = drag * (volume->viscosity_multiplier * pObject->water_depth_factor);
+        } else {
+            drag = (br_scalar)(drag * 0.5 * (volume->viscosity_multiplier * pObject->water_depth_factor));
+        }
+    }
+    BrVector3Scale(&damping, &pObject->v, drag * 6.9 * BrVector3Length(&pObject->v) / pObject->M);
+    DRVector3Diminish(&pObject->v, &damping);
+    BrVector3Scale(&damping, &pObject->omega, drag * BrVector3Length(&pObject->omega));
+    ApplyDiminishingTorque(pObject, &damping);
+    for (child = pObject->child; child != NULL; child = child->next) {
+        ProcessDrag2(pObject_info, child, pDrag, pFlags, pVolume);
+    }
+}
+
+inline void C2_HOOK_FASTCALL ProcessDrag(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, br_scalar pDrag) {
+
+    ProcessDrag2(pObject_info, pObject, pDrag, pObject_info->field_0x4, pObject->last_special_volume);
+}
 
 // FUNCTION: CARMA2_HW 0x004b6e90
 void C2_HOOK_FASTCALL MarkObjectAndChildrenAsPassive(tPhysics_object* pObject) {
@@ -773,19 +957,212 @@ void C2_HOOK_FASTCALL MarkObjectAndChildrenAsPassive(tPhysics_object* pObject) {
     }
 }
 
-// SetStandardGravity
+inline void C2_HOOK_FASTCALL SetStandardGravity(br_vector3* pV, br_scalar pGravity) {
 
-// ProcessGravity
+    pV->v[0] = 0.0f;
+    pV->v[1] = (br_scalar)(pGravity * gGravity_multiplier * (-9.8 / 6.9 * 0.04));
+    pV->v[2] = 0.0f;
+}
 
-// LevelOutOnSurface
+// FUNCTION: CARMA2_HW 0x004b6ec0
+// FUNCTION: CARMA2_SW 0x004b35e0
+// FUNCTION: CARMA2_CHEAT 0x004bc9f0
+void C2_HOOK_FASTCALL ProcessGravity(tPHIL_queued_header* pObject_info, tPhysics_object* pObject, br_scalar pGravity) {
+    tSpecial_volume* volume;
+    br_vector3 gravity;
 
-// PHILMungeObjects
+    volume = NULL;
+    if (pObject_info->field_0x4 & 0x8) {
+        volume = pObject->last_special_volume;
+    }
+    if (volume != NULL) {
+        if (pObject_info->field_0x14 == 0.0f || volume == NULL || volume->viscosity_multiplier <= 2.0) {
+            SetStandardGravity(&gravity, volume->gravity_multiplier * pObject->water_depth_factor * pGravity);
+        } else {
+            gravity.v[0] = 0.0f;
+            gravity.v[1] = (br_scalar)(0.04 * (-9.8 / 6.9 * gGravity_multiplier * pGravity + pObject->water_depth_factor * pObject_info->field_0x14 * (1.0f - volume->gravity_multiplier)));
+            gravity.v[2] = 0.0f;
+        }
+    } else {
+        SetStandardGravity(&gravity, pGravity);
+    }
+    SetGravityDeltaV(pObject, &gravity);
+    ApplyGravitySingleObject(pObject);
+}
 
-// PHILActivatePassive
+// FUNCTION: CARMA2_HW 0x004b6fb0
+// FUNCTION: CARMA2_SW 0x004b36d0
+// FUNCTION: CARMA2_CHEAT 0x004bcae0
+void C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object* pObject) {
+    br_vector3 down;
+    br_vector3 cross;
+    br_vector3 correction;
+    br_scalar dot;
 
-// PHILInterpolateObjects
+    if (pObject->I.v[0] > pObject->I.v[1] && pObject->I.v[0] > pObject->I.v[2]) {
+        BrVector3Scale(&down, (br_vector3*)pObject->actor->t.t.mat.m[0], -1.0f);
+    } else if (pObject->I.v[1] > pObject->I.v[2] && pObject->I.v[1] > pObject->I.v[0]) {
+        BrVector3Scale(&down, (br_vector3*)pObject->actor->t.t.mat.m[1], -1.0f);
+    } else {
+        BrVector3Scale(&down, (br_vector3*)pObject->actor->t.t.mat.m[2], -1.0f);
+    }
+    dot = BrVector3Dot(&pObject->water_normal, &down);
+    if (dot > -0.99) {
+        BrVector3Cross(&cross, &down, &pObject->water_normal);
+        BrVector3Scale(&cross, &cross, (dot + 1.0f) / BrVector3Length(&cross));
+        BrMatrix34TApplyV(&correction, &cross, &pObject->actor->t.t.mat);
+        BrVector3Accumulate(&pObject->omega, &correction);
+    }
+}
 
-// PHILDoPhysics
+inline void C2_HOOK_FASTCALL PHILMungeObjects(tPhysics_object* pObjects) {
+    tPHIL_queued_header* info;
+    tSpecial_volume* original_volume;
+    tSpecial_volume* volume;
+    br_scalar original_water_depth_factor;
+
+    for (; pObjects != NULL; pObjects = pObjects->next) {
+        info = pObjects->field_0x240;
+        if (pObjects->disable_move_rotate == 0 && info != NULL && info->field_0x8 == 2) {
+            if (info->field_0x4 & 0x8) {
+                original_water_depth_factor = pObjects->water_depth_factor;
+                original_volume = pObjects->last_special_volume;
+                if (pObjects->water_d != 10000.0f) {
+                    TestAutoSpecialVolume(pObjects);
+                }
+                MungeSpecialVolume(pObjects);
+            }
+            if (info->field_0x10 != 0.0f || (pObjects->last_special_volume != NULL && (info->field_0x4 & 0x8))) {
+                if (info->field_0x10 != 0.0f) {
+                    ProcessGravity(info, pObjects, info->field_0x10);
+                } else {
+                    ProcessGravity(info, pObjects, 1.0);
+                }
+            }
+            if (info->field_0xc != 0.0f || (pObjects->last_special_volume != NULL && (info->field_0x4 & 0x8))) {
+                if (info->field_0xc != 0.0f) {
+                    ProcessDrag(info, pObjects, info->field_0xc);
+                } else {
+                    ProcessDrag(info, pObjects, 1.0);
+                }
+            }
+            if (info->field_0x4 & 0x8) {
+                volume = pObjects->last_special_volume;
+                if (volume == NULL || volume->viscosity_multiplier <= 2.0 || pObjects->water_depth_factor != 1.0
+                    || (original_volume != NULL && original_volume->viscosity_multiplier > 2.0 && original_water_depth_factor >= 1.0)) {
+                    if ((volume == NULL || volume->viscosity_multiplier <= 2.0) && original_volume != NULL && original_volume->viscosity_multiplier > 2.0) {
+                        ProcessDrag(info, pObjects, gPHIL_leave_water_drag);
+                    }
+                } else {
+                    ProcessDrag(info, pObjects, gPHIL_enter_water_drag);
+                }
+                if (info->field_0x14 != 0.0f && pObjects->last_special_volume != NULL
+                    && pObjects->last_special_volume->viscosity_multiplier > 2.0 && pObjects->water_depth_factor < 1.0) {
+                    LevelOutOnSurface(pObjects);
+                }
+            }
+            if (info->field_0x4 & 0x1) {
+                PositionChildren(pObjects);
+            }
+        } else if (info != NULL && info->field_0x8 == 1) {
+            MarkObjectAndChildrenAsPassive(pObjects);
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004b71b0
+// FUNCTION: CARMA2_SW 0x004b38d0
+// FUNCTION: CARMA2_CHEAT 0x004bcce0
+void C2_HOOK_FASTCALL PHILActivatePassive(tPhysics_object* pObject, void* pContext) {
+    tPHIL_queued_header* info;
+
+    info = pObject->field_0x240;
+    if (info != NULL && info->field_0x8 == 1) {
+        if (gPHIL_original_activate_passive != NULL) {
+            gPHIL_original_activate_passive(pObject, pContext);
+        }
+        if (gPHIL_callbacks->passive_activated != NULL) {
+            if (gPHIL_callbacks->passive_activated(pObject, pContext)) {
+                PHILMakeObjectActive(pObject, NULL, NULL, 1);
+            }
+        } else {
+            PHILMakeObjectActive(pObject, NULL, NULL, 1);
+        }
+    } else {
+        pObject->flags |= 0x1000;
+    }
+}
+
+inline void C2_HOOK_FASTCALL PHILInterpolateObjects(tPhysics_object* pObjects, tU32 pTime) {
+    tPHIL_queued_header* info;
+    br_scalar dt;
+
+    dt = (br_scalar)((int)(gPHIL_last_physics_tick - pTime) * 0.001);
+    if (dt > 0.04 || dt < 0.0f) {
+        dt = 0.0f;
+    }
+    if (dt <= 0.0f) {
+        gOver_shoot = 0;
+    } else {
+        gOver_shoot = 1;
+    }
+    for (; pObjects != NULL; pObjects = pObjects->next) {
+        info = pObjects->field_0x240;
+        if (info != NULL && info->field_0x8 == 2) {
+            InterpolateSingleObject(pObjects, -dt);
+        }
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004b6630
+// FUNCTION: CARMA2_SW 0x004b2d50
+// FUNCTION: CARMA2_CHEAT 0x004bc110
+void C2_HOOK_FASTCALL PHILDoPhysics(tPhysics_callbacks* pCallbacks, tU32 pLast_tick_time, tU32 pFrame_period) {
+    tU32 now;
+    int loops;
+
+    loops = 0;
+    if (gPHIL_disabled == 0) {
+        now = pLast_tick_time + pFrame_period;
+        gPHIL_callbacks = pCallbacks;
+        gPHIL_original_activate_passive = pCallbacks->world_callbacks->activate_passive;
+        pCallbacks->world_callbacks->activate_passive = PHILActivatePassive;
+        if (gPHIL_last_physics_tick < pLast_tick_time) {
+            gPHIL_last_physics_tick = pLast_tick_time / 40 * 40;
+        }
+        if (gPHIL_last_physics_tick >= now) {
+            ResetObjectList(gPHIL_list_collision_infos);
+            PHILInterpolateObjects(gPHIL_list_collision_infos, now);
+            pCallbacks->world_callbacks->activate_passive = gPHIL_original_activate_passive;
+        } else {
+            gPHIL_doing_physics = 1;
+            gPHIL_mechanics_time_sync = now - gPHIL_last_physics_tick;
+            while (gPHIL_last_physics_tick < now && loops < 5) {
+                loops++;
+                if (pCallbacks->pre_collision != NULL) {
+                    pCallbacks->pre_collision();
+                }
+                PHILMungeObjects(gPHIL_list_collision_infos);
+                gPHIL_munging_objects = 1;
+                if (gPHIL_list_collision_infos != NULL) {
+                    DoCollisions(&gPHIL_list_collision_infos, pCallbacks->world_callbacks);
+                }
+                gPHIL_munging_objects = 0;
+                if (pCallbacks->post_collision != NULL) {
+                    pCallbacks->post_collision();
+                }
+                FlushQueuedAddsAndRemoves();
+                gPHIL_last_physics_tick += 40;
+                gPHIL_mechanics_time_sync -= 40;
+            }
+            PHILInterpolateObjects(gPHIL_list_collision_infos, now);
+            ChangedObjectsCallbacks(gPHIL_list_collision_infos, pCallbacks, pFrame_period);
+            gPHIL_mechanics_time_sync = 1;
+            gPHIL_doing_physics = 0;
+            pCallbacks->world_callbacks->activate_passive = gPHIL_original_activate_passive;
+        }
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004b7220
 // FUNCTION: CARMA2_SW 0x004b3940

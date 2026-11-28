@@ -113,7 +113,7 @@ typedef intptr_t C2_HOOK_FASTCALL tDRActorEnumRecurseWithSnart_cbfn(br_actor*, b
 typedef int C2_HOOK_FASTCALL tDrone_form_within_rendering_distance_cbfn(const br_vector3 *pPos);
 typedef int C2_HOOK_FASTCALL tDrone_form_within_processing_distance_cbfn(const br_vector3 *pPos);
 typedef void C2_HOOK_FASTCALL tFunk_index_cbfn(int pFunk_index);
-typedef void C2_HOOK_FASTCALL tWorld_callback_active_passive_cbfn(tPhysics_object*);
+typedef void C2_HOOK_FASTCALL tWorld_callback_active_passive_cbfn(tPhysics_object*, void*);
 typedef intptr_t C2_HOOK_FASTCALL tNearbyActors_cbfn(br_actor*, void*);
 typedef void C2_HOOK_FASTCALL tDoSomethingsToCheckpoints_cbfn(br_pixelmap* pMap, int pCheckPoint, tU32 pTime, int pEnable);
 typedef void C2_HOOK_FASTCALL tTurn_on_AR_callback(void);
@@ -2980,7 +2980,7 @@ typedef struct tCar_spec {
     float damage_magnitude_accumulator;
     float revs;
     float target_revs;
-    undefined field_0x1348[12];
+    br_vector3 road_normal;
     float max_force_front;
     float max_force_rear;
     int gear;
@@ -4637,13 +4637,15 @@ typedef struct tPhysics_object {
     br_vector3 velocity_car_space;
     br_vector3 field_0x1b4;
     br_vector3 rotate_omega;
-    undefined field_0x1cc[12];
-    undefined4 field183_0x1d8;
+    br_vector3 field_0x1cc;
+    tPhysics_object* field183_0x1d8;
     undefined field_0x1dc;
     undefined collision_flag;
     undefined field_0x1de;
     undefined field_0x1df;
-    undefined field_0x1e0[8];
+    tU8 field_0x1e0;
+    undefined field_0x1e1[3];
+    undefined4 field_0x1e4;
     br_matrix34 field_0x1e8;
     undefined4 field_0x218;
     float field_0x21c;
@@ -5595,7 +5597,7 @@ typedef struct tWorld_callbacks {
     tNon_car_spec* (C2_HOOK_FASTCALL * pull_actor_from_world)(br_actor*);
     void (C2_HOOK_FASTCALL * stop_groovidelic)(br_actor*);
     float (C2_HOOK_FASTCALL * get_friction_from_face)(const tFace_ref*);
-    void (C2_HOOK_FASTCALL * activate_passive)(tPhysics_object*);
+    void (C2_HOOK_FASTCALL * activate_passive)(tPhysics_object*, void*);
 } tWorld_callbacks;
 
 typedef struct {
@@ -5604,7 +5606,7 @@ typedef struct {
     void (C2_HOOK_FASTCALL *post_collision)(void);
     void (C2_HOOK_FASTCALL *changed_objects)(tPhysics_object*, undefined4);
     int (C2_HOOK_FASTCALL *active_halted)(tPhysics_object*);
-    int (C2_HOOK_FASTCALL *passive_activated)(tPhysics_object*);
+    int (C2_HOOK_FASTCALL *passive_activated)(tPhysics_object*, tPhysics_object*);
     void* callback_0x18;
 } tPhysics_callbacks;
 
