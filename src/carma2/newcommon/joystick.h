@@ -18,6 +18,8 @@ extern float gJoystick_x_steering;
 extern float gJoystick_y_throttle;
 extern int gINT_00595f84;
 extern int gINT_00596310;
+extern float gForce_feedback_upper_limit;
+extern float gForce_feedback_lower_limit;
 extern int gJoystick_preferences_backup_valid;
 extern tButtonJoystickInfo gJoystick_preferences_backup;
 
@@ -63,5 +65,7 @@ extern void C2_HOOK_FASTCALL SetJoystickY(float pValue);
 extern float C2_HOOK_FASTCALL GetJoystickX(void);
 
 extern float C2_HOOK_FASTCALL GetJoystickY(void);
+
+extern void C2_HOOK_FASTCALL FUN_0045c910(tCar_spec* pCar, br_vector3* pPosition, br_vector3* pForce, br_scalar pMagnitude);
 
 #endif /* REC2_JOYSTICK_H */

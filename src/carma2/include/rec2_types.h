@@ -2800,7 +2800,7 @@ typedef struct tCar_spec {
     undefined field_0x90[28];
     tU16 fire_vertex[12];
     float dt;
-    undefined* field_0xc8;
+    tCar_spec* field_0xc8;
     char name[32];
     char driver_name[32];
     char grid_icon_names[3][14];
@@ -2956,10 +2956,7 @@ typedef struct tCar_spec {
     br_vector3 mu;
     float traction_multiplier;
     float downforce_to_weight;
-    undefined field_0x12a8;
-    undefined field_0x12a9;
-    undefined field_0x12aa;
-    undefined field_0x12ab;
+    int down_force_flag;
     float initial_brake;
     float brake_increase;
     float friction_slipping_reduction;
@@ -2980,7 +2977,7 @@ typedef struct tCar_spec {
     float damage_magnitude_accumulator;
     float revs;
     float target_revs;
-    undefined field_0x1348[12];
+    br_vector3 road_normal;
     float max_force_front;
     float max_force_rear;
     int gear;
@@ -3052,7 +3049,7 @@ typedef struct tCar_spec {
     tCarCockpitMaterial window_materials[5];
     tU16 old_material_count;
     tU16 new_material_count;
-    undefined4 field_0x195c;
+    tPhysics_object* field_0x195c;
     br_pixelmap* field_0x1960;
 } tCar_spec;
 
@@ -4638,7 +4635,7 @@ typedef struct tPhysics_object {
     br_vector3 field_0x1b4;
     br_vector3 rotate_omega;
     undefined field_0x1cc[12];
-    undefined4 field183_0x1d8;
+    tPhysics_object* field183_0x1d8;
     undefined field_0x1dc;
     undefined collision_flag;
     undefined field_0x1de;
@@ -5588,7 +5585,7 @@ typedef struct {
 } tToggled_door;
 
 typedef struct tWorld_callbacks {
-    int (C2_HOOK_FASTCALL * process_forces)(void*, float*, int arg3);
+    int (C2_HOOK_FASTCALL * process_forces)(tPhysics_joint_force*, br_scalar*, int);
     int (C2_HOOK_FASTCALL * process_joint_forces)(void*, void*, void*);
     void (C2_HOOK_FASTCALL * new_face_list)(tPhysics_object*, tFace_ref *);
     int (C2_HOOK_FASTCALL * find_faces_in_box)(tBounds*, tFace_ref*, int, struct tWorld_callbacks*);
