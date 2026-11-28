@@ -402,6 +402,11 @@ typedef struct {
 } tCompressed_vector4;
 
 typedef struct {
+    br_vector3 normal;
+    br_scalar d;
+} tSplit_info;
+
+typedef struct {
     tCompressed_vector3 m0;
     tCompressed_vector3 m1;
     tCompressed_vector3 p;
@@ -755,6 +760,7 @@ typedef enum {
     ePipe_chunk_frame_finish = 0,
     ePipe_chunk_ped_incident = 1,
     ePipe_chunk_sound = 2,
+    ePipe_chunk_crush = 3,
     ePipe_chunk_car = 5,
     ePipe_chunk_graphical_wheel_stuff = 6,
     ePipe_chunk_damage = 7,
@@ -4285,6 +4291,28 @@ typedef struct tCar_bit_spec {
     tU32 field_0x10;
 } tCar_bit_spec;
 
+typedef struct {
+    br_bounds3 bounds;
+    float field_0x18;
+    float field_0x1c;
+    float field_0x20;
+    br_vector3 field_0x24;
+    br_vector3 field_0x30;
+    br_angle field_0x3c[3];
+    undefined field_0x42[2];
+    br_vector3 field_0x44;
+    br_vector3 field_0x50;
+    br_vector3 field_0x5c;
+    br_vector3 field_0x68;
+    int field_0x74;
+} tBend_point_spec;
+
+typedef struct tBend_point_context {
+    tCar_spec* car;
+    br_matrix34 field_0x4;
+    tBend_point_spec* field_0x34;
+} tBend_point_context;
+
 typedef struct tCar_crush_spec {
     int count_shapes;
     tCar_crush_shape_info* field_0x4;
@@ -4309,13 +4337,10 @@ typedef struct tCar_crush_spec {
     float bendability_factor;
     float bend_z_min;
     float bend_z_max;
-    undefined field_0x154[0x174 - 0x154];
-    float field_0x174;
-    undefined field_0x178[0x180 - 0x178];
-    float field_0x180;
-    undefined field_0x184[0x1cc - 0x184];
+    tBend_point_spec field_0x154;
     tCar_crush_vertex_data* field_0x1cc;
-    undefined field_0x1d0[28];
+    int field_0x1d0;
+    undefined field_0x1d4[24];
     br_vector3 field_0x1ec[6];
     br_vector3 field_0x234[4];
     br_vector3 field_0x264;
@@ -4343,19 +4368,25 @@ typedef struct tCar_crush_spec {
 typedef struct tCrush_net_detach_list_item {
     br_actor* actor;
     tCar_spec* car;
-    undefined field_0x8[28];
+    tU32 time;
+    br_bounds3 bounds;
 } tCrush_net_detach_list_item;
 
 typedef struct tCrush_net_semi_detach_bit_list_item {
     br_actor* actor;
     tCar_spec* car;
-    undefined field_0x8[68];
+    tU32 time;
+    br_vector3 point_1;
+    br_vector3 point_2;
+    br_vector3 point_3;
+    br_bounds3 bounds;
+    float value;
 } tCrush_net_semi_detach_bit_list_item;
 
 typedef struct tCrush_net_full_detach_bit_list_item {
     tCar_spec* car;
     tPhysics_object* object;
-    undefined field_0x8[0xc - 0x8];
+    tU32 time;
 } tCrush_net_full_detach_bit_list_item;
 
 typedef struct tCrush_net_reattach_bit_list_item {
@@ -4761,6 +4792,12 @@ typedef struct {
 } tCar_crush;
 
 typedef struct {
+    tCar_spec* car;
+    tCar_crush* crush;
+    float scale;
+} tSpam_userdata; /* FIXME: name from Ghidra */
+
+typedef struct {
     tU8 count;
     undefined field_0x1;
     tCompressed_vector3 vectors[4];
@@ -4784,7 +4821,7 @@ typedef struct {
 } tQueued_drone_crush_item;
 
 typedef struct {
-    undefined4* field_0x0;
+    tPhysics_object* object; /* FIXME: type is a guess, passed on to GetDroneCrushData */
     int count;
     tQueued_drone_crush_item items[2];
 } tQueued_drone_crush;
@@ -5441,6 +5478,12 @@ typedef struct tDrone_spec {
     undefined4 field_0x5d4;
 } tDrone_spec;
 
+typedef struct { /* FIXME: name is a guess, returned to PHIL by GetDroneCrushData */
+    br_model* model;
+    float crushability;
+    br_bounds3 bounds;
+} tDrone_crush_data;
+
 typedef struct {
     void* field_0x0;
     tU32 field_0x4;
@@ -5460,6 +5503,7 @@ typedef enum {
     eNet_message_chunk_type_oil_spill = 0x1f,
     eNet_message_chunk_type_car_crush = 0x20,
     eNet_message_chunk_type_semi_detach_bit = 0x24,
+    eNet_message_chunk_type_fully_detach_bit = 0x25,
     eNet_message_chunk_type_reattach_bit = 0x26,
     eNet_message_chunk_type_reattach_all_bits = 0x2b,
     eNet_message_chunk_type_toggle_doors = 0x2c,
@@ -5530,10 +5574,10 @@ typedef struct {
 } tNet_message_chunk_semi_detach_bit;
 
 typedef struct {
-    int ID;
-    tU8 field_0x4;
-    undefined field_0x5[0x8 - 0x5];
-    tU32 field_0x8;
+    tNet_message_chunk_header header;
+    tPlayer_ID player;
+    tU8 id;
+    tU32 time;
     tCompressed_vector3 bounds_min;
     tCompressed_vector3 bounds_max;
 } tNet_message_chunk_detach_bit;
@@ -5698,6 +5742,7 @@ typedef union {
     tNet_message_chunk_oil_spill oil_spill; /* type = 0x1f*/
     tNet_message_car_crush car_crush; /* type = 0x20 */
     tNet_message_chunk_semi_detach_bit semi_detach_bit; /* type = 0x24 */
+    tNet_message_chunk_semi_detach_bit fully_detach_bit; /* type = 0x25, value unused */
     tNet_message_chunk_reattach_bit reattach_bit; /* type = 0x26 */
     tNet_message_chunk_reattach_all_bits reattach_all_bits; /* type = 0x2b */
     tNet_message_chunk_toggle_doors toggle_doors; /* type = 0x2c */
