@@ -316,7 +316,7 @@ extern intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor
 
 // IsOnNonCarHalf
 
-// SplitCar
+extern void C2_HOOK_FASTCALL SplitCar(tCar_spec* pCar, const tSplit_info* pSplit_info, int pArg3);
 
 // QuantizePlane
 
@@ -370,7 +370,7 @@ extern void C2_HOOK_FASTCALL BendPoint(br_vector3* pPoint, const tBend_point_con
 
 // ReAttachOrFullyDetachDifficultBits
 
-// BendCar
+extern void C2_HOOK_FASTCALL BendCar(tCar_spec* pCar, br_angle pAngle_x, br_angle pAngle_y, br_angle pAngle_z, const br_vector3* pPivot, br_scalar pZ, int pArg7);
 
 // QuantizeAngle
 
@@ -470,13 +470,13 @@ extern void C2_HOOK_FASTCALL CompletelyUnBendCar(tCar_spec* pCar_spec);
 
 extern void C2_HOOK_FASTCALL RepairCarCollisionShapes(tCar_spec* pCar, float pStep);
 
-// RepairCar2
+extern float C2_HOOK_FASTCALL RepairCar2(tCar_spec* pCar, tU32 pFrame_period, br_scalar* pTotal_deflection);
 
-// RepairCar
+extern float C2_HOOK_FASTCALL RepairCar(tU16 pCar_ID, tU32 pFrame_period, br_scalar* pTotal_deflection);
 
 // RestoreVitalBitsOfObject
 
-// WeldCar
+extern void C2_HOOK_FASTCALL WeldCar(tCar_spec* pCar_spec);
 
 // ARCompressCrush
 
@@ -520,23 +520,23 @@ extern void C2_HOOK_FASTCALL ReceivedReAttachAllBits(tNet_message_chunk* pConten
 
 // DoQueuedNetDetaching
 
-// DBNonCarOwner
+extern tCar_spec* C2_HOOK_FASTCALL DBNonCarOwner(tNon_car_spec* pNon_car);
 
-// SendDBNonCar
+extern void C2_HOOK_FASTCALL SendDBNonCar(tNon_car_spec* pNon_car, tU32 pTime, tNet_game_player_info* pPlayer);
 
 // ReceivedDBNonCar
 
-// SendAllDBNonCars
+extern void C2_HOOK_FASTCALL SendAllDBNonCars(tNet_game_player_info* pPlayer);
 
 // ReceivedDBNonCarPosition
 
 extern void C2_HOOK_FASTCALL ReceivedToggleFlaps(tNet_message_chunk* pContents);
 
-// SHNonCarOwner
+extern tCar_spec* C2_HOOK_FASTCALL SHNonCarOwner(tNon_car_spec* pNon_car);
 
-// SendSHNonCar
+extern void C2_HOOK_FASTCALL SendSHNonCar(tNon_car_spec* pNon_car, tU32 pTime, tNet_game_player_info* pPlayer);
 
-// SendAllSHNonCars
+extern void C2_HOOK_FASTCALL SendAllSHNonCars(tNet_game_player_info* pPlayer);
 
 // ReceivedSHNonCar
 
@@ -546,17 +546,17 @@ extern int C2_HOOK_FASTCALL GetNetShapeDataLengthFromData(tU8* pData);
 
 extern void C2_HOOK_FASTCALL EncodeNetShapeData(tU8* pData, tCar_spec* pCar);
 
-// DecodeNetShapeData
+extern void C2_HOOK_FASTCALL DecodeNetShapeData(tCar_spec* pCar, tU8* pData);
 
-// CopyBendInMessage
+extern void C2_HOOK_FASTCALL CopyBendInMessage(tCar_spec* pCar);
 
-// Vector4Equal
+extern int C2_HOOK_FASTCALL Vector4Equal(const br_vector4* pV1, const br_vector4* pV2);
 
 extern void C2_HOOK_FASTCALL CompressPlane(tCompressed_vector4* pDest, const br_vector4* pSrc);
 
 extern void C2_HOOK_FASTCALL ExpandPlane(br_vector4* pDest, const tCompressed_vector4* pSrc);
 
-// CopySplitInMessage
+extern void C2_HOOK_FASTCALL CopySplitInMessage(tCar_spec* pCar);
 
 extern void C2_HOOK_FASTCALL SetAllShapeStatusFlags(tCar_crush_network_shapes* pShapes);
 
