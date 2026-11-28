@@ -15,6 +15,7 @@
 extern br_vector3 gRender_bounds_centre;
 extern int gINT_00681fb0;
 extern int gFrame;
+extern tDrone_state_function* gDrone_state_functions[6];
 extern int gCurrent_selected_drone;
 extern int gCount_drones;
 extern tDrone_form gDrone_forms[64];
@@ -35,7 +36,7 @@ extern void C2_HOOK_CDECL DoNotDprintf_drone(const char* pMessage, ...);
 
 // CrappyLittleDrivingStateInfoDprintf
 
-// DroneStraightestArcForCorner2D
+extern int C2_HOOK_FASTCALL DroneStraightestArcForCorner2D(br_vector2* pCent, br_scalar* pRadius, br_scalar* pEntry_length, int* pLeft_not_right, const br_vector2* p1, const br_vector2* p2, const br_vector2* p3, br_scalar pWidth);
 
 extern FILE* C2_HOOK_FASTCALL OpenDroneFile(char* pDrone_name);
 
@@ -79,13 +80,13 @@ extern br_actor* C2_HOOK_CDECL MrFindy(br_actor* pActor, const char* pName);
 
 // LoadDrone
 
-// CalculateDrivingInfo
+extern void C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone);
 
 // PauseDroneState
 
 // UnPauseDroneState
 
-// NewDroneState
+extern void C2_HOOK_FASTCALL NewDroneState(tDrone_spec* pDrone, int pNew_state);
 
 // ResetDroneCrushyModel
 
@@ -101,7 +102,7 @@ extern int C2_HOOK_FASTCALL DroneTrainWithinRenderingDistance(const br_vector3* 
 
 // InitDroneSpec
 
-// ChooseNextNode
+extern int C2_HOOK_FASTCALL ChooseNextNode(tDrone_spec* pDrone);
 
 // DroneOrientationChanged
 
@@ -131,25 +132,25 @@ extern int C2_HOOK_FASTCALL DroneTrainWithinProcessingDistance(const br_vector3*
 
 // ProcessThisDrone
 
-// DroneStateFuncReset
+extern void C2_HOOK_FASTCALL DroneStateFuncReset(tDrone_spec* pDrone, tDroneStateFuncState pState);
 
-// InitDroneDrivingInfo
+extern void C2_HOOK_FASTCALL InitDroneDrivingInfo(tDrone_spec* pDrone);
 
-// MoveThisDronePlane
+extern void C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone);
 
-// MoveThisDroneCar
+extern void C2_HOOK_FASTCALL MoveThisDroneCar(tDrone_spec* pDrone);
 
 extern void C2_HOOK_FASTCALL PipeDroneMatrix(tDrone_spec* pDrone);
 
-// PossiblyPipeDroneMovement
+extern void C2_HOOK_FASTCALL PossiblyPipeDroneMovement(tDrone_spec* pDrone);
 
-// DroneStateFuncControlledMovement
+extern void C2_HOOK_FASTCALL DroneStateFuncControlledMovement(tDrone_spec* pDrone, tDroneStateFuncState pState);
 
 // DoDroneHaltingStuff
 
-// DroneStateFuncPhysicsActive
+extern void C2_HOOK_FASTCALL DroneStateFuncPhysicsActive(tDrone_spec* pDrone, tDroneStateFuncState pState);
 
-// DroneStateFuncStationaryPassive
+extern void C2_HOOK_FASTCALL DroneStateFuncStationaryPassive(tDrone_spec* pDrone, tDroneStateFuncState pState);
 
 // GetNewCrushyModelForDrone
 
