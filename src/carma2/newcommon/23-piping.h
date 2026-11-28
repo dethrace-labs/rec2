@@ -34,7 +34,7 @@ extern tU32 gPipe_sound_start_time;
 extern tU32 gPipe_sound_time_window;
 extern int gDisable_advance;
 extern int gPipe_count_callbacks;
-extern tPipe_smudge_data* gCrush_space;
+extern void* gCrush_space;
 extern tU8* gEnd_of_session;
 
 extern int C2_HOOK_FASTCALL ARReplayForwards(void);
@@ -251,7 +251,7 @@ extern void C2_HOOK_FASTCALL PipeSingleNonCarCreation(int pIndex);
 
 extern void C2_HOOK_FASTCALL PipeSingleSmashModelChange(br_actor* pActor, br_model* pOld_model, br_model* pNew_model);
 
-// PipeSingleSmashRemoveFaces
+extern void C2_HOOK_FASTCALL PipeSingleSmashRemoveFaces(br_model* pModel, int pCount, const tPipe_remove_face* pFaces, br_material* pMaterial);
 
 extern void C2_HOOK_FASTCALL PipeSingleSmashDecal(int pIndex);
 
