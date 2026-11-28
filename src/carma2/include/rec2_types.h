@@ -598,6 +598,33 @@ typedef struct {
     br_actor* actor;
 } tPipe_ped_incident;
 
+typedef enum {
+    eIncident_ped = 0,
+    eIncident_car = 1,
+    eIncident_wall = 2,
+    eNo_incident = 3
+} tIncident_type;
+
+typedef struct {
+    br_actor* ped_actor;
+    br_actor* murderer_actor;
+} tPed_incident_info;
+
+typedef struct {
+    tCar_spec* car;
+    br_vector3 impact_point;
+} tCar_incident_info;
+
+typedef struct {
+    br_vector3 pos;
+} tWall_incident_info;
+
+typedef union {
+    tPed_incident_info ped_info;
+    tCar_incident_info car_info;
+    tWall_incident_info wall_info;
+} tIncident_info;
+
 typedef struct {
     float force;
     tU16 car_ID;
@@ -872,6 +899,7 @@ typedef struct tPipe_chunk {
     uintptr_t subject_index;
     union {
         tPipe_chunk_car_incident car_incident;
+        tPipe_ped_incident ped_incident;
         tPipe_chunk_frame_boundary frame_boundary;
         tPipe_chunk_car car;
         tPipe_chunk_non_car non_car;
