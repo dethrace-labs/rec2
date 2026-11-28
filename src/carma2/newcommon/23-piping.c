@@ -20,6 +20,7 @@
 #include "32-spark.h"
 #include "37-brucetrk.h"
 #include "41-utility.h"
+#include "49-physics.h"
 #include "46-win95sys.h"
 #include "51-smash.h"
 #include "52-errors.h"
@@ -856,7 +857,127 @@ int C2_HOOK_FASTCALL PipeObjectPosition(tPhysics_object* pObject, void* pContext
     return 0;
 }
 
-// PipeCarPositions
+// FUNCTION: CARMA2_HW 0x004c7260
+// FUNCTION: CARMA2_SW 0x004c3990
+// FUNCTION: CARMA2_CHEAT 0x004ccd80
+inline void C2_HOOK_FASTCALL AddCarToPipingSession(int pCar_ID, br_matrix34* pCar_mat, br_vector3* pCar_velocity, float pSpeedo_speed, float pRevs, int pGear, int pFrame_coll_flag, int pField_0x18cc) {
+
+    ARAddVariedDataToSession(ePipe_chunk_car, pCar_ID, 5,
+        SIZE_OFFSET_PIPING(tPipe_chunk_car, mat), pCar_mat,
+        SIZE_OFFSET_PIPING(tPipe_chunk_car, v), pCar_velocity,
+        SIZE_OFFSET_PIPING(tPipe_chunk_car, speedo_speed), (int)(pSpeedo_speed * (32767.0 / 0.07)),
+        SIZE_OFFSET_PIPING(tPipe_chunk_car, flags), (((int)pRevs / 10) & 0x7ff) + ((pGear + 1) << 12) + (pFrame_coll_flag ? 0x800 : 0),
+        SIZE_OFFSET_PIPING(tPipe_chunk_car, field_0x40), pField_0x18cc);
+}
+
+#if defined(REC2_MATCHING) && defined(_MSC_VER)
+#pragma inline_depth(0)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004c7400
+// FUNCTION: CARMA2_SW 0x004c3b30
+// FUNCTION: CARMA2_CHEAT 0x004ccf20
+inline void C2_HOOK_FASTCALL AddDamageToPipingSession(int pCar_ID, tS8* pDamage_deltas) {
+    tS8 damage_deltas[12];
+
+    memcpy(damage_deltas, pDamage_deltas, sizeof(damage_deltas));
+    ARAddDataToSession(ePipe_chunk_damage, pCar_ID, damage_deltas, sizeof(damage_deltas));
+}
+
+#if defined(REC2_MATCHING) && defined(_MSC_VER)
+#pragma inline_depth()
+#endif
+
+// FUNCTION: CARMA2_HW 0x004c6640
+// FUNCTION: CARMA2_SW 0x004c2d70
+// FUNCTION: CARMA2_CHEAT 0x004cc160
+void C2_HOOK_FASTCALL PipeCarPositions(void) {
+    int category;
+    int car_count;
+    int car_index;
+    int session_started;
+    tCar_spec* car;
+    int i;
+    tS8 damage_deltas[12];
+    int any_damage;
+
+    ARStartPipingSession(ePipe_chunk_car);
+    for (category = eVehicle_self; category <= eVehicle_drone; category++) {
+        if (category == eVehicle_self) {
+            car_count = 1;
+        } else {
+            car_count = GetCarCount(category);
+        }
+        for (car_index = 0; car_index < car_count; car_index++) {
+            if (category == eVehicle_self) {
+                car = &gProgram_state.current_car;
+            } else {
+                car = GetCarSpec(category, car_index);
+            }
+            AddCarToPipingSession((category << 8) + car_index,
+                &car->car_master_actor->t.t.mat,
+                &car->collision_info->v,
+                car->speedo_speed,
+                car->revs,
+                car->gear,
+                car->frame_collision_flag,
+                car->field_0x18cc);
+        }
+    }
+    AREndPipingSession();
+
+    session_started = 0;
+    for (category = eVehicle_self; category <= eVehicle_self; category++) {
+        if (category == eVehicle_self) {
+            car_count = 1;
+        } else {
+            car_count = GetCarCount(category);
+        }
+        for (car_index = 0; car_index < car_count; car_index++) {
+            if (category == eVehicle_self) {
+                car = &gProgram_state.current_car;
+            } else {
+                car = GetCarSpec(category, car_index);
+            }
+            if (car->active) {
+                any_damage = 0;
+                for (i = 0; i < (int)REC2_ASIZE(car->damage_units); i++) {
+                    damage_deltas[i] = car->damage_units[i].damage_level - car->frame_start_damage[i];
+                    car->frame_start_damage[i] = car->damage_units[i].damage_level;
+                    any_damage |= damage_deltas[i];
+                }
+                if (any_damage) {
+                    if (!session_started) {
+                        ARStartPipingSession(ePipe_chunk_damage);
+                        session_started = 1;
+                    }
+                    AddDamageToPipingSession((category << 8) + car_index, damage_deltas);
+                }
+            }
+        }
+    }
+    if (session_started) {
+        AREndPipingSession();
+    }
+
+    ARStartPipingSession(ePipe_chunk_non_car);
+    for (category = eVehicle_self; category <= eVehicle_drone; category++) {
+        if (category == eVehicle_self) {
+            car_count = 1;
+        } else {
+            car_count = GetCarCount(category);
+        }
+        for (car_index = 0; car_index < car_count; car_index++) {
+            if (category == eVehicle_self) {
+                car = &gProgram_state.current_car;
+            } else {
+                car = GetCarSpec(category, car_index);
+            }
+            PhysicsObjectRecurseChildren(car->collision_info, PipeObjectPosition, NULL);
+        }
+    }
+    AREndPipingSession();
+}
 
 // DoOilSpillAR
 
@@ -1046,9 +1167,9 @@ void C2_HOOK_FASTCALL AddExtendedSplashToPipingSession(tPhysics_object* pObject,
         SIZE_OFFSET_PIPING(tPipe_chunk_extended_splash, bb), &pObject->bb2);
 }
 
-// AddCarToPipingSession
+// AddCarToPipingSession (moved before PipeCarPositions for inlining purposes)
 
-// AddDamageToPipingSession
+// AddDamageToPipingSession (moved before PipeCarPositions for inlining purposes)
 
 // FUNCTION: CARMA2_HW 0x004c74c0
 // FUNCTION: CARMA2_SW 0x004c3bf0
