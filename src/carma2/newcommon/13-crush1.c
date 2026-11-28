@@ -1000,11 +1000,32 @@ float C2_HOOK_FASTCALL PointEdgeDistSq(const br_vector3* pP, const br_vector3* p
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x0042c0e0
-// STUB: CARMA2_SW 0x0042c170
-// STUB: CARMA2_CHEAT 0x0042c280
+// FUNCTION: CARMA2_HW 0x0042c0e0
+// FUNCTION: CARMA2_SW 0x0042c170
+// FUNCTION: CARMA2_CHEAT 0x0042c280
 void C2_HOOK_FASTCALL SetFlapCheckVertices(tCar_crush_flap_data* pFlap_data, const br_model* pModel, tModel_detail_vertex_data* pVertex_data) {
-    NOT_IMPLEMENTED();
+    br_vector3 hinge_normal;
+    float dist;
+    tU16 i;
+    br_vector3 hinge01;
+    float d;
+    float side;
+    br_vector3 hinge02;
+
+    BrVector3Sub(&hinge01, &pModel->vertices[pFlap_data->hinge1].p, &pModel->vertices[pFlap_data->hinge0].p);
+    BrVector3Sub(&hinge02, &pModel->vertices[pFlap_data->hinge2].p, &pModel->vertices[pFlap_data->hinge0].p);
+    BrVector3Cross(&hinge_normal, &hinge01, &hinge02);
+    BrVector3Normalise(&hinge_normal, &hinge_normal);
+    d = BrVector3Dot(&hinge_normal, &pModel->vertices[pFlap_data->hinge0].p);
+    for (i = 0; i < pModel->nvertices; i++) {
+        dist = PointEdgeDistSq(&pModel->vertices[i].p, &pModel->vertices[pFlap_data->hinge0].p, &pModel->vertices[pFlap_data->hinge1].p);
+        side = BrVector3Dot(&hinge_normal, &pModel->vertices[i].p) - d;
+        if (dist > 0.00021004f && side > -0.001449275f) {
+            pVertex_data[i].flags |= 0x2;
+        } else {
+            pVertex_data[i].flags &= ~0x2;
+        }
+    }
 }
 
 #ifdef REC2_MATCHING
