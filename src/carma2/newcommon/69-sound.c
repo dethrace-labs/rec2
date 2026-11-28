@@ -115,6 +115,7 @@ int gLast_tune = -1;
 
 // GLOBAL: CARMA2_HW 0x00595c28
 // GLOBAL: CARMA2_SW 0x00590b88
+// GLOBAL: CARMA2_CHEAT 0x0059c580
 const char* gSound_periodicity_choices[3] = {
     "RANDOM",
     "PERIODIC",
@@ -207,6 +208,7 @@ br_vector3 gOld_camera_position;
 
 // GLOBAL: CARMA2_HW 0x0079ea60
 // GLOBAL: CARMA2_SW 0x00794fc0
+// GLOBAL: CARMA2_CHEAT 0x007a57c0
 br_vector3 gCamera_velocity;
 
 // GLOBAL: CARMA2_HW 0x00684540
