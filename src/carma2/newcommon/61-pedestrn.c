@@ -341,6 +341,7 @@ br_material* gPed_slick_material = NULL;
 br_material* gNapalm_bolt_materials[7] = { 0 };
 
 // GLOBAL: CARMA2_HW 0x0069fda4
+// GLOBAL: CARMA2_CHEAT 0x006a791c
 int gINT_0069fda4 = 0;
 
 // GLOBAL: CARMA2_HW 0x00694308
