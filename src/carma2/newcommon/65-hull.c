@@ -102,38 +102,38 @@ int C2_HOOK_FASTCALL Collinear(const br_vector3* pV1, const br_vector3* pV2, con
 
 // AddPointToPolyhedron
 
-#ifdef REC2_MATCHING
-
 // FUNCTION: CARMA2_HW 0x00421fd0
 // FUNCTION: CARMA2_SW 0x00422050
 // FUNCTION: CARMA2_CHEAT 0x00422220
-tFUN_00421fd0* C2_HOOK_FASTCALL FUN_00421fd0(int pCount_points) {
-    /* Unused function */
-    tFUN_00421fd0* result;
+tCollision_shape_polyhedron_data* C2_HOOK_FASTCALL FUN_00421fd0(int pCount_points) {
+    tCollision_shape_polyhedron_data* result;
     int count_faces;
-    int count_indices;
+    int count_edges;
 
     count_faces = pCount_points - 2;
-    count_indices = count_faces * 3;
+    count_edges = count_faces * 3;
 
-    /* FIXME: replace "32" with sizeof(some_struct) */
-    result = BrMemAllocate(sizeof(tU16) * count_indices + 32 * count_faces + sizeof(br_vector3) * pCount_points + sizeof(tFUN_00421fd0), BR_MEMORY_APPLICATION);
+    /* A convex hull of n points has at most 3 * (n - 2) edges and 2 * (n - 2) faces */
+    result = BrMemAllocate(sizeof(tPolyhedron_edge_indexes) * count_edges + 2 * sizeof(br_vector4) * count_faces + sizeof(br_vector3) * pCount_points + sizeof(tCollision_shape_polyhedron_data), BR_MEMORY_APPLICATION);
     if (result == NULL) {
         return NULL;
     }
-    result->field_0x0c = (br_vector3*)(result + 1);
-    result->field_0x10 = (tU16*)(result->field_0x0c + pCount_points);
-    result->field_0x14 = (undefined*)(result->field_0x10 + count_indices);
-    result->field_0x00 = 0;
-    result->field_0x04 = 0;
-    result->field_0x08 = 0;
+    result->points = (br_vector3*)(result + 1);
+    result->edges = (tPolyhedron_edge_indexes*)(result->points + pCount_points);
+    result->planes = (br_vector4*)(result->edges + count_edges);
+    result->count_points = 0;
+    result->count_edges = 0;
+    result->count_planes = 0;
     return result;
 }
-#endif
 
 // AdjustEdges
 
 // PointOnShape
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
 // STUB: CARMA2_HW 0x00420fb0
 // STUB: CARMA2_SW 0x00421030
@@ -142,9 +142,125 @@ tPhysicsError C2_HOOK_FASTCALL ConvexHull3D(tCollision_shape_polyhedron_data* pP
     NOT_IMPLEMENTED();
 }
 
-// GetPointSample
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
-// SampledConvexHull
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// NPointConvexHullUsingSample
+// STUB: CARMA2_HW 0x00422030
+// STUB: CARMA2_SW 0x004220b0
+// STUB: CARMA2_CHEAT 0x00422280
+tPhysicsError C2_HOOK_FASTCALL GetPointSample(br_model* pModel, int pCount, int* pIndices) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
+
+// FUNCTION: CARMA2_HW 0x004222c0
+// FUNCTION: CARMA2_SW 0x00422340
+// FUNCTION: CARMA2_CHEAT 0x00422510
+tPhysicsError C2_HOOK_FASTCALL FUN_004222c0(int* pCount, int* pIndices, br_model* pModel, int pMin_points, int pMax_points) {
+    tCollision_shape_polyhedron_data* polyhedron;
+    tPhysicsError error;
+    int count;
+
+    if (pModel == NULL) {
+        return ePhysicsError_UnknownHingeType;
+    }
+    if (pMax_points < 3) {
+        return ePhysicsError_OutOfMemory;
+    }
+    if (pMax_points > pModel->nvertices) {
+        pMax_points = pModel->nvertices;
+    }
+    if (pMin_points < 3) {
+        pMin_points = 3;
+    } else if (pMin_points > pMax_points) {
+        pMin_points = pMax_points;
+    }
+    polyhedron = FUN_00421fd0(pMax_points);
+    if (polyhedron == NULL) {
+        return ePhysicsError_error4;
+    }
+    count = pMax_points;
+    for (;;) {
+        *pCount = count;
+        error = SampledConvexHull(polyhedron, pIndices, pModel, count);
+        if (polyhedron->count_points == 0 || (error != ePhysicsError_Ok && error != ePhysicsError_WireFrameHasNoPoints)) {
+            return error;
+        }
+        count = count * pMin_points / polyhedron->count_points;
+        if (polyhedron->count_points == pMin_points || count >= pMax_points) {
+            break;
+        }
+    }
+    BrMemFree(polyhedron);
+    return error;
+}
+
+// FUNCTION: CARMA2_HW 0x00422400
+// FUNCTION: CARMA2_SW 0x00422480
+// FUNCTION: CARMA2_CHEAT 0x00422650
+tPhysicsError C2_HOOK_FASTCALL SampledConvexHull(tCollision_shape_polyhedron_data* pPolyhedron, int* pIndices, br_model* pModel, int pCount) {
+    int i;
+    tPhysicsError error;
+
+    if (pModel->nvertices > pCount) {
+        error = GetPointSample(pModel, pCount, pIndices);
+        if (error != ePhysicsError_Ok) {
+            return error;
+        }
+        pPolyhedron->count_points = pCount;
+        for (i = 0; i < pCount; i++) {
+            BrVector3Copy(&pPolyhedron->points[i], &pModel->vertices[pIndices[i]].p);
+        }
+    } else {
+        pPolyhedron->count_points = pModel->nvertices;
+        for (i = 0; i < pModel->nvertices; i++) {
+            pIndices[i] = i;
+            BrVector3Copy(&pPolyhedron->points[i], &pModel->vertices[i].p);
+        }
+    }
+    return ConvexHull3D(pPolyhedron);
+}
+
+// FUNCTION: CARMA2_HW 0x00422500
+// FUNCTION: CARMA2_SW 0x00422580
+// FUNCTION: CARMA2_CHEAT 0x00422750
+tPhysicsError C2_HOOK_FASTCALL NPointConvexHullUsingSample(tCollision_shape_polyhedron_data* pPolyhedron, br_model* pModel, int pMin_points, int pMax_points, int* pIndices) {
+    tPhysicsError error;
+    int count;
+
+    if (pModel == NULL) {
+        return ePhysicsError_UnknownHingeType;
+    }
+    if (pMax_points < 3) {
+        return ePhysicsError_OutOfMemory;
+    }
+    if (pMax_points > pModel->nvertices) {
+        pMax_points = pModel->nvertices;
+    }
+    if (pMin_points < 3) {
+        pMin_points = 3;
+    } else if (pMin_points > pMax_points) {
+        pMin_points = pMax_points;
+    }
+    count = pMax_points;
+    do {
+        error = SampledConvexHull(pPolyhedron, pIndices, pModel, count);
+        if (pPolyhedron->count_points == 0 || (error != ePhysicsError_Ok && error != ePhysicsError_WireFrameHasNoPoints)) {
+            break;
+        }
+        count = count * pMin_points / pPolyhedron->count_points;
+        if (pPolyhedron->count_points == pMin_points) {
+            break;
+        }
+    } while (count < pMax_points);
+    return error;
+}
 
