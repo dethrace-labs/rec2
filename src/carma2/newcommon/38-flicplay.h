@@ -57,6 +57,8 @@ extern void C2_HOOK_FASTCALL LetFlicFuckWithPalettes(void);
 
 extern void C2_HOOK_STDCALL PlayFlicsInDarkness(void);
 
+extern void C2_HOOK_STDCALL ReilluminateFlics(void);
+
 extern void C2_HOOK_FASTCALL TurnFlicTransparencyOn(void);
 
 extern void C2_HOOK_FASTCALL TurnFlicTransparencyOff(void);
@@ -103,6 +105,8 @@ extern void C2_HOOK_FASTCALL DoUncompressedTrans(tFlic_descriptor* pFlic_info, t
 
 extern int C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info);
 
+extern int C2_HOOK_FASTCALL PlayFlic(int pIndex, tU32 pSize, tS8* pData_ptr, br_pixelmap* pDest_pixelmap, int pX_offset, int pY_offset, tPlayFlic_DoPerFrame DoPerFrame, int pInterruptable, int pFrame_rate);
+
 extern void C2_HOOK_FASTCALL InitFlics(void);
 
 extern int C2_HOOK_FASTCALL LoadFlic(int pIndex);
@@ -112,6 +116,8 @@ extern void C2_HOOK_FASTCALL UnlockFlic(int pIndex);
 extern int C2_HOOK_FASTCALL LoadFlicData(char* pName, tU8** pData, tU32* pData_length);
 
 extern void C2_HOOK_FASTCALL FreeFlic(int pIndex);
+
+extern void C2_HOOK_FASTCALL RunFlicAt(int pIndex, int pX, int pY);
 
 extern void C2_HOOK_FASTCALL SwapScreen(void);
 
