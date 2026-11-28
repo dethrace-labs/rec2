@@ -283,9 +283,10 @@ int gINT_006a6c3c;
 // FUNCTION: CARMA2_CHEAT 0x005210c0
 void C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
     MEMORYSTATUS memory_status;
-    unsigned int bufferSize;
+    int bufferSize;
     void *buffer;
 
+    buffer = NULL;
     if (gWin32ActionReplayBufferAllocated) {
         return;
     }
@@ -318,7 +319,7 @@ void C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
         bufferSize = 4000000;
     }
     dr_dprintf("Win32AllocateActionReplayBuffer(): We want %d bytes...", bufferSize);
-    if (memory_status.dwAvailPageFile + memory_status.dwAvailPhys < bufferSize) {
+    if (bufferSize > memory_status.dwAvailPageFile + memory_status.dwAvailPhys) {
         bufferSize = memory_status.dwAvailPageFile + memory_status.dwAvailPhys - 0x100000;
         dr_dprintf("Win32AllocateActionReplayBuffer(): ...but there's only %d bytes available...", bufferSize);
     }
@@ -327,7 +328,7 @@ void C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
         dr_dprintf("Win32AllocateActionReplayBuffer(): ...but we have to have a minimum size of %d bytes...",
                    bufferSize);
     }
-    while (1) {
+    while (bufferSize >= 0x10000) {
         buffer = BrMemAllocate(bufferSize, kMem_action_replay_buffer);
         if (buffer != NULL) {
             break;
@@ -335,11 +336,11 @@ void C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
         bufferSize -= 0x10000;
     }
     gPDActionReplayBuffer = buffer;
-    if (buffer == NULL) {
-        gPDActionReplayBufferSize = 0;
-    } else {
+    if (buffer != NULL) {
         gPDActionReplayBufferSize = bufferSize;
         Sleep(1000);
+    } else {
+        gPDActionReplayBufferSize = 0;
     }
     dr_dprintf("Win32AllocateActionReplayBuffer(): Actually allocated %d bytes.", bufferSize);
     GlobalMemoryStatus(&memory_status);
@@ -1065,7 +1066,7 @@ void C2_HOOK_FASTCALL PDForEveryFile(const char *pThe_path, tPDForEveryFile_cbfn
     char found_path[256];
     WIN32_FIND_DATAA find_data;
     HANDLE hFindFile;
-    char file_filter[6];
+    char file_filter[256];
     char current_dir[260];
 
     GetCurrentDirectoryA(sizeof(current_dir), current_dir);
@@ -1073,10 +1074,13 @@ void C2_HOOK_FASTCALL PDForEveryFile(const char *pThe_path, tPDForEveryFile_cbfn
         strcpy(file_filter, "*.???");
         hFindFile = FindFirstFileA(file_filter, &find_data);
         if (hFindFile != INVALID_HANDLE_VALUE) {
-            do {
+            for (;;) {
                 PathCat(found_path, pThe_path, find_data.cFileName);
                 pAction_routine(found_path);
-            } while (FindNextFileA(hFindFile, &find_data) != 0);
+                if (FindNextFileA(hFindFile, &find_data) == 0) {
+                    break;
+                }
+            }
             FindClose(hFindFile);
         }
         SetCurrentDirectoryA(current_dir);
