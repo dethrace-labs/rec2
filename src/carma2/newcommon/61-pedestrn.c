@@ -8,6 +8,7 @@
 
 #include "61-pedestrn.h"
 
+#include "00-car.h"
 #include "07-structur.h"
 #include "08-loading1.h"
 #include "10-loading2.h"
@@ -61,10 +62,25 @@ tSmashable_initial_position_spec gGiblet_initial_position;
 // GLOBAL: CARMA2_CHEAT 0x0069bc94
 float gGiblet_scrape_start;
 
+// GLOBAL: CARMA2_HW 0x00694140
+// GLOBAL: CARMA2_SW 0x0068e198
+// GLOBAL: CARMA2_CHEAT 0x0069bcb8
+tProximity_ray gProximity_rays[20] = { 0 };
+
+// GLOBAL: CARMA2_HW 0x00694230
+// GLOBAL: CARMA2_SW 0x0068e288
+// GLOBAL: CARMA2_CHEAT 0x0069bda8
+int gPed_animal_count = 0;
+
+// GLOBAL: CARMA2_HW 0x00694234
+// GLOBAL: CARMA2_SW 0x0068e28c
+// GLOBAL: CARMA2_CHEAT 0x0069bdac
+int gPed_severing_damage = 0;
+
 // GLOBAL: CARMA2_HW 0x00694238
 // GLOBAL: CARMA2_SW 0x0068e290
 // GLOBAL: CARMA2_CHEAT 0x0069bdb0
-tSlick_spec gPed_slick;
+tSlick_spec gPed_slick = { 0 };
 
 // GLOBAL: CARMA2_HW 0x0069445c
 // GLOBAL: CARMA2_SW 0x0068e4b4
@@ -290,6 +306,11 @@ int gPeds_suicidal;
 // GLOBAL: CARMA2_CHEAT 0x0074be50
 int gExploding_pedestrians;
 
+// GLOBAL: CARMA2_HW 0x007447b4
+// GLOBAL: CARMA2_SW 0x0073b274
+// GLOBAL: CARMA2_CHEAT 0x0074be54
+tPedestrian* gPedestrians_in_sight;
+
 // GLOBAL: CARMA2_HW 0x007447c0
 // GLOBAL: CARMA2_SW 0x0073b280
 // GLOBAL: CARMA2_CHEAT 0x0074be60
@@ -375,6 +396,11 @@ br_vector3 gChanged_points[10];
 // GLOBAL: CARMA2_SW 0x0068e4ac
 // GLOBAL: CARMA2_CHEAT 0x0069bfcc
 int gPed_dismember_spurting_member_count;
+
+// GLOBAL: CARMA2_HW 0x00694458
+// GLOBAL: CARMA2_SW 0x0068e4b0
+// GLOBAL: CARMA2_CHEAT 0x0069bfd0
+br_pixelmap* gProx_ray_shade_table;
 
 // GLOBAL: CARMA2_HW 0x00694490
 // GLOBAL: CARMA2_SW 0x0068e4e8

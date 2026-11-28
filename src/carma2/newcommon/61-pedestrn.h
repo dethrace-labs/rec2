@@ -44,8 +44,12 @@ extern int gSelected_ped;
 extern int gCount_active_peds;
 extern int gPeds_suicidal;
 extern int gExploding_pedestrians;
+extern tPedestrian* gPedestrians_in_sight;
 extern tNapalm_bolt gNapalm_bolts[5];
 extern int gPed_severing_chance;
+
+extern int gPed_severing_damage;
+extern br_pixelmap* gProx_ray_shade_table;
 extern br_material* gPed_slick_material;
 extern br_material* gNapalm_bolt_materials[7];
 extern br_model* gNapalm_bolt_models[7];
