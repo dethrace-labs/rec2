@@ -15,9 +15,14 @@ extern const char* gCop_name;
 extern const char* gDrone_name;
 
 extern int gBIG_APC_index;
+extern int gChallenger_index__opponent;
 extern float gOpponent_nastyness_frigger;
 extern int gMinTimeOpponentRepair;
 extern int gMaxTimeOpponentRepair;
+extern tU32 gNext_grudge_reduction;
+extern int gGrudge_reduction_per_period;
+extern br_scalar gMinimum_yness_before_knackerisation;
+extern tU32 gAcme_frame_count;
 extern int gActive_car_list_rebuild_required;
 extern int gNumber_of_cops_before_faffage;
 extern int gNum_of_opponents_completing_race;
@@ -39,6 +44,7 @@ extern int gNum_of_opponents_completing_race;
 extern int gRoute_search_attempts;
 extern int gRoute_search_max_calls;
 extern int gRoute_search_total_calls;
+extern float gDefinite_cop_pursuit_speed;
 extern float gDefinite_no_cop_pursuit_speed;
 extern int gFirst_frame;
 extern float gCop_pursuit_speed_percentage_multiplier;
@@ -176,7 +182,9 @@ extern int C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_spec
 
 // NumberOfOpponentsStillRunning
 
-// ResetPredominantJobbies
+extern void C2_HOOK_FASTCALL ResetPredominantJobbies(void);
+
+extern void C2_HOOK_FASTCALL ChallengeOccurred(int pChallenger_index, int pAccepted);
 
 extern void C2_HOOK_FASTCALL LoadCopCars(tRace_info* pRace_info);
 
@@ -184,9 +192,11 @@ extern void C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF);
 
 extern void C2_HOOK_FASTCALL DisposeOpponentPaths(void);
 
-// MungeOpponents
+extern void C2_HOOK_FASTCALL MungeOpponents(tU32 pFrame_period);
 
-// InitOpponents
+extern void C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info);
+
+extern void C2_HOOK_FASTCALL FUN_004ae380(void);
 
 extern void C2_HOOK_FASTCALL DisposeOpponents(void);
 
@@ -226,7 +236,7 @@ extern void C2_HOOK_FASTCALL InitOpponentPsyche(int pOpponent_index);
 
 extern void C2_HOOK_FASTCALL TwoCarsHitEachOther(tCar_spec* pA_car, tCar_spec* pAnother_car);
 
-// RecordOpponentTwattageOccurrence
+extern void C2_HOOK_FASTCALL RecordOpponentTwattageOccurrence(tCar_spec* pTwatter, tCar_spec* pTwattee);
 
 // GetOpponentMood
 
