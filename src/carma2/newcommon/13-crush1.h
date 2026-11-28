@@ -520,23 +520,23 @@ extern void C2_HOOK_FASTCALL ReceivedReAttachAllBits(tNet_message_chunk* pConten
 
 // DoQueuedNetDetaching
 
-// DBNonCarOwner
+extern tCar_spec* C2_HOOK_FASTCALL DBNonCarOwner(tNon_car_spec* pNon_car);
 
-// SendDBNonCar
+extern void C2_HOOK_FASTCALL SendDBNonCar(tNon_car_spec* pNon_car, tU32 pTime, tNet_game_player_info* pPlayer);
 
 // ReceivedDBNonCar
 
-// SendAllDBNonCars
+extern void C2_HOOK_FASTCALL SendAllDBNonCars(tNet_game_player_info* pPlayer);
 
 // ReceivedDBNonCarPosition
 
 extern void C2_HOOK_FASTCALL ReceivedToggleFlaps(tNet_message_chunk* pContents);
 
-// SHNonCarOwner
+extern tCar_spec* C2_HOOK_FASTCALL SHNonCarOwner(tNon_car_spec* pNon_car);
 
 // SendSHNonCar
 
-// SendAllSHNonCars
+extern void C2_HOOK_FASTCALL SendAllSHNonCars(tNet_game_player_info* pPlayer);
 
 // ReceivedSHNonCar
 
