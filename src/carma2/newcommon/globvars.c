@@ -510,6 +510,7 @@ int gTyping;
 int gCount_opponents;
 
 // GLOBAL: CARMA2_HW 0x0076350c
+// GLOBAL: CARMA2_SW 0x00759a6c
 // GLOBAL: CARMA2_CHEAT 0x0076abac
 br_actor* gPlayer_car_master_actor;
 
@@ -637,6 +638,7 @@ br_vector3* gOur_pos;
 
 // GLOBAL: CARMA2_HW 0x007634b4
 // GLOBAL: CARMA2_SW 0x00759a14
+// GLOBAL: CARMA2_CHEAT 0x0076ab54
 int gTrack_version;
 //float gCar_crush_max_fold;
 
