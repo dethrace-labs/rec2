@@ -65,6 +65,26 @@ br_actor* gLast_actor;
 // GLOBAL: CARMA2_CHEAT 0x006bdcc0
 br_model* gAdditional_models[1000];
 
+// GLOBAL: CARMA2_HW 0x006ab7a4
+// GLOBAL: CARMA2_SW 0x006a51f4
+// GLOBAL: CARMA2_CHEAT 0x006b2e34
+br_actor* gKnown_actor;
+
+// GLOBAL: CARMA2_HW 0x006ab798
+// GLOBAL: CARMA2_SW 0x006a51e8
+// GLOBAL: CARMA2_CHEAT 0x006b2e28
+br_vector3 gActor_centre;
+
+// GLOBAL: CARMA2_HW 0x00661080
+// GLOBAL: CARMA2_SW 0x0065b9d4
+// GLOBAL: CARMA2_CHEAT 0x006688b8
+tRotate_mode gCurrent_rotate_mode = eRotate_mode_y;
+
+// GLOBAL: CARMA2_HW 0x006ab944
+// GLOBAL: CARMA2_SW 0x006a5394
+// GLOBAL: CARMA2_CHEAT 0x006b2fd4
+tScale_mode gCurrent_scale_mode;
+
 // GLOBAL: CARMA2_HW 0x006ab948
 // GLOBAL: CARMA2_SW 0x006a5398
 // GLOBAL: CARMA2_CHEAT 0x006b2fd8
@@ -286,6 +306,475 @@ void C2_HOOK_FASTCALL AutoSaveAdditionalStuff(void) {
     FlushAllPedCaches();
 }
 
+// FUNCTION: CARMA2_HW 0x00508a50
+// FUNCTION: CARMA2_SW 0x00503ea0
+// FUNCTION: CARMA2_CHEAT 0x0050e440
+void C2_HOOK_FASTCALL SnapAccToVertical(void) {
+
+    if (gLast_actor != NULL) {
+        BrVector3Set((br_vector3*)gLast_actor->t.t.mat.m[0], 1.0f, 0.0f, 0.0f);
+        BrVector3Set((br_vector3*)gLast_actor->t.t.mat.m[1], 0.0f, 1.0f, 0.0f);
+        BrVector3Set((br_vector3*)gLast_actor->t.t.mat.m[2], 0.0f, 0.0f, 1.0f);
+        AutoSaveAdditionalStuff();
+    }
+}
+
+inline void C2_HOOK_FASTCALL RotateAccessory(br_angle pAngle) {
+    br_vector3 mr_offset;
+
+    if (gLast_actor != NULL) {
+        if (gSpec_vol_mode == 0 && gLast_actor->identifier != NULL && gLast_actor->identifier[0] == '@') {
+            CentreActor(gLast_actor, &mr_offset);
+        }
+        switch (gCurrent_rotate_mode) {
+        case eRotate_mode_x:
+            BrMatrix34PreRotateX(&gLast_actor->t.t.mat, pAngle);
+            break;
+        case eRotate_mode_y:
+            BrMatrix34PreRotateY(&gLast_actor->t.t.mat, pAngle);
+            break;
+        case eRotate_mode_z:
+            BrMatrix34PreRotateZ(&gLast_actor->t.t.mat, pAngle);
+            break;
+        }
+        if (gSpec_vol_mode == 0 && gLast_actor->identifier != NULL && gLast_actor->identifier[0] == '@') {
+            DRActorEnumRecurseWithTrans(gLast_actor, NULL, ApplyTransToModels, NULL);
+            OffsetActor(gLast_actor, &mr_offset);
+        }
+        AutoSaveAdditionalStuff();
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00508c20
+// FUNCTION: CARMA2_SW 0x00504070
+// FUNCTION: CARMA2_CHEAT 0x0050e610
+void C2_HOOK_FASTCALL RotateAccL(void) {
+
+    RotateAccessory(BR_ANGLE_DEG(90));
+}
+
+// FUNCTION: CARMA2_HW 0x00508e50
+// FUNCTION: CARMA2_SW 0x005042a0
+// FUNCTION: CARMA2_CHEAT 0x0050e840
+intptr_t C2_HOOK_CDECL OffsetModel(br_actor* pActor, void* pContext) {
+    int i;
+
+    if (pActor->model != NULL) {
+        for (i = 0; i < pActor->model->nvertices; i++) {
+            BrVector3Accumulate(&pActor->model->vertices[i].p, (br_vector3*)pContext);
+        }
+    }
+    return 0;
+}
+
+inline void C2_HOOK_FASTCALL OffsetActor(br_actor* pActor, br_vector3* pOffset) {
+
+    DRActorEnumRecurse(pActor, OffsetModel, pOffset);
+}
+
+// FUNCTION: CARMA2_HW 0x00508ec0
+// FUNCTION: CARMA2_SW 0x00504310
+// FUNCTION: CARMA2_CHEAT 0x0050e8b0
+void C2_HOOK_FASTCALL CentreActor(br_actor* pActor, br_vector3* pOffset) {
+
+    if (pActor->model != NULL) {
+        if (gKnown_actor == gLast_actor) {
+            BrVector3Scale(pOffset, &gActor_centre, -1.0f);
+        } else {
+            pOffset->v[0] = -(pActor->model->bounds.max.v[0] + pActor->model->bounds.min.v[0]) / 2.0f;
+            pOffset->v[1] = -(pActor->model->bounds.max.v[1] + pActor->model->bounds.min.v[1]) / 2.0f;
+            pOffset->v[2] = -(pActor->model->bounds.max.v[2] + pActor->model->bounds.min.v[2]) / 2.0f;
+        }
+    } else {
+        BrVector3Set(pOffset, 0.0f, 0.0f, 0.0f);
+    }
+    OffsetActor(pActor, pOffset);
+    BrVector3Negate(pOffset, pOffset);
+}
+
+// FUNCTION: CARMA2_HW 0x00508f70
+// FUNCTION: CARMA2_SW 0x005043c0
+// FUNCTION: CARMA2_CHEAT 0x0050e960
+void C2_HOOK_FASTCALL RotateAccL2(void) {
+
+    RotateAccessory(BR_ANGLE_DEG(15));
+}
+
+// FUNCTION: CARMA2_HW 0x005091a0
+// FUNCTION: CARMA2_SW 0x005045f0
+// FUNCTION: CARMA2_CHEAT 0x0050eb90
+void C2_HOOK_FASTCALL RotateAccL3(void) {
+
+    RotateAccessory(BR_ANGLE_DEG(5));
+}
+
+// FUNCTION: CARMA2_HW 0x005093d0
+// FUNCTION: CARMA2_SW 0x00504820
+// FUNCTION: CARMA2_CHEAT 0x0050edc0
+void C2_HOOK_FASTCALL RotateAccL4(void) {
+
+    RotateAccessory(BR_ANGLE_DEG(1));
+}
+
+// FUNCTION: CARMA2_HW 0x00509600
+// FUNCTION: CARMA2_SW 0x00504a50
+// FUNCTION: CARMA2_CHEAT 0x0050eff0
+void C2_HOOK_FASTCALL RotateAccR(void) {
+
+    RotateAccessory(BR_ANGLE_DEG(-90));
+}
+
+// FUNCTION: CARMA2_HW 0x00509830
+// FUNCTION: CARMA2_SW 0x00504c80
+// FUNCTION: CARMA2_CHEAT 0x0050f220
+void C2_HOOK_FASTCALL RotateAccR2(void) {
+
+    RotateAccessory(BR_ANGLE_DEG(-15));
+}
+
+// FUNCTION: CARMA2_HW 0x00509a60
+// FUNCTION: CARMA2_SW 0x00504eb0
+// FUNCTION: CARMA2_CHEAT 0x0050f450
+void C2_HOOK_FASTCALL RotateAccR3(void) {
+
+    RotateAccessory(BR_ANGLE_DEG(-5));
+}
+
+// FUNCTION: CARMA2_HW 0x00509c90
+// FUNCTION: CARMA2_SW 0x005050e0
+// FUNCTION: CARMA2_CHEAT 0x0050f680
+void C2_HOOK_FASTCALL RotateAccR4(void) {
+
+    RotateAccessory(BR_ANGLE_DEG(-1));
+}
+
+// FUNCTION: CARMA2_HW 0x00509ec0
+// FUNCTION: CARMA2_SW 0x00505310
+// FUNCTION: CARMA2_CHEAT 0x0050f8b0
+void C2_HOOK_FASTCALL CycleAccRotate(void) {
+
+    if (gCurrent_rotate_mode++ == eRotate_mode_z) {
+        gCurrent_rotate_mode = eRotate_mode_x;
+    }
+    switch (gCurrent_rotate_mode) {
+    case eRotate_mode_x:
+        NewTextHeadupSlot(4, 0, 2000, -2, "Rotate mode: X");
+        break;
+    case eRotate_mode_y:
+        NewTextHeadupSlot(4, 0, 2000, -2, "Rotate mode: Y");
+        break;
+    case eRotate_mode_z:
+        NewTextHeadupSlot(4, 0, 2000, -2, "Rotate mode: Z");
+        break;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00509f30
+// FUNCTION: CARMA2_SW 0x00505380
+// FUNCTION: CARMA2_CHEAT 0x0050f920
+void C2_HOOK_FASTCALL CycleAccScale(void) {
+
+    if (gCurrent_scale_mode++ == eScale_mode_z) {
+        gCurrent_scale_mode = eScale_mode_all;
+    }
+    switch (gCurrent_scale_mode) {
+    case eScale_mode_all:
+        NewTextHeadupSlot(4, 0, 2000, -2, "Scale mode: ALL");
+        break;
+    case eScale_mode_x:
+        NewTextHeadupSlot(4, 0, 2000, -2, "Scale mode: X");
+        break;
+    case eScale_mode_y:
+        NewTextHeadupSlot(4, 0, 2000, -2, "Scale mode: Y");
+        break;
+    case eScale_mode_z:
+        NewTextHeadupSlot(4, 0, 2000, -2, "Scale mode: Z");
+        break;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00509fd0
+// FUNCTION: CARMA2_SW 0x00505420
+// FUNCTION: CARMA2_CHEAT 0x0050f9c0
+void C2_HOOK_FASTCALL ScaleAccUp2(void) {
+
+    ScaleAccessory(1.2f);
+}
+
+// FUNCTION: CARMA2_HW 0x00509fe0
+// FUNCTION: CARMA2_SW 0x00505430
+// FUNCTION: CARMA2_CHEAT 0x0050f9d0
+void C2_HOOK_FASTCALL ScaleAccessory(float pScaling_factor) {
+    br_vector3 mr_offset;
+
+    if (gLast_actor != NULL) {
+        if (gSpec_vol_mode == 0 && gLast_actor->identifier != NULL && gLast_actor->identifier[0] == '@') {
+            CentreActor(gLast_actor, &mr_offset);
+        }
+        switch (gCurrent_scale_mode) {
+        case eScale_mode_all:
+            BrMatrix34PreScale(&gLast_actor->t.t.mat, pScaling_factor, pScaling_factor, pScaling_factor);
+            break;
+        case eScale_mode_x:
+            BrMatrix34PreScale(&gLast_actor->t.t.mat, pScaling_factor, 1.0f, 1.0f);
+            break;
+        case eScale_mode_y:
+            BrMatrix34PreScale(&gLast_actor->t.t.mat, 1.0f, pScaling_factor, 1.0f);
+            break;
+        case eScale_mode_z:
+            BrMatrix34PreScale(&gLast_actor->t.t.mat, 1.0f, 1.0f, pScaling_factor);
+            break;
+        }
+        if (gSpec_vol_mode == 0 && gLast_actor->identifier != NULL && gLast_actor->identifier[0] == '@') {
+            DRActorEnumRecurseWithTrans(gLast_actor, NULL, ApplyTransToModels, NULL);
+            OffsetActor(gLast_actor, &mr_offset);
+        }
+        AutoSaveAdditionalStuff();
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0050a230
+// FUNCTION: CARMA2_SW 0x00505680
+// FUNCTION: CARMA2_CHEAT 0x0050fc20
+void C2_HOOK_FASTCALL ScaleAccUp3(void) {
+
+    ScaleAccessory(1.05f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050a240
+// FUNCTION: CARMA2_SW 0x00505690
+// FUNCTION: CARMA2_CHEAT 0x0050fc30
+void C2_HOOK_FASTCALL ScaleAccUp4(void) {
+
+    ScaleAccessory(1.002f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050a250
+// FUNCTION: CARMA2_SW 0x005056a0
+// FUNCTION: CARMA2_CHEAT 0x0050fc40
+void C2_HOOK_FASTCALL ScaleAccDown2(void) {
+
+    ScaleAccessory(1 / 1.2f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050a260
+// FUNCTION: CARMA2_SW 0x005056b0
+// FUNCTION: CARMA2_CHEAT 0x0050fc50
+void C2_HOOK_FASTCALL ScaleAccDown3(void) {
+
+    ScaleAccessory((float)(1 / 1.05));
+}
+
+// FUNCTION: CARMA2_HW 0x0050a270
+// FUNCTION: CARMA2_SW 0x005056c0
+// FUNCTION: CARMA2_CHEAT 0x0050fc60
+void C2_HOOK_FASTCALL ScaleAccDown4(void) {
+
+    ScaleAccessory((float)(1 / 1.002));
+}
+
+inline void C2_HOOK_FASTCALL MoveAccessory(br_scalar pX_shift, br_scalar pY_shift, br_scalar pZ_shift) {
+    br_vector3 v;
+
+    if (gLast_actor != NULL) {
+        BrVector3Set(&v, pX_shift, pY_shift, pZ_shift);
+        BrVector3Accumulate(&gLast_actor->t.t.translate.t, &v);
+        AutoSaveAdditionalStuff();
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x0050a280
+// FUNCTION: CARMA2_SW 0x005056d0
+// FUNCTION: CARMA2_CHEAT 0x0050fc70
+void C2_HOOK_FASTCALL MoveXAccL(void) {
+
+    MoveAccessory(1.0f, 0.0f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050a420
+// FUNCTION: CARMA2_SW 0x00505870
+// FUNCTION: CARMA2_CHEAT 0x0050fe10
+void C2_HOOK_FASTCALL MoveXAccL2(void) {
+
+    MoveAccessory(0.2f, 0.0f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050a5c0
+// FUNCTION: CARMA2_SW 0x00505a10
+// FUNCTION: CARMA2_CHEAT 0x0050ffb0
+void C2_HOOK_FASTCALL MoveXAccL3(void) {
+
+    MoveAccessory(0.02f, 0.0f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050a760
+// FUNCTION: CARMA2_SW 0x00505bb0
+// FUNCTION: CARMA2_CHEAT 0x00510150
+void C2_HOOK_FASTCALL MoveXAccL4(void) {
+
+    MoveAccessory(0.002f, 0.0f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050a900
+// FUNCTION: CARMA2_SW 0x00505d50
+// FUNCTION: CARMA2_CHEAT 0x005102f0
+void C2_HOOK_FASTCALL MoveXAccR(void) {
+
+    MoveAccessory(-1.0f, 0.0f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050aaa0
+// FUNCTION: CARMA2_SW 0x00505ef0
+// FUNCTION: CARMA2_CHEAT 0x00510490
+void C2_HOOK_FASTCALL MoveXAccR2(void) {
+
+    MoveAccessory(-0.2f, 0.0f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050ac40
+// FUNCTION: CARMA2_SW 0x00506090
+// FUNCTION: CARMA2_CHEAT 0x00510630
+void C2_HOOK_FASTCALL MoveXAccR3(void) {
+
+    MoveAccessory(-0.02f, 0.0f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050ade0
+// FUNCTION: CARMA2_SW 0x00506230
+// FUNCTION: CARMA2_CHEAT 0x005107d0
+void C2_HOOK_FASTCALL MoveXAccR4(void) {
+
+    MoveAccessory(-0.002f, 0.0f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050af80
+// FUNCTION: CARMA2_SW 0x005063d0
+// FUNCTION: CARMA2_CHEAT 0x00510970
+void C2_HOOK_FASTCALL MoveYAccL(void) {
+
+    MoveAccessory(0.0f, 1.0f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050b120
+// FUNCTION: CARMA2_SW 0x00506570
+// FUNCTION: CARMA2_CHEAT 0x00510b10
+void C2_HOOK_FASTCALL MoveYAccL2(void) {
+
+    MoveAccessory(0.0f, 0.2f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050b2c0
+// FUNCTION: CARMA2_SW 0x00506710
+// FUNCTION: CARMA2_CHEAT 0x00510cb0
+void C2_HOOK_FASTCALL MoveYAccL3(void) {
+
+    MoveAccessory(0.0f, 0.02f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050b460
+// FUNCTION: CARMA2_SW 0x005068b0
+// FUNCTION: CARMA2_CHEAT 0x00510e50
+void C2_HOOK_FASTCALL MoveYAccL4(void) {
+
+    MoveAccessory(0.0f, 0.002f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050b600
+// FUNCTION: CARMA2_SW 0x00506a50
+// FUNCTION: CARMA2_CHEAT 0x00510ff0
+void C2_HOOK_FASTCALL MoveYAccR(void) {
+
+    MoveAccessory(0.0f, -1.0f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050b7a0
+// FUNCTION: CARMA2_SW 0x00506bf0
+// FUNCTION: CARMA2_CHEAT 0x00511190
+void C2_HOOK_FASTCALL MoveYAccR2(void) {
+
+    MoveAccessory(0.0f, -0.2f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050b940
+// FUNCTION: CARMA2_SW 0x00506d90
+// FUNCTION: CARMA2_CHEAT 0x00511330
+void C2_HOOK_FASTCALL MoveYAccR3(void) {
+
+    MoveAccessory(0.0f, -0.02f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050bae0
+// FUNCTION: CARMA2_SW 0x00506f30
+// FUNCTION: CARMA2_CHEAT 0x005114d0
+void C2_HOOK_FASTCALL MoveYAccR4(void) {
+
+    MoveAccessory(0.0f, -0.002f, 0.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050bc80
+// FUNCTION: CARMA2_SW 0x005070d0
+// FUNCTION: CARMA2_CHEAT 0x00511670
+void C2_HOOK_FASTCALL MoveZAccL(void) {
+
+    MoveAccessory(0.0f, 0.0f, 1.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050be20
+// FUNCTION: CARMA2_SW 0x00507270
+// FUNCTION: CARMA2_CHEAT 0x00511810
+void C2_HOOK_FASTCALL MoveZAccL2(void) {
+
+    MoveAccessory(0.0f, 0.0f, 0.2f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050bfc0
+// FUNCTION: CARMA2_SW 0x00507410
+// FUNCTION: CARMA2_CHEAT 0x005119b0
+void C2_HOOK_FASTCALL MoveZAccL3(void) {
+
+    MoveAccessory(0.0f, 0.0f, 0.02f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050c160
+// FUNCTION: CARMA2_SW 0x005075b0
+// FUNCTION: CARMA2_CHEAT 0x00511b50
+void C2_HOOK_FASTCALL MoveZAccL4(void) {
+
+    MoveAccessory(0.0f, 0.0f, 0.002f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050c300
+// FUNCTION: CARMA2_SW 0x00507750
+// FUNCTION: CARMA2_CHEAT 0x00511cf0
+void C2_HOOK_FASTCALL MoveZAccR(void) {
+
+    MoveAccessory(0.0f, 0.0f, -1.0f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050c4a0
+// FUNCTION: CARMA2_SW 0x005078f0
+// FUNCTION: CARMA2_CHEAT 0x00511e90
+void C2_HOOK_FASTCALL MoveZAccR2(void) {
+
+    MoveAccessory(0.0f, 0.0f, -0.2f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050c640
+// FUNCTION: CARMA2_SW 0x00507a90
+// FUNCTION: CARMA2_CHEAT 0x00512030
+void C2_HOOK_FASTCALL MoveZAccR3(void) {
+
+    MoveAccessory(0.0f, 0.0f, -0.02f);
+}
+
+// FUNCTION: CARMA2_HW 0x0050c7e0
+// FUNCTION: CARMA2_SW 0x00507c30
+// FUNCTION: CARMA2_CHEAT 0x005121d0
+void C2_HOOK_FASTCALL MoveZAccR4(void) {
+
+    MoveAccessory(0.0f, 0.0f, -0.002f);
+}
+
 // FUNCTION: CARMA2_HW 0x0050c980
 // FUNCTION: CARMA2_SW 0x00507dd0
 // FUNCTION: CARMA2_CHEAT 0x00512370
@@ -403,6 +892,70 @@ void C2_HOOK_FASTCALL BuildSpecVolModel(tSpecial_volume* pSpec, int pIndex, br_m
     SetSpecVolMatSize(actor);
 }
 
+// FUNCTION: CARMA2_HW 0x0050d1f0
+// FUNCTION: CARMA2_SW 0x00508640
+// FUNCTION: CARMA2_CHEAT 0x00512be0
+void C2_HOOK_FASTCALL DropSpecVol2(void) {
+
+    DropSpecVol(2);
+}
+
+// FUNCTION: CARMA2_HW 0x0050d200
+// FUNCTION: CARMA2_SW 0x00508650
+// FUNCTION: CARMA2_CHEAT 0x00512bf0
+void C2_HOOK_FASTCALL DropSpecVol3(void) {
+
+    DropSpecVol(3);
+}
+
+// FUNCTION: CARMA2_HW 0x0050d210
+// FUNCTION: CARMA2_SW 0x00508660
+// FUNCTION: CARMA2_CHEAT 0x00512c00
+void C2_HOOK_FASTCALL DropSpecVol4(void) {
+
+    DropSpecVol(4);
+}
+
+// FUNCTION: CARMA2_HW 0x0050d220
+// FUNCTION: CARMA2_SW 0x00508670
+// FUNCTION: CARMA2_CHEAT 0x00512c10
+void C2_HOOK_FASTCALL DropSpecVol5(void) {
+
+    DropSpecVol(5);
+}
+
+// FUNCTION: CARMA2_HW 0x0050d230
+// FUNCTION: CARMA2_SW 0x00508680
+// FUNCTION: CARMA2_CHEAT 0x00512c20
+void C2_HOOK_FASTCALL DropSpecVol6(void) {
+
+    DropSpecVol(6);
+}
+
+// FUNCTION: CARMA2_HW 0x0050d240
+// FUNCTION: CARMA2_SW 0x00508690
+// FUNCTION: CARMA2_CHEAT 0x00512c30
+void C2_HOOK_FASTCALL DropSpecVol7(void) {
+
+    DropSpecVol(7);
+}
+
+// FUNCTION: CARMA2_HW 0x0050d250
+// FUNCTION: CARMA2_SW 0x005086a0
+// FUNCTION: CARMA2_CHEAT 0x00512c40
+void C2_HOOK_FASTCALL DropSpecVol8(void) {
+
+    DropSpecVol(8);
+}
+
+// FUNCTION: CARMA2_HW 0x0050d260
+// FUNCTION: CARMA2_SW 0x005086b0
+// FUNCTION: CARMA2_CHEAT 0x00512c50
+void C2_HOOK_FASTCALL DropSpecVol9(void) {
+
+    DropSpecVol(9);
+}
+
 // FUNCTION: CARMA2_HW 0x0050d270
 // FUNCTION: CARMA2_SW 0x005086c0
 // FUNCTION: CARMA2_CHEAT 0x00512c60
@@ -435,6 +988,27 @@ void C2_HOOK_FASTCALL IdentifySpecVol(void) {
     }
 }
 
+// FUNCTION: CARMA2_HW 0x0050d370
+// FUNCTION: CARMA2_SW 0x005087c0
+// FUNCTION: CARMA2_CHEAT 0x00512d60
+void C2_HOOK_FASTCALL DeleteSpecVol(void) {
+    int index;
+
+    index = FindSpecVolIndex(gLast_actor);
+    if (index >= 0) {
+        DelSpecVolumeGraph(index);
+        memcpy(&gProgram_state.special_volumes[index], &gProgram_state.special_volumes[index + 1], (gProgram_state.special_volume_count - index - 1) * sizeof(tSpecial_volume));
+        memcpy(&gSpec_vol_actors[index], &gSpec_vol_actors[index + 1], (gProgram_state.special_volume_count - index - 1) * sizeof(br_actor*));
+        gProgram_state.special_volume_count--;
+        NewTextHeadupSlot(4, 0, 2000, -2, "There's been a special volumes MURDER!!");
+        gLast_actor = NULL;
+        if (gDefault_water_spec_vol_real > &gProgram_state.special_volumes[index]) {
+            gDefault_water_spec_vol_real--;
+        }
+        SaveSpecialVolumes();
+    }
+}
+
 // FUNCTION: CARMA2_HW 0x0050d470
 // FUNCTION: CARMA2_SW 0x005088c0
 // FUNCTION: CARMA2_CHEAT 0x00512e60
@@ -461,6 +1035,334 @@ void C2_HOOK_FASTCALL DelSpecVolumeGraph(int pIndex) {
     BrModelFree(model);
     BrActorRemove(actor);
     BrActorFree(actor);
+}
+
+// FUNCTION: CARMA2_HW 0x0050d580
+// FUNCTION: CARMA2_SW 0x005089d0
+// FUNCTION: CARMA2_CHEAT 0x00512f70
+void C2_HOOK_FASTCALL RotateSpecVolL(void) {
+
+    RotateAccL();
+}
+
+// FUNCTION: CARMA2_HW 0x0050d7b0
+// FUNCTION: CARMA2_SW 0x00508c00
+// FUNCTION: CARMA2_CHEAT 0x005131a0
+void C2_HOOK_FASTCALL RotateSpecVolL2(void) {
+
+    RotateAccL2();
+}
+
+// FUNCTION: CARMA2_HW 0x0050d9e0
+// FUNCTION: CARMA2_SW 0x00508e30
+// FUNCTION: CARMA2_CHEAT 0x005133d0
+void C2_HOOK_FASTCALL RotateSpecVolL3(void) {
+
+    RotateAccL3();
+}
+
+// FUNCTION: CARMA2_HW 0x0050dc10
+// FUNCTION: CARMA2_SW 0x00509060
+// FUNCTION: CARMA2_CHEAT 0x00513600
+void C2_HOOK_FASTCALL RotateSpecVolL4(void) {
+
+    RotateAccL4();
+}
+
+// FUNCTION: CARMA2_HW 0x0050de40
+// FUNCTION: CARMA2_SW 0x00509290
+// FUNCTION: CARMA2_CHEAT 0x00513830
+void C2_HOOK_FASTCALL RotateSpecVolR(void) {
+
+    RotateAccR();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e070
+// FUNCTION: CARMA2_SW 0x005094c0
+// FUNCTION: CARMA2_CHEAT 0x00513a60
+void C2_HOOK_FASTCALL RotateSpecVolR2(void) {
+
+    RotateAccR2();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e2a0
+// FUNCTION: CARMA2_SW 0x005096f0
+// FUNCTION: CARMA2_CHEAT 0x00513c90
+void C2_HOOK_FASTCALL RotateSpecVolR3(void) {
+
+    RotateAccR3();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e4d0
+// FUNCTION: CARMA2_SW 0x00509920
+// FUNCTION: CARMA2_CHEAT 0x00513ec0
+void C2_HOOK_FASTCALL RotateSpecVolR4(void) {
+
+    RotateAccR4();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e700
+// FUNCTION: CARMA2_SW 0x00509b50
+// FUNCTION: CARMA2_CHEAT 0x005140f0
+void C2_HOOK_FASTCALL CycleSpecVolRotate(void) {
+
+    CycleAccRotate();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e770
+// FUNCTION: CARMA2_SW 0x00509bc0
+// FUNCTION: CARMA2_CHEAT 0x00514160
+void C2_HOOK_FASTCALL CycleSpecVolScale(void) {
+
+    CycleAccScale();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e810
+// FUNCTION: CARMA2_SW 0x00509c60
+// FUNCTION: CARMA2_CHEAT 0x00514200
+void C2_HOOK_FASTCALL ScaleSpecVolUp2(void) {
+
+    ScaleAccUp2();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e820
+// FUNCTION: CARMA2_SW 0x00509c70
+// FUNCTION: CARMA2_CHEAT 0x00514210
+void C2_HOOK_FASTCALL ScaleSpecVolUp3(void) {
+
+    ScaleAccUp3();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e830
+// FUNCTION: CARMA2_SW 0x00509c80
+// FUNCTION: CARMA2_CHEAT 0x00514220
+void C2_HOOK_FASTCALL ScaleSpecVolUp4(void) {
+
+    ScaleAccUp4();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e840
+// FUNCTION: CARMA2_SW 0x00509c90
+// FUNCTION: CARMA2_CHEAT 0x00514230
+void C2_HOOK_FASTCALL ScaleSpecVolDown2(void) {
+
+    ScaleAccDown2();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e850
+// FUNCTION: CARMA2_SW 0x00509ca0
+// FUNCTION: CARMA2_CHEAT 0x00514240
+void C2_HOOK_FASTCALL ScaleSpecVolDown3(void) {
+
+    ScaleAccDown3();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e860
+// FUNCTION: CARMA2_SW 0x00509cb0
+// FUNCTION: CARMA2_CHEAT 0x00514250
+void C2_HOOK_FASTCALL ScaleSpecVolDown4(void) {
+
+    ScaleAccDown4();
+}
+
+// FUNCTION: CARMA2_HW 0x0050e870
+// FUNCTION: CARMA2_SW 0x00509cc0
+// FUNCTION: CARMA2_CHEAT 0x00514260
+void C2_HOOK_FASTCALL MoveXSpecVolL(void) {
+
+    MoveXAccL();
+}
+
+// FUNCTION: CARMA2_HW 0x0050ea10
+// FUNCTION: CARMA2_SW 0x00509e60
+// FUNCTION: CARMA2_CHEAT 0x00514400
+void C2_HOOK_FASTCALL MoveXSpecVolL2(void) {
+
+    MoveXAccL2();
+}
+
+// FUNCTION: CARMA2_HW 0x0050ebb0
+// FUNCTION: CARMA2_SW 0x0050a000
+// FUNCTION: CARMA2_CHEAT 0x005145a0
+void C2_HOOK_FASTCALL MoveXSpecVolL3(void) {
+
+    MoveXAccL3();
+}
+
+// FUNCTION: CARMA2_HW 0x0050ed50
+// FUNCTION: CARMA2_SW 0x0050a1a0
+// FUNCTION: CARMA2_CHEAT 0x00514740
+void C2_HOOK_FASTCALL MoveXSpecVolL4(void) {
+
+    MoveXAccL4();
+}
+
+// FUNCTION: CARMA2_HW 0x0050eef0
+// FUNCTION: CARMA2_SW 0x0050a340
+// FUNCTION: CARMA2_CHEAT 0x005148e0
+void C2_HOOK_FASTCALL MoveXSpecVolR(void) {
+
+    MoveXAccR();
+}
+
+// FUNCTION: CARMA2_HW 0x0050f090
+// FUNCTION: CARMA2_SW 0x0050a4e0
+// FUNCTION: CARMA2_CHEAT 0x00514a80
+void C2_HOOK_FASTCALL MoveXSpecVolR2(void) {
+
+    MoveXAccR2();
+}
+
+// FUNCTION: CARMA2_HW 0x0050f230
+// FUNCTION: CARMA2_SW 0x0050a680
+// FUNCTION: CARMA2_CHEAT 0x00514c20
+void C2_HOOK_FASTCALL MoveXSpecVolR3(void) {
+
+    MoveXAccR3();
+}
+
+// FUNCTION: CARMA2_HW 0x0050f3d0
+// FUNCTION: CARMA2_SW 0x0050a820
+// FUNCTION: CARMA2_CHEAT 0x00514dc0
+void C2_HOOK_FASTCALL MoveXSpecVolR4(void) {
+
+    MoveXAccR4();
+}
+
+// FUNCTION: CARMA2_HW 0x0050f570
+// FUNCTION: CARMA2_SW 0x0050a9c0
+// FUNCTION: CARMA2_CHEAT 0x00514f60
+void C2_HOOK_FASTCALL MoveYSpecVolL(void) {
+
+    MoveYAccL();
+}
+
+// FUNCTION: CARMA2_HW 0x0050f710
+// FUNCTION: CARMA2_SW 0x0050ab60
+// FUNCTION: CARMA2_CHEAT 0x00515100
+void C2_HOOK_FASTCALL MoveYSpecVolL2(void) {
+
+    MoveYAccL2();
+}
+
+// FUNCTION: CARMA2_HW 0x0050f8b0
+// FUNCTION: CARMA2_SW 0x0050ad00
+// FUNCTION: CARMA2_CHEAT 0x005152a0
+void C2_HOOK_FASTCALL MoveYSpecVolL3(void) {
+
+    MoveYAccL3();
+}
+
+// FUNCTION: CARMA2_HW 0x0050fa50
+// FUNCTION: CARMA2_SW 0x0050aea0
+// FUNCTION: CARMA2_CHEAT 0x00515440
+void C2_HOOK_FASTCALL MoveYSpecVolL4(void) {
+
+    MoveYAccL4();
+}
+
+// FUNCTION: CARMA2_HW 0x0050fbf0
+// FUNCTION: CARMA2_SW 0x0050b040
+// FUNCTION: CARMA2_CHEAT 0x005155e0
+void C2_HOOK_FASTCALL MoveYSpecVolR(void) {
+
+    MoveYAccR();
+}
+
+// FUNCTION: CARMA2_HW 0x0050fd90
+// FUNCTION: CARMA2_SW 0x0050b1e0
+// FUNCTION: CARMA2_CHEAT 0x00515780
+void C2_HOOK_FASTCALL MoveYSpecVolR2(void) {
+
+    MoveYAccR2();
+}
+
+// FUNCTION: CARMA2_HW 0x0050ff30
+// FUNCTION: CARMA2_SW 0x0050b380
+// FUNCTION: CARMA2_CHEAT 0x00515920
+void C2_HOOK_FASTCALL MoveYSpecVolR3(void) {
+
+    MoveYAccR3();
+}
+
+// FUNCTION: CARMA2_HW 0x005100d0
+// FUNCTION: CARMA2_SW 0x0050b520
+// FUNCTION: CARMA2_CHEAT 0x00515ac0
+void C2_HOOK_FASTCALL MoveYSpecVolR4(void) {
+
+    MoveYAccR4();
+}
+
+// FUNCTION: CARMA2_HW 0x00510270
+// FUNCTION: CARMA2_SW 0x0050b6c0
+// FUNCTION: CARMA2_CHEAT 0x00515c60
+void C2_HOOK_FASTCALL MoveZSpecVolL(void) {
+
+    MoveZAccL();
+}
+
+// FUNCTION: CARMA2_HW 0x00510410
+// FUNCTION: CARMA2_SW 0x0050b860
+// FUNCTION: CARMA2_CHEAT 0x00515e00
+void C2_HOOK_FASTCALL MoveZSpecVolL2(void) {
+
+    MoveZAccL2();
+}
+
+// FUNCTION: CARMA2_HW 0x005105b0
+// FUNCTION: CARMA2_SW 0x0050ba00
+// FUNCTION: CARMA2_CHEAT 0x00515fa0
+void C2_HOOK_FASTCALL MoveZSpecVolL3(void) {
+
+    MoveZAccL3();
+}
+
+// FUNCTION: CARMA2_HW 0x00510750
+// FUNCTION: CARMA2_SW 0x0050bba0
+// FUNCTION: CARMA2_CHEAT 0x00516140
+void C2_HOOK_FASTCALL MoveZSpecVolL4(void) {
+
+    MoveZAccL4();
+}
+
+// FUNCTION: CARMA2_HW 0x005108f0
+// FUNCTION: CARMA2_SW 0x0050bd40
+// FUNCTION: CARMA2_CHEAT 0x005162e0
+void C2_HOOK_FASTCALL MoveZSpecVolR(void) {
+
+    MoveZAccR();
+}
+
+// FUNCTION: CARMA2_HW 0x00510a90
+// FUNCTION: CARMA2_SW 0x0050bee0
+// FUNCTION: CARMA2_CHEAT 0x00516480
+void C2_HOOK_FASTCALL MoveZSpecVolR2(void) {
+
+    MoveZAccR2();
+}
+
+// FUNCTION: CARMA2_HW 0x00510c30
+// FUNCTION: CARMA2_SW 0x0050c080
+// FUNCTION: CARMA2_CHEAT 0x00516620
+void C2_HOOK_FASTCALL MoveZSpecVolR3(void) {
+
+    MoveZAccR3();
+}
+
+// FUNCTION: CARMA2_HW 0x00510dd0
+// FUNCTION: CARMA2_SW 0x0050c220
+// FUNCTION: CARMA2_CHEAT 0x005167c0
+void C2_HOOK_FASTCALL MoveZSpecVolR4(void) {
+
+    MoveZAccR4();
+}
+
+// FUNCTION: CARMA2_HW 0x00510f70
+// FUNCTION: CARMA2_SW 0x0050c3c0
+// FUNCTION: CARMA2_CHEAT 0x00516960
+void C2_HOOK_FASTCALL SnapSpecVolToVertical(void) {
+
+    SnapAccToVertical();
 }
 
 // FUNCTION: CARMA2_HW 0x00511140
