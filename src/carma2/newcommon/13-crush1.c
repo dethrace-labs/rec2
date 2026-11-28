@@ -2092,20 +2092,111 @@ intptr_t C2_HOOK_CDECL MakeCarModelsMaterialsSingleSided(br_actor* pActor, void*
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x00434f60
-// STUB: CARMA2_SW 0x00434f90
-// STUB: CARMA2_CHEAT 0x00435150
+// FUNCTION: CARMA2_HW 0x00434f60
+// FUNCTION: CARMA2_SW 0x00434f90
+// FUNCTION: CARMA2_CHEAT 0x00435150
 void C2_HOOK_FASTCALL BendPoint(br_vector3* pPoint, const tBend_point_context* pContext) {
-    NOT_IMPLEMENTED();
+    br_vector3 tv;
+    br_scalar x;
+    br_scalar y;
+    br_scalar z;
+    br_scalar xy;
+    br_scalar sx;
+    br_scalar sy;
+    br_scalar sz;
+    int flag;
+
+    flag = pContext->field_0x34->field_0x74;
+    z = pPoint->v[2] - pContext->field_0x34->field_0x20;
+    if ((flag && z <= 0.0f) || (!flag && z >= 0.0f)) {
+        BrMatrix34ApplyP(&tv, pPoint, &pContext->field_0x4);
+        BrVector3Copy(pPoint, &tv);
+        return;
+    }
+    BrVector3Sub(&tv, pPoint, &pContext->field_0x34->field_0x24);
+    if ((flag && tv.v[2] <= 0.0f) || (!flag && tv.v[2] >= 0.0f)) {
+        sx = pContext->field_0x34->field_0x30.v[0];
+        sy = pContext->field_0x34->field_0x30.v[1];
+        sz = pContext->field_0x34->field_0x30.v[2];
+        x = tv.v[0] / sx;
+        y = tv.v[1] / sy;
+        z = tv.v[2] / sz;
+        xy = y * x;
+        tv.v[0] = pContext->field_0x34->field_0x44.v[0] * xy + pContext->field_0x34->field_0x50.v[0] * x + pContext->field_0x34->field_0x5c.v[0] * y;
+        tv.v[1] = pContext->field_0x34->field_0x44.v[1] * xy + pContext->field_0x34->field_0x50.v[1] * x + pContext->field_0x34->field_0x5c.v[1] * y;
+        tv.v[2] = pContext->field_0x34->field_0x44.v[2] * xy + pContext->field_0x34->field_0x50.v[2] * x + pContext->field_0x34->field_0x5c.v[2] * y;
+        BrVector3Accumulate(&tv, &pContext->field_0x34->field_0x68);
+        tv.v[0] = z * tv.v[0];
+        tv.v[1] = z * tv.v[1];
+        tv.v[2] = z * tv.v[2];
+        BrVector3Accumulate(pPoint, &tv);
+    }
 }
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
 #endif
 
-// EdgeCrossesZPlane
+inline int C2_HOOK_FASTCALL EdgeCrossesZPlane(br_scalar pZ, const br_vector3* pP1, const br_vector3* pP2) {
 
-// BendCollisionShape
+    if (pP1->v[2] < pZ) {
+        return pP2->v[2] > pZ;
+    } else {
+        return pP2->v[2] < pZ;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00435110
+// FUNCTION: CARMA2_SW 0x00435140
+// FUNCTION: CARMA2_CHEAT 0x00435300
+void C2_HOOK_FASTCALL BendCollisionShape(tCar_crush_shape_info* pShape, const tBend_point_context* pContext) {
+    int i;
+    int count;
+    int j;
+    tCollision_shape_polyhedron_data* data;
+    br_scalar z;
+    br_scalar t;
+    br_vector3* p1;
+    br_vector3* p2;
+    br_vector3 new_points[8];
+
+    if (pShape->count_points == pShape->count_points_add_8) {
+        return;
+    }
+    count = 0;
+    data = &pShape->field_0x0->polyhedron;
+    z = pContext->field_0x34->field_0x20;
+    for (i = 0; i < data->count_edges; i++) {
+        if (EdgeCrossesZPlane(z, &data->points[data->edges[i].index2], &data->points[data->edges[i].index1])) {
+            p1 = &data->points[data->edges[i].index1];
+            p2 = &data->points[data->edges[i].index2];
+            if ((br_scalar)fabs(p1->v[2] - z) >= 0.2f / WORLD_SCALE && (br_scalar)fabs(p2->v[2] - z) >= 0.2f / WORLD_SCALE) {
+                t = (z - p1->v[2]) / (p1->v[2] - p2->v[2]);
+                new_points[count].v[0] = t * (p1->v[0] - p2->v[0]) + p1->v[0];
+                new_points[count].v[1] = t * (p1->v[1] - p2->v[1]) + p1->v[1];
+                new_points[count].v[2] = z;
+                count++;
+                if (count == REC2_ASIZE(new_points)) {
+                    break;
+                }
+            }
+        }
+    }
+    if (pShape->count_points + count > pShape->count_points_add_8) {
+        count = pShape->count_points_add_8 - pShape->count_points;
+    }
+    for (i = 0, j = pShape->count_points; i < count; i++, j++) {
+        BrVector3Copy(&pShape->field_0x18[j].field_0x18, &new_points[i]);
+    }
+    pShape->original_count_points = pShape->count_points;
+    pShape->count_points += count;
+    for (i = 0; i < pShape->count_points; i++) {
+        BrVector3Copy(&pShape->field_0x18[i].field_0x2c, &pShape->field_0x18[i].field_0x18);
+    }
+    for (i = 0; i < pShape->count_points; i++) {
+        BendPoint(&pShape->field_0x18[i].field_0x18, pContext);
+    }
+}
 
 // BendCollisionShapes
 
@@ -2113,9 +2204,62 @@ void C2_HOOK_FASTCALL BendPoint(br_vector3* pPoint, const tBend_point_context* p
 
 // BendModels
 
-// BrAngleToSignedDegree
+inline br_scalar C2_HOOK_FASTCALL BrAngleToSignedDegree(br_angle pAngle) {
+    br_scalar degrees;
 
-// BendWheels
+    degrees = (br_scalar)(pAngle * (360.0 / 65536.0));
+    if (degrees >= 180.0f) {
+        degrees -= 360.0f;
+    }
+    return degrees;
+}
+
+// FUNCTION: CARMA2_HW 0x00435310
+// FUNCTION: CARMA2_SW 0x00435340
+// FUNCTION: CARMA2_CHEAT 0x00435500
+void C2_HOOK_FASTCALL BendWheels(tCar_spec* pCar, const tBend_point_context* pContext) {
+    int i;
+    br_actor* actor;
+    tGroovidelic_spec* groove;
+    br_vector3* centre;
+    br_vector3 delta;
+    br_vector3 p;
+
+    for (i = 0; i < (int)REC2_ASIZE(pCar->pivot_actors); i++) {
+        actor = pCar->pivot_actors[i];
+        if (actor == NULL) {
+            actor = pCar->wheel_actors[i];
+            if (actor == NULL) {
+                continue;
+            }
+        }
+        groove = ActorsGroove(actor);
+        if (groove != NULL && groove->path_type == eGroove_path_straight) {
+            centre = &groove->path_data.straight_info.centre;
+            BrVector3Copy(&pCar->car_crush_spec->field_0x1ec[i], centre);
+            BrVector3Negate(&delta, centre);
+            BendPoint(centre, pContext);
+            centre->v[1] = pCar->car_crush_spec->field_0x1ec[i].v[1];
+            BrVector3Accumulate(&delta, centre);
+            PipeSingleVector3(centre, &delta);
+        }
+    }
+    for (i = 0; i < (int)REC2_ASIZE(pCar->wpos); i++) {
+        BrVector3Copy(&pCar->car_crush_spec->field_0x234[i], &pCar->wpos[i]);
+        p.v[0] = (br_scalar)(pCar->wpos[i].v[0] / WORLD_SCALE_D);
+        p.v[1] = (br_scalar)(pCar->wpos[i].v[1] / WORLD_SCALE_D);
+        p.v[2] = (br_scalar)(pCar->wpos[i].v[2] / WORLD_SCALE_D);
+        BendPoint(&p, pContext);
+        pCar->wpos[i].v[0] = (br_scalar)(p.v[0] * WORLD_SCALE_D);
+        pCar->wpos[i].v[1] = (br_scalar)(p.v[1] * WORLD_SCALE_D);
+        pCar->wpos[i].v[2] = (br_scalar)(p.v[2] * WORLD_SCALE_D);
+    }
+    SetCarSuspGiveAndHeight(pCar, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f);
+    if (pContext->field_0x34->field_0x20 == pCar->car_crush_spec->bend_z_min) {
+        pCar->field_0x1260 = BrAngleToSignedDegree(pContext->field_0x34->field_0x3e) * 0.03f;
+    }
+    CalcGraphicalWheelStuff(pCar);
+}
 
 // BendActor
 
@@ -2470,7 +2614,50 @@ void C2_HOOK_FASTCALL UnBendCollisionShape(tCar_crush_shape_info* pShape, const 
 
 // UnBendCollisionShapes
 
-// UnBendWheels
+// FUNCTION: CARMA2_HW 0x0043aa80
+// FUNCTION: CARMA2_SW 0x0043aad0
+// FUNCTION: CARMA2_CHEAT 0x0043aca0
+void C2_HOOK_FASTCALL UnBendWheels(tCar_spec* pCar, const tBend_point_context* pContext) {
+    int i;
+    br_actor* actor;
+    tGroovidelic_spec* groove;
+    br_vector3* centre;
+    br_vector3 delta;
+    br_vector3 p;
+
+    for (i = 0; i < (int)REC2_ASIZE(pCar->pivot_actors); i++) {
+        actor = pCar->pivot_actors[i];
+        if (actor == NULL) {
+            actor = pCar->wheel_actors[i];
+            if (actor == NULL) {
+                continue;
+            }
+        }
+        groove = ActorsGroove(actor);
+        if (groove != NULL && groove->path_type == eGroove_path_straight) {
+            centre = &groove->path_data.straight_info.centre;
+            BrVector3Negate(&delta, centre);
+            BrVector3Copy(centre, &pCar->car_crush_spec->field_0x1ec[i]);
+            BendPoint(centre, pContext);
+            centre->v[1] = pCar->car_crush_spec->field_0x1ec[i].v[1];
+            BrVector3Accumulate(&delta, centre);
+            PipeSingleVector3(centre, &delta);
+        }
+    }
+    for (i = 0; i < (int)REC2_ASIZE(pCar->wpos); i++) {
+        p.v[0] = (br_scalar)(pCar->car_crush_spec->field_0x234[i].v[0] / WORLD_SCALE_D);
+        p.v[1] = (br_scalar)(pCar->car_crush_spec->field_0x234[i].v[1] / WORLD_SCALE_D);
+        p.v[2] = (br_scalar)(pCar->car_crush_spec->field_0x234[i].v[2] / WORLD_SCALE_D);
+        BendPoint(&p, pContext);
+        pCar->wpos[i].v[0] = (br_scalar)(p.v[0] * WORLD_SCALE_D);
+        pCar->wpos[i].v[1] = (br_scalar)(p.v[1] * WORLD_SCALE_D);
+        pCar->wpos[i].v[2] = (br_scalar)(p.v[2] * WORLD_SCALE_D);
+    }
+    SetCarSuspGiveAndHeight(pCar, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f);
+    if (pContext->field_0x34->field_0x20 == pCar->car_crush_spec->bend_z_min) {
+        pCar->field_0x1260 = BrAngleToSignedDegree(pContext->field_0x34->field_0x3e) * 0.03f;
+    }
+}
 
 // UnBendOtherThings
 
