@@ -16,15 +16,20 @@
 #include "18b-graphics2.h"
 #include "19-font.h"
 #include "25-grafdata.h"
+#include "27-powerup.h"
 #include "30-opponent.h"
+#include "36-trig.h"
 #include "41-utility.h"
 #include "42-input.h"
+#include "49-physics.h"
 #include "52-errors.h"
 #include "53-controls.h"
+#include "61-pedestrn-phys.h"
 #include "63-loading3.h"
 #include "70-packfile.h"
 #include "globvars.h"
 #include "globvrpb.h"
+#include "platform.h"
 #include "rec2_macros.h"
 
 #include <limits.h>
@@ -55,6 +60,11 @@ const int gArrows[2][4][60] = {
     },
 };
 
+// GLOBAL: CARMA2_HW 0x00659b20
+// GLOBAL: CARMA2_SW 0x00654508
+// GLOBAL: CARMA2_CHEAT 0x00660438
+tOpponent_Status gPrevious_opponent_status = eOpponent_status_Uninitialized;
+
 // GLOBAL: CARMA2_HW 0x00655df0
 // GLOBAL: CARMA2_SW 0x00650cd8
 // GLOBAL: CARMA2_CHEAT 0x0065c670
@@ -83,6 +93,11 @@ tCar_spec* gTarget_lock_car_1;
 // GLOBAL: CARMA2_CHEAT 0x00694f90
 tCar_spec* gTarget_lock_car_2;
 
+// GLOBAL: CARMA2_HW 0x0068d6f4
+// GLOBAL: CARMA2_SW 0x0068774c
+// GLOBAL: CARMA2_CHEAT 0x00694f94
+int gNearest_smash_blip_index; /* FIXME: name guessed from the old DrawSmashBlip: index of the nearest smash blip, -1 for none */
+
 // GLOBAL: CARMA2_HW 0x0068d8c8
 // GLOBAL: CARMA2_SW 0x00687920
 // GLOBAL: CARMA2_CHEAT 0x00695168
@@ -92,6 +107,11 @@ int gTarget_lock_enabled;
 // GLOBAL: CARMA2_SW 0x00687924
 // GLOBAL: CARMA2_CHEAT 0x0069516c
 int gInitMap_done;
+
+// GLOBAL: CARMA2_HW 0x0068d8d0
+// GLOBAL: CARMA2_SW 0x00687928
+// GLOBAL: CARMA2_CHEAT 0x00695170
+tU32 gTime_oppobar_target_wasted;
 
 // GLOBAL: CARMA2_HW 0x0074abdc
 // GLOBAL: CARMA2_SW 0x00741288
@@ -122,6 +142,11 @@ int gINT_0074ab88;
 // GLOBAL: CARMA2_SW 0x00741238
 // GLOBAL: CARMA2_CHEAT 0x0075222c
 int gINT_0074ab8c;
+
+// GLOBAL: CARMA2_HW 0x0074ab90
+// GLOBAL: CARMA2_SW 0x0074123c
+// GLOBAL: CARMA2_CHEAT 0x00752230
+float gFLOAT_0074ab90;
 
 // GLOBAL: CARMA2_HW 0x0074ab94
 // GLOBAL: CARMA2_SW 0x00741240
@@ -180,6 +205,46 @@ int gINT_00655f04 = 520;
 // GLOBAL: CARMA2_HW 0x00655f08
 // GLOBAL: CARMA2_CHEAT 0x0065c788
 int gINT_00655f08 = 380;
+
+// GLOBAL: CARMA2_HW 0x0068d6a8
+// GLOBAL: CARMA2_SW 0x00687700
+// GLOBAL: CARMA2_CHEAT 0x00694f48
+br_matrix34 gCar_in_map_space;
+
+// GLOBAL: CARMA2_HW 0x0068d6d8
+// GLOBAL: CARMA2_SW 0x00687730
+// GLOBAL: CARMA2_CHEAT 0x00694f78
+br_vector2 gVector2_0068d6d8;
+
+// GLOBAL: CARMA2_HW 0x0068d6e0
+// GLOBAL: CARMA2_SW 0x00687738
+// GLOBAL: CARMA2_CHEAT 0x00694f80
+float gFLOAT_0068d6e0;
+
+// GLOBAL: CARMA2_HW 0x0068d890
+// GLOBAL: CARMA2_SW 0x006878e8
+// GLOBAL: CARMA2_CHEAT 0x00695130
+int gMap_overlay_offset_x;
+
+// GLOBAL: CARMA2_HW 0x0068c858
+// GLOBAL: CARMA2_SW 0x006868b0
+// GLOBAL: CARMA2_CHEAT 0x006940f8
+int gMap_overlay_offset_y;
+
+// GLOBAL: CARMA2_HW 0x0068d8b0
+// GLOBAL: CARMA2_SW 0x00687908
+// GLOBAL: CARMA2_CHEAT 0x00695150
+br_vector2 gVector2_0068d8b0;
+
+// GLOBAL: CARMA2_HW 0x0068d8b8
+// GLOBAL: CARMA2_SW 0x00687910
+// GLOBAL: CARMA2_CHEAT 0x00695158
+float gFLOAT_0068d8b8;
+
+// GLOBAL: CARMA2_HW 0x0074abc4
+// GLOBAL: CARMA2_SW 0x00741270
+// GLOBAL: CARMA2_CHEAT 0x00752264
+float gFLOAT_0074abc4;
 
 // GLOBAL: CARMA2_HW 0x0068d8a0
 // GLOBAL: CARMA2_SW 0x006878f8
@@ -258,7 +323,18 @@ br_pixelmap* gAlt_meter;
 
 // GLOBAL: CARMA2_HW 0x0068c880
 // GLOBAL: CARMA2_SW 0x006868d8
+// GLOBAL: CARMA2_CHEAT 0x00694120
 br_matrix23 gMatrix23_0068c880;
+
+// GLOBAL: CARMA2_HW 0x0068c878
+// GLOBAL: CARMA2_SW 0x006868d0
+// GLOBAL: CARMA2_CHEAT 0x00694118
+int gHeadup_map_src_x;
+
+// GLOBAL: CARMA2_HW 0x0068c874
+// GLOBAL: CARMA2_SW 0x006868cc
+// GLOBAL: CARMA2_CHEAT 0x00694114
+int gHeadup_map_src_y;
 
 // GLOBAL: CARMA2_HW 0x0068c868
 // GLOBAL: CARMA2_SW 0x006868c0
@@ -318,7 +394,20 @@ tSmashable_race_target gSmashable_race_targets[300];
 br_actor* gLit_op_stat_actor;
 #endif
 
-// CarArrowColour
+inline br_uint_32 C2_HOOK_FASTCALL CarArrowColour(tCar_spec* pCar, tVehicle_type pCategory) {
+
+    if (gNet_mode != eNet_mode_none && pCar->shrapnel_materials[0] != NULL) {
+        if (NetPlayerFromCar(pCar)->field_0x80) {
+            return 0xffffffff;
+        } else {
+            return pCar->shrapnel_materials[0]->index_base;
+        }
+    } else if (pCar->knackered) {
+        return 0;
+    } else {
+        return gCar_map_colours[pCategory];
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x004945f0
 // FUNCTION: CARMA2_SW 0x004918f0
@@ -459,7 +548,24 @@ void C2_HOOK_FASTCALL SetIntegerMapRenders(void) {
 #endif
 }
 
-// OppositeColour
+inline int C2_HOOK_FASTCALL OppositeColour(int pColour) {
+    int brightness;
+
+    if (pColour < 224) {
+        if ((pColour & 0x7) < 4) {
+            brightness = 255;
+        } else {
+            brightness = 0;
+        }
+    } else {
+        if ((pColour & 0xf) < 8) {
+            brightness = 255;
+        } else {
+            brightness = 0;
+        }
+    }
+    return brightness;
+}
 
 // FUNCTION: CARMA2_HW 0x00495a00
 // STUB: CARMA2_SW 0x00492400
@@ -528,15 +634,240 @@ void C2_HOOK_FASTCALL DrawArrow(br_pixelmap* pScreen, br_uint_32 pArrow_index, c
     }
 }
 
-// DrawMapBlip
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
 
-// DrawSmashBlip
+// FUNCTION: CARMA2_HW 0x00496270
+// FUNCTION: CARMA2_SW 0x00492d40
+// FUNCTION: CARMA2_CHEAT 0x00496620
+void C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar, tU32 pTime, br_matrix34* pTrans, const br_vector3* pPos, br_uint_32 pColour) {
+    tU32 time_diff;
+    br_vector3 map_pos;
+    br_vector3 offset;
+    br_scalar distance;
+    br_uint_32 colours[2];
+    br_uint_32 colour;
+    int arrow_index;
+    int size;
 
-// DrawMapSmallBlip
+    time_diff = pTime - gMap_time;
+    BrMatrix34ApplyP(&map_pos, pPos, &gCurrent_race.map_transformation);
+    map_pos.v[2] = 0.0f;
+    if (((pCar != NULL && pCar->driver == eDriver_oppo) || (pCar != NULL && pCar->driver == eDriver_net_human))
+        && (!pCar->knackered || pCar == gTarget_lock_car_1)
+        && (gCurrent_race.race_spec->race_type != kRaceType_Cars || pCar->is_race_goal)
+        && (gNet_mode == eNet_mode_none
+            || (gCurrent_net_game->type == eNet_game_type_6 && !NetPlayerFromCar(pCar)->field_0x80)
+            || (gCurrent_net_game->type == eNet_game_type_foxy && pCar == gNet_players[gIt_or_fox].car)
+            || (gCurrent_net_game->type != eNet_game_type_6 && gCurrent_net_game->type != eNet_game_type_foxy))) {
+        offset.v[0] = (float)(gHeadup_map_half_width + gMap_overlay_offset_x + gINT_0074ab8c) - map_pos.v[0];
+        offset.v[1] = (float)(gHeadup_map_half_height + gMap_overlay_offset_y + gINT_0074ab88) - map_pos.v[1];
+        offset.v[2] = 0.0f - map_pos.v[2];
+        distance = offset.v[2] * offset.v[2] + offset.v[0] * offset.v[0] + offset.v[1] * offset.v[1];
+        if ((gTarget_lock_car_2 == NULL
+                || (!gTarget_lock_enabled && distance < gFLOAT_0074ab90)
+                || (gTarget_lock_enabled && pCar == gTarget_lock_car_2))
+            && !pCar->knackered) {
+            gTarget_lock_car_2 = pCar;
+            gVector2_0068d6d8.v[0] = offset.v[0];
+            gVector2_0068d6d8.v[1] = offset.v[1];
+            gFLOAT_0068d6e0 = offset.v[2];
+            gFLOAT_0074ab90 = distance;
+        }
+    }
+    if (gMini_map_visible || gMap_view == 2) {
+        BrMatrix34Mul(&gCar_in_map_space, pTrans, &gCurrent_race.map_transformation);
+        arrow_index = (int)((int)(360.0f - FastScalarArcTan2(gCar_in_map_space.m[2][0], gCar_in_map_space.m[2][1]) + 12.25) / 22.5) % 16;
+        if (pCar == NULL || pCar->driver != eDriver_local_human || (pTime & 0x100)) {
+            DrawArrow(pScreen, arrow_index, &map_pos, pColour);
+        }
+        colours[0] = pColour;
+        colours[1] = OppositeColour(pColour);
+        if (gBack_screen->type != BR_PMT_INDEX_8) {
+            colours[0] = PaletteEntry16Bit(gRender_palette, colours[0]);
+            colours[1] = PaletteEntry16Bit(gRender_palette, colours[1]);
+        }
+#ifndef REC2_FIX_BUGS
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+        /* the original indexes with the bit itself, so the second colour is read from far past the array */
+        colour = colours[pTime & 0x100];
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+#else
+        colour = colours[(pTime & 0x100) != 0];
+#endif
+        if (gNet_mode != eNet_mode_none
+            && gCurrent_net_game->type == eNet_game_type_foxy
+            && pCar == gNet_players[gIt_or_fox].car) {
+            BrPixelmapLine(pScreen,
+                (int)(map_pos.v[0] - 8.0f),
+                (int)(map_pos.v[1] - 8.0f),
+                (int)(map_pos.v[0] + 8.0f),
+                (int)(map_pos.v[1] - 8.0f),
+                colour);
+            BrPixelmapLine(pScreen,
+                (int)(map_pos.v[0] - 8.0f),
+                (int)(map_pos.v[1] + 8.0f),
+                (int)(map_pos.v[0] + 8.0f),
+                (int)(map_pos.v[1] + 8.0f),
+                colour);
+            BrPixelmapLine(pScreen,
+                (int)(map_pos.v[0] - 8.0f),
+                (int)(map_pos.v[1] - 8.0f),
+                (int)(map_pos.v[0] - 8.0f),
+                (int)(map_pos.v[1] + 8.0f),
+                colour);
+            BrPixelmapLine(pScreen,
+                (int)(map_pos.v[0] + 8.0f),
+                (int)(map_pos.v[1] - 8.0f),
+                (int)(map_pos.v[0] + 8.0f),
+                (int)(map_pos.v[1] + 8.0f),
+                colour);
+        }
+        if (time_diff <= 500 && pCar != NULL && pCar->driver == eDriver_local_human) {
+            size = (35000 - 70 * time_diff) / 500;
+            BrPixelmapLine(pScreen,
+                (int)(map_pos.v[0] - 0.5) - size,
+                (int)(map_pos.v[1] - 0.5) - size,
+                (int)(map_pos.v[0] + 0.5) + size,
+                (int)(map_pos.v[1] - 0.5) - size,
+                colour);
+            BrPixelmapLine(pScreen,
+                (int)(map_pos.v[0] - 0.5) - size,
+                (int)(map_pos.v[1] + 0.5) + size,
+                (int)(map_pos.v[0] + 0.5) + size,
+                (int)(map_pos.v[1] + 0.5) + size,
+                colour);
+            BrPixelmapLine(pScreen,
+                (int)(map_pos.v[0] - 0.5) - size,
+                (int)(map_pos.v[1] - 0.5) - size,
+                (int)(map_pos.v[0] - 0.5) - size,
+                (int)(map_pos.v[1] + 0.5) + size,
+                colour);
+            BrPixelmapLine(pScreen,
+                (int)(map_pos.v[0] + 0.5) + size,
+                (int)(map_pos.v[1] - 0.5) - size,
+                (int)(map_pos.v[0] + 0.5) + size,
+                (int)(map_pos.v[1] + 0.5) + size,
+                colour);
+        }
+    }
+}
 
-// CopyMapToScreen
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
-// DrawCarArrow
+inline void C2_HOOK_FASTCALL DrawSmashBlip(br_pixelmap* pScreen, tU32 pTime, const br_vector3* pPos, int pIndex) {
+    br_vector3 map_pos;
+    br_vector3 offset;
+    br_scalar distance;
+
+    BrMatrix34ApplyP(&map_pos, pPos, &gCurrent_race.map_transformation);
+    map_pos.v[2] = 0.0f;
+    offset.v[0] = (float)(gHeadup_map_half_width + gMap_overlay_offset_x + gINT_0074ab8c) - map_pos.v[0];
+    offset.v[1] = (float)(gHeadup_map_half_height + gMap_overlay_offset_y + gINT_0074ab88) - map_pos.v[1];
+    offset.v[2] = 0.0f - map_pos.v[2];
+    distance = offset.v[2] * offset.v[2] + offset.v[0] * offset.v[0] + offset.v[1] * offset.v[1];
+    if (gNearest_smash_blip_index == -1 || distance < gFLOAT_0074abc4) {
+        gFLOAT_0074abc4 = distance;
+        gVector2_0068d8b0.v[0] = offset.v[0];
+        gVector2_0068d8b0.v[1] = offset.v[1];
+        gFLOAT_0068d8b8 = offset.v[2];
+        gNearest_smash_blip_index = pIndex;
+    }
+    if (gNet_mode == eNet_mode_none && (pTime & 0x100)) {
+#ifdef REC2_HW
+        if (gMap_view == 2) {
+            PossibleLock(1);
+        }
+#endif
+        DRPixelmapRectangleMaskedCopy(pScreen,
+            (br_int_16)(int)(map_pos.v[0] - gSmashy_dot->width / 2),
+            (br_int_16)(int)(map_pos.v[1] - gSmashy_dot->height / 2),
+            gSmashy_dot,
+            0,
+            0,
+            gSmashy_dot->width,
+            gSmashy_dot->height);
+#ifdef REC2_HW
+        if (gMap_view == 2) {
+            PossibleUnlock(1);
+        }
+#endif
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x004967c0
+// FUNCTION: CARMA2_CHEAT 0x00496b70
+void C2_HOOK_FASTCALL DrawMapSmallBlip(br_pixelmap* pScreen, tU32 pTime, const br_vector3 *pPos, int pColour) {
+    br_vector3 map_pos;
+
+    if (pTime & 0x100) {
+        pColour = 0;
+    }
+    BrMatrix34ApplyP(&map_pos, pPos, &gCurrent_race.map_transformation);
+    if (map_pos.v[0] >= 0.0f && map_pos.v[0] < (float)pScreen->width
+            && map_pos.v[1] >= 0 && map_pos.v[1] < (float)pScreen->height) {
+#ifdef REC2_HW
+        if (gMap_view == 2) {
+            PossibleLock(1);
+        }
+#endif
+        if (gBack_screen->type != BR_PMT_INDEX_8) {
+            *(br_uint_16*)((br_uint_8*)pScreen->pixels + (int)map_pos.v[1] * pScreen->row_bytes + 2 * (int)map_pos.v[0]) = PaletteEntry16Bit(gRender_palette, pColour);
+        } else {
+            ((br_uint_8*)pScreen->pixels)[(int)map_pos.v[1] * pScreen->row_bytes + (int)map_pos.v[0]] = pColour;
+        }
+#ifdef REC2_HW
+        if (gMap_view == 2) {
+            PossibleUnlock(1);
+        }
+#endif
+    }
+}
+
+inline void C2_HOOK_FASTCALL CopyMapToScreen(void) {
+
+    if (gCurrent_race.map_image != NULL) {
+#ifdef REC2_SW
+        if (gGraf_data_index != 0) {
+            BrPixelmapCopy(gBack_screen, gCurrent_race.map_image);
+        } else {
+            BrPixelmapCopy(gBack_screen, gCurrent_race.map_image);
+        }
+#else
+        if (gGraf_data_index != 0) {
+            PossibleUnlock(1);
+            DrPixelmapRectangleCopyPossibleLock(gBack_screen,
+                -gBack_screen->origin_x,
+                -gBack_screen->origin_y,
+                gCurrent_race.map_image,
+                gCurrent_race.map_image->origin_x,
+                gCurrent_race.map_image->origin_y,
+                640, 480);
+        } else {
+            DRPixelmapCopy(gBack_screen, gCurrent_race.map_image);
+        }
+#endif
+    }
+    DimRectangleClipped(gBack_screen,
+        gMap_render_x_i - gCurrent_graf_data->map_render_x_marg,
+        gMap_render_y_i - gCurrent_graf_data->map_render_y_marg,
+        gMap_render_width_i + gMap_render_x_i + gCurrent_graf_data->map_render_x_marg,
+        gMap_render_height_i + gMap_render_y_i + gCurrent_graf_data->map_render_y_marg,
+        1);
+}
+
+inline void C2_HOOK_FASTCALL DrawCarArrow(br_pixelmap* pScreen, tCar_spec* pCar, tU32 pTime, const br_vector3* pPos, tVehicle_type pCategory) {
+
+    DrawMapBlip(pScreen, pCar, pTime, &pCar->car_master_actor->t.t.mat, pPos, CarArrowColour(pCar, pCategory));
+}
 
 // FUNCTION: CARMA2_HW 0x00495ba0
 // FUNCTION: CARMA2_SW 0x00492540
@@ -611,10 +942,51 @@ void C2_HOOK_FASTCALL CalcMapCheckpoint2(br_pixelmap* pMap, int pCheckpoint, tU3
     checkpoint->map_position.v[1] += (float)gINT_0074abd0;
 }
 
-// DrawCheckpoint
+// FUNCTION: CARMA2_HW 0x004969e0
+// FUNCTION: CARMA2_CHEAT 0x00496d90
+void C2_HOOK_FASTCALL DrawCheckpoint(br_pixelmap* pMap, int pCheckpoint, tU32 pTime, int pTarget) {
+    // GLOBAL: CARMA2_HW 0x0068d8e8
+    // GLOBAL: CARMA2_CHEAT 0x00695188
+    static tU32 last_flash;
+    // GLOBAL: CARMA2_HW 0x0068d8ec
+    // GLOBAL: CARMA2_CHEAT 0x0069518c
+    static int flash_rate;
+    tRace_checkpoint_spec* checkpoint;
+
+    if ((pCheckpoint >= 0 && pCheckpoint < gCurrent_race.check_point_count && gTrack_version > 0 && !pTarget)
+            || Flash(300, &last_flash, &flash_rate)) {
+
+        checkpoint = &gCurrent_race.checkpoints[pCheckpoint];
+        if (checkpoint->map_position.v[0] >= 0.0f
+                && checkpoint->map_position.v[0] < (float)pMap->width
+                && checkpoint->map_position.v[1] >= 0.0f
+                && checkpoint->map_position.v[1] < (float)pMap->height) {
+
+#ifdef REC2_HW
+            if (gMap_view == 2) {
+                PossibleLock(1);
+            }
+#endif
+            DRPixelmapRectangleMaskedCopy(pMap,
+                (int)(checkpoint->map_position.v[0] - (float)gCheckpoint_digit_center_x),
+                (int)(checkpoint->map_position.v[1] - (float)(int)gCheckpoint_digit_center_y),
+                gCheckpoint_numbers,
+                0,
+                pCheckpoint * gCheckpoint_digit_height,
+                gCheckpoint_numbers->width,
+                gCheckpoint_digit_height);
+#ifdef REC2_HW
+            if (gMap_view == 2) {
+                PossibleUnlock(1);
+            }
+#endif
+        }
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x00495d00
 // FUNCTION: CARMA2_SW 0x00493350
+// FUNCTION: CARMA2_CHEAT 0x00495f70
 void C2_HOOK_FASTCALL DrawOffsetCheckpoint(br_pixelmap* pMap, int pCheckpoint, tU32 pTime, int pTarget) {
     tRace_checkpoint_spec* checkpoint;
 
@@ -646,18 +1018,131 @@ void C2_HOOK_FASTCALL DrawOffsetCheckpoint(br_pixelmap* pMap, int pCheckpoint, t
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x00495e10
-// STUB: CARMA2_SW 0x004927b0
-// STUB: CARMA2_CHEAT 0x00496080
+// FUNCTION: CARMA2_HW 0x00495e10
+// FUNCTION: CARMA2_SW 0x004927b0
+// FUNCTION: CARMA2_CHEAT 0x00496080
 void C2_HOOK_FASTCALL DoMapOverlays(br_pixelmap* pScreen) {
-    NOT_IMPLEMENTED();
+    tU32 the_time;
+    tVehicle_type category;
+    int car_count;
+    tCar_spec* car;
+    int count;
+    tNet_game_player_info* net_player;
+    int i;
+    br_vector3 pos;
+    const br_vector3* position;
+    tSmashable_race_target* smash_target;
+#ifdef REC2_CHEAT
+    char s[512];
+    char s2[512];
+#endif
+
+#ifdef REC2_CHEAT
+    if (gNet_mode == eNet_mode_none && gMap_view == 2) {
+        if (gCurrent_race.race_spec->description[0] != '\0') {
+            s2[0] = '\0';
+            sprintf(s, "%s", gCurrent_race.race_spec->description);
+            MungeMetaCharactersChar(s, 'R', 1);
+            for (i = strlen(s) - 1; i >= 0; i--) {
+                if (s[i] == 1) {
+                    strcpy(s2, &s[i + 1]);
+                    break;
+                }
+            }
+        } else {
+            sprintf(s2, "...%s", gCurrent_race.race_spec->name);
+        }
+        DRTextWidth(&gFonts[2], s2);
+        BrPixelmapRectangleFill(gBack_screen, 0, 0, gBack_screen->width, 16, 0);
+        gRender_poly_text = !gRender_poly_text;
+        OoerrIveGotTextInMeBoxMissus(2, s2, gBack_screen, 0, 0, gBack_screen->width, gBack_screen->height, 0);
+        gRender_poly_text = !gRender_poly_text;
+    }
+#endif
+    the_time = PDGetTotalTime();
+    if (gCurrent_race.race_spec->race_type == kRaceType_Carma1 || gCurrent_race.race_spec->race_type == kRaceType_Checkpoints) {
+        if (gMap_view == 2) {
+            DoSomeThingsToCheckpoints(pScreen, the_time, CalcMapCheckpoint, 1);
+            DoSomeThingsToCheckpoints(pScreen, the_time, DrawCheckpoint, 1);
+        } else {
+            DoSomeThingsToCheckpoints(pScreen, the_time, CalcMapCheckpoint2, 1);
+        }
+    }
+    if (gShow_peds_on_map
+        || gCurrent_race.race_spec->race_type == kRaceType_Peds
+        || (gNet_mode != eNet_mode_none && gCurrent_net_game->options.show_powerups_on_map)) {
+        count = GetPedCount();
+        for (i = 0; i < count; i++) {
+            if (GetPedPosition(i, &pos)) {
+                DrawMapSmallBlip(pScreen, the_time, &pos, 52);
+            }
+        }
+    }
+    if ((gNet_mode != eNet_mode_none && gCurrent_net_game->options.show_powerups_on_map)
+        || gCurrent_race.race_spec->expansion) {
+        count = GetPowerupCount();
+        for (i = 0; i < count; i++) {
+            GetPowerupPosition(i, &pos);
+            DrawMapSmallBlip(pScreen, the_time, &pos, 4);
+        }
+    }
+    for (category = gShow_opponents ? eVehicle_opponent : eVehicle_self; category >= (gMap_view == 1 ? eVehicle_net_player : eVehicle_self); category--) {
+        if (category == eVehicle_self) {
+            car_count = 1;
+        } else {
+            car_count = GetCarCount(category);
+        }
+        for (i = 0; i < car_count; i++) {
+            if (category == eVehicle_self) {
+                car = &gProgram_state.current_car;
+            } else {
+                car = GetCarSpec(category, i);
+            }
+            if (gNet_mode != eNet_mode_none) {
+                net_player = NetPlayerFromCar(car);
+            }
+            if (gNet_mode == eNet_mode_none
+                || (!car->knackered && !net_player->wasted && net_player->player_status >= ePlayer_status_racing)) {
+                if (category == eVehicle_self) {
+                    position = &gPlayer_car_master_actor->t.t.translate.t;
+                } else {
+                    position = &GetCarSpec(category, i)->car_master_actor->t.t.translate.t;
+                }
+                DrawCarArrow(pScreen, car, the_time, position, category);
+            }
+        }
+    }
+    if (gCurrent_race.race_spec->race_type >= kRaceType_Smash) {
+        for (i = 0; i < gCount_smashable_race_targets; i++) {
+            smash_target = &gSmashable_race_targets[i];
+            if ((smash_target->model != NULL && smash_target->actor->render_style != BR_RSTYLE_NONE && smash_target->actor->model == smash_target->model)
+                || (smash_target->field_0x8 >= 0 && gPedestrian_array[smash_target->field_0x8].hit_points > 0)) {
+                if (smash_target->field_0x8 >= 0) {
+                    position = &gPedestrian_array[smash_target->field_0x8].pos;
+                } else {
+                    position = &smash_target->actor->t.t.translate.t;
+                }
+                DrawSmashBlip(pScreen, the_time, position, i);
+            }
+        }
+    }
 }
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
 #endif
 
-// StartMap
+inline void C2_HOOK_FASTCALL StartMap(void) {
+
+    gBack_original_origin_x = gBack_screen->origin_x;
+    gBack_original_origin_y = gBack_screen->origin_y;
+    gBack_original_base_x = gBack_screen->base_x;
+    gBack_original_base_y = gBack_screen->base_y;
+    gBack_screen->origin_x = 0;
+    gBack_screen->origin_y = 0;
+    gBack_screen->base_x = 0;
+    gBack_screen->base_y = 0;
+}
 
 void C2_HOOK_FASTCALL FinishMap(void) {
 
@@ -669,6 +1154,7 @@ void C2_HOOK_FASTCALL FinishMap(void) {
 
 // FUNCTION: CARMA2_HW 0x00496b10
 // FUNCTION: CARMA2_SW 0x00493450
+// FUNCTION: CARMA2_CHEAT 0x00496ec0
 void C2_HOOK_FASTCALL CheckpointLine(br_pixelmap* pMap, int pCheckpoint, tU32 pTime, int pTarget) {
     int p2_x;
     int p2_y;
@@ -689,11 +1175,68 @@ void C2_HOOK_FASTCALL CheckpointLine(br_pixelmap* pMap, int pCheckpoint, tU32 pT
     }
 }
 
-// DoDirectionFinderStuff
+inline void C2_HOOK_FASTCALL DoDirectionFinderStuff(br_pixelmap* pMap) {
+    tU32 the_time;
+    const br_vector2* offset;
+    br_scalar distance;
+    br_vector2 dir;
+
+    the_time = PDGetTotalTime();
+    if ((gMini_map_visible || gMap_view == 2)
+        && gCheckpoint_finder_enabled
+        && (gCurrent_race.race_spec->race_type == kRaceType_Carma1 || gCurrent_race.race_spec->race_type == kRaceType_Checkpoints)) {
+        DoSomeThingsToCheckpoints(pMap, the_time, CheckpointLine, 0);
+    }
+    if (gCurrent_race.race_spec->race_type >= kRaceType_Smash) {
+        if (gNearest_smash_blip_index < 0) {
+            return;
+        }
+        distance = gFLOAT_0074abc4;
+        offset = &gVector2_0068d8b0;
+    } else if ((gNet_mode != eNet_mode_none
+                   || gCurrent_race.race_spec->race_type == kRaceType_Carma1
+                   || gCurrent_race.race_spec->race_type == kRaceType_Cars)
+               && gTarget_lock_car_2 != NULL) {
+        distance = gFLOAT_0074ab90;
+        offset = &gVector2_0068d6d8;
+    } else {
+        return;
+    }
+    if (distance > gFLOAT_0074abb8) {
+        BrMatrix23TApplyV(&dir, offset, &gMatrix23_0068c880);
+        distance = (br_scalar)sqrt(distance) - (float)gCurrent_graf_data->field_0x51c;
+        BrVector2Normalise(&dir, &dir);
+        if (fabs(distance * dir.v[0]) > gINT_0074abd4) {
+            distance *= gINT_0074abd4 / fabs(distance * dir.v[0]);
+        }
+        if (gMini_map_visible || gMap_view == 2) {
+            FancyDrawLine(pMap,
+                gINT_0074abd4 + 8,
+                gINT_0074abd0,
+                (int)(gINT_0074abd4 - distance * dir.v[0] + 8.0f),
+                (int)(gINT_0074abd0 - distance * dir.v[1]),
+                52,
+                75);
+        }
+    }
+}
 
 // MungeMoodMessage
 
-// DoOpponentStatusHeadup
+#ifdef REC2_MATCHING
+#pragma auto_inline(off)
+#endif
+
+// STUB: CARMA2_HW 0x00494900
+// STUB: CARMA2_SW 0x00493520
+// STUB: CARMA2_CHEAT 0x00494b30
+void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
+    NOT_IMPLEMENTED();
+}
+
+#ifdef REC2_MATCHING
+#pragma auto_inline(on)
+#endif
 
 #ifdef REC2_HW
 // FUNCTION: CARMA2_HW 0x00494f40
@@ -741,26 +1284,195 @@ void C2_HOOK_FASTCALL AllocateOppoBarActor(int pX, int pY) {
 }
 #endif
 
-// DoNearestOpponentRelativeHeightMarkerStuff
+inline void C2_HOOK_FASTCALL DoNearestOpponentRelativeHeightMarkerStuff(br_pixelmap* pMap) {
+    int half_height;
+    int border_height;
+    br_scalar delta_height;
+    int ym;
+    int yt;
+
+    if ((gMini_map_visible || gMap_view == 2) && gTarget_lock_car_2 != NULL) {
+        half_height = pMap->height / 2;
+        border_height = (int)(pMap->height * 0.05);
+        BrPixelmapLine(pMap, 1, border_height, 3, border_height, RGB565_TO_BACKSCREEN_COLOUR(7, 46, 7));
+        BrPixelmapLine(pMap, 1, pMap->height - border_height, 3, pMap->height - border_height, RGB565_TO_BACKSCREEN_COLOUR(7, 46, 7));
+        BrPixelmapLine(pMap, 0, border_height + 1, 0, pMap->height - border_height - 1, RGB565_TO_BACKSCREEN_COLOUR(7, 46, 7));
+        BrPixelmapLine(pMap, 4, border_height + 1, 4, pMap->height - border_height - 1, RGB565_TO_BACKSCREEN_COLOUR(7, 46, 7));
+        BrPixelmapLine(pMap, 0, half_height, 4, half_height, RGB565_TO_BACKSCREEN_COLOUR(31, 62, 31));
+        BrPixelmapPixelSet(pMap, 0, border_height, RGB565_TO_BACKSCREEN_COLOUR(6, 42, 6));
+        BrPixelmapPixelSet(pMap, 4, border_height, RGB565_TO_BACKSCREEN_COLOUR(6, 42, 6));
+        BrPixelmapPixelSet(pMap, 0, pMap->height - border_height, RGB565_TO_BACKSCREEN_COLOUR(6, 42, 6));
+        BrPixelmapPixelSet(pMap, 4, pMap->height - border_height, RGB565_TO_BACKSCREEN_COLOUR(6, 42, 6));
+        delta_height = gPlayer_car_master_actor->t.t.translate.t.v[1] - gTarget_lock_car_2->pos.v[1];
+        if (fabs(delta_height) > 15.0 / WORLD_SCALE_D) {
+            delta_height = (br_scalar)(sign((int)delta_height) * (15.0 / WORLD_SCALE_D));
+        }
+        delta_height = (br_scalar)(delta_height * 0.46);
+        if (fabs(delta_height) < 0.05) {
+            ym = half_height;
+        } else {
+            ym = (int)((half_height - border_height) * delta_height + half_height);
+        }
+        yt = border_height + 1;
+        if (ym > border_height) {
+            yt = ym;
+            if (ym >= pMap->height - border_height) {
+                yt = pMap->height - border_height - 1;
+            }
+        }
+        if (yt < half_height) {
+            BrPixelmapLine(pMap, 1, yt, 1, half_height - 1, RGB565_TO_BACKSCREEN_COLOUR(0, 38, 31));
+            BrPixelmapLine(pMap, 2, yt, 2, half_height - 1, RGB565_TO_BACKSCREEN_COLOUR(6, 0, 31));
+            BrPixelmapLine(pMap, 3, yt, 3, half_height - 1, 0x15);
+        } else if (yt > half_height) {
+            BrPixelmapLine(pMap, 1, half_height + 1, 1, yt, RGB565_TO_BACKSCREEN_COLOUR(0, 38, 31));
+            BrPixelmapLine(pMap, 2, half_height + 1, 2, yt, RGB565_TO_BACKSCREEN_COLOUR(6, 0, 31));
+            BrPixelmapLine(pMap, 3, half_height + 1, 3, yt, 0x15);
+        }
+    }
+}
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(off)
 #endif
 
-// STUB: CARMA2_HW 0x004950b0
-// STUB: CARMA2_SW 0x00491c00
-// STUB: CARMA2_CHEAT 0x004952e0
+// FUNCTION: CARMA2_HW 0x004950b0
+// FUNCTION: CARMA2_SW 0x00491c00
+// FUNCTION: CARMA2_CHEAT 0x004952e0
 void C2_HOOK_FASTCALL MapOverlay(void) {
-    NOT_IMPLEMENTED();
+    tU32 the_time;
+    br_uint_16 original_base_x;
+    br_matrix23 mat23;
+    br_vector3 player_pos;
+
+    BrMatrix34ApplyP(&gOrigin_map, &gPlayer_car_master_actor->t.t.translate.t, &gCurrent_race.map_transformation);
+    gOrigin_headup_map.v[0] = gOrigin_map.v[0] - (float)(gINT_0074ab94 / 2);
+    gOrigin_headup_map.v[1] = gOrigin_map.v[1] - (float)(gINT_0074abec / 2);
+    gHeadup_map_src_x = (int)(gOrigin_headup_map.v[0] + 0.5);
+    gHeadup_map_src_y = (int)(gOrigin_headup_map.v[1] + 0.5);
+    if (gHeadup_map_src_x < 0 || gHeadup_map_src_y < 0
+        || gHeadup_map_src_x > gCurrent_race.map_image->width
+        || gHeadup_map_src_y > gCurrent_race.map_image->height) {
+        BrPixelmapFill(gMap_overlay, 0);
+    }
+    if (gINT_0074ab94 > gINT_0074abec) {
+        gMap_overlay_offset_y = (gINT_0074ab94 - gINT_0074abec) / 2;
+        gMap_overlay_offset_x = 0;
+        BrPixelmapRectangleCopy(gMap_overlay,
+            0,
+            0,
+            gCurrent_race.map_image,
+            gHeadup_map_src_x,
+            gHeadup_map_src_y - gMap_overlay_offset_y,
+            gINT_0074ab94,
+            gINT_0074ab94);
+    } else {
+        gMap_overlay_offset_x = (gINT_0074abec - gINT_0074ab94) / 2;
+        gMap_overlay_offset_y = 0;
+        BrPixelmapRectangleCopy(gMap_overlay,
+            0,
+            0,
+            gCurrent_race.map_image,
+            gHeadup_map_src_x - gMap_overlay_offset_x,
+            gHeadup_map_src_y,
+            gINT_0074abec,
+            gINT_0074abec);
+    }
+    gCurrent_race.map_transformation.m[3][0] -= gOrigin_headup_map.v[0] - (float)gMap_overlay_offset_x;
+    gCurrent_race.map_transformation.m[3][1] -= gOrigin_headup_map.v[1] - (float)gMap_overlay_offset_y;
+    BrMatrix34Mul(&gCar_in_map_space, &gProgram_state.current_car.car_master_actor->t.t.mat, &gCurrent_race.map_transformation);
+    mat23.m[0][0] = gCar_in_map_space.m[0][0];
+    mat23.m[0][1] = gCar_in_map_space.m[0][1];
+    mat23.m[1][0] = gCar_in_map_space.m[2][0];
+    mat23.m[1][1] = gCar_in_map_space.m[2][1];
+    mat23.m[2][0] = 0.0f;
+    mat23.m[2][1] = 0.0f;
+    BrMatrix23LPNormalise(&gMatrix23_0068c880, &mat23);
+    DoMapOverlays(gMap_overlay);
+    gCurrent_race.map_transformation.m[3][0] += gOrigin_headup_map.v[0] - (float)gMap_overlay_offset_x;
+    gCurrent_race.map_transformation.m[3][1] += gOrigin_headup_map.v[1] - (float)gMap_overlay_offset_y;
+    the_time = PDGetTotalTime();
+#ifdef REC2_HW
+    PossibleLock(1);
+#endif
+    if (gMini_map_visible && gMap_overlay != NULL) {
+        DRPixelmapRotatedAndFeatheredCopy(&gMatrix23_0068c880,
+            gBack_screen,
+            gHeadup_map_x + 8,
+            gHeadup_map_y,
+            gMap_overlay,
+            gMap_overlay_offset_x + gINT_0074ab8c,
+            gMap_overlay_offset_y + gINT_0074ab88,
+            gHeadup_map_w,
+            gHeadup_map_h,
+            gMap_trans);
+    }
+    InitMap();
+    original_base_x = gMini_map->base_x;
+    gMini_map->base_x = gMini_map->base_x / 2;
+    DoDirectionFinderStuff(gMini_map);
+    gMini_map->base_x = original_base_x;
+    if (gMini_map_visible) {
+        if (gCurrent_race.race_spec->race_type == kRaceType_Carma1 || gCurrent_race.race_spec->race_type == kRaceType_Checkpoints) {
+            DoSomeThingsToCheckpoints(gMini_map, the_time, DrawOffsetCheckpoint, 1);
+        }
+        if (gMini_map->type == BR_PMT_INDEX_8) {
+            gMini_map->base_x = 0;
+        } else {
+            gMini_map->base_x /= 2;
+        }
+        player_pos.v[0] = (float)(gHeadup_map_w / 2 + gHeadup_map_x + 8);
+        player_pos.v[1] = (float)(gHeadup_map_h / 2 + gHeadup_map_y);
+        player_pos.v[2] = gMini_map_arrow_z;
+        DrawArrow(gBack_screen, 0, &player_pos, CarArrowColour(&gProgram_state.current_car, eVehicle_self));
+    }
+    DoNearestOpponentRelativeHeightMarkerStuff(gMini_map);
+    gMini_map->base_x = original_base_x;
+#ifdef REC2_HW
+    PossibleUnlock(1);
+#endif
+    if (gHeadup_detail_level > 2) {
+        DoOpponentStatusHeadup();
+    }
 }
 
 #ifdef REC2_MATCHING
 #pragma auto_inline(on)
 #endif
 
-// InitNearestCar
+inline void C2_HOOK_FASTCALL InitNearestCar(void) {
 
-// MapStuffBeforeRender
+    gNearest_smash_blip_index = -1;
+    if (gNet_mode != eNet_mode_none && gCurrent_net_game->type == eNet_game_type_foxy) {
+        gTarget_lock_car_2 = NULL;
+    } else if (gPrevious_opponent_status == eOpponent_status_Wasted && gTarget_lock_car_1 != NULL) {
+        if (PDGetTotalTime() - gTime_oppobar_target_wasted <= 2500) {
+            gFLOAT_0074ab90 = 0.0f;
+        } else {
+            gTarget_lock_car_2 = NULL;
+            gTarget_lock_car_1 = NULL;
+            if (gTarget_lock_enabled) {
+                gTarget_lock_enabled = 0;
+            }
+        }
+    } else if (gTarget_lock_enabled) {
+        gFLOAT_0074ab90 = 0.0f;
+    } else {
+        gTarget_lock_car_2 = NULL;
+    }
+}
+
+// FUNCTION: CARMA2_HW 0x00496be0
+// FUNCTION: CARMA2_SW 0x00493a80
+// FUNCTION: CARMA2_CHEAT 0x00496f90
+void C2_HOOK_FASTCALL MapStuffBeforeRender(void) {
+
+    InitNearestCar();
+    if (gCurrent_race.map_image != NULL && gMap_view == 2) {
+        StartMap();
+        CopyMapToScreen();
+    }
+}
 
 // FUNCTION: CARMA2_HW 0x00496d80
 // FUNCTION: CARMA2_SW 0x00493bf0

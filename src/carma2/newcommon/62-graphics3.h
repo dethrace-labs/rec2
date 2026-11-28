@@ -39,7 +39,7 @@ extern int gBack_original_origin_y;
 extern br_actor* gLit_op_stat_actor;
 #endif
 
-// CarArrowColour
+extern br_uint_32 C2_HOOK_FASTCALL CarArrowColour(tCar_spec* pCar, tVehicle_type pCategory);
 
 extern void C2_HOOK_FASTCALL ToggleTargetLock(void);
 
@@ -53,19 +53,19 @@ extern void C2_HOOK_FASTCALL InitTargetLock(void);
 
 extern void C2_HOOK_FASTCALL SetIntegerMapRenders(void);
 
-// OppositeColour
+extern int C2_HOOK_FASTCALL OppositeColour(int pColour);
 
 extern void C2_HOOK_FASTCALL DrawArrow(br_pixelmap* pScreen, br_uint_32 pArrow_index, const br_vector3* pPos, br_uint_32 pColour);
 
-// DrawMapBlip
+extern void C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar, tU32 pTime, br_matrix34* pTrans, const br_vector3* pPos, br_uint_32 pColour);
 
-// DrawSmashBlip
+extern void C2_HOOK_FASTCALL DrawSmashBlip(br_pixelmap* pScreen, tU32 pTime, const br_vector3* pPos, int pIndex);
 
-// DrawMapSmallBlip
+extern void C2_HOOK_FASTCALL DrawMapSmallBlip(br_pixelmap* pScreen, tU32 pTime, const br_vector3* pPos, int pColour);
 
-// CopyMapToScreen
+extern void C2_HOOK_FASTCALL CopyMapToScreen(void);
 
-// DrawCarArrow
+extern void C2_HOOK_FASTCALL DrawCarArrow(br_pixelmap* pScreen, tCar_spec* pCar, tU32 pTime, const br_vector3* pPos, tVehicle_type pCategory);
 
 extern void C2_HOOK_FASTCALL DoSomeThingsToCheckpoints(br_pixelmap* pMap, tU32 pTime, tDoSomethingsToCheckpoints_cbfn* pCallback, int pDraw_prev);
 
@@ -73,35 +73,35 @@ extern void C2_HOOK_FASTCALL CalcMapCheckpoint(br_pixelmap* pMap, int pCheckpoin
 
 extern void C2_HOOK_FASTCALL CalcMapCheckpoint2(br_pixelmap* pMap, int pCheckpoint, tU32 pTime, int pTarget);
 
-// DrawCheckpoint
+extern void C2_HOOK_FASTCALL DrawCheckpoint(br_pixelmap* pMap, int pCheckpoint, tU32 pTime, int pTarget);
 
 extern void C2_HOOK_FASTCALL DrawOffsetCheckpoint(br_pixelmap* pMap, int pCheckpoint, tU32 pTime, int pTarget);
 
 extern void C2_HOOK_FASTCALL DoMapOverlays(br_pixelmap* pScreen);
 
-// StartMap
+extern void C2_HOOK_FASTCALL StartMap(void);
 
 extern void C2_HOOK_FASTCALL FinishMap(void);
 
 extern void C2_HOOK_FASTCALL CheckpointLine(br_pixelmap* pMap, int pCheckpoint, tU32 pTime, int pTarget);
 
-// DoDirectionFinderStuff
+extern void C2_HOOK_FASTCALL DoDirectionFinderStuff(br_pixelmap* pMap);
 
 // MungeMoodMessage
 
-// DoOpponentStatusHeadup
+extern void C2_HOOK_FASTCALL DoOpponentStatusHeadup(void);
 
 #ifdef REC2_HW
 extern void C2_HOOK_FASTCALL AllocateOppoBarActor(int pX, int pY);
 #endif
 
-// DoNearestOpponentRelativeHeightMarkerStuff
+extern void C2_HOOK_FASTCALL DoNearestOpponentRelativeHeightMarkerStuff(br_pixelmap* pMap);
 
 extern void C2_HOOK_FASTCALL MapOverlay(void);
 
-// InitNearestCar
+extern void C2_HOOK_FASTCALL InitNearestCar(void);
 
-// MapStuffBeforeRender
+extern void C2_HOOK_FASTCALL MapStuffBeforeRender(void);
 
 extern void C2_HOOK_FASTCALL MapStuffAfterRender(void);
 
