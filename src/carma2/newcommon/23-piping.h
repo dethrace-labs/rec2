@@ -34,7 +34,7 @@ extern tU32 gPipe_sound_start_time;
 extern tU32 gPipe_sound_time_window;
 extern int gDisable_advance;
 extern int gPipe_count_callbacks;
-extern tPipe_smudge_data* gCrush_space;
+extern void* gCrush_space;
 extern tU8* gEnd_of_session;
 
 extern int C2_HOOK_FASTCALL ARReplayForwards(void);
@@ -203,6 +203,28 @@ extern void C2_HOOK_FASTCALL AddFlapToPipingSession(br_actor* pActor, br_angle p
 
 extern void C2_HOOK_FASTCALL AddModelMashToPipingSession(br_model* pModel, br_vector3* pMash);
 
+extern void C2_HOOK_FASTCALL AddRelinkToPipingSession(br_actor* pParent, br_actor* pActor);
+
+extern void C2_HOOK_FASTCALL AddIdentityToPipingSession(br_actor* pActor);
+
+extern void C2_HOOK_FASTCALL AddSplitWeldToPipingSession(uintptr_t pId, const br_vector4* pPlane, int pSplit);
+
+extern void C2_HOOK_FASTCALL AddBendToPipingSession(uintptr_t pId, tU16 pArg2, tU16 pArg3, tU16 pArg4, const br_vector3* pArg5, float pArg6);
+
+extern void C2_HOOK_FASTCALL AddUnBendToPipingSession(uintptr_t pId, tU16 pArg2, tU16 pArg3, tU16 pArg4);
+
+extern void C2_HOOK_FASTCALL AddEndMyBendToPipingSession(uintptr_t pId, const tU8* pArg2, const tU8* pArg3, int pArg4, const tU16* pArg5);
+
+extern void C2_HOOK_FASTCALL AddExplosionToPipingSession(int pIndex, const tExplosion* pExplosion);
+
+extern void C2_HOOK_FASTCALL AddNonCarCreationToPipingSession(int pIndex);
+
+extern void C2_HOOK_FASTCALL AddSmashModelChangeToPipingSession(br_actor* pActor, br_model* pOld_model, br_model* pNew_model);
+
+extern void C2_HOOK_FASTCALL AddSmashDecalToPipingSession(int pIndex);
+
+extern void C2_HOOK_FASTCALL AddSmashTextureChangeToPipingSession(tCar_spec* pCar_spec, br_material* pMaterial, br_pixelmap* pTexture);
+
 extern void C2_HOOK_FASTCALL AddRepulseRayToPipingSession(int pIndex, br_vector3* pOrigin, br_vector3* pVictim, tU32 pTime);
 
 extern void C2_HOOK_FASTCALL AddNapalmBoltToPipingSession(int pIndex, tPedestrian* pPed, br_vector3* pPositions);
@@ -243,7 +265,13 @@ extern void C2_HOOK_FASTCALL PipeSingleIdentity(br_actor* pActor);
 
 extern void C2_HOOK_FASTCALL PipeSingleSplitWeld(uintptr_t pId, const br_vector4* pPlane, int pSplit);
 
-// PipeSingleShrapnelShower
+extern void C2_HOOK_FASTCALL PipeSingleBend(uintptr_t pId, tU16 pArg2, tU16 pArg3, tU16 pArg4, const br_vector3* pArg5, float pArg6);
+
+extern void C2_HOOK_FASTCALL PipeSingleUnBend(uintptr_t pId, tU16 pArg2, tU16 pArg3, tU16 pArg4);
+
+extern void C2_HOOK_FASTCALL PipeSingleEndMyBend(uintptr_t pId, const tU8* pArg2, const tU8* pArg3, int pArg4, const tU16* pArg5);
+
+extern void C2_HOOK_FASTCALL PipeSingleShrapnelShower(uintptr_t pId, tU32 pArg2, int pArg3, tCar_crush_smashable_part* pArg4, const br_vector3* pArg5, const br_vector3* pArg6, float pArg7, const br_vector3* pArg8, const br_vector3* pArg9, tShrapnel_spec* pArg10, const br_bounds3* pArg11, br_actor* pArg12, const br_matrix34* pArg13, const br_vector3* pArg14, const br_vector3* pArg15);
 
 extern void C2_HOOK_FASTCALL PipeSingleExplosion(int pIndex, const tExplosion* pExplosion);
 
